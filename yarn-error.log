@@ -1,0 +1,31 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add --dev @nomiclabs/hardhat-ethers ethers
+
+PATH: 
+  C:\Program Files (x86)\Microsoft\Edge\Application;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Android;C:\Windows\System32;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\130\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\110\DTS\Binn\;C:\Program Files\nodejs\;C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Local\Microsoft\WindowsApps;C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Local\GitHubDesktop\bin;C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Roaming\npm
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  19.8.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  SyntaxError: R:\Work\05 - Steelo\Steelo\package.json: Unexpected end of JSON input
+      at JSON.parse (<anonymous>)
+      at C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:1629:59
+      at Generator.next (<anonymous>)
+      at step (C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:310:30)
+      at C:\Users\eddie.DESKTOP-KVADVQ2\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:321:13
+
+npm manifest: 
+  
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
