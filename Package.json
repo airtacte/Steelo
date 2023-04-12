@@ -18,6 +18,9 @@
     "hardhat-deploy": "^0.11.26"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.8.2"
+    "@openzeppelin/contracts": "^4.8.2",
+    "@safe-global/api-kit": "^1.0.1",
+    "@safe-global/protocol-kit": "^0.1.1",
+    "@safe-global/safe-core-sdk-types": "^1.10.1"
   }
 }
