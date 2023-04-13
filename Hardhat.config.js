@@ -7,7 +7,7 @@ const ALCHEMY_API_KEY = "jhT3QEajr6JISNWO7O9SZi0fncOm94Vq";
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: "0.8.19", // Change this to 0.8.19 for your project
+  solidity: "0.8.19",
   networks: {
     mumbai: {
       url: `https://polygon-mumbai.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,

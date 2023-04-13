@@ -1,16 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "node_modules/@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "node_modules/@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "node_modules/@openzeppelin/contracts/access/Ownable.sol";
-import "node_modules/@openzeppelin/contracts/security/Pausable.sol";
+import "node_modules/@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import "node_modules/@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "node_modules/@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "node_modules/@openzeppelin/contracts/utils/Strings.sol";
 import "node_modules/@openzeppelin/contracts/utils/Counters.sol";
 import "node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "node_modules/@gnosis.pm/safe-core-sdk/src/safeCoreSDK.ts";
+import "node_modules/@safe-global/safe-core-sdk";
+// https://github.com/maticnetwork probably needs to be imported to setup the multisig x metamask wallets --> GPT (can wait a while) 
 
-contract SteeloToken is ERC1155, Ownable, Pausable {
+contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
     using SafeMath for uint256;
     using Address for address;
     using Counters for Counters.Counter;
@@ -41,37 +42,42 @@ contract SteeloToken is ERC1155, Ownable, Pausable {
     event TokenMinted(uint256 indexed tokenId, address indexed creator, uint256 totalSupply);
     event AnnualTokenIncrease(uint256 indexed tokenId);
 
-    constructor(string memory baseURI) ERC1155("https://myapi.com/api/token/{id}.json") {
+    function initializeWithSafe(string memory baseURI, address safeAddress) public initializer {
+        __ERC1155_init("https://myapi.com/api/token/{id}.json");
+        __Ownable_init_unchained(safeAddress);
+        __Pausable_init_unchained();
+
         _baseURI = baseURI;
 
-        // Gnosis Safe multisig setup code
+        // Gnosis Safe multisig setup code (to be setup) --> GPT
     }
+
 
     // Minting function
     function mint(address to, uint256 tokenId, uint256 amount, bytes memory data) public onlyOwner {
         require(_currentTokenID.current() < type(uint256).max, "SteeloToken: TokenID overflow");
         require(_totalSupply[tokenId] < MAX_CREATOR_TOKENS, "SteeloToken: Maximum cap reached");
 
-        // Set token creator and royalty
-        if (_creator[tokenId] == address(0)) {
-            _creator[tokenId] = to;
-            _royalty[tokenId] = TOKEN_CREATOR_ROYALTY.add(STEELO_ROYALTY).add(HOLDER_ROYALTY);
-        }
+    // Set token creator and royalty
+    if (_creator[tokenId] == address(0)) {
+        _creator[tokenId] = to;
+        _royalty[tokenId] = TOKEN_CREATOR_ROYALTY.add(STEELO_ROYALTY).add(HOLDER_ROYALTY);
+    }
 
-        // Update the transaction count
-        _transactionCount[tokenId] = _transactionCount[tokenId].add(amount);
+    // Update the transaction count
+    _transactionCount[tokenId] = _transactionCount[tokenId].add(amount);
 
-        // Update the minting state for annual token increase
-        if (_mintedInLastYear[tokenId].add(amount) <= INITIAL_CAP.mul(TRANSACTION_MULTIPLIER)) {
-            _mintedInLastYear[tokenId] = _mintedInLastYear[tokenId].add(amount);
-            _lastMintTime[tokenId] = block.timestamp;
-        }
+    // Update the minting state for annual token increase
+    if (_mintedInLastYear[tokenId].add(amount) <= INITIAL_CAP.mul(TRANSACTION_MULTIPLIER)) {
+        _mintedInLastYear[tokenId] = _mintedInLastYear[tokenId].add(amount);
+        _lastMintTime[tokenId] = block.timestamp;
+    }
 
-        // Mint the tokens
-        _mint(to, tokenId, amount, data);
-        _totalSupply[tokenId] = _totalSupply[tokenId].add(amount);
+    // Mint the tokens
+    _mint(to, tokenId, amount, data);
+    _totalSupply[tokenId] = _totalSupply[tokenId].add(amount);
 
-        emit TokenMinted(tokenId, to, _totalSupply[tokenId]);
+    emit TokenMinted(tokenId, to, _totalSupply[tokenId]);
     }
 
     function uri(uint256 tokenId) public view override returns (string memory) {
