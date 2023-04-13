@@ -9,7 +9,6 @@ import "node_modules/@openzeppelin/contracts/utils/Strings.sol";
 import "node_modules/@openzeppelin/contracts/utils/Counters.sol";
 import "node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "node_modules/@safe-global/safe-core-sdk";
-// https://github.com/maticnetwork probably needs to be imported to setup the multisig x metamask wallets --> GPT (can wait a while) 
 
 contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
     using SafeMath for uint256;
