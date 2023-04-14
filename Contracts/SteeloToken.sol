@@ -9,9 +9,8 @@ import "node_modules/@openzeppelin/contracts/utils/Strings.sol";
 import "node_modules/@openzeppelin/contracts/utils/Counters.sol";
 import "node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "node_modules/@safe-global/safe-core-sdk";
-import "node_modules/@gnosis.pm/safe-contracts/contracts/interfaces/ISafe.sol";
-import "node_modules/@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";
-import "node_modules/@gnosis.pm/safe-contracts/contracts/proxies/GnosisSafeProxy.sol";
+import "node_modules/@safe-global/safe-contracts/contracts/Safe.sol";
+import "node_modules/@safe-global/safe-contracts/contracts/proxies/SafeProxy.sol"; 
 
 contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
     using SafeMath for uint256;
@@ -58,6 +57,10 @@ contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradea
     _;
 }
 
+    // Add the following contract addresses
+    address private constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F; // Mainnet Gnosis Safe Master Copy address. Update it based on your network.
+    address private constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48; // Mainnet Gnosis Safe Proxy Factory address. Update it based on your network.
+
     // Functions
 
         // Initialize With Safe-Global's MultiSig Wallet
@@ -68,7 +71,25 @@ contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradea
 
         _baseURI = baseURI;
 
-            // Gnosis Safe multisig setup code (to be setup) --> GPT
+        // Gnosis Safe multisig setup
+        GnosisSafeProxyFactory proxyFactory = GnosisSafeProxyFactory(GNOSIS_SAFE_PROXY_FACTORY);
+        GnosisSafeProxy proxy = GnosisSafeProxy(proxyFactory.createProxy(GNOSIS_SAFE_MASTER_COPY, ""));
+        ISafe safe = ISafe(address(proxy));
+        
+        // Configure the Gnosis Safe with the given `safeAddress`
+        safe.setup(
+            new address[](1){safeAddress}, // The Safe owners
+            1,                             // The number of required confirmations
+            address(0),                    // Address of the module that checks signatures
+            bytes(""),                     // Data for the module that checks signatures
+            address(0),                    // Address of the fallback handler
+            address(0),                    // Address of the token payment receiver
+            0,                             // Value of the token payment
+            address(0)                     // Address of the token to pay
+        );
+        
+        // Transfer ownership of the contract to the Gnosis Safe
+        transferOwnership(address(safe));
     }
 
         // Snapshot function
