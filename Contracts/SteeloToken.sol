@@ -132,7 +132,7 @@ contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradea
 
         // Create token
         function createToken() public onlyOwner {
-            require(_creator[msg.sender] == false, "SteeloToken: Creator has already created a token.");
+            require(!_hasCreatedToken[msg.sender], "SteeloToken: Creator has already created a token.");
             _creator[msg.sender] = true;
 
             _currentTokenID.increment();
@@ -181,16 +181,6 @@ contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradea
             for (uint256 tokenId = 1; tokenId <= _currentTokenID.current(); tokenId++) {
                 _snapshotBalances[_snapshotCounter][tokenId] = _totalSupply[tokenId];
             }
-        }
-
-        // Transfer With Royalty function
-        function transferWithRoyalty(
-            address from,
-            address to,
-            uint256 tokenId,
-            uint256 amount
-        ) public dailySnapshot {
-            _transferWithRoyalty(from, to, tokenId, amount);
         }
 
         // Minting function
@@ -253,10 +243,6 @@ contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradea
             return _lastMintTime[tokenId];
         }
 
-        function _takeSnapshot(/* parameters */) internal {
-            // Snapshot logic
-        }
-
         function expansionEligible(uint256 tokenId) public view returns (bool) {
             return _transactionCount[tokenId] >= _totalSupply[tokenId].mul(2);
         }
@@ -300,14 +286,6 @@ contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradea
                 }
             }
 
-        function claimRoyalty(uint256 tokenId) external {
-            uint256 userRoyalty = _undistributedRoyalties[tokenId][msg.sender];
-            require(userRoyalty > 0, "SteeloToken: No royalty available for the caller.");
-
-            _undistributedRoyalties[tokenId][msg.sender] = 0;
-            _safeTransferFrom(address(this), msg.sender, tokenId, userRoyalty, "");
-        }
-
         function _transferWithRoyalty(
             address from,
             address to,
@@ -328,6 +306,14 @@ contract SteeloToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradea
 
             // Transfer remaining tokens
             _safeTransferFrom(from, to, tokenId, sellerAmount, "");
+        }
+
+        function claimRoyalty(uint256 tokenId) external {
+            uint256 userRoyalty = _undistributedRoyalties[tokenId][msg.sender];
+            require(userRoyalty > 0, "SteeloToken: No royalty available for the caller.");
+
+            _undistributedRoyalties[tokenId][msg.sender] = 0;
+            _safeTransferFrom(address(this), msg.sender, tokenId, userRoyalty, "");
         }
 
         // User Royalty View from last Snapshot
