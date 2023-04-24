@@ -50,11 +50,9 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
     mapping(uint256 => uint256) private _lastMintTime;
     mapping(uint256 => mapping(address => uint256)) private _undistributedRoyalties;
 
-    // COUNTERS
+    // SNAPSHOTS
     CountersUpgradeable.Counter private _currentTokenID;
     CountersUpgradeable.Counter private _snapshotCounter;
-
-    // SNAPSHOTS
     mapping(uint256 => mapping(uint256 => uint256)) private _snapshotBalances;
     mapping(uint256 => uint256) private _lastSnapshot;
     uint256 private _lastSnapshotTimestamp;
@@ -62,10 +60,9 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
 
     // EVENTS
     event TokenMinted(uint256 indexed tokenId, address indexed creator, uint256 amount);
-    event TokenLaunched(uint256 indexed tokenId, address indexed launcher, uint256 totalSupply);
     event PreOrderMinted(uint256 indexed tokenId, address indexed buyer, uint256 amount);
+    event TokenLaunched(uint256 indexed tokenId, address indexed launcher, uint256 totalSupply);
     event RoyaltyUpdated(uint256 indexed tokenId, address indexed user, uint256 updatedRoyaltyAmount);
-    event TokenBurned(uint256 indexed tokenId, address indexed burner, uint256 amount);
     event AnnualTokenIncrease(uint256 indexed tokenId);
     event RoyaltySet(uint256 indexed tokenId, uint256 royalty);
     event RoyaltyPaid(uint256 indexed tokenId, address indexed payee, uint256 amount);
@@ -73,6 +70,7 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
     event SteeloRoyaltyTransferred(address indexed from, address indexed to, uint256 indexed tokenId, uint256 value);
     event CommunityRoyaltyTransferred(address indexed from, address indexed to, uint256 indexed tokenId, uint256 value);
     event TokenTransferredWithRoyalty(address indexed from, address indexed to, uint256 indexed tokenId, uint256 value);
+    event TokenBurned(uint256 indexed tokenId, address indexed burner, uint256 amount);
 
     // MODIFIERS
     modifier canCreateToken(address creator) {require(!_hasCreatedToken[creator], "CreatorToken: Creator has already created a token."); _;}
@@ -190,6 +188,7 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
             // Check that the recipient is not the creator of the token
             address tokenCreator = _tokenCreator[tokenId];
             bool isCreator = tokenCreator == currentOwner && !(_balances[tokenId][currentOwner] > 0);
+                // Admins also cannot buy creator tokens
             require(to != tokenCreator, "CreatorToken: Creator cannot buy their own token");
 
             if (_isOwner(currentOwner)) {
@@ -226,9 +225,9 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
             if (_creator[tokenId] == address(0)) {
                 address tokenCreator = msg.sender;
                 _creator[tokenId] = tokenCreator;
-                _royalty[tokenId].creatorRoyalty = TOKEN_CREATOR_ROYALTY;
+                _royalty[tokenId].creatorRoyalty = TOKEN_CREATOR_ROYALTY; // On primary sale, 90% goes to Creator (as the seller)
                 _royalty[tokenId].steeloRoyalty = STEELO_ROYALTY;
-                _royalty[tokenId].communityRoyalty = COMMUNITY_ROYALTY;
+                _royalty[tokenId].communityRoyalty = COMMUNITY_ROYALTY; // On primary sale, community royalty 100% goes to Steelo
             }
 
             // Update the transaction count
@@ -270,6 +269,8 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
             // Take a snapshot after minting tokens
             _takeSnapshot();
         }
+
+    // TOKEN LIFE CYCLE
 
         // Pre-order function
         function preOrder(uint256 tokenId, uint256 amount) public payable {
@@ -333,6 +334,8 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
             emit TokenBurned(tokenId, msg.sender, amount);
         }
 
+    // TOKEN MANAGEMENT TOOLS
+
         // Get royalty receiver for a token
         function getRoyaltyReceiver(uint256 tokenId) public view returns (address) {
             return _royaltyReceiver[tokenId];
@@ -382,7 +385,7 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
         // Fallback function
         receive() external payable {}
 
-        // Destroy contract
+        // Destroy contract // DOUBLE CHECK VS BURN -- REDUNDANT
         function destroy() public onlyOwner {
             selfdestruct(payable(owner()));
         }
@@ -435,6 +438,11 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
             // Take a snapshot after minting tokens
             _takeSnapshot();
         }
+        
+        // Additional functions for token management, like Semi-fungible tokens, Hooks, Upgrading, batchTransfer, batchBalance, safeBatchTransferFrom, etc.
+        // Optional functions such as approve, allowance, isApprovedForAll, setApprovalForAll
+
+    // TOKEN METADATA
 
         function totalSupply(uint256 tokenId) public view returns (uint256) {
             return _totalSupply[tokenId];
@@ -463,9 +471,6 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
         function expansionEligible(uint256 tokenId) public view returns (bool) {
             return _transactionCount[tokenId] >= _totalSupply[tokenId].mul(2);
         }
-
-        // Additional functions for token management, like Semi-fungible tokens, Hooks, Upgrading, batchTransfer, batchBalance, safeBatchTransferFrom, etc.
-        // Optional functions such as approve, allowance, isApprovedForAll, setApprovalForAll
 
         // Function to check annual token increase eligibility and initiate the process
         function checkAndInitiateAnnualTokenIncrease(uint256 tokenId) public {
