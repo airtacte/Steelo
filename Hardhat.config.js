@@ -1,19 +1,17 @@
 require("@nomiclabs/hardhat-ethers");
-require("hardhat-deploy");
-
-const ALCHEMY_API_KEY = "jhT3QEajr6JISNWO7O9SZi0fncOm94Vq";
 const { ethers } = require("hardhat");
-const { Safe, SafeFactory } = require('@safe-global/safe-core-sdk');
-const { EthersAdapter } = require('@gnosis.pm/safe-ethers-adapters');
+const { Safe, SafeFactory } = require("@safe-global/safe-core-sdk");
+const { EthersAdapter } = require("@gnosis.pm/safe-ethers-adapters");
 
-async function initSafe() {
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+
+async function initSafe(owners, threshold) {
     const provider = ethers.provider;
     const ethAdapter = new EthersAdapter({
         ethers,
         signer: provider.getSigner()
     });
 
-    // Create a new Safe wallet
     const safeFactory = new SafeFactory({
         ethAdapter,
         contractNetworks: {
@@ -24,13 +22,14 @@ async function initSafe() {
             }
         }
     });
+
     const safeTransaction = await safeFactory.deploySafe({
-        owners: ['<OWNER_ADDRESS_1>', '<OWNER_ADDRESS_2>', '<OWNER_ADDRESS_3>'],
-        threshold: 2
+        owners: owners,
+        threshold: threshold
     });
+
     const safeAddress = await safeTransaction.getAddress();
 
-    // Initialize the Safe instance
     const safe = await Safe.create({
         ethAdapter,
         safeAddress,
@@ -58,12 +57,6 @@ module.exports = {
                 mnemonic: process.env.MNEMONIC || "",
             },
             chainId: 80001,
-        },
-        // Add ZkEVM network configuration here when needed
-    },
-    namedAccounts: {
-        deployer: {
-            default: 0,
         },
     },
     paths: {
