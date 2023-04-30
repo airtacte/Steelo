@@ -1,14 +1,14 @@
 {
   "name": "steelo",
   "version": "1.0.0",
-  "description": "",
+  "description": "Demo for the Steelo Tokenomic Ecosystem",
   "main": "Hardhat.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Edmund Berkmann",
+  "license": "MIT",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@nomiclabs/hardhat-waffle": "^2.0.5",
