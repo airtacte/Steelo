@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// contracts/DiamondCutFacet.sol
 pragma solidity ^0.8.19;
 
 import "node_modules/@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
@@ -16,19 +15,12 @@ import "node_modules/@safe-global/safe-contracts/contracts/Safe.sol";
 import "node_modules/@safe-global/safe-contracts/contracts/proxies/SafeProxy.sol"; 
 import "./Royalties.sol";
 
+// CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
 contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
     using SafeMath for uint256;
     using Address for address;
     using Counters for Counters.Counter;
     using Strings for uint256;
-
-    // Returns array for the functions to be added as facts to the diamond contract
-    function getSelectors() public pure returns (bytes4[] memory) {
-        return [
-            this.createToken.selector, // Add more function selectors as needed
-            this.manageToken.selector
-        ];
-    }
 
     // ROLES
     mapping (address => bool) private admins;
@@ -89,7 +81,7 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
     modifier onlyCreatorOrOwner() {require(owners[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or Owners can call this function"); _;}
     modifier dailySnapshot() {if (block.timestamp >= _lastSnapshotTimestamp.add(1 days)) {_takeSnapshot(); _lastSnapshotTimestamp = block.timestamp;} _;}
     
-    // SAFE GLOBAL (PREVIOUSLY GNOSIS SAFE) CONTRACT ADDRESSES
+    // CONTRACT ADDRESSES
     address private constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
     address private constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
     address public constant STEELO_WALLET = 0x1234567890123456789012345678901234567890; // Placeholder address
@@ -193,7 +185,7 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
         }
 
         // Transfer token balance to specified address
-        function transferToken(address to, uint256 tokenId) public {
+        function transferToken(uint256 id, uint256 value, address from, address to) external payRoyaltiesOnTransfer(id, value, from, to) {
             require(to != address(0), "CreatorToken: Transfer to zero address");
 
             address currentOwner = ownerOf(tokenId);
@@ -417,6 +409,11 @@ contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgrade
             require(_totalSupply[tokenId] < MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap reached");
             require(to != address(0), "CreatorToken: Cannot mint to zero address");
             require(amount > 0, "CreatorToken: Cannot mint zero amount");
+            require(tokenId != 0, "CreatorToken: Token ID cannot be 0");
+            require(to != _creator[tokenId], "CreatorToken: Token creator cannot mint their own tokens");
+            uint256 maxAllowedMint = getMaxAllowedMint(msg.sender, tokenId);
+            require(amount <= maxAllowedMint, "CreatorToken: Exceeds maximum allowed mint amount");
+            require(!_exists(tokenId), "CreatorToken: token already exists");
             _royalties.mint(to, tokenId, amount);
 
             // Mint the tokens  
