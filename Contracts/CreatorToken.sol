@@ -15,6 +15,8 @@ import "node_modules/@safe-global/safe-contracts/contracts/Safe.sol";
 import "node_modules/@safe-global/safe-contracts/contracts/proxies/SafeProxy.sol"; 
 import "./Royalties.sol";
 
+// WORTH LOOKING INTO EthPM (Ethereum Package Manager)
+
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
 contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
     using SafeMath for uint256;
