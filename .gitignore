@@ -1,1 +1,5 @@
+# Ignore external dependencies and resources
 node_modules/
+
+# Ignore environment variables file
+.env
