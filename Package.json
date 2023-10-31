@@ -10,10 +10,12 @@
   "author": "Edmund Berkmann",
   "license": "MIT",
   "devDependencies": {
+    "@ensdomains/ens-contracts": "0.0.22",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-waffle": "^2.0.5",
     "ethereum-waffle": "^4.0.10",
     "ethers": "^6.3.0",
+    "ganache": "6.12.2",
     "hardhat": "^2.14.0",
     "hardhat-deploy": "^0.11.27"
   },
@@ -24,6 +26,8 @@
     "@safe-global/api-kit": "^1.1.0",
     "@safe-global/protocol-kit": "^1.0.0",
     "@safe-global/safe-core-sdk": "^3.3.3",
-    "@safe-global/safe-core-sdk-types": "^2.0.0"
+    "@safe-global/safe-core-sdk-types": "^2.0.0",
+    "axios": "^1.6.0",
+    "tough-cookie": "^4.1.3"
   }
 }
