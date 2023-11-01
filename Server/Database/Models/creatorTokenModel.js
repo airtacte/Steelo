@@ -1,4 +1,4 @@
-const TokenSchema = new mongoose.Schema({
+const creatorTokenSchema = new mongoose.Schema({
     name: String,  // e.g., "$TEELO"
     price: Number,
     supply: Number,  // Total number of tokens
@@ -19,4 +19,4 @@ const TokenSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Token', TokenSchema);
+module.exports = mongoose.model('creatorToken', creatorTokenSchema);

@@ -8,6 +8,7 @@ const CreatorBubbleSchema = new mongoose.Schema({
         fitDegree: Number  // degree of "fitting within the bubble"
     }],
     genre: String,  // Overall genre of this bubble e.g., "music", "comedy"
+    // More AI-driven metric creation tools (eg., preferences, network, ,investorships and otherr network effect data)
     averageMintedTokens: Number,  // Average minted tokens of creators in this bubble
 });
 
