@@ -7,9 +7,9 @@ import "node_modules/@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Up
 import "node_modules/@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import "node_modules/@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable.sol";
 import "node_modules/@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "./CreatorToken.sol";
+import "./STEEZFacet.sol";
 
-interface ICreatorToken {
+interface ISTEEZFacet {
     event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
 
     function creatorOf(uint256 tokenId) external view returns (address);   
@@ -78,7 +78,7 @@ contract Royalties is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     modifier onlyAdmin() {
-        require(ICreatorToken(_creatorTokenAddress).isAdmin(msg.sender), "Royalties: Caller is not an admin");
+        require(ISTEEZFacet(_creatorTokenAddress).isAdmin(msg.sender), "Royalties: Caller is not an admin");
         _;
     }
 
@@ -97,7 +97,7 @@ contract Royalties is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // Function to listen to ownership events from CreatorToken.sol
     function setCreatorTokenAddress(address creatorTokenAddress) external onlyOwner {
         _creatorTokenAddress = creatorTokenAddress;
-        ICreatorToken(_creatorTokenAddress).TransferSingle().add(this.onTransferSingle.selector);
+        ISTEEZFacet(_creatorTokenAddress).TransferSingle().add(this.onTransferSingle.selector);
     }
 
     // Function to listen to transaction events from CreatorToken.sol

@@ -7,7 +7,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "./libraries/LibDiamond.sol";
 
-contract TokenomicsFacet is ERC20, Ownable, ChainLinkClient {
+contract STEELOFacet is ERC20, Ownable, ChainLinkClient {
 
     // Chainlink parameters
     address private oracle;

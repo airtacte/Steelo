@@ -8,7 +8,6 @@ import "node_modules/@openzeppelin/contracts-upgradeable/security/PausableUpgrad
 import "node_modules/@openzeppelin/contracts/utils/Address.sol";
 import "node_modules/@openzeppelin/contracts/utils/Strings.sol";
 import "node_modules/@openzeppelin/contracts/utils/Counters.sol";
-import "node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "node_modules/@openzeppelin/contracts/token/ERC2535/IDiamondCut.sol";
 import "node_modules/@safe-global/safe-core-sdk";
 import "node_modules/@safe-global/safe-contracts/contracts/Safe.sol";
@@ -18,8 +17,7 @@ import "./Royalties.sol";
 // WORTH LOOKING INTO EthPM (Ethereum Package Manager)
 
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
-contract CreatorToken is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
-    using SafeMath for uint256;
+contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
     using Address for address;
     using Counters for Counters.Counter;
     using Strings for uint256;
