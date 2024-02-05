@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 
-contract SimpleOracle is Ownable, ChainlinkClient {
+contract SteezOracleFacet is Ownable, ChainlinkClient {
     int256 public steezTransactionCount;
     uint256 public steeloCurrentPrice;
 

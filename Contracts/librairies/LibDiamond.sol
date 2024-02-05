@@ -26,18 +26,51 @@ library LibDiamond {
     }
 
     struct DiamondStorage {
-        // maps function selector to the facet address and
-        // the position of the selector in the facetFunctionSelectors.selectors array
+
+        // Diamond Standard parameters
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
-        // maps facet addresses to function selectors
         mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
-        // facet addresses
         address[] facetAddresses;
-        // Used to query if a contract implements an interface.
-        // Used to implement ERC-165.
         mapping(bytes4 => bool) supportedInterfaces;
-        // owner of the contract
         address contractOwner;
+
+        // Chainlink parameters
+        address oracle = 0xb83E47C2bC239B3bf370bc41e1459A34b41238D0;
+        bytes32 jobId;
+        uint256 fee;
+        uint256 volume;
+
+        // Steelo Constants
+        int256 steezTransactionCount;
+        uint256 steeloCurrentPrice;
+        uint256 public constant TGE_AMOUNT = 25_000_000 * 1e18;
+        uint256 totalMinted; 
+        uint256 totalBurned;
+        uint256 lastMintEvent; 
+        uint256 lastBurnUpdate;
+        uint256 mintAmount;
+        uint256 burnAmount;
+        uint256 burnRate;
+        uint256 mintRate;
+        bool isDeflationary;
+        bool tgeExecuted;
+
+        // Steelo Tokenomic Constants
+        uint256 public constant pMin = 0.5 ether;
+        uint256 public constant pMax = 5 ether;
+        uint256 public rho = 1 ether;
+        uint256 public alpha = 10;
+        uint256 public beta = 10;
+        uint256 public constant BURN_THRESHOLD = 1e9;
+
+        // Steelo Addresses and Distribution Rates
+        address public treasury; uint256 public trasuryTGE = 35; uint256 public treasuryMint = 35;
+        address public liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 public liquidityProvidersMint = 55;
+        address public ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 public ecosystemProvidersMint = 10;
+        address public foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 public foundersTGE = 20;
+        address public earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 public earlyInvestorsTGE = 10;
+        address public communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 public communityTGE = 35;
+        address public steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public FEE_RATE = 25;
     }
 
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
