@@ -16,7 +16,7 @@ import "node_modules/@safe-global/safe-contracts/contracts/Safe.sol";
 import "node_modules/@safe-global/safe-contracts/contracts/proxies/SafeProxy.sol"; 
 import "./SteezFeesFacet.sol";
 
-// WORTH LOOKING INTO EthPM (Ethereum Package Manager)
+import { ISteezFacet } from "../interfaces/ISteezFacet.sol";
 
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
 contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable {
@@ -42,59 +42,80 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     event RoyaltyUpdated(uint256 tokenId, address user, uint256 amount);
 
     // FUNCTIONS
-        function initialize(string memory baseURI, uint256 maxCreatorTokens, uint256 transactionFee) public initializer {
+    function initialize(string memory baseURI, uint256 maxCreatorTokens, uint256 transactionFee) public initializer {
         __ERC1155_init("https://myapi.com/api/token/{id}.json");
         __Ownable_init();
         __Pausable_init();
 
-        _baseURI = baseURI;
-        _maxCreatorTokens = maxCreatorTokens;
-        _transactionFee = transactionFee;
-        }
-
-        function setRoyaltiesContract(address royaltiesContractAddress) external onlyOwner {
-            require(royaltiesContractAddress != address(0), "CreatorToken: Royalties contract address cannot be zero address.");
-            _royalties = Royalties(royaltiesContractAddress);
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        ds.baseURI = baseURI;
+        ds.maxCreatorTokens = maxCreatorTokens;
+        ds.transactionFee = transactionFee;
         }
 
         // TOKEN LIMITATIONS
-        function setMaxCreatorTokens(uint256 maxTokens) public onlyOwner {_maxCreatorTokens = maxTokens;}
-        function getMaxCreatorTokens() public view returns (uint256) {return _maxCreatorTokens;}
-        function setBaseURI(string memory newBaseURI) public onlyOwner {_baseURI = newBaseURI; emit BaseURIUpdated(newBaseURI);}
-        function baseURI() public view returns (string memory) {return _baseURI;}
+        function setMaxCreatorTokens(uint256 maxTokens) public onlyOwner {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            ds.maxCreatorTokens = maxTokens;
+        }
+        
+        function getMaxCreatorTokens() public view returns (uint256) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            return ds.maxCreatorTokens;
+        }
+        
+        function setBaseURI(string memory newBaseURI) public onlyOwner {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            ds.baseURI = newBaseURI;
+            emit BaseURIUpdated(newBaseURI); // Ensure this event is declared in your contract
+        }
+        
+        function baseURI() public view returns (string memory) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            return ds.baseURI;
+        }
 
         // Transfer ownership to new owner
         function transferOwnership(address newOwner, uint256 tokenId) public {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(newOwner != address(0), "CreatorToken: Transfer to zero address");
-            require(newOwner != _creator[tokenId], "CreatorToken: Transfer to current owner");
+            require(newOwner != ds.tokenCreators[tokenId], "CreatorToken: Transfer to current owner");
 
-            address currentOwner = ownerOf(tokenId);
-            require(currentOwner == msg.sender || _operatorApprovals[currentOwner][msg.sender], "CreatorToken: Transfer caller is not owner nor approved");
+            address currentOwner = ds.TokenOwners(tokenId);
+            require(currentOwner == msg.sender || ds.operatorApprovals[currentOwner][msg.sender], "CreatorToken: Transfer caller is not owner nor approved");
 
             _transfer(currentOwner, newOwner, tokenId);
 
-            if (_balances[tokenId][currentOwner] == 0) {
-                _removeTokenHolder(tokenId, currentOwner);
-            }
+            // `_transfer` logic should be implemented to reflect diamond storage interaction
+            ds.tokenOwners[tokenId] = newOwner;
 
-            if (_balances[tokenId][newOwner] > 0) {
-                _addTokenHolder(tokenId, newOwner);
-            }
+                // Update balances accordingly in Diamond Storage
+                if (_balances[tokenId][currentOwner] == 0) {
+                    _removeTokenHolder(tokenId, currentOwner);
+                }
+
+                if (_balances[tokenId][newOwner] > 0) {
+                    _addTokenHolder(tokenId, newOwner);
+                }
+
+            // Emit an event for the transfer
+            emit OwnershipTransferred(currentOwner, newOwner, tokenId); // Ensure this event is declared in your contract
         }
 
         // Transfer token balance to specified address
         function transferToken(uint256 id, uint256 value, address from, address to) external payRoyaltiesOnTransfer(id, value, from, to) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(to != address(0), "CreatorToken: Transfer to zero address");
-
+            require(from == msg.sender || ds.operatorApprovals[from][msg.sender], "CreatorToken: Transfer caller is not owner nor approved");
+            require(to != ds.tokenCreators[tokenId], "CreatorToken: Creator cannot buy their own token");
+            
             address currentOwner = ownerOf(tokenId);
-            require(currentOwner == msg.sender || _operatorApprovals[currentOwner][msg.sender], "CreatorToken: Transfer caller is not owner nor approved");
-
-            // Check that the recipient is not the creator of the token
             address tokenCreator = _tokenCreator[tokenId];
             bool isCreator = tokenCreator == currentOwner && !(_balances[tokenId][currentOwner] > 0);
-                // Admins also cannot buy creator tokens
-            require(to != tokenCreator, "CreatorToken: Creator cannot buy their own token");
 
+            // The `_transfer` logic should be implemented to reflect diamond storage interaction
+            ds._transfer(from, to, tokenId, value);
+        
             if (_isOwner(currentOwner)) {
                 // Transfer to an owner, don't add the Owner role to the recipient
                 _transfer(currentOwner, to, tokenId);
@@ -111,18 +132,22 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             if (_balances[tokenId][to] > 0) {
                 _addTokenHolder(tokenId, to);
             }
+            // Emit a Transfer event
+            emit Transfer(from, to, tokenId, value); // Ensure this event is declared in your contract
         }
 
         // Create custom creator token
         function mint(address to, uint256 tokenId, uint256 amount, bytes memory data) public onlyOwner dailySnapshot {
-            require(!_exists(tokenId), "CreatorToken: token already exists");
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            require(!ds.tokenExists[tokenId], "CreatorToken: token already exists");
             require(to != address(0), "CreatorToken: Cannot mint to zero address");
-            require(_currentTokenID.current() < type(uint256).max, "CreatorToken: TokenID overflow");
-            require(_totalSupply[tokenId] < MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap reached");
+            require(ds.totalSupply[tokenId] < ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap reached");
             require(amount > 0, "CreatorToken: Cannot mint zero amount");
-            require(to != _creator[tokenId], "CreatorToken: Token creator cannot mint their own tokens");
             require(tokenId != 0, "CreatorToken: Token ID cannot be 0");
-            _royalties.mint(to, tokenId, amount);
+            require(to != ds.tokenCreators[tokenId], "CreatorToken: Token creator cannot mint their own tokens");
+
+            // The `_mint` logic should be implemented to reflect diamond storage interaction
+            ds._mint(to, tokenId, amount, data);
 
             uint256 maxAllowedMint = getMaxAllowedMint(msg.sender, tokenId);
             require(amount <= maxAllowedMint, "CreatorToken: Exceeds maximum allowed mint amount");
@@ -136,18 +161,14 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
                 _royalty[tokenId].communityRoyalty = COMMUNITY_ROYALTY; // On primary sale, community royalty 100% goes to Steelo
             }
 
-            // Update the transaction count
-            _transactionCount[tokenId] = _transactionCount[tokenId].add(amount);
-
-            if (!_tokenExists[tokenId]) {
-                _tokenExists[tokenId] = true;
-                emit TokenMinted(tokenId, msg.sender, amount);
-            }
+            // Update the transaction count and minting state
+            ds.transactionCount[tokenId] += amount;
+            ds.tokenExists[tokenId] = true;
 
             // Update the minting state for annual token increase
-            if (_mintedInLastYear[tokenId].add(amount) <= INITIAL_CAP.mul(TRANSACTION_MULTIPLIER)) {
-                _mintedInLastYear[tokenId] = _mintedInLastYear[tokenId].add(amount);
-                _lastMintTime[tokenId] = block.timestamp;
+            if (ds.mintedInLastYear[tokenId] + amount <= ds.INITIAL_CAP * ds.TRANSACTION_MULTIPLIER) {
+                ds.mintedInLastYear[tokenId] += amount;
+                ds.lastMintTime[tokenId] = block.timestamp;
             }
 
             emit TokenMinted(tokenId, to, _totalSupply[tokenId]);
@@ -172,77 +193,83 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
                 }
             }
 
-            // Take a snapshot after minting tokens
+            emit TokenMinted(tokenId, to, ds.totalSupply[tokenId]);
             _takeSnapshot();
+            emit Mint(to, tokenId, amount, data); // Ensure this event is declared in your contract
         }
 
         // Pre-order function
         function preOrder(uint256 tokenId, uint256 amount) public payable {
-            require(_creator[msg.sender], "CreatorToken: Only creators can pre-order tokens.");
-            require(_totalSupply[tokenId] == 0, "CreatorToken: Pre-order has already been completed.");
-            require(amount >= PRE_ORDER_MINIMUM_SOLD, "CreatorToken: Minimum pre-order amount not reached.");
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            require(ds.tokenCreators[msg.sender], "CreatorToken: Only creators can pre-order tokens.");
+            require(ds.totalSupply[tokenId] == 0, "CreatorToken: Pre-order has already been completed.");
+            require(amount >= ds.PRE_ORDER_MINIMUM_SOLD, "CreatorToken: Minimum pre-order amount not reached.");
 
             _mint(msg.sender, tokenId, amount, "");
-            _totalSupply[tokenId] = amount;
+            ds.totalSupply[tokenId] += amount;
 
-            emit PreOrderMinted(tokenId, msg.sender, amount);
+            emit PreOrderMinted(tokenId, msg.sender, amount);        
         }
 
         // Launch token function
         function launchToken(uint256 tokenId, uint256 amount) public payable {
-            require(_creator[msg.sender], "CreatorToken: Only creators can launch tokens.");
-            require(_totalSupply[tokenId] > 0, "CreatorToken: Pre-order must be completed first.");
-            require(_totalSupply[tokenId].add(amount) <= _maxCreatorTokens, "CreatorToken: Maximum cap exceeded.");
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            require(ds.tokenCreators[msg.sender], "CreatorToken: Only creators can launch tokens.");
+            require(ds.totalSupply[tokenId] > 0, "CreatorToken: Pre-order must be completed first.");
+            require(ds.totalSupply[tokenId] + amount <= ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap exceeded.");
             require(amount > 0, "CreatorToken: Launch amount must be greater than zero");
 
             _mint(msg.sender, tokenId, amount, "");
-            _totalSupply[tokenId] = _totalSupply[tokenId].add(amount);
-
-            emit TokenLaunched(tokenId, msg.sender, _totalSupply[tokenId]);
+            ds.totalSupply[tokenId] += amount;
+            emit TokenLaunched(tokenId, msg.sender, ds.totalSupply[tokenId]);
         }
 
         // Anniversary Expansion function
         function expandToken(uint256 tokenId, uint256 amount) external payable onlyCreator {
-            require(_totalSupply[tokenId] > 0, "CreatorToken: Token does not exist");
-            require(_totalSupply[tokenId].add(amount) <= _maxCreatorTokens, "CreatorToken: Maximum cap exceeded");
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            require(ds.totalSupply[tokenId] > 0, "CreatorToken: Token does not exist");
+            require(ds.totalSupply[tokenId] + amount <= ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap exceeded");
 
             _mint(msg.sender, tokenId, amount, "");
-            _totalSupply[tokenId] = _totalSupply[tokenId].add(amount);
-
+            ds.totalSupply[tokenId] += amount;
             emit TokenMinted(tokenId, msg.sender, amount);
         }
 
         function expansionEligible(uint256 tokenId) public view returns (bool) {
-            return _transactionCount[tokenId] >= _totalSupply[tokenId].mul(2);
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            return ds.transactionCount[tokenId] >= ds.totalSupply[tokenId] * 2;
         }
 
         // Function to check annual token increase eligibility and initiate the process
         function checkAndInitiateAnnualTokenIncrease(uint256 tokenId) public {
-            require(_creator[tokenId] == msg.sender, "CreatorToken: Only the token creator can initiate an annual token increase.");
-            require(block.timestamp >= _lastTokenIncrease[tokenId].add(ANNUALTOKENINCREASE_DELAY), "CreatorToken: Annual token increase not yet available.");
-        
-            uint256 currentSupply = _totalSupply[tokenId];
-            uint256 newSupply = currentSupply.add(currentSupply.mul(ANNUAL_TOKEN_INCREASE_PERCENTAGE).div(100));
-            _totalSupply[tokenId] = newSupply;
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            require(ds.tokenCreators[tokenId] == msg.sender, "CreatorToken: Only the token creator can initiate an annual token increase.");
+            require(block.timestamp >= ds.lastTokenIncrease[tokenId] + ds.ANNUALTOKENINCREASE_DELAY, "CreatorToken: Annual token increase not yet available.");
+            
+            uint256 currentSupply = ds.totalSupply[tokenId];
+            uint256 newSupply = currentSupply + (currentSupply * ds.ANNUAL_TOKEN_INCREASE_PERCENTAGE / 100);
+            ds.totalSupply[tokenId] = newSupply;
 
-            _lastTokenIncrease[tokenId] = block.timestamp;
+            ds.lastTokenIncrease[tokenId] = block.timestamp;
 
             emit TokenSupplyIncreased(tokenId, newSupply);
 
             _initiateAnnualTokenIncrease(tokenId);
         }
-        
+
         // Snapshot function
         function _takeSnapshot() internal {
-            _snapshotCounter = _snapshotCounter.add(1);
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            ds.snapshotCounter++;
 
-            for (uint256 tokenId = 1; tokenId <= _currentTokenID.current(); tokenId++) {
-                _snapshotBalances[_snapshotCounter][tokenId] = _totalSupply[tokenId];
+            for (uint256 tokenId = 1; tokenId <= ds.currentTokenID; tokenId++) {
+                ds.snapshotBalances[ds.snapshotCounter][tokenId] = ds.totalSupply[tokenId];
             }
         }
 
         // Minting function
         function mint(address to, uint256 tokenId, uint256 amount, bytes memory data) public onlyOwner dailySnapshot {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(_currentTokenID.current() < type(uint256).max, "CreatorToken: TokenID overflow");
             require(_totalSupply[tokenId] < MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap reached");
             require(to != address(0), "CreatorToken: Cannot mint to zero address");
@@ -273,7 +300,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             }
 
             // Update the transaction count
-            _transactionCount[tokenId] = _transactionCount[tokenId].add(amount);
+            ds.transactionCount[tokenId] += amount;
 
             // Update the minting state for annual token increase
             if (_mintedInLastYear[tokenId].add(amount) <= INITIAL_CAP.mul(TRANSACTION_MULTIPLIER)) {
@@ -285,10 +312,5 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             
             // Take a snapshot after minting tokens
             _takeSnapshot();
-        }
-
-        // Destroy contract
-        function destroy() public onlyOwner {
-            selfdestruct(payable(owner()));
         }
 }

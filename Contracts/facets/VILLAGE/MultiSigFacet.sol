@@ -1,3 +1,15 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "./libraries/LibDiamond.sol";
+
+contract SteeloMultiSigFacet {
+    function initialize() external {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        ds.contractOwner = msg.sender;
+    }
+}
+
             // Gnosis Safe multisig setup
             GnosisSafeProxyFactory proxyFactory = GnosisSafeProxyFactory(GNOSIS_SAFE_PROXY_FACTORY);
             GnosisSafeProxy proxy = GnosisSafeProxy(proxyFactory.createProxy(GNOSIS_SAFE_MASTER_COPY, ""));

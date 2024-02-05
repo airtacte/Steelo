@@ -60,6 +60,12 @@ contract Royalties is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         ISTEEZFacet(_creatorTokenAddress).TransferSingle().add(this.onTransferSingle.selector);
     }
 
+    function setRoyaltiesContract(address royaltiesContractAddress) external onlyOwner {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(royaltiesContractAddress != address(0), "CreatorToken: Royalties contract address cannot be zero address.");
+        ds.royaltiesContract = royaltiesContractAddress;
+    }
+
     // Function to listen to transaction events from CreatorToken.sol
     function onTransferSingle(address operator, address from, address to, uint256 id, uint256 value) external {
         require(msg.sender == _creatorTokenAddress, "Royalties: Caller is not the CreatorToken contract");

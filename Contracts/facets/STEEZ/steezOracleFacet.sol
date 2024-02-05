@@ -1,10 +1,15 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "./libraries/LibDiamond.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 
 contract SteezOracleFacet is Ownable, ChainlinkClient {
+    LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+    ds.contractOwner = msg.sender;
     int256 public steezTransactionCount;
     uint256 public steeloCurrentPrice;
 

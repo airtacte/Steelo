@@ -1,3 +1,13 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "./libraries/LibDiamond.sol";
+
+contract SteezAccessControlFacet {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        ds.contractOwner = msg.sender;
+    }
+
     // ACCESS CONTROL 
 
         // Add/Remove Admin Role
@@ -21,7 +31,7 @@
         function isCreator(address _creator) external view returns(bool) {return creators[_creator];}
         function isOwner(address _owner) external view returns(bool) {return owners[_owner];}
         function isUser(address _user) external view returns(bool) {return users[_user];}
-        
+
 
         // Remove token holder
         function _removeTokenHolder(uint256 tokenId, address holder) internal {

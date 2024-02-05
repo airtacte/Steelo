@@ -1,3 +1,13 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "./libraries/LibDiamond.sol";
+
+contract SteezManagementFacet {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        ds.contractOwner = msg.sender;
+    }
+
         // Update transaction fee function
         function updateTransactionFee(uint256 transactionFee) external onlyOwner {
             require(transactionFee <= 100, "CreatorToken: Transaction fee cannot exceed 100%");
