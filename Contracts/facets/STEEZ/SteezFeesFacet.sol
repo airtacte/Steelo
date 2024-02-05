@@ -32,46 +32,11 @@ struct Snapshot {
 contract Royalties is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     using SafeMathUpgradeable for uint256;
 
-    // Constants for the royalty rates during Pre-Orders
-    uint256 constant PRE_ORDER_CREATOR_RATE = 90; // 90% of pre-order sale value to creator
-    uint256 constant PRE_ORDER_STEELO_RATE = 10; // 10% of pre-order sale value to Steelo
-
-    // Constants for the royalty rates during Token Launch and Expansions
-    uint256 constant LAUNCH_CREATOR_RATE = 90; // 90% of launch + expansion sale value to creator
-    uint256 constant LAUNCH_STEELO_RATE = 75; // 7.5% of launch + expansion sale value to Steelo
-    uint256 constant LAUNCH_COMMUNITY_RATE = 25; // 2.5% of launch + expansion sale value to token holders
-    
-    // Constants for the royalty rates for any 2nd hand sales
-    uint256 constant SECOND_HAND_SELLER_RATE = 90; // 90% of second-hand sale value to seller
-    uint256 constant SECOND_HAND_CREATOR_RATE = 50; // 5% of second-hand sale value to creator
-    uint256 constant SECOND_HAND_STEELO_RATE = 25; // 2.5% of second-hand sale value to Steelo
-    uint256 constant SECOND_HAND_COMMUNITY_RATE = 25; // 2.5% of second-hand sale value to token holders
-
-// MAPPING
-
-    // Mapping from token ID to mapping of user address to their share of undistributed community royalties
-    mapping (uint256 => mapping(address => uint256)) private _undistributedRoyalties;
-
-    // Mapping for storing the community royalty rate for each token ID
-    mapping (uint256 => uint256) private _communityRoyaltyRates;
-
-    // Mapping from token ID to mapping of user address to an array of snapshots
-    mapping(uint256 => mapping(address => Snapshot[])) private _holderSnapshots;
-
-    // Mapping from token ID to an array of snapshots for the total undistributed community royalties
-    mapping(uint256 => Snapshot[]) private _totalUndistributedSnapshots;
-
-// EVENTS
-
-    // Event emitted when a royalty is paid to a recipient
+    // EVENTS
     event RoyaltyPaid(uint256 indexed tokenId, address indexed recipient, uint256 amount);
-
-    // Event emitted when a token is transferred on CreatorToken.sol
     event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
 
-// MODIFIERS
-
-    // Modifier to pay royalties for a token transfer
+    // MODIFIERS
     modifier payRoyaltiesOnTransfer(uint256 id, uint256 value, address from, address to) {
         _;
         payRoyalties(id, value, from, to);
@@ -81,11 +46,6 @@ contract Royalties is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         require(ISTEEZFacet(_creatorTokenAddress).isAdmin(msg.sender), "Royalties: Caller is not an admin");
         _;
     }
-
-// CONTRACT ADDRESSES
-    address private _creatorTokenAddress;
-
-// FUNCTIONS
 
     // Function to initialize the contract with the owner address
     function initialize(address owner) public initializer {
@@ -231,4 +191,126 @@ contract Royalties is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
         return left.sub(1);
     }
+
+        // Get royalty receiver for a token
+        function getRoyaltyReceiver(uint256 tokenId) public view returns (address) {
+            return _royaltyReceiver[tokenId];
+            return _royalties.getRoyaltyReceiver(tokenId);
+        }
+
+        // Get royalty percentage for a token
+        function getRoyaltyPercentage(uint256 tokenId) public view returns (uint256) {
+            return _royalty[tokenId];
+            return _royalties.getRoyaltyPercentage(tokenId);
+        }
+
+        // Update royalty function
+        function updateRoyalty(uint256 tokenId, address user, uint256 amount) external onlyCreator {
+            require(_creator[tokenId] == msg.sender, "CreatorToken: Caller is not the creator of the token");
+            require(_tokenExists[tokenId], "CreatorToken: Token does not exist");
+
+            _undistributedRoyalties[tokenId][user] = _undistributedRoyalties[tokenId][user].add(amount);
+
+            emit RoyaltyUpdated(tokenId, user, amount);
+        }
+        
+        function _distributeCommunityRoyalty(
+            uint256 tokenId,
+            uint256 communityRoyalty
+        ) internal {
+            uint256 totalSnapshotSupply = _snapshotBalances[_snapshotCounter][tokenId];
+            uint256 royaltyPerToken = communityRoyalty.div(totalSnapshotSupply);
+
+            for (uint256 i = 1; i <= _currentTokenID.current(); i++) {
+                _undistributedRoyalties[i][tokenId] = _undistributedRoyalties[i][tokenId].add(royaltyPerToken);
+            }
+        }
+
+        function _transferWithRoyalty(address from, address to, uint256 tokenId, uint256 amount, bytes memory data) internal {
+            require(amount > 0, "CreatorToken: Transfer amount must be greater than zero");
+
+            uint256 creatorRoyalty = _royalty[tokenId].creatorRoyalty;
+            uint256 steeloRoyalty = _royalty[tokenId].steeloRoyalty;
+            uint256 communityRoyalty = _royalty[tokenId].communityRoyalty;
+            uint256 totalRoyalty = creatorRoyalty.add(steeloRoyalty).add(communityRoyalty);
+            
+            require(totalRoyalty <= amount, "CreatorToken: Royalty exceeds transfer amount");
+            require(from != to, "CreatorToken: Transfer to self");
+
+            uint256 sellerAmount = amount.sub(totalRoyalty);
+
+            // Ensure royalties are distributed correctly
+            uint256 fromBalance = _balances[tokenId][from];
+            require(fromBalance >= amount, "CreatorToken: Insufficient balance");
+            uint256 fromBalanceAfterTransfer = fromBalance.sub(amount);
+            uint256 undistributedRoyalties = _undistributedRoyalties[tokenId][address(this)].add(communityRoyalty);
+            require(fromBalanceAfterTransfer >= undistributedRoyalties, "CreatorToken: Undistributed royalties not accounted for");
+            require(sellerAmount > 0, "CreatorToken: Insufficient amount for seller");
+            require(creatorRoyalty > 0 || steeloRoyalty > 0 || communityRoyalty > 0, "CreatorToken: No royalties specified");
+        
+            _balances[tokenId][from] = _balances[tokenId][from].sub(amount, "CreatorToken: Insufficient balance");
+            _balances[tokenId][to] = _balances[tokenId][to].add(sellerAmount);
+            _balances[tokenId][_creator[tokenId]] = _balances[tokenId][_creator[tokenId]].add(creatorRoyalty);
+            _balances[tokenId][address(this)] = _balances[tokenId][address(this)].add(steeloRoyalty);
+            _undistributedRoyalties[tokenId][address(this)] = _undistributedRoyalties[tokenId][address(this)].add(communityRoyalty);
+
+            emit TransferWithRoyalty(from, to, tokenId, amount, creatorRoyalty, steeloRoyalty, communityRoyalty, data);
+
+            if (fromBalance == amount) {
+                _removeTokenHolder(tokenId, from);
+            }
+
+            if (_balances[tokenId][to] == sellerAmount) {
+                _addTokenHolder(tokenId, to);
+            }
+
+            if (_tokenHolders[tokenId].length < _minTokenHolders[tokenId]) {
+                _initiateAnnualTokenIncrease(tokenId);
+            }
+        }
+
+        function getCommunityRoyaltyShare(address user, uint256 tokenId) public view returns (uint256) {
+            uint256 totalSupply = _totalSupply[tokenId];
+            uint256 communityRoyalty = _royalty[tokenId].communityRoyalty;
+
+            if (totalSupply == 0 || communityRoyalty == 0) {
+                return 0;
+            }
+
+            uint256 userBalance = balanceOf(user, tokenId);
+            uint256 userShare = communityRoyalty.mul(userBalance).div(totalSupply);
+
+            return userShare;
+        }
+        
+        function getRoyalty(address user, uint256 tokenId) public view returns (uint256) {
+            uint256 undistributedRoyalty = _undistributedRoyalties[tokenId][user];
+            uint256 totalSupply = _totalSupply[tokenId];
+            uint256 balance = balanceOf(user, tokenId);
+
+            if (totalSupply == 0 || balance == 0) {
+                return 0;
+            }
+
+            uint256 userShare = balance.mul(10000).div(totalSupply);
+            uint256 userRoyalty = _royalty[tokenId].creatorRoyalty.mul(userShare).div(10000);
+
+            if (user == _creator[tokenId]) {
+                userRoyalty = userRoyalty.add(_royalty[tokenId].creatorRoyalty);
+            } else {
+                userRoyalty = userRoyalty.add(_royalty[tokenId].steeloRoyalty);
+            }
+
+            userRoyalty = userRoyalty.add(undistributedRoyalty);
+
+            return userRoyalty;
+        }
+
+        function claimRoyalty(uint256 tokenId) external {
+            uint256 userRoyalty = _undistributedRoyalties[tokenId][msg.sender];
+            require(userRoyalty > 0, "CreatorToken: No royalty available for the caller.");
+
+            _undistributedRoyalties[tokenId][msg.sender] = 0;
+            _safeTransferFrom(address(this), msg.sender, tokenId, userRoyalty, "");
+        }
 }
