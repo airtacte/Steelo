@@ -2,7 +2,7 @@
 
 ## Introduction 🌟
 
-Welcome to **Steelo**, a pioneering blockchain platform designed to revolutionize the digital landscape for creators and communities. Standing at the vanguard of a digital revolution in the web3 renaissance, Steelo offers a unique dual-token framework, robust smart contract functionality, and a strong focus on community engagement and sustainable growth.
+Welcome to **Steelo**, a pioneering blockchain platform designed to revolutionize the digital landscape for creators and communities. Standing at the vanguard of a digital revolution in the web3 renaissance, Steelo offers a unique dual-token framework, robust smart contract functionality, and a strong focus on community engagement and sustainable growth. Visit our website www.Steelo.io for news, feature overviews and demo testing.
 
 ## Key Features 🔑
 
