@@ -124,9 +124,24 @@ contract STEELOFacet is
             adjustmentFactor += (_currentPrice - ds.pMax) * ds.alpha / 100;
         } else if (_currentPrice <= ds.pMin) {
             adjustmentFactor -= (ds.pMin - _currentPrice) * ds.beta / 100;
+        } else {
+            adjustmentFactor += adjustmentFactor / 100; // 1% adjustment when Pcurrent is within Pmin and Pmax
         }
         uint256 mintAmount = ds.rho * _steezTransactions * adjustmentFactor / 1 ether / 1 ether;
         return mintAmount;
+    }
+
+    // Calculate the Supply Cap to use in the minting function
+    function calculateSupplyCap(uint256 _currentPrice) public view returns (uint256) {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        uint256 currentSupply = totalSupply();
+        uint256 supplyCap;
+        if (_currentPrice < ds.pMin) {
+            supplyCap = currentSupply - ds.delta * (ds.pMin - _currentPrice) * currentSupply / 1 ether;
+        } else {
+            supplyCap = currentSupply; // maintain the current supply cap if Pcurrent is within or above the target range
+        }
+        return supplyCap;
     }
 
     // Function to calculate the amount to burn based on the burn rate
@@ -139,7 +154,7 @@ contract STEELOFacet is
     function adjustMintRate(uint256 _newMintRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         require(_newMintRate > 0, "Mint rate must be greater than 0");
-        require(_newMintRate <= ds.mintRate * 110 / 100 && _newMintRate >= ds.mintRate * 90 / 100, "New rate must be within 10% of the current rate");
+        require(_newMintRate <= ds.mintRate * 110 / 100 && _newMintRate >= ds.mintRate * 90 / 100, "New rate must be within 10% of the current rate"); // To amend
 
         ds.mintRate = _newMintRate;
         emit MintRateUpdated(_newMintRate);
@@ -149,7 +164,7 @@ contract STEELOFacet is
     function adjustBurnRate(uint256 _newBurnRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         require(_newBurnRate > 0, "Burn rate must be greater than 0");
-        require(_newBurnRate <= ds.burnRate * 110 / 100 && _newBurnRate >= ds.burnRate * 90 / 100, "New rate must be within 10% of the current rate");
+        require(_newBurnRate <= ds.burnRate * 110 / 100 && _newBurnRate >= ds.burnRate * 90 / 100, "New rate must be within 10% of the current rate"); // To amend
 
         ds.burnRate = _newBurnRate;
         emit BurnRateUpdated(_newBurnRate);
@@ -159,7 +174,7 @@ contract STEELOFacet is
     function burnTokens() private {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         uint256 treasuryBalance = balanceOf(address(this)); // Assuming _balanceOf was a typo, use balanceOf
-        uint256 burnAmount = (treasuryBalance * ds.FEE_RATE / 1000) * ds.burnRate / 100;
+        uint256 burnAmount = (SteeloCurrentPrice * ds.FEE_RATE / 1000) * ds.burnRate / 100;
 
         require(treasuryBalance >= burnAmount, "Not enough tokens to burn");
         require(burnAmount > 0, "Burn amount must be greater than 0");

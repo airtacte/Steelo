@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import "./libraries/LibDiamond.sol";
 
-contract SteeloMosaicFacet {
+contract ProfileFacet {
     function initialize() external {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.contractOwner = msg.sender;

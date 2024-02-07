@@ -43,7 +43,8 @@ library LibDiamond {
         // STEELOFacet.sol Constants
         int256 steezTransactionCount;
         uint256 steeloCurrentPrice;
-        uint256 public constant TGE_AMOUNT = 25_000_000 * 1e18;
+        uint256 steezCurrentPrice;
+        uint256 public constant TGE_AMOUNT = 825_000_000 * 1e18;
         uint256 totalMinted; 
         uint256 totalBurned;
         uint256 lastMintEvent; 
