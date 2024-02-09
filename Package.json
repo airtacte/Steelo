@@ -29,6 +29,7 @@
   "dependencies": {
     "@chainlink/contracts": "^0.8.0",
     "@gnosis.pm/safe-ethers-adapters": "^0.1.0-alpha.13",
+    "@lens-protocol/react-native": "^0.1.0-alpha.7",
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^4.8.3",
     "@react-native-firebase/app": "^18.8.0",
