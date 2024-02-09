@@ -1,4 +1,4 @@
-# Steelo Mobile dApp - Diamond Structure 🚀
+# Steelo Mobile dApp - Diamond Structure 💎
 
 ## Facets Overview 🧱
 
@@ -36,14 +36,14 @@
 - **SteezGovernanceFacet.sol**: Regulates the governance aspects related to $STEEZ, facilitating proposals and votes that impact the dynamics of creator-community interactions.
 - **SteezManagementFacet.sol**: Administers the overall management of $STEEZ tokens, from minting to trading, and ensures compliance with the platform's tokenomic policies.
 
-## Integrating Facets into Steelo's Core Features 🗳️
+## Integrating Facets into Steelo's Core Features 🔗
 
 - **Consensus and Transaction Validation**: This could involve the `GovernanceFacet`, `SecurityComplianceFacet`, and potentially the `GasOptimisationFacet` to ensure transactions are secure, compliant, and cost-efficient.
 - **Tokenomics and Governance**: The `TokenomicsFacet` and `GovernanceFacet` would play pivotal roles, integrating the dual-token model with the governance mechanisms.
 - **Data Management**: The `DataManagementFacet` would work closely with Steelo's storage solutions to handle data related to transactions, NFT metadata, and user content.
 - **Community Engagement**: The `UserInteractionFacet` might be responsible for features that facilitate community building, while the `StakingFacet` would handle aspects related to community rewards and staking.
 
-## In Depth Diamond Structure 📝
+## In Depth Diamond Structure 🔧
 
 To provide a deeper understanding of each facet's role and requirements in the Steelo platform, I'll offer a more detailed hypothetical description of each facet's responsibilities based on their names. It is important to note that the actual implementation details would require access to the Solidity code within each `.sol` file and a thorough understanding of the overall system architecture and business logic.
 
@@ -75,7 +75,7 @@ Oversees the storage, retrieval, and integrity of data, potentially interfacing 
   - Functions to encode and decode data to and from storage formats.
   - Efficient data retrieval mechanisms for on-chain and off-chain data.
 
-**Features Folder:**
+### Features Folder
 
 #### BazaarFacet.sol
 Manages the Uniswap-powered marketplace functionalities, overseeing trading pools, listings, sales, and purchases.
@@ -117,7 +117,7 @@ Handles customizable user profiles powered by Lens Protocol, integrating with ma
   - Integration with the marketplace for displaying user activities.
   - Social features for community engagement.
 
-**Steelo Folder:**
+### Steelo Folder
 
 #### STEELOFacet.sol
 Deals with the token economic model of SteeloToken and CreatorToken, managing distribution and inflation/deflation mechanics.
@@ -151,7 +151,7 @@ Processes technical proposals for the platform, allowing for detailed changes to
   - Mechanisms for community feedback and voting.
   - Integration with development and deployment processes.
 
-**Steez Folder:**
+### Steez Folder
 
 #### STEEZFacet.sol
 Manages Creator Token functionalities, including issuance and transactions for creator and community engagement.
