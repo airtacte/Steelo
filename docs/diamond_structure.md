@@ -1,132 +1,191 @@
-# Facets Overview 🧱
+# Steelo Mobile dApp - Diamond Structure 🚀
 
-- **AccessControlFacet.sol**: Manages permissions and access within the Steelo ecosystem, ensuring only authorized users and contracts can perform certain actions.
-- **AnalyticsReportingFacet.sol**: Likely handles the collection and reporting of analytics data within the Steelo platform, providing insights into user behavior and platform performance.
-- **BazaarFacet.sol**: Could be responsible for the marketplace functionalities, managing listings, sales, and purchases of NFTs or other digital assets.
-- **DataManagementFacet.sol**: Manages the storage, retrieval, and integrity of data, possibly interfacing with decentralized storage solutions.
+## Facets Overview 🧱
+
 - **DiamondCutFacet.sol**: Directly involved with the upgradeability of the Diamond, handling the addition, replacement, or removal of facets.
 - **DiamondLoupeFacet.sol**: Provides information about the Diamond, such as the facets it has and the functions they implement.
 - **GasOptimisationFacet.sol**: Contains logic to optimize transactions for gas efficiency, reducing the cost of operations on the Ethereum network.
 - **GovernanceFacet.sol**: Manages the governance processes, including the Steelo Improvement Proposal (SIP) system and voting mechanisms.
 - **OwnershipFacet.sol**: Handles ownership-related functionalities within the platform, potentially managing the assignment and transfer of ownership rights.
 - **SecurityComplianceFacet.sol**: Ensures that the platform adheres to security standards and compliance regulations, implementing necessary checks and balances.
-- **StakingFacet.sol**: Manages staking operations, including the distribution of rewards and the staking of SteeloTokens for governance purposes.
-- **TokenomicsFacet.sol**: Deals with the token economic model of Steelo, managing the distribution, inflation/deflation mechanics, and other aspects of SteeloToken and CreatorToken.
 - **UserInteractionFacet.sol**: Handles user interactions with the platform, such as user registration, profile management, and social features.
+- **UserExperienceFacet.sol**: Crafts the end-user experience, optimizing the interface and interactions to ensure an intuitive and responsive environment for all participants.
+- **DiamondOracleFacet.sol**: Integrates ChainLink Oracle services, providing reliable and secure external data feeds for dynamic decision-making within the Steelo infrastructure.
 
-### Integrating Facets into Steelo's Core Features
+#### App Folder
+- **AccessControlFacet.sol**: Manages permissions and access within the Steelo ecosystem, ensuring only authorized users and contracts can perform certain actions.
+- **AnalyticsReportingFacet.sol**: Likely handles the collection and reporting of analytics data within the Steelo platform, providing insights into user behavior and platform performance.
+- **DataManagementFacet.sol**: Manages the storage, retrieval, and integrity of data, possibly interfacing with decentralized storage solutions.
+
+#### Features Folder
+- **BazaarFacet.sol**: Responsible for the Uniswap-powered marketplace functionalities, managing trading-pools, listings, sales, and purchases of NFTs or other digital assets.
+- **VillageFacet.sol**: Safe-powered MultiSig system that manages decentralized community hubs, facilitating collaboration and governance at the micro-community level within the Steelo ecosystem.
+- **MosaicFacet.sol**: Enables the creation and curation of digital content, browsed through in a mosaic-like style with vertical content-navigation and horizontal creator-navigation.
+- **GalleryFacet.sol**: Oversees virtual-gallery-like user wallets, providing visibility for investors to exhibit their purchased $STEEZ while staking $STEELO through Lido liquid staking.
+- **ProfileFacet.sol**: Lens-powered, handles user profiles, allowing for the customization of digital identities, portfolio showcases, and integration with marketplace activities.
+
+#### Steelo Folder
+- **STEELOFacet.sol**: Deals with the token economic model of Steelo, managing the distribution, inflation/deflation mechanics, and other aspects of SteeloToken and CreatorToken.
+- **SteeloStakingFacet.sol**: Manages staking operations, including the distribution of rewards and the staking of SteeloTokens for governance purposes.
+- **SteeloGovernancerFacet.sol**: Conducts the core governance activities for Steelo, managing the proposal process, vote tallying, and enforcement of community decisions.
+- **SteeloImplementationProposalFacet.sol**: Processes implementation-specific proposals, enabling detailed technical changes to be proposed, voted on, and enacted within the Steelo platform.
+
+#### Steez Folder
+- **STEEZFacet.sol**: Manages Creator Token (fka $STEEZ) functionalities, including issuance, transactions, and interactions specific to creator and community engagement.
+- **SteezFeesFacet.sol**: Oversees the fee structure associated with $STEEZ, handling fee collection, distribution, and potential benefits unlocked through ownership.
+- **SteezGovernanceFacet.sol**: Regulates the governance aspects related to $STEEZ, facilitating proposals and votes that impact the dynamics of creator-community interactions.
+- **SteezManagementFacet.sol**: Administers the overall management of $STEEZ tokens, from minting to trading, and ensures compliance with the platform's tokenomic policies.
+
+## Integrating Facets into Steelo's Core Features 🗳️
 
 - **Consensus and Transaction Validation**: This could involve the `GovernanceFacet`, `SecurityComplianceFacet`, and potentially the `GasOptimisationFacet` to ensure transactions are secure, compliant, and cost-efficient.
 - **Tokenomics and Governance**: The `TokenomicsFacet` and `GovernanceFacet` would play pivotal roles, integrating the dual-token model with the governance mechanisms.
 - **Data Management**: The `DataManagementFacet` would work closely with Steelo's storage solutions to handle data related to transactions, NFT metadata, and user content.
 - **Community Engagement**: The `UserInteractionFacet` might be responsible for features that facilitate community building, while the `StakingFacet` would handle aspects related to community rewards and staking.
 
-### In Depth Diamond Structure
+## In Depth Diamond Structure 📝
 
 To provide a deeper understanding of each facet's role and requirements in the Steelo platform, I'll offer a more detailed hypothetical description of each facet's responsibilities based on their names. It is important to note that the actual implementation details would require access to the Solidity code within each `.sol` file and a thorough understanding of the overall system architecture and business logic.
 
-### AccessControlFacet.sol
-This facet likely manages the roles and permissions for different actors within the Steelo ecosystem. It might implement role-based access control (RBAC) mechanisms that allow certain functionalities to be performed only by users with specific roles, such as administrators, moderators, or validated creators.
+Below is the updated section for the "In Depth Diamond Structure" tailored to the revised structure overview you provided:
 
-**Requirements:**
-- A mapping of roles to addresses
-- Functions to grant and revoke roles
-- Modifiers to restrict function access based on roles
+### App Folder
 
-### AnalyticsReportingFacet.sol
-Responsible for gathering, storing, and processing analytics data to generate reports and insights about platform usage, transaction volumes, and user activities, which can be used for decision-making and improving user experience.
+#### AccessControlFacet.sol
+Manages roles and permissions within the Steelo ecosystem, implementing role-based access control mechanisms for different user levels.
+  
+  **Requirements:**
+  - A robust mapping of roles to addresses.
+  - Functions to grant and revoke roles.
+  - Modifiers to restrict function access based on roles.
 
-**Requirements:**
-- Integration with data storage for persisting analytics data
-- Methods for data aggregation and report generation
-- Possibly, events that emit data for off-chain analysis
+#### AnalyticsReportingFacet.sol
+Collects and reports analytics data, providing insights into user behavior and platform performance.
+  
+  **Requirements:**
+  - Integration with data storage solutions for persistent analytics data.
+  - Methods for data aggregation and report generation.
+  - Events that emit data for off-chain analysis.
 
-### BazaarFacet.sol
-Manages the marketplace aspect of the platform, handling the listing, bidding, selling, and purchasing of digital assets. It would also manage auction mechanisms or direct sales processes.
+#### DataManagementFacet.sol
+Oversees the storage, retrieval, and integrity of data, potentially interfacing with decentralized storage solutions.
+  
+  **Requirements:**
+  - Interfaces to interact with decentralized file storage systems.
+  - Functions to encode and decode data to and from storage formats.
+  - Efficient data retrieval mechanisms for on-chain and off-chain data.
 
-**Requirements:**
-- Functions to create and manage listings
-- Logic for handling bids and sales transactions
-- Integration with the platform's payment and wallet systems
+**Features Folder:**
 
-### DataManagementFacet.sol
-Handles the off-chain and on-chain data management strategy, dealing with the storage, retrieval, and updating of platform data like user profiles, asset metadata, and transaction history.
+#### BazaarFacet.sol
+Manages the Uniswap-powered marketplace functionalities, overseeing trading pools, listings, sales, and purchases.
+  
+  **Requirements:**
+  - Functions to create and manage marketplace listings.
+  - Logic for handling bids, auctions, and direct sales.
+  - Integration with the platform's payment systems.
 
-**Requirements:**
-- Interfaces to interact with decentralized file storage systems
-- Functions to encode and decode data to and from storage formats
-- Efficient data retrieval mechanisms
+#### VillageFacet.sol
+Implements the Safe-powered MultiSig system, managing decentralized community hubs and governance.
+  
+  **Requirements:**
+  - Multi-signature transaction management.
+  - Community hub creation and administration tools.
+  - Governance and voting functions specific to community hubs.
 
-### DiamondCutFacet.sol
-This is the core facet responsible for managing upgrades to the Diamond, allowing for the addition, replacement, or removal of facets. It ensures that the Diamond remains flexible and upgradeable over time.
+#### MosaicFacet.sol
+Facilitates the creation and curation of digital content, enabling a unique browsing experience.
+  
+  **Requirements:**
+  - Tools for content creation, curation, and navigation.
+  - User interfaces for vertical content navigation and horizontal creator navigation.
+  - Integration with other facets for content monetization.
 
-**Requirements:**
-- Implementation of the DiamondCut interface as specified in EIP-2535
-- Functions for adding, replacing, and removing facets
-- Security measures to prevent unauthorized upgrades
+#### GalleryFacet.sol
+Manages virtual-gallery-like user wallets, showcasing purchased assets and facilitating Lido liquid staking.
+  
+  **Requirements:**
+  - Display mechanisms for virtual galleries.
+  - Functions for staking and showcasing digital assets.
+  - Integration with the platform's staking and rewards system.
 
-### DiamondLoupeFacet.sol
-Provides transparency and information about the Diamond structure, such as querying available facets and the functions they implement.
+#### ProfileFacet.sol
+Handles customizable user profiles powered by Lens Protocol, integrating with marketplace activities.
+  
+  **Requirements:**
+  - Profile management and customization tools.
+  - Integration with the marketplace for displaying user activities.
+  - Social features for community engagement.
 
-**Requirements:**
-- Functions to list all facets and their functions
-- Mechanisms to retrieve facet addresses and function selectors
+**Steelo Folder:**
 
-### GasOptimisationFacet.sol
-Focused on reducing the gas cost of transactions and operations within the Steelo platform, possibly by implementing efficient algorithms and leveraging gas-saving patterns.
+#### STEELOFacet.sol
+Deals with the token economic model of SteeloToken and CreatorToken, managing distribution and inflation/deflation mechanics.
+  
+  **Requirements:**
+  - Token supply management algorithms.
+  - Economic models for distribution and value stabilization.
+  - Tools for analyzing and adjusting tokenomic parameters.
 
-**Requirements:**
-- Analysis tools to identify and target high-gas-cost operations
-- Implementation of gas-efficient algorithms and contract patterns
+#### SteeloStakingFacet.sol
+Manages staking operations, including the distribution of rewards and staking for governance.
+  
+  **Requirements:**
+  - Functions for staking, unstaking, and claiming rewards.
+  - Integration with governance for staker voting rights.
+  - Reward distribution mechanisms and algorithms.
 
-### GovernanceFacet.sol
-Manages governance actions, including proposal creation, voting mechanisms, and execution of governance decisions.
+#### SteeloGovernanceFacet.sol
+Conducts core governance activities, managing proposals, vote tallying, and decision enforcement.
+  
+  **Requirements:**
+  - Proposal submission and management functions.
+  - Voting and vote tallying mechanisms.
+  - Enforcement tools for community decisions.
 
-**Requirements:**
-- Functions for submitting and voting on proposals
-- Mechanisms for tallying votes and enacting decisions
-- Integration with the platform's token for governance rights
+#### SteeloImplementationProposalFacet.sol
+Processes technical proposals for the platform, allowing for detailed changes to be proposed and enacted.
+  
+  **Requirements:**
+  - Proposal creation and management specific to technical implementations.
+  - Mechanisms for community feedback and voting.
+  - Integration with development and deployment processes.
 
-### OwnershipFacet.sol
-Handles ownership tracking and transfer within the platform, which could be related to asset ownership or administrative control over certain platform functions.
+**Steez Folder:**
 
-**Requirements:**
-- Functions to transfer ownership
-- Modifiers to check and validate ownership before performing sensitive actions
+#### STEEZFacet.sol
+Manages Creator Token functionalities, including issuance and transactions for creator and community engagement.
+  
+  **Requirements:**
+  - Creator Token issuance and management functions.
+  - Transaction handling specific to Creator Tokens.
+  - Integration with community engagement tools.
 
-### SecurityComplianceFacet.sol
-Ensures that the platform adheres to various security protocols and compliance regulations, implementing necessary checks and security measures.
+#### SteezFeesFacet.sol
+Oversees the fee structure for Creator Tokens, handling fee collection, distribution, and associated benefits.
+  
+  **Requirements:**
+  - Fee collection and distribution algorithms.
+  - Benefit management related to token ownership.
+  - Integration with the platform's economic model.
 
-**Requirements:**
-- Integration with security libraries and standards
-- Functions to perform regular security checks
-- Compliance with industry and regulatory standards
+#### SteezGovernanceFacet.sol
+Regulates governance aspects related to Creator Tokens, facilitating community-driven proposals and votes.
+  
+  **Requirements:**
+  - Governance functions specific to Creator Tokens.
+  - Community proposal and voting systems.
+  - Implementation of decision-making outcomes.
 
-### StakingFacet.sol
-This facet would manage staking processes, including staking tokens for rewards, participating in governance, and potentially securing the network.
+#### SteezManagementFacet.sol
+Administers the management of Creator Tokens, ensuring compliance with tokenomic policies.
+  
+  **Requirements:**
+  - Comprehensive management tools for Creator Tokens.
+  - Compliance checking with the platform's tokenomic model.
+  - Integration with the broader Steelo ecosystem for token lifecycle management.
 
-**Requirements:**
-- Functions for staking and unstaking tokens
-- Reward distribution mechanisms
-- Integration with governance for staker voting rights
-
-### TokenomicsFacet.sol
-Deals with the economic model of the platform's tokens, managing supply, distribution, and other token-related mechanics.
-
-**Requirements:**
-- Algorithms for minting, burning, and distributing tokens
-- Integration with market dynamics for price stabilization
-- Tools for analyzing and adjusting economic parameters
-
-### UserInteractionFacet.sol
-Manages user interactions with the platform, including UI-related transactions, user support tools, and other engagement mechanisms.
-
-**Requirements:**
-- Functions to handle user queries and transactions
-- Events to log user interactions
-- Integration with front-end systems
-
-### Conclusion
+## Conclusion 🤝
 
 Each `.sol` file encapsulates specific business logic related to its domain, allowing for a clean separation of concerns and the ability to upgrade parts of the system without affecting the whole. This modularity and upgradeability are core benefits of the Diamond Standard architecture employed by Steelo.
 

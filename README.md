@@ -74,11 +74,11 @@ The **PROFILE** section is where users curate their digital identity on Steelo. 
 
 Instructions on how to set up the development environment, install dependencies, and run the application will be provided here. Stay tuned!
 
-## License 📄
+### License 📄
 
 This project currently uses the MIT license, suspect to change. See the [MIT](https://opensource.org/license/mit/) file for more details.
 
-## Contact 📧
+### Contact 📧
 
 For more information, questions, or feedback, reach out to us at [info@steelo.io](mailto:info@steelo.io).
 
