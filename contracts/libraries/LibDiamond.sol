@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
 /******************************************************************************\
 * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -43,6 +43,15 @@ library LibDiamond {
         bytes32 jobId;
         uint256 fee;
         uint256 volume;
+
+        // ProfileFacet.So
+        mapping(address => ProfileInfo) profiles;
+        mapping(string => bool) usernameExists;
+        string username;
+        string bio;
+        string avatarURI; // URI to user's avatar image
+        address walletAddress; // The user's wallet address
+        // Additional fields can be added as needed
 
         // STEELOFacet.sol Constants
         int256 steezTransactionCount;
@@ -89,7 +98,10 @@ library LibDiamond {
         uint256 private constant INITIAL_CAP = 500;
         uint256 private constant TRANSACTION_MULTIPLIER = 2;
         uint256 private constant PRE_ORDER_MINIMUM_SOLD = 125; // 50% of 250
-
+        uint256 public constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
+        uint256 public constant PRICE_INCREMENT = 10 ether; // Increment value
+        uint256 public constant TOKEN_BATCH_SIZE = 250;
+        uint256 public constant AUCTION_DURATION = 24 hours;
         Royalties private _royalties;
 
         // STEEZFacet.sol Variables
@@ -169,6 +181,24 @@ library LibDiamond {
                 ds.slot := STORAGE_SLOT
             }
         }
+    }
+
+    // Function to check if a username already exists
+    function usernameTaken(string memory username) internal view returns (bool) {
+        return diamondStorage().usernameExists[username];
+    }
+
+    // Function to create or update a profile
+    function setProfile(address user, string memory username, string memory bio, string memory avatarURI) internal {
+        require(!usernameTaken(username), "Username already taken");
+        diamondStorage storage ds = diamondStorage();
+        ds.profiles[user] = ProfileInfo(username, bio, avatarURI, user);
+        ds.usernameExists[username] = true;
+    }
+
+    // Function to retrieve a user's profile
+    function getProfile(address user) internal view returns (ProfileInfo memory) {
+        return diamondStorage().profiles[user];
     }
 
     // Increment the snapshot counter to create a new snapshot

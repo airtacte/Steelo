@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 pragma experimental ABIEncoderV2;
 
 /******************************************************************************\
@@ -16,8 +16,6 @@ import "./interfaces/IERC173.sol";
 import "./interfaces/IERC165.sol";
 
 contract Diamond {
-    // more arguments are added to this struct
-    // this avoids stack too deep errors
     struct DiamondArgs {
         address owner;
     }

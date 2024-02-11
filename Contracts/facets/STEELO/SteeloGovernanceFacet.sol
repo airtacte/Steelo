@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "../libraries/LibDiamond.sol";
-import "../interfaces/ISteeloGovernanceFacet.sol";
+import "../../libraries/LibDiamond.sol";
+import "../../interfaces/IGovernanceFacet.sol";
 
-contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, OwnableUpgradeable {
+contract SteeloGovernanceFacet is IGovernanceFacet, Initializable, OwnableUpgradeable {
     using LibDiamond for LibDiamond.DiamondStorage;
 
     event SIPCreated(uint256 indexed sipId, SIPType indexed sipType, address indexed proposer, string description);

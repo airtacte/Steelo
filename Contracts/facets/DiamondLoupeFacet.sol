@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
 import { LibDiamond } from  "../libraries/LibDiamond.sol";
 import { IDiamondLoupe } from "../interfaces/IDiamondLoupe.sol";
@@ -9,6 +9,7 @@ import { IERC165 } from "../interfaces/IERC165.sol";
 // The EIP-2535 Diamond standard requires these functions.
 
 contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
+    bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
     // Diamond Loupe Functions
     ////////////////////////////////////////////////////////////////////
     /// These functions are expected to be called frequently by tools.
@@ -59,5 +60,6 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     function supportsInterface(bytes4 _interfaceId) external override view returns (bool) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.supportedInterfaces[_interfaceId];
+        return interfaceId == _INTERFACE_ID_ERC165 || ... // other supported interfaces
     }
 }

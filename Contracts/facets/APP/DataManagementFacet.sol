@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
-import "./libraries/LibDiamond.sol";
+import "../../libraries/LibDiamond.sol";
 
 contract DataManagementFacet {
     function initialize() external {

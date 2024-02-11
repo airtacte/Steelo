@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
-import "./ISafe.sol";
-import "./ILensProtocol.sol";
+import "../../interfaces/ISafe.sol";
+import "../../interfaces/ILens.sol";
 
 contract SocialNetworkFacet {
     ISafe private safeCore;

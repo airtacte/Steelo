@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "../libraries/LibDiamond.sol";
+import "../../libraries/LibDiamond.sol";
 
 contract SteezGovernanceFacet is Initializable, AccessControlUpgradeable, GovernorUpgradeable, GovernorVotesUpgradeable {
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");

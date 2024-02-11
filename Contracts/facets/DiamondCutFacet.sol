@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
-import { LibDiamond } from "../Contracts/libraries/LibDiamond.sol";
+import { LibDiamond } from "../libraries/LibDiamond.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
