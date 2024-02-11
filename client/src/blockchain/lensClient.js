@@ -19,7 +19,6 @@ const client = new ApolloClient({
 // Export the configured client
 export { client, provider };
 
-
 /*
 // Example usage in some component or service
 

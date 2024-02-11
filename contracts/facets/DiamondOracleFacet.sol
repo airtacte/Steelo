@@ -6,7 +6,6 @@ import "./libraries/LibDiamond.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
-import "../STEEZ/STEEZFacet.sol";
 
 contract DiamondOracleFacet is Ownable, ChainlinkClient {
     LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();

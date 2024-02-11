@@ -8,7 +8,6 @@ Welcome to **Steelo**, a pioneering blockchain platform designed to revolutioniz
 
 ### VILLAGE 🏘️
 
-#### Overview
 The **VILLAGE** represents the core community space within Steelo, where creators, investors, and enthusiasts converge to share ideas, collaborate on projects, and participate in governance. This dynamic ecosystem fosters a sense of belonging and collective growth, enabling users to contribute to the platform's direction and success.
 
 #### Features
@@ -18,7 +17,6 @@ The **VILLAGE** represents the core community space within Steelo, where creator
 
 ### GALLERY 🖼️
 
-#### Overview
 The **GALLERY** is Steelo's digital showroom, showcasing the finest creations from across the ecosystem. It serves as a curated space for artists and creators to exhibit their work, offering users a glimpse into the vast creative talent within the community.
 
 #### Features
@@ -28,7 +26,6 @@ The **GALLERY** is Steelo's digital showroom, showcasing the finest creations fr
 
 ### MOSAIC 🧩
 
-#### Overview
 **MOSAIC** is an innovative feature that allows users to contribute to collective art projects. This collaborative platform encourages community members to add their unique touch to a larger artwork, symbolizing the unity and creative power of the Steelo community.
 
 #### Features
@@ -38,7 +35,6 @@ The **GALLERY** is Steelo's digital showroom, showcasing the finest creations fr
 
 ### PROFILE 📝
 
-#### Overview
 The **PROFILE** section is where users curate their digital identity on Steelo. It's a personal space to showcase one's creations, collaborations, and contributions to the community, acting as a portfolio and social hub.
 
 #### Features
@@ -48,7 +44,6 @@ The **PROFILE** section is where users curate their digital identity on Steelo. 
 
 ### BAZAAR 📈
 
-#### Overview
 **BAZAAR** is Steelo's marketplace, a vibrant trading space where creators and collectors buy, sell, and trade digital assets. This bustling economic hub supports the ecosystem's growth, offering a wide range of digital goods and services.
 
 #### Features
@@ -86,41 +81,33 @@ For more information, questions, or feedback, reach out to us at [info@steelo.io
 
 ## Blockchain and Ethereum Development 🕹️
 
-    @ensdomains/ens-contracts
-    @nomiclabs/hardhat-ethers
-    @nomiclabs/hardhat-waffle
+    ensdomains
+    nomiclabs
     ethereum-waffle
     ethers
     ganache
     hardhat
     hardhat-deploy
-    @gnosis.pm/safe-ethers-adapters
-    @openzeppelin/contracts
-    @openzeppelin/contracts-upgradeable
-    @safe-global/api-kit
-    @safe-global/protocol-kit
-    @safe-global/safe-core-sdk
-    @safe-global/safe-core-sdk-types
+    gnosis.pm/safe-ethers-adapters
+    openzeppelin
+    safe-global
     web3
 
 ## React Native and UI 🌟
 
-    @react-native-community/async-storage
-    @react-native-firebase/app
-    @react-native-firebase/auth
-    @react-native-firebase/firestore
-    @react-native-google-signin/google-signin
-    @react-navigation/native
-    @react-navigation/stack
+    react-native-community
+    react-native-firebase
+    react-native-google-signin
+    react-navigation
     lottie-react-native
     react-native-push-notification
     react-native-webview
-    @walletconnect/react-native-dapp
+    walletconnect/react-native-dapp
 
 ## State Management 📰
 
-    @reduxjs/toolkit
     react-redux
+    reduxjs
     redux
 
 ## Backend and Server 🗳️
@@ -137,7 +124,7 @@ For more information, questions, or feedback, reach out to us at [info@steelo.io
 
 ## Testing and Development 🔄
 
-    @testing-library/jest-native
-    @testing-library/react-native
+    testing-library/jest-native
+    testing-library/react-native
     jest
     yargs-parser

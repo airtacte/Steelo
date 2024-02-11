@@ -34,6 +34,10 @@ library LibDiamond {
         mapping(bytes4 => bool) supportedInterfaces;
         address contractOwner;
 
+        // Add more fields as needed...
+        ISteezFeesFacet steezFeesFacet;
+        ISteezFacet steezFacet;
+
         // Chainlink parameters
         address oracle = 0xb83E47C2bC239B3bf370bc41e1459A34b41238D0;
         bytes32 jobId;
@@ -98,6 +102,11 @@ library LibDiamond {
         mapping(uint256 => uint256) private _transactionCount;
         mapping(uint256 => uint256) private _mintedInLastYear;
         mapping(uint256 => uint256) private _lastMintTime;
+        mapping(uint256 => uint256[]) public creatorSplits;
+        mapping(uint256 => uint256[]) public communitySplits;
+        mapping(uint256 => address[]) public tokenHolders;
+        mapping(uint256 => mapping(address => uint256)) public balances;
+        mapping(uint256 => mapping(address => uint256)) public distributionPolicies;
 
         // STEEZFacet.sol Snapshots
         CountersUpgradeable.Counter private _currentTokenID;
@@ -125,20 +134,16 @@ library LibDiamond {
         // STEEZFeesFacet.sol Addresses
         address private _creatorTokenAddress;
 
-        // SteezFeesFacet.sol Constants for Pre-Orders
-        uint256 constant PRE_ORDER_CREATOR_RATE = 90; // 90% of pre-order sale value to creator
-        uint256 constant PRE_ORDER_STEELO_RATE = 10; // 10% of pre-order sale value to Steelo
-
-        // SteezFeesFacet.sol Constants for Token Launch and Expansions
-        uint256 constant LAUNCH_CREATOR_RATE = 90; // 90% of launch + expansion sale value to creator
-        uint256 constant LAUNCH_STEELO_RATE = 75; // 7.5% of launch + expansion sale value to Steelo
-        uint256 constant LAUNCH_COMMUNITY_RATE = 25; // 2.5% of launch + expansion sale value to token holders
-        
-        // SteezFeesFacet.sol Constants for 2nd hand sales
-        uint256 constant SECOND_HAND_SELLER_RATE = 90; // 90% of second-hand sale value to seller
-        uint256 constant SECOND_HAND_CREATOR_RATE = 50; // 5% of second-hand sale value to creator
-        uint256 constant SECOND_HAND_STEELO_RATE = 25; // 2.5% of second-hand sale value to Steelo
-        uint256 constant SECOND_HAND_COMMUNITY_RATE = 25; // 2.5% of second-hand sale value to token holders
+        struct RoyaltyInfo {
+            uint256 constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
+            uint256 constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
+            uint256 constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
+            uint256 constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
+            uint256 constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
+            uint256 constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
+            uint256 constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
+            uint256 constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
+            uint256 constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
 
         // SteezFeesFacet.sol Mapping
         mapping(uint256 => mapping(address => uint256)) private _undistributedRoyalties;
@@ -147,11 +152,30 @@ library LibDiamond {
         mapping(uint256 => Snapshot[]) private _totalUndistributedSnapshots;
     }
 
+    // Example method in LibDiamond for batch updating royalties
+    function updateRoyaltyRates(uint256[] calldata tokenIds, RoyaltyInfo[] calldata newRoyalties) external {
+        require(tokenIds.length == newRoyalties.length, "Mismatched arrays");
+        LibDiamond.enforceIsContractOwner();
+        for(uint i = 0; i < tokenIds.length; i++) {
+            diamondStorage().royaltyInfo[tokenIds[i]] = newRoyalties[i];
+    }
+
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
         assembly {
             ds.slot := position
         }
+    }
+
+    // Increment the snapshot counter to create a new snapshot
+    function _incrementSnapshot() internal returns (uint256) {
+        return ++snapshotCounter;
+    }
+
+    // Record the balance for an address at the current snapshot
+    function _snapshotBalance(address account, uint256 balance) internal {
+        uint256 currentId = _incrementSnapshot();
+        snapshotBalances[currentId][account] = balance;
     }
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
