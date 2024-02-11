@@ -12,11 +12,10 @@ import "./libraries/LibDiamond.sol";
 
 contract STEELOFacet is 
     ERC20, 
-    OwnableUpgradable, 
-    PausableUpgradable, 
+    OwnableUpgradeable, 
+    PausableUpgradeable, 
     ReentrancyGuard, 
-    ChainlinkClient, 
-    ISteeloFacet {
+    ChainlinkClient {
 
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -35,10 +34,9 @@ contract STEELOFacet is
         address _linkToken
     ) public initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-
         __ERC20_init("Steelo", "STEELO");
-        __Ownable_init();
-        __Pausable_init();
+        __OwnableUpgradeable_init();
+        __PausableUpgradeable_init();
         __ReentrancyGuard_init();
 
         require(_treasury != address(0), "Treasury cannot be the zero address");
@@ -153,9 +151,7 @@ contract STEELOFacet is
     // Function to adjust the mint rate, can be called through governance decisions (SIPs)
     function adjustMintRate(uint256 _newMintRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(_newMintRate > 0, "Mint rate must be greater than 0");
-        require(_newMintRate <= ds.mintRate * 110 / 100 && _newMintRate >= ds.mintRate * 90 / 100, "New rate must be within 10% of the current rate"); // To amend
-
+        require(_newMintRate > 0 && _newMintRate <= ds.mintRateMax, "Invalid mint rate");
         ds.mintRate = _newMintRate;
         emit MintRateUpdated(_newMintRate);
     }
@@ -163,9 +159,7 @@ contract STEELOFacet is
     // Function to adjust the burn rate, can be called through governance decisions (SIPs)
     function adjustBurnRate(uint256 _newBurnRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(_newBurnRate > 0, "Burn rate must be greater than 0");
-        require(_newBurnRate <= ds.burnRate * 110 / 100 && _newBurnRate >= ds.burnRate * 90 / 100, "New rate must be within 10% of the current rate"); // To amend
-
+        require(_newBurnRate > 0 && _newBurnRate <= ds.burnRateMax, "Invalid burn rate");
         ds.burnRate = _newBurnRate;
         emit BurnRateUpdated(_newBurnRate);
     }
@@ -206,23 +200,26 @@ contract STEELOFacet is
     // Example function to update transaction volume and current price
     function updateParameters(uint256 _steezTransactionCount, uint256 _currentPrice) external {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(_currentPrice >= ds.pMin && _currentPrice <= ds.pMax, "Price out of allowed range");
         ds.steezTransactionCount = _steezTransactionCount;
         ds.steeloCurrentPrice = _currentPrice;
+        // Logic to determine if minting or burning should occur based on updated parameters
     }
 
     // Function to make a GET request to the Chainlink oracle
     function requestVolumeData() public returns (bytes32 requestId) {
-        Chainlink.Request memory request = buildChainlinkRequest(0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000, address(this), this.fulfill.selector);
-        req.add("get", "https://us-central1-steelo-47.cloudfunctions.net/functionName");
-        req.add("path", "volume"); // Specify the JSON path that leads to the data of interest
+        Chainlink.Request memory request = buildChainlinkRequest(ds.jobId, address(this), this.fulfill.selector);
+        req.add("get", "https://us-central1-steelo.io.cloudfunctions.net/functionName");
+        req.add("path", "volume");
         return sendChainlinkRequestTo(ds.oracle, request, ds.fee);
     }
 
     // Function to receive the response from the Chainlink oracle
     function fulfill(bytes32 _requestId, uint256 _steezTransactionCount) public recordChainlinkFulfillment(_requestId) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(_steezTransactionCount > 0, "Invalid transaction count");
         ds.steezTransactionCount = _steezTransactionCount;
-        checkForMintOrBurn(); // Ensure this function also accesses shared state via ds
+        // Additional logic for mint or burn based on the new transaction count
     }
 
     // Helper function to convert a string to a bytes32

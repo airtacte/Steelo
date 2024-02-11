@@ -67,6 +67,8 @@ library LibDiamond {
         uint256 public alpha = 10;
         uint256 public beta = 10;
         uint256 public constant BURN_THRESHOLD = 1e9;
+        mapping(address => uint256) public stakes;
+        mapping(address => bool) public isStakeholder;
 
         // STEELOFacet.sol Addresses and Distribution Rates
         address public treasury; uint256 public trasuryTGE = 35; uint256 public treasuryMint = 35;
@@ -160,10 +162,12 @@ library LibDiamond {
             diamondStorage().royaltyInfo[tokenIds[i]] = newRoyalties[i];
     }
 
-    function diamondStorage() internal pure returns (DiamondStorage storage ds) {
-        bytes32 position = DIAMOND_STORAGE_POSITION;
-        assembly {
-            ds.slot := position
+    library LibDiamond {
+        function diamondStorage() internal pure returns (DiamondStorage storage ds) {
+            const STORAGE_SLOT = bytes32(uint256(keccak256("eip2535.diamond.storage")) - 1);
+            assembly {
+                ds.slot := STORAGE_SLOT
+            }
         }
     }
 
