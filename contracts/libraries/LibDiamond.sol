@@ -147,7 +147,6 @@ library LibDiamond {
         CountersUpgradeable.Counter _currentTokenID;
         CountersUpgradeable.Counter _snapshotCounter;
         uint256 _lastSnapshotTimestamp;
-        uint256 _snapshotCounter;
 
         // STEEZFacet.solCONTRACT ADDRESSES
         address _safeAddress;

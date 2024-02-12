@@ -58,21 +58,6 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             uint256 steeloRate;
             uint256 communityRate;
 
-            // Calculate the creator royalty
-            uint256 creatorFee = 0;
-            uint256[] memory splits = ds.creatorSplits[tokenId];
-            for (uint256 i = 0; i < splits.length; i++) {
-                creatorFee += amount.mul(splits[i]).div(100);
-            }
-
-            // Calculate the community royalty
-            uint256 communityFee = 0;
-            address[] memory holders = ds.tokenHolders[tokenId];
-            for (uint256 i = 0; i < holders.length; i++) {
-                uint256 balance = ds.balances[tokenId][holders[i]];
-                communityFee += amount.mul(balance).div(totalSupply);
-            }
-
             if (from == owner()) {
                 if (to == owner()) {
                     creatorRate = ds.PRE_ORDER_CREATOR_RATE;
@@ -90,7 +75,9 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             }
 
             // Calculate the royalty amounts
-            (uint256 creatorFee, uint256 steeloFee, uint256 communityFee) = calculateRoyalties(tokenId, amount);
+            uint256 creatorFee = amount.mul(creatorRate).div(100);
+            uint256 steeloFee = amount.mul(steeloRate).div(100);
+            uint256 communityFee = amount.mul(communityRate).div(100);
             uint256 totalRoyalty = creatorFee.add(steeloFee).add(communityFee);
             require(totalRoyalty <= amount, "Royalties: Royalty exceeds transfer amount");
 

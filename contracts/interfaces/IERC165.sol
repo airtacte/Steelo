@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+
 /**
  * @dev Interface of the ERC165 standard as defined in the EIP.
  */
-interface IERC165 {
+
+interface MyIERC165 is IERC165 {
     /// @notice Query if a contract implements an interface
     /// @param interfaceId The interface identifier, as specified in ERC-165
     /// @dev Interface identification is specified in ERC-165. This function
