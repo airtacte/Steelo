@@ -60,6 +60,6 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     function supportsInterface(bytes4 _interfaceId) external override view returns (bool) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.supportedInterfaces[_interfaceId];
-        return interfaceId == _INTERFACE_ID_ERC165 || ... // other supported interfaces
+        return interfaceId == _INTERFACE_ID_ERC165; // other supported interfaces
     }
 }

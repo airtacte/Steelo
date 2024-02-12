@@ -12,28 +12,29 @@ import "../../interfaces/ISafe.sol";
 import "../app/MultiSigFacet.sol";
 
 contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    // Event declarations, e.g., for profile updates, content posted, etc.
+    event ProfileUpdated(address indexed user);
+    event ContentPosted(address indexed user, uint256 contentId);
+    event InvestorAdded(address indexed creator, address indexed investor);
+    event PortfolioUpdated(address indexed user, uint256 indexed tokenId, uint256 amount);
+    event SpaceCreated(address indexed user, uint256 spaceId);
+
+    ILens lens;
+    ISafe safe;
+
     function initialize() external {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.contractOwner = msg.sender;
+    }
 
-        ILens public lens;
-        ISafe public safe;
+    function initialize(address _lensAddress, address _safeAddress) external initializer {
+        __ERC1155_init("https://myapi.com/api/token/{id}.json");
+        __Ownable_init();
+        __ReentrancyGuard_init();
 
-        // Event declarations, e.g., for profile updates, content posted, etc.
-        event ProfileUpdated(address indexed user);
-        event ContentPosted(address indexed user, uint256 contentId);
-        event InvestorAdded(address indexed creator, address indexed investor);
-        event PortfolioUpdated(address indexed user, uint256 indexed tokenId, uint256 amount);
-        event SpaceCreated(address indexed user, uint256 spaceId);
-
-        function initialize(address _lensAddress, address _safeAddress) external initializer {
-            __ERC1155_init("https://myapi.com/api/token/{id}.json");
-            __Ownable_init();
-            __ReentrancyGuard_init();
-
-            lens = ILens(_lensAddress);
-            safe = ISafe(_safeAddress);
-        }
+        lens = ILens(_lensAddress);
+        safe = ISafe(_safeAddress);
+    }
 
         // Function to set up or update a user profile
         function setProfile(LibDiamond.ProfileInput calldata profileInput) external override nonReentrant {
@@ -92,5 +93,4 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         }
 
         // Additional helper functions as needed for accessing nested or complex data structures
-    }
 }

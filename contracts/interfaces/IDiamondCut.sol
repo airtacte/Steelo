@@ -2,21 +2,26 @@
 pragma solidity 0.8.20;
 
 interface IDiamondCut {
-    // Struct for diamond cuts
+    enum FacetCutAction {Add, Replace, Remove}
+    // Add=0, Replace=1, Remove=2
+
     struct FacetCut {
         address facetAddress;
-        Action action;
+        FacetCutAction action;
         bytes4[] functionSelectors;
     }
 
-    enum Action { Add, Replace, Remove }
+    /// @notice Add/replace/remove any number of functions and optionally execute
+    ///         a function with delegatecall
+    /// @param _diamondCut Contains the facet addresses and function selectors
+    /// @param _init The address of the contract or facet to execute _calldata
+    /// @param _calldata A function call, including function selector and arguments
+    ///                  _calldata is executed with delegatecall on _init
+    function diamondCut(
+        FacetCut[] calldata _diamondCut,
+        address _init,
+        bytes calldata _calldata
+    ) external;
 
-    // Adds, replaces, or removes functions
-    // _facetCuts - An array of structs that contain a facet address and function selectors.
-    // _init - An address of a contract or facet to call `init.functionSelectors.selector` 
-    //         and pass `_calldata` to.
-    // _calldata - Data to pass to `_init` address.
-    function diamondCut(FacetCut[] calldata _facetCuts, address _init, bytes calldata _calldata) external;
-    
-    event DiamondCut(FacetCut[] _facetCuts, address _init, bytes _calldata);
+    event DiamondCut(FacetCut[] _diamondCut, address _init, bytes _calldata);
 }

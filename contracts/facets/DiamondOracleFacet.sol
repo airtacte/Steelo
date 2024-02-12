@@ -7,15 +7,16 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 
 contract DiamondOracleFacet is Ownable, ChainlinkClient {
-    LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-    ds.contractOwner = msg.sender;
-    int256 public steezTransactionCount;
+    LibDiamond.DiamondStorage ds = LibDiamond.diamondStorage();
+    uint256 public steezTransactionCount;
     uint256 public steeloCurrentPrice;
 
     constructor() {
         setChainlinkToken(0x779877a7b0d9e8603169ddbd7836e478b4624789); // Set the token to be used for paying for the oracle service
+        ds = LibDiamond.diamondStorage();
+        ds.contractOwner = msg.sender;
     }
-
+    
     function requestVolumeData(uint256 _payment) public onlyOwner {
         Chainlink.Request memory req = buildChainlinkRequest(0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000, address(this), this.fulfill.selector);
         // Customize the request parameters
@@ -34,7 +35,7 @@ contract DiamondOracleFacet is Ownable, ChainlinkClient {
         return price;
     }
 
-    function getSteezTransactionCount() external view returns (int256) {
+    function getSteezTransactionCount() external view returns (uint256) {
         return steezTransactionCount;
     }
 

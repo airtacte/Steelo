@@ -44,6 +44,16 @@ module.exports = {
     // rest of your config...
 };
 
+// This is a sample Hardhat task. To learn how to create your own go to
+// https://hardhat.org/guides/create-task.html
+task('accounts', 'Prints the list of accounts', async () => {
+    const accounts = await ethers.getSigners()
+  
+    for (const account of accounts) {
+      console.log(account.address)
+    }
+  })
+  
 // This is removed from the global scope of the config file to prevent HH9 errors
 // const { ethers } = require("hardhat");
 // const { Safe, SafeFactory } = require("@safe-global/safe-core-sdk");

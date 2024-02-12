@@ -16,14 +16,14 @@ contract SteeloImprovementProposalFacet is Ownable, ReentrancyGuard {
         bool executed;
         uint256 yesVotes;
         uint256 noVotes;
-        ProposalType type;
+        ProposalType proposalType;
     }
 
     enum ProposalType {CreatorInitiated, InvestorInitiated, SteeloInitiated}
 
     SIP[] public sips;
 
-    event SIPCreated(uint256 indexed id, string description, ProposalType type, address indexed proposer);
+    event SIPCreated(uint256 indexed id, string description, ProposalType proposalType, address indexed proposer);
     event SIPVoted(uint256 indexed id, bool support, address indexed voter, uint256 weight);
     event SIPExecuted(uint256 indexed id, bool success);
 
@@ -42,7 +42,7 @@ contract SteeloImprovementProposalFacet is Ownable, ReentrancyGuard {
         newSIP.startTime = startTime;
         newSIP.endTime = endTime;
         newSIP.proposer = msg.sender;
-        newSIP.type = _type;
+        newSIP.proposalType = _type;
         emit SIPCreated(newSipId, _description, _type, msg.sender, startTime, endTime);
     }
 

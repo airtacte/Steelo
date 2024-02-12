@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {LibDiamond} from "../../libraries/LibDiamond.sol";
 
 struct Snapshot {
@@ -15,7 +14,6 @@ struct Snapshot {
 }
 
 contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
-    using SafeMathUpgradeable for uint256;
 
     event RoyaltyPaid(uint256 indexed tokenId, address indexed recipient, uint256 amount);
     event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
@@ -98,7 +96,7 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
             // Pay the creator royalty
             payable(from).transfer(creatorFee);
-            payable(owner()).transfer(steeloFee);;
+            payable(owner()).transfer(steeloFee);
 
             // Distribute the community royalty among the token holders
             for (uint256 i = 0; i < holders.length; i++) {

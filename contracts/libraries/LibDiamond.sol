@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-/******************************************************************************\
-* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
-* EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
-/******************************************************************************/
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
@@ -14,7 +10,77 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
+        uint256 public constant TGE_AMOUNT = 825_000_000 * 10**18;
+        uint256 public constant pMin = 0.5 ether;
+        uint256 public constant pMax = 5 ether;
+        uint256 public constant BURN_THRESHOLD = 1e9;
+        uint256 private constant INITIAL_CAP = 500;
+        uint256 private constant TRANSACTION_MULTIPLIER = 2;
+        uint256 private constant PRE_ORDER_MINIMUM_SOLD = 125; // 50% of 250
+        uint256 public constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
+        uint256 public constant PRICE_INCREMENT = 10 ether; // Increment value
+        uint256 public constant TOKEN_BATCH_SIZE = 250;
+        uint256 public constant AUCTION_DURATION = 24 hours;
+        address private constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
+        address private constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
+        address public constant STEELO_WALLET = 0x1234567890123456789012345678901234567890; // Placeholder address
+        uint256 public constant rho = 1 ether;
+        uint256 public constant alpha = 10;
+        uint256 public constant beta = 10;
 
+        uint256 constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
+        uint256 constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
+        uint256 constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
+        uint256 constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
+        uint256 constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
+        uint256 constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
+        uint256 constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
+        uint256 constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
+        uint256 constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
+
+    function diamondStorage() internal pure returns (DiamondStorage storage ds) {
+        assembly {
+            ds.slot := STORAGE_SLOT
+        }
+    }
+
+        mapping(address => uint256) public stakes;
+        mapping(address => bool) public isStakeholder;
+        mapping (address => bool) private admins;
+        mapping (address => bool) private creators;
+        mapping (address => bool) private owners; // to rename to investors
+        mapping (address => bool) private users;
+        mapping(address => bool) private _hasCreatedToken;
+        mapping(uint256 => bool) private _tokenExists; 
+        mapping(uint256 => uint256) private _totalSupply;
+        mapping(address => uint256) private _shareholdings;
+        mapping(uint256 => uint256) private _transactionCount;
+        mapping(uint256 => uint256) private _mintedInLastYear;
+        mapping(uint256 => uint256) private _lastMintTime;
+        mapping(uint256 => uint256[]) public creatorSplits;
+        mapping(uint256 => uint256[]) public communitySplits;
+        mapping(uint256 => address[]) public tokenHolders;
+        mapping(uint256 => mapping(address => uint256)) public balances;
+        mapping(uint256 => mapping(address => uint256)) public distributionPolicies;
+        mapping(uint256 => mapping(uint256 => uint256)) private _snapshotBalances;
+        mapping(uint256 => uint256) private _lastSnapshot;
+
+        address public treasury; uint256 public trasuryTGE = 35; uint256 public treasuryMint = 35;
+        address public liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 public liquidityProvidersMint = 55;
+        address public ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 public ecosystemProvidersMint = 10;
+        address public foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 public foundersTGE = 20;
+        address public earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 public earlyInvestorsTGE = 10;
+        address public communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 public communityTGE = 35;
+        address public steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public FEE_RATE = 25;
+
+        modifier canCreateToken(address creator) {require(!_hasCreatedToken[creator], "CreatorToken: Creator has already created a token."); _;}
+        modifier onlyAdmin() {require(admins[msg.sender], "Only Admin can call this function"); _;}
+        modifier onlyCreator() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator, "CreatorToken: Only Creators can call this function"); _;}
+        modifier onlyOwner() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator && msg.sender != owner(), "CreatorToken: Only Owners can call this function"); _;}
+        modifier onlyUser() {require(users[msg.sender], "Only User can call this function"); _;}
+        modifier onlyCreatorOrOwner() {require(owners[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or Owners can call this function"); _;}
+        modifier dailySnapshot() {if (block.timestamp >= _lastSnapshotTimestamp.add(1 days)) {_takeSnapshot(); _lastSnapshotTimestamp = block.timestamp;} _;}
+        
     struct FacetAddressAndPosition {
         address facetAddress;
         uint96 functionSelectorPosition; // position in facetFunctionSelectors.functionSelectors array
@@ -39,7 +105,7 @@ library LibDiamond {
         ISteezFacet steezFacet;
 
         // Chainlink parameters
-        address oracle = 0xb83E47C2bC239B3bf370bc41e1459A34b41238D0;
+        address oracle;
         bytes32 jobId;
         uint256 fee;
         uint256 volume;
@@ -57,7 +123,6 @@ library LibDiamond {
         int256 steezTransactionCount;
         uint256 steeloCurrentPrice;
         uint256 steezCurrentPrice;
-        uint256 public constant TGE_AMOUNT = 825_000_000 * 1e18;
         uint256 totalMinted; 
         uint256 totalBurned;
         uint256 lastMintEvent; 
@@ -69,117 +134,41 @@ library LibDiamond {
         bool isDeflationary;
         bool tgeExecuted;
 
-        // STEELOFacet.sol Tokenomic Constants
-        uint256 public constant pMin = 0.5 ether;
-        uint256 public constant pMax = 5 ether;
-        uint256 public rho = 1 ether;
-        uint256 public alpha = 10;
-        uint256 public beta = 10;
-        uint256 public constant BURN_THRESHOLD = 1e9;
-        mapping(address => uint256) public stakes;
-        mapping(address => bool) public isStakeholder;
-
-        // STEELOFacet.sol Addresses and Distribution Rates
-        address public treasury; uint256 public trasuryTGE = 35; uint256 public treasuryMint = 35;
-        address public liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 public liquidityProvidersMint = 55;
-        address public ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 public ecosystemProvidersMint = 10;
-        address public foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 public foundersTGE = 20;
-        address public earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 public earlyInvestorsTGE = 10;
-        address public communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 public communityTGE = 35;
-        address public steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public FEE_RATE = 25;
-
-        // STEEZFacet.sol Roles
-        mapping (address => bool) private admins;
-        mapping (address => bool) private creators;
-        mapping (address => bool) private owners; // to rename to investors
-        mapping (address => bool) private users;
-
         // STEEZFacet.sol Constants
-        uint256 private constant INITIAL_CAP = 500;
-        uint256 private constant TRANSACTION_MULTIPLIER = 2;
-        uint256 private constant PRE_ORDER_MINIMUM_SOLD = 125; // 50% of 250
-        uint256 public constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
-        uint256 public constant PRICE_INCREMENT = 10 ether; // Increment value
-        uint256 public constant TOKEN_BATCH_SIZE = 250;
-        uint256 public constant AUCTION_DURATION = 24 hours;
-        Royalties private _royalties;
+        Royalties _royalties;
 
         // STEEZFacet.sol Variables
-        string private _baseURI;
-        uint256 private _maxCreatorTokens;
-        uint256 private _transactionFee;
-        uint256 private _totalShareholdings;
-        mapping(address => bool) private _hasCreatedToken;
-        mapping(uint256 => bool) private _tokenExists; 
-        mapping(uint256 => uint256) private _totalSupply;
-        mapping(address => uint256) private _shareholdings;
-        mapping(uint256 => uint256) private _transactionCount;
-        mapping(uint256 => uint256) private _mintedInLastYear;
-        mapping(uint256 => uint256) private _lastMintTime;
-        mapping(uint256 => uint256[]) public creatorSplits;
-        mapping(uint256 => uint256[]) public communitySplits;
-        mapping(uint256 => address[]) public tokenHolders;
-        mapping(uint256 => mapping(address => uint256)) public balances;
-        mapping(uint256 => mapping(address => uint256)) public distributionPolicies;
+        string _baseURI;
+        uint256 _maxCreatorTokens;
+        uint256 _transactionFee;
+        uint256 _totalShareholdings;
 
         // STEEZFacet.sol Snapshots
-        CountersUpgradeable.Counter private _currentTokenID;
-        CountersUpgradeable.Counter private _snapshotCounter;
-        mapping(uint256 => mapping(uint256 => uint256)) private _snapshotBalances;
-        mapping(uint256 => uint256) private _lastSnapshot;
-        uint256 private _lastSnapshotTimestamp;
-        uint256 private _snapshotCounter;
+        CountersUpgradeable.Counter _currentTokenID;
+        CountersUpgradeable.Counter _snapshotCounter;
+        uint256 _lastSnapshotTimestamp;
+        uint256 _snapshotCounter;
 
-        // STEEZFacet.sol MODIFIERS
-        modifier canCreateToken(address creator) {require(!_hasCreatedToken[creator], "CreatorToken: Creator has already created a token."); _;}
-        modifier onlyAdmin() {require(admins[msg.sender], "Only Admin can call this function"); _;}
-        modifier onlyCreator() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator, "CreatorToken: Only Creators can call this function"); _;}
-        modifier onlyOwner() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator && msg.sender != owner(), "CreatorToken: Only Owners can call this function"); _;}
-        modifier onlyUser() {require(users[msg.sender], "Only User can call this function"); _;}
-        modifier onlyCreatorOrOwner() {require(owners[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or Owners can call this function"); _;}
-        modifier dailySnapshot() {if (block.timestamp >= _lastSnapshotTimestamp.add(1 days)) {_takeSnapshot(); _lastSnapshotTimestamp = block.timestamp;} _;}
-        
         // STEEZFacet.solCONTRACT ADDRESSES
-        address private constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
-        address private constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
-        address public constant STEELO_WALLET = 0x1234567890123456789012345678901234567890; // Placeholder address
-        address private _safeAddress;
+        address _safeAddress;
 
         // STEEZFeesFacet.sol Addresses
-        address private _creatorTokenAddress;
-
-        struct RoyaltyInfo {
-            uint256 constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
-            uint256 constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
-            uint256 constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
-            uint256 constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
-            uint256 constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
-            uint256 constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
-            uint256 constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
-            uint256 constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
-            uint256 constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
+        address _creatorTokenAddress;
 
         // SteezFeesFacet.sol Mapping
-        mapping(uint256 => mapping(address => uint256)) private _undistributedRoyalties;
-        mapping(uint256 => uint256) private _communityRoyaltyRates;
-        mapping(uint256 => mapping(address => Snapshot[])) private _holderSnapshots;
-        mapping(uint256 => Snapshot[]) private _totalUndistributedSnapshots;
-    }
+        mapping(uint256 => mapping(address => uint256)) _undistributedRoyalties;
+        mapping(uint256 => uint256) _communityRoyaltyRates;
+        mapping(uint256 => mapping(address => Snapshot[])) _holderSnapshots;
+        mapping(uint256 => Snapshot[]) _totalUndistributedSnapshots;
 
+    }
+    
     // Example method in LibDiamond for batch updating royalties
     function updateRoyaltyRates(uint256[] calldata tokenIds, RoyaltyInfo[] calldata newRoyalties) external {
         require(tokenIds.length == newRoyalties.length, "Mismatched arrays");
         LibDiamond.enforceIsContractOwner();
         for(uint i = 0; i < tokenIds.length; i++) {
             diamondStorage().royaltyInfo[tokenIds[i]] = newRoyalties[i];
-    }
-
-    library LibDiamond {
-        function diamondStorage() internal pure returns (DiamondStorage storage ds) {
-            const STORAGE_SLOT = bytes32(uint256(keccak256("eip2535.diamond.storage")) - 1);
-            assembly {
-                ds.slot := STORAGE_SLOT
-            }
         }
     }
 
