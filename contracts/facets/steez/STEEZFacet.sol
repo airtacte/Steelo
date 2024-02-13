@@ -4,9 +4,9 @@ pragma solidity 0.8.20;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
 import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
-import { SafeProxyFactory } from "../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
-import { SafeProxy } from "../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
-import { SafeL2 } from "../lib/safe-contracts/contracts/SafeL2.sol";
+import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
+import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -30,10 +30,34 @@ contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableU
     event TokenTransferred(uint256 tokenId, address from, address to, uint256 amount);
     event TokenBurned(uint256 tokenId, address owner, uint256 amount);
 
-    // State variables to track auction state
+    Royalties private _royalties;
+    string public _baseURI;
+    address public _safeAddress;
+    address public _creatorTokenAddress;
+    uint256 public _maxCreatorTokens;
+    uint256 public _transactionFee;
+    uint256 private _totalShareholdings;
+    uint256 public _currentTokenID;
+    uint256 private _snapshotCounter;
+    uint256 private snapshotCounter;
+    uint256 private _lastSnapshotTimestamp;
     uint256 public currentPrice = ds.INITIAL_PRICE;
     uint256 public tokensSecuredThisBatch = 0;
     uint256 public auctionStartTime;
+    mapping(uint256 => mapping(address => uint256)) _undistributedRoyalties;
+    mapping(uint256 => uint256) _communityRoyaltyRates;
+    mapping(uint256 => mapping(address => Snapshot[])) _holderSnapshots;
+    mapping(uint256 => Snapshot[]) _totalUndistributedSnapshots;
+    mapping(uint256 => mapping(uint256 => uint256)) private _snapshotBalances;
+    mapping(uint256 => uint256) private _lastSnapshot;
+    mapping(address => bool) private _hasCreatedToken;
+    mapping(uint256 => bool) private _tokenExists; 
+    mapping(uint256 => uint256) private _totalSupply;
+    mapping(address => uint256) private _shareholdings;
+    mapping(uint256 => uint256) private _transactionCount;
+    mapping(uint256 => uint256) private _mintedInLastYear;
+    mapping(uint256 => uint256) private _lastMintTime;
+    mapping(uint256 => mapping(address => uint256)) public balances;
 
     modifier withinAuctionPeriod() {
         require(auctionStartTime != 0, "Auction has not started yet");

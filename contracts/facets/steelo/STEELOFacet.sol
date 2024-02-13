@@ -26,6 +26,23 @@ contract STEELOFacet is
     event BurnRateUpdated(uint256 newBurnRate);
     event steeloTGEExecuted(uint256 tgeAmount);
 
+    // Storage
+    mapping(uint256 => mapping(uint256 => uint256)) private _snapshotBalances;
+    mapping(uint256 => uint256) private _lastSnapshot;
+    int256 steezTransactionCount;
+    uint256 steeloCurrentPrice;
+    uint256 steezCurrentPrice;
+    uint256 totalMinted; 
+    uint256 totalBurned;
+    uint256 lastMintEvent; 
+    uint256 lastBurnUpdate;
+    uint256 mintAmount;
+    uint256 burnAmount;
+    uint256 burnRate;
+    uint256 mintRate;
+    bool isDeflationary;
+    bool tgeExecuted;
+
     function initialize(
         address _treasury,
         address _oracle,

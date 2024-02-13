@@ -1,15 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import { LibDiamond } from "../libraries/LibDiamond.sol";
-import { MultiSigFacet } from "../app/MultiSigFacet.sol";
-import { IFeaturesFacet } from "../../interfaces/IFeaturesFacet.sol";
+import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { IProfileFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { ILens } from "../../interfaces/ILens.sol";
-import { ISafe } from "../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "../app/MultiSigFacet.sol";
+
+string username;
+string bio;
+string avatarURI;
+address walletAddress;
 
 contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // Event declarations, e.g., for profile updates, content posted, etc.

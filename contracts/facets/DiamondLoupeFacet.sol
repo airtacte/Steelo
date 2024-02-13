@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import { LibDiamond } from  "../libraries/LibDiamond.sol";
+import { LibDiamond } from "../libraries/LibDiamond.sol";
 import { IDiamondLoupe } from "../interfaces/IDiamondLoupe.sol";
-import { IERC165 } from "../lib/safe-contracts/contracts/interfaces/ISafeIERC165.sol";
+import { IERC165 } from "../../lib/safe-contracts/contracts/interfaces/IERC165.sol";
 
 // The functions in DiamondLoupeFacet MUST be added to a diamond.
 // The EIP-2535 Diamond standard requires these functions.

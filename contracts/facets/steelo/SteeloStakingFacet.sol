@@ -12,9 +12,15 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     IERC20Upgradeable public steeloToken;
 
+    // Events
     event Staked(address indexed user, uint256 amount);
     event Unstaked(address indexed user, uint256 amount);
     event RewardPaid(address indexed user, uint256 rewardAmount);
+
+    // Storage
+    mapping(address => uint256) public stakes;
+    mapping(address => bool) public isStakeholder;
+    mapping(address => uint256) public stakeDuration;
 
     function initialize(address _steeloToken) public initializer {
         __Ownable_init();

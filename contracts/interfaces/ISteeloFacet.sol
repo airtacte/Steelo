@@ -40,3 +40,6 @@ interface ISteeloFacet {
     // Transfers Steelo tokens from one account to another.
     function tokenTransfer(address recipient, uint256 amount) external;
 }
+
+interface ISteeloStakingFacet {
+}

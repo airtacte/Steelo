@@ -6,6 +6,12 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
+mapping(uint256 => uint256[]) public creatorSplits;
+mapping (address => bool) private admins;
+mapping (address => bool) private creators;
+mapping (address => bool) private owners; // to rename to investors
+mapping (address => bool) private users;
+
 contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");

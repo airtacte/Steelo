@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import { LibDiamond } from "../libraries/LibDiamond.sol";
-import { ISafe } from "../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 
 contract SocialNetworkFacet {
     ISafe private safeCore;

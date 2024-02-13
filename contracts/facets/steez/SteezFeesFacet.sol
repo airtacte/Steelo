@@ -13,6 +13,11 @@ struct Snapshot {
     uint256 value;
 }
 
+mapping(uint256 => mapping(address => uint256)) public undistributedRoyalties;
+mapping(uint256 => uint256[]) public communitySplits;
+mapping(uint256 => address[]) public tokenHolders;
+mapping(uint256 => mapping(address => uint256)) public balances;
+
 contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     event RoyaltyPaid(uint256 indexed tokenId, address indexed recipient, uint256 amount);

@@ -6,7 +6,7 @@ import "./interfaces/IDiamondLoupe.sol";
 import "./interfaces/IDiamondCut.sol";
 import "./interfaces/IERC173.sol";
 import "../lib/safe-contracts/contracts/interfaces/ISafe.sol";
-import "../lib/safe-contracts/contracts/interfaces/ISafeIERC165.sol";
+import "../lib/safe-contracts/contracts/interfaces/IERC165.sol";
 
 contract Diamond {
     struct DiamondArgs {

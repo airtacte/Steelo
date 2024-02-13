@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import { LibDiamond } from "../libraries/LibDiamond.sol";
+import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
+import { IMosaicFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { ILens } from "../../interfaces/ILens.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
@@ -68,7 +69,7 @@ contract MosaicFacet {
         emit Liked(msg.sender, contentId);
     }
 
-    function comment(uint256 contentId, string calldata comment) external {
+    function commentOnContent(uint256 contentId, string calldata comment) external {
         // Placeholder: Actual comment logic
         emit Commented(msg.sender, contentId, comment);
     }
