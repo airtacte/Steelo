@@ -1,13 +1,14 @@
 import firestore from '@react-native-firebase/firestore';
 
-class FirestoreService {
-    static addUser(userData) {
-        return firestore()
-            .collection("users")
-            .add(userData)
-            .then(docRef => console.log("User added with ID: ", docRef.id))
-            .catch(error => console.error("Error adding user: ", error));
-    }
+  class FirestoreService {
+      static addUser(userData) {
+          return firestore()
+              .collection("users")
+              .add(userData)
+              .then(docRef => console.log("User added with ID: ", docRef.id))
+              .catch(error => console.error("Error adding user: ", error));
+      }
+  }
 
 // Define the collection name as a constant
 const COLLECTION_NAME = 'myCollection';
@@ -41,6 +42,6 @@ class FirestoreService {
       console.error('Error getting documents: ', error);
     }
   }
-}
 
 export default FirestoreService;
+}
