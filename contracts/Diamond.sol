@@ -1,19 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
-pragma experimental ABIEncoderV2;
-
-/******************************************************************************\
-* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
-* EIP-2535 Diamond Standard: https://eips.ethereum.org/EIPS/eip-2535
-* 
-* Implementation of a diamond.
-/******************************************************************************/
 
 import "./libraries/LibDiamond.sol";
 import "./interfaces/IDiamondLoupe.sol";
 import "./interfaces/IDiamondCut.sol";
 import "./interfaces/IERC173.sol";
-import "./interfaces/IERC165.sol";
+import "../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import "../lib/safe-contracts/contracts/interfaces/ISafeIERC165.sol";
 
 contract Diamond {
     struct DiamondArgs {

@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
+import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
+import { SafeProxyFactory } from "../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+import { SafeProxy } from "../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
+import { SafeL2 } from "../lib/safe-contracts/contracts/SafeL2.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -8,15 +14,9 @@ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@safe-global/safe-contracts/contracts/SafeL2.sol";
-import {SafeProxyFactory} from "@safe-global/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
-import {SafeProxy} from "@safe-global/safe-contracts/contracts/proxies/SafeProxy.sol";
-import {LibDiamond} from "../../libraries/LibDiamond.sol";
-import {IDiamondCut} from "../../interfaces/IDiamondCut.sol";
-import {ISteezFacet} from "../../interfaces/ISteezFacet.sol";
 
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
-contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
+contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     using LibDiamond for LibDiamond.DiamondStorage;
     using Address for address;
     using Strings for uint256;

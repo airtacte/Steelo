@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "../../libraries/LibDiamond.sol";
+import { LibDiamond } from "../libraries/LibDiamond.sol";
 
 contract AnalyticsReportingFacet {
     function initialize() external {

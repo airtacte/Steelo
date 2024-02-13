@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "hardhat/console.sol";
-import "../../libraries/LibDiamond.sol";
 
 contract SteeloImprovementProposalFacet is Ownable, ReentrancyGuard {
     struct SIP {
