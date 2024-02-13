@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../../libraries/LibDiamond.sol";
-import "../../interfaces/IGovernanceFacet.sol";
+import "../../interfaces/IAppFacet.sol";
 
 contract SteeloGovernanceFacet is IGovernanceFacet, Initializable, OwnableUpgradeable {
     using LibDiamond for LibDiamond.DiamondStorage;

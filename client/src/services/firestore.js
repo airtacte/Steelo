@@ -42,6 +42,6 @@ class FirestoreService {
       console.error('Error getting documents: ', error);
     }
   }
+}
 
 export default FirestoreService;
-}

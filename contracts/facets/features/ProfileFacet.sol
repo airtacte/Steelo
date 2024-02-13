@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "../../interfaces/IProfileFacet.sol";
+import "../../interfaces/IFeaturesFacet.sol";
 import "../../libraries/LibDiamond.sol";
 import "../../interfaces/ILens.sol";
 import "../../interfaces/ISafe.sol";

@@ -43,6 +43,7 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@safe-global/api-kit": "^2.1.0",
     "@safe-global/protocol-kit": "^3.0.0",
+    "@safe-global/safe-contracts": "^1.4.1-build.0",
     "@safe-global/safe-core-sdk": "^3.3.5",
     "@safe-global/safe-core-sdk-types": "^4.0.0",
     "@walletconnect/react-native-dapp": "^1.8.0",

@@ -2,19 +2,11 @@
 pragma solidity 0.8.20;
 
 import "../../libraries/LibDiamond.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-// Simplified interface for the Diamond Standard
-interface IDiamondCut {
-    function diamondCut(
-        bytes[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
-    ) external;
-}
 
 // Simplified interface for handling chat encryption keys securely
 interface IEncryptionKeyManager {
@@ -30,7 +22,7 @@ interface IESCROW {
     // Additional functions for ESCROW management
 }
 
-contract VillageFacet is Ownable, Pausable {
+contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     IDiamondCut diamondCut;
@@ -79,7 +71,7 @@ contract VillageFacet is Ownable, Pausable {
     }
 
     // Function to handle group chat governance, e.g., voting
-    function groupChatGovernance(uint256 chatId, /* parameters for governance */) external {
+    function groupChatGovernance(uint256 chatId, uint256 proposalId, bool vote) external {
         // Governance logic here
     }
 

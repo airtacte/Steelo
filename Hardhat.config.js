@@ -1,19 +1,6 @@
 require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ethers");
 require('dotenv').config();
-const { ethers } = require("ethers");
-
-// Convert mnemonic to private keys
-function getPrivateKeys(mnemonic) {
-    const walletPath = "m/44'/60'/0'/0";
-    const wallets = [];
-  
-    for (let i = 0; i < 10; i++) {
-      const wallet = ethers.Wallet.fromMnemonic(mnemonic, `${walletPath}/${i}`);
-      wallets.push(wallet.privateKey);
-    }
-  
-    return wallets;
-}
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -23,7 +10,9 @@ module.exports = {
     networks: {
         polygonZkEvmTestnet: {
             url: process.env.POLYGON_ZKEVM_TESTNET_RPC_URL,
-            accounts: process.env.MNEMONIC ? getPrivateKeys(process.env.MNEMONIC) : [],
+            accounts: {
+                mnemonic: process.env.MNEMONIC
+            },
             chainId: parseInt(process.env.POLYGON_ZKEVM_TESTNET_CHAIN_ID || 1422),
         },
     },
