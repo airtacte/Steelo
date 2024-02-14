@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2023 Edmund Berkmann
 pragma solidity 0.8.20;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-
-mapping(uint256 => uint256[]) public creatorSplits;
-mapping (address => bool) private admins;
-mapping (address => bool) private creators;
-mapping (address => bool) private owners; // to rename to investors
-mapping (address => bool) private users;
 
 contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
@@ -24,6 +19,12 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
     event DistributionPolicyUpdated(uint256 indexed tokenId);
     event Paused();
     event Unpaused();
+
+    mapping(uint256 => uint256[]) public creatorSplits;
+    mapping (address => bool) private admins;
+    mapping (address => bool) private creators;
+    mapping (address => bool) private owners; // to rename to investors
+    mapping (address => bool) private users;
 
     function initialize(address owner) public initializer {
         __AccessControl_init();

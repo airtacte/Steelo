@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2023 Edmund Berkmann
 pragma solidity 0.8.20;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -8,31 +9,31 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-struct Snapshot {
-    uint256 blockNumber;
-    uint256 value;
-}
-
-mapping(uint256 => mapping(address => uint256)) public undistributedRoyalties;
-mapping(uint256 => uint256[]) public communitySplits;
-mapping(uint256 => address[]) public tokenHolders;
-mapping(uint256 => mapping(address => uint256)) public balances;
-
 contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+
+    struct Royalties {
+        address recipient;
+        uint256 value;
+    }
+
+    struct RoyaltyInfo {
+        address creator;
+        address investor;
+        uint256 share;
+        uint256 value;
+    }
 
     event RoyaltyPaid(uint256 indexed tokenId, address indexed recipient, uint256 amount);
     event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
     event DistributionPolicySet(uint256 tokenId, address recipient, uint256 share);
 
-    modifier payRoyaltiesOnTransfer(uint256 id, uint256 value, address from, address to) {
-        _;
-        payRoyalties(id, value, from, to);
-    }
+    mapping(uint256 => mapping(address => uint256)) public undistributedRoyalties;
+    mapping(uint256 => uint256[]) public communitySplits;
+    mapping(uint256 => address[]) public tokenHolders;
+    mapping(uint256 => mapping(address => uint256)) public balances;
 
-    modifier onlyAdmin() {
-        require(ds.steezFacet.isAdmin(msg.sender), "Royalties: Caller is not an admin");
-        _;
-    }
+    modifier payRoyaltiesOnTransfer(uint256 id, uint256 value, address from, address to) { _; payRoyalties(id, value, from, to) ;}
+    modifier onlyAdmin() {require(ds.steezFacet.isAdmin(msg.sender), "Royalties: Caller is not an admin"); _;}
 
     function initialize(address owner) public initializer {
         __Ownable_init();
@@ -172,6 +173,15 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             userRoyalty = userRoyalty.add(undistributedRoyalty);
 
             return (userShare, userRoyalty);
+        }
+
+        // Batch updating royalties
+        function updateRoyaltyRates(uint256[] calldata tokenIds, RoyaltyInfo[] calldata newRoyalties) external {
+            require(tokenIds.length == newRoyalties.length, "Mismatched arrays");
+            LibDiamond.enforceIsContractOwner();
+            for(uint i = 0; i < tokenIds.length; i++) {
+                royaltyInfo[tokenIds[i]] = newRoyalties[i];
+            }
         }
 
         function createSnapshot(uint256 tokenId) external onlyAdmin {

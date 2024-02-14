@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2023 Edmund Berkmann
 pragma solidity 0.8.20;
 
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
@@ -8,47 +9,68 @@ import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
 
 error InitializationFunctionReverted(address _initializationContractAddress, bytes _calldata);
 
-import { ISteezFacet } from "../interfaces/ISteezFacet.sol";
-import { ISteezFeesFacet } from "../interfaces/ISteezFacet.sol";
-
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
+
+    uint private _lastSnapshotTimestamp;
+    uint private snapshotCounter;
+    mapping(uint256 => mapping(address => uint256)) private _snapshotBalances;
+    bool private _takeSnapshot;
+    
+    modifier dailySnapshot() {if (block.timestamp >= _lastSnapshotTimestamp.add(1 days)) {_takeSnapshot(); _lastSnapshotTimestamp = block.timestamp;} _;}
 
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
         assembly {
             ds.slot := STORAGE_SLOT
         }
     }
+    
+    struct FacetAddressAndPosition {
+        address facetAddress;
+        uint96 functionSelectorPosition;
+    }
 
-    uint256 public constant TGE_AMOUNT = 825_000_000 * 10**18;
-    uint256 public constant pMin = 0.5 ether;
-    uint256 public constant pMax = 5 ether;
-    uint256 public constant BURN_THRESHOLD = 1e9;
-    uint256 public constant INITIAL_CAP = 500;
-    uint256 public constant TRANSACTION_MULTIPLIER = 2;
-    uint256 public constant PRE_ORDER_MINIMUM_SOLD = 125; // 50% of 250
-    uint256 public constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
-    uint256 public constant PRICE_INCREMENT = 10 ether; // Increment value
-    uint256 public constant TOKEN_BATCH_SIZE = 250;
-    uint256 public constant AUCTION_DURATION = 24 hours;
+    struct FacetFunctionSelectors {
+        bytes4[] functionSelectors;
+        uint256 facetAddressPosition;
+    }
+
+    // STEELO MULTI-SIG WALLETS
     address private constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
     address private constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
     address private constant STEELO_WALLET = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
 
+    // STEELO TOKENOMICS
+    uint256 public constant TGE_AMOUNT = 825_000_000 * 10**18;
+    uint256 public constant BURN_THRESHOLD = 1e9;
+    uint256 public constant pMin = 0.5 ether;
+    uint256 public constant pMax = 5 ether;
     uint256 private constant rho = 1 ether;
     uint256 private constant alpha = 10;
     uint256 private constant beta = 10;
 
-    uint256 constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
-    uint256 constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
-    uint256 constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
-    uint256 constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
-    uint256 constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
-    uint256 constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
-    uint256 constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
-    uint256 constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
-    uint256 constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
+    // STEEZ TOKENOMICS
+    uint256 public constant INITIAL_CAP = 500;
+    uint256 public constant TRANSACTION_MULTIPLIER = 2;
+    uint256 public constant PRE_ORDER_MINIMUM_SOLD = 250; // 100% of 250
+    uint256 public constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
+    uint256 public constant PRICE_INCREMENT = 10 ether; // Increment value
+    uint256 public constant TOKEN_BATCH_SIZE = 250;
+    uint256 public constant AUCTION_DURATION = 24 hours;
+    uint256 public constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
+    uint256 public constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
+    uint256 public constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
+    uint256 public constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
+    uint256 public constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
+    uint256 public constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
+    uint256 public constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
+    uint256 public constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
+    uint256 public constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
 
+    // STEEZ ROYALTY DISTRIBUTION
     address public treasury; uint256 public trasuryTGE = 35; uint256 public treasuryMint = 35;
     address public liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 public liquidityProvidersMint = 55;
     address public ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 public ecosystemProvidersMint = 10;
@@ -57,38 +79,11 @@ library LibDiamond {
     address public communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 public communityTGE = 35;
     address public steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public FEE_RATE = 25;
 
-    struct FacetAddressAndPosition {
-        address facetAddress;
-        uint96 functionSelectorPosition; // position in facetFunctionSelectors.functionSelectors array
-    }
-
-    struct FacetFunctionSelectors {
-        bytes4[] functionSelectors;
-        uint256 facetAddressPosition; // position of facetAddress in facetAddresses array
-    }
-
-    struct ProfileInfo {
-        string username;
-        string bio;
-        string avatarURI;
-        address walletAddress;
-    }
-
-    struct Royalties {
-        address recipient;
-        uint256 value;
-    }
-
     struct Snapshot {
+        uint256 id;
         uint256 timestamp;
         uint256 value;
-    }
-
-    struct RoyaltyInfo {
-        address creator;
-        address investor;
-        uint256 share;
-        uint256 value;
+        mapping(address => uint256) balances;
     }
 
     struct DiamondStorage {
@@ -96,49 +91,15 @@ library LibDiamond {
         // Diamond Standard parameters
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
         mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
-        address[] facetAddresses;
         mapping(bytes4 => bool) supportedInterfaces;
+        address[] facetAddresses;
         address contractOwner;
-
-        // Add more fields as needed...
-        ISteezFacet steezFacet;
-        ISteezFeesFacet steezFeesFacet;
 
         // Chainlink parameters
         address oracle;
         bytes32 jobId;
         uint256 fee;
         uint256 volume;
-
-        mapping(address => ProfileInfo) profiles;
-        mapping(string => bool) usernameExists;
-    }
-    
-    // Example method in LibDiamond for batch updating royalties
-    function updateRoyaltyRates(uint256[] calldata tokenIds, RoyaltyInfo[] calldata newRoyalties) external {
-        require(tokenIds.length == newRoyalties.length, "Mismatched arrays");
-        LibDiamond.enforceIsContractOwner();
-        for(uint i = 0; i < tokenIds.length; i++) {
-            diamondStorage().royaltyInfo[tokenIds[i]] = newRoyalties[i];
-        }
-    }
-
-    // Function to check if a username already exists
-    function usernameTaken(string memory username) internal view returns (bool) {
-        return diamondStorage().usernameExists[username];
-    }
-
-    // Function to create or update a profile
-    function setProfile(address user, string memory username, string memory bio, string memory avatarURI) internal {
-        require(!usernameTaken(username), "Username already taken");
-        diamondStorage storage ds = diamondStorage();
-        ds.profiles[user] = ProfileInfo(username, bio, avatarURI, user);
-        ds.usernameExists[username] = true;
-    }
-
-    // Function to retrieve a user's profile
-    function getProfile(address user) internal view returns (ProfileInfo memory) {
-        return diamondStorage().profiles[user];
     }
 
     // Increment the snapshot counter to create a new snapshot
@@ -151,8 +112,6 @@ library LibDiamond {
         uint256 currentId = _incrementSnapshot();
         _snapshotBalances[currentId][account] = balance;
     }
-
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     function setContractOwner(address _newOwner) internal {
         DiamondStorage storage ds = diamondStorage();
@@ -169,9 +128,6 @@ library LibDiamond {
         require(msg.sender == diamondStorage().contractOwner, "LibDiamond: Must be contract owner");
     }
 
-    event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
-
-    // Internal function version of diamondCut
     function diamondCut(
         IDiamondCut.FacetCut[] memory _diamondCut,
         address _init,

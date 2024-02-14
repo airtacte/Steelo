@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2023 Edmund Berkmann
 pragma solidity 0.8.20;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -59,6 +60,7 @@ contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableU
     mapping(uint256 => uint256) private _lastMintTime;
     mapping(uint256 => mapping(address => uint256)) public balances;
 
+    modifier canCreateToken(address creator) {require(!_hasCreatedToken[creator], "CreatorToken: Creator has already created a token."); _;}
     modifier withinAuctionPeriod() {
         require(auctionStartTime != 0, "Auction has not started yet");
         require(block.timestamp < auctionStartTime + AUCTION_DURATION, "Auction duration has ended");
@@ -116,6 +118,7 @@ contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableU
     
         function mint(address to, uint256 tokenId, uint256 amount, bytes memory data) public onlyOwner nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            require(canCreateToken(msg.sender), "CreatorToken: Creator has already created a token.");
             require(!ds.tokenExists[tokenId], "CreatorToken: token already exists");
             require(to != address(0), "CreatorToken: Cannot mint to zero address");
             require(ds.totalSupply[tokenId] < ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap reached");

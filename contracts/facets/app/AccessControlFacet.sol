@@ -1,22 +1,10 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2023 Edmund Berkmann
 pragma solidity 0.8.20;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-
-modifier canCreateToken(address creator) {require(!_hasCreatedToken[creator], "CreatorToken: Creator has already created a token."); _;}
-modifier onlyAdmin() {require(admins[msg.sender], "Only Admin can call this function"); _;}
-modifier onlyCreator() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator, "CreatorToken: Only Creators can call this function"); _;}
-modifier onlyOwner() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator && msg.sender != owner(), "CreatorToken: Only Owners can call this function"); _;}
-modifier onlyUser() {require(users[msg.sender], "Only User can call this function"); _;}
-modifier onlyCreatorOrOwner() {require(owners[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or Owners can call this function"); _;}
-modifier dailySnapshot() {if (block.timestamp >= _lastSnapshotTimestamp.add(1 days)) {_takeSnapshot(); _lastSnapshotTimestamp = block.timestamp;} _;}
-
-mapping (address => bool) private admins;
-mapping (address => bool) private creators;
-mapping (address => bool) private owners; // to rename to investors
-mapping (address => bool) private users;
 
 contract AccessControlFacet is AccessControl {
     bytes32 public constant UPGRADE_ROLE = keccak256("UPGRADE_ROLE");
@@ -25,6 +13,17 @@ contract AccessControlFacet is AccessControl {
 
     IERC20 public steeloToken;
     IERC20 public steezToken;
+
+    modifier onlyAdmin() {require(admins[msg.sender], "Only Admin can call this function"); _;}
+    modifier onlyCreator() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator, "CreatorToken: Only Creators can call this function"); _;}
+    modifier onlyOwner() {require(creatorToIsAdmin[msg.sender] == false && msg.sender != creator && msg.sender != owner(), "CreatorToken: Only Owners can call this function"); _;}
+    modifier onlyUser() {require(users[msg.sender], "Only User can call this function"); _;}
+    modifier onlyCreatorOrOwner() {require(owners[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or Owners can call this function"); _;}
+
+    mapping (address => bool) private admins;
+    mapping (address => bool) private creators;
+    mapping (address => bool) private owners; // to rename to investors
+    mapping (address => bool) private users;
 
     constructor(address _steeloToken, address _steezToken) {
         steeloToken = IERC20(_steeloToken);

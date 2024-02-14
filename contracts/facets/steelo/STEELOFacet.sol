@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2023 Edmund Berkmann
 pragma solidity 0.8.20;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -102,7 +103,7 @@ contract STEELOFacet is
 
         // Only mint tokens if the system is in the deflationary phase
         if (ds.isDeflationary) {
-            uint256 burnAmount = calculateBurnAmount(amount); // Calculate the amount to burn
+            burnAmount = calculateBurnAmount(amount); // Calculate the amount to burn
             _burn(sender, burnAmount);
         }
     }
@@ -127,7 +128,7 @@ contract STEELOFacet is
         require(_steezTransactions > 0, "_steezTransactions must be greater than 0");
         require(_currentPrice > 0, "_currentPrice must be greater than 0");
         
-        uint256 mintAmount = calculateMintAmount(_steezTransactions, _currentPrice);
+        mintAmount = calculateMintAmount(_steezTransactions, _currentPrice);
         distributeMintedTokens(mintAmount); 
     }
 
@@ -142,7 +143,7 @@ contract STEELOFacet is
         } else {
             adjustmentFactor += adjustmentFactor / 100; // 1% adjustment when Pcurrent is within Pmin and Pmax
         }
-        uint256 mintAmount = ds.rho * _steezTransactions * adjustmentFactor / 1 ether / 1 ether;
+        mintAmount = ds.rho * _steezTransactions * adjustmentFactor / 1 ether / 1 ether;
         return mintAmount;
     }
 
@@ -185,7 +186,7 @@ contract STEELOFacet is
     function burnTokens() private {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         uint256 treasuryBalance = balanceOf(address(this)); // Assuming _balanceOf was a typo, use balanceOf
-        uint256 burnAmount = (SteeloCurrentPrice * ds.FEE_RATE / 1000) * ds.burnRate / 100;
+        burnAmount = (SteeloCurrentPrice * ds.FEE_RATE / 1000) * ds.burnRate / 100;
 
         require(treasuryBalance >= burnAmount, "Not enough tokens to burn");
         require(burnAmount > 0, "Burn amount must be greater than 0");
@@ -203,9 +204,9 @@ contract STEELOFacet is
     }
 
     // Function to update the transaction count and possibly trigger burning
-    function updateSteezTransactionCount(uint256 mintAmount) external onlyOwner nonReentrant {
+    function updateSteezTransactionCount(uint256 _mintAmount) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        ds.steezTransactionCount += mintAmount;
+        ds.steezTransactionCount += _mintAmount;
         if (!ds.isDeflationary && ds.steezTransactionCount > 0) {
             ds.isDeflationary = true;
         }
