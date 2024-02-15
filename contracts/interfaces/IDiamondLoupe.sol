@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 // A loupe is a small magnifying glass used to look at diamonds.
 // These functions look at diamonds

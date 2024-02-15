@@ -6,7 +6,40 @@ require('dotenv').config();
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-    solidity: "0.8.20",
+    solidity: {
+        compilers: [
+            {
+                version: "0.8.24",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200
+                    },
+                    evmVersion: "istanbul"
+                },
+            },
+            {
+                version: "0.8.20",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200
+                    },
+                    evmVersion: "istanbul"
+                },
+            },
+            {
+                version: "0.8.10",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200
+                    },
+                    evmVersion: "istanbul"
+                },
+            },
+        ],
+    },
     networks: {
         polygonZkEvmTestnet: {
             url: process.env.POLYGON_ZKEVM_TESTNET_RPC_URL,

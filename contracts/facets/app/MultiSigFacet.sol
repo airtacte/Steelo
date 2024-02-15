@@ -1,75 +1,46 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
 
 contract MultiSigFacet {
+    // Placeholder addresses for the SafeProxyFactory and SafeMasterCopy. 
+    // These should be replaced with the actual addresses of the deployed contracts on the respective network.
+    address constant SAFE_PROXY_FACTORY = address(0); // TODO: Replace with actual SafeProxyFactory address
+    address constant SAFE_MASTER_COPY = address(0); // TODO: Replace with actual SafeMasterCopy address
+
+    /**
+     * Initialize the MultiSigFacet.
+     * This function sets up the contract owner in the Diamond Storage and can include additional initialization logic as needed.
+     */
     function initialize() external {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        // Set the contract owner upon initialization.
         ds.contractOwner = msg.sender;
-
-        // Gnosis Safe multisig setup
-        GnosisSafeProxyFactory proxyFactory = GnosisSafeProxyFactory(GNOSIS_SAFE_PROXY_FACTORY);
-        GnosisSafeProxy proxy = GnosisSafeProxy(proxyFactory.createProxy(GNOSIS_SAFE_MASTER_COPY, ""));
-        ISafe safe = ISafe(address(proxy));
-        
-        // Configure the Gnosis Safe with the given `safeAddress`
-        safe.setup(
-            owners, // The Safe owners
-            1,          // The number of required confirmations
-            address(0), // Address of the module that checks signatures
-            bytes(""),  // Data for the module that checks signatures
-            address(0), // Address of the fallback handler
-            address(0), // Address of the token payment receiver
-            0,          // Value of the token payment
-            address(0)  // Address of the token to pay
-        );
-        
-        // Transfer ownership of the contract to the Gnosis Safe
-        transferOwnership(address(safe));
+        // Additional initialization logic can be added here.
     }
 
-    function createMultiSigForTokenHolders(address[] memory holders) external {
-        // Create a new array to hold the owners of the multisig wallet
-        address[] memory owners = new address[](holders.length);
-
-        // Iterate over the token holders
-        for (uint i = 0; i < holders.length; i++) {
-            // Check if the address holds the token
-            if (steezToken.balanceOf(holders[i]) > 0) {
-                // If the address holds the token, add it to the owners array
-                owners[i] = holders[i];
-            }
-        }
-
-        // Create the multisig wallet
-        GnosisSafeProxyFactory proxyFactory = GnosisSafeProxyFactory(GNOSIS_SAFE_PROXY_FACTORY);
-        GnosisSafeProxy proxy = GnosisSafeProxy(proxyFactory.createProxy(GNOSIS_SAFE_MASTER_COPY, ""));
-        ISafe safe = ISafe(address(proxy));
-
-        // Configure the Gnosis Safe with the owners
-        safe.setup(
-            owners,     // The Safe owners
-            1,          // The number of required confirmations
-            address(0), // Address of the module that checks signatures
-            bytes(""),  // Data for the module that checks signatures
-            address(0), // Address of the fallback handler
-            address(0), // Address of the token payment receiver
-            0,          // Value of the token payment
-            address(0)  // Address of the token to pay
-        );
-
-        // Transfer ownership of the contract to the Gnosis Safe
-        transferOwnership(address(safe));
-
-        // Store the Safe address in a mapping with the Village as the key
-        villageSafes[village] = address(safe);
+    /**
+     * A placeholder function to demonstrate how multisig functionality might be integrated.
+     * This function and its contents should be adapted based on the specific needs of your project and the capabilities of the Safe{Core} SDK.
+     */
+    function exampleMultisigFunctionality() external {
+        // Example functionality to illustrate integration points.
+        // Actual implementation should utilize the Safe{Core} SDK for interacting with Gnosis Safe multisig features.
     }
 
+    /**
+     * Transfer ownership of the contract within the Diamond Storage.
+     * @param newOwner The address of the new owner.
+     */
     function transferOwnership(address newOwner) internal {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.contractOwner = newOwner;
     }
+
+    // Additional functions and logic for interacting with Gnosis Safe functionality can be added here.
 }

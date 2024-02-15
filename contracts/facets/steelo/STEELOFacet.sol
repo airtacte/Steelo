@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";

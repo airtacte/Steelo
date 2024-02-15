@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
-import { IUniswapV4 } from "../../interfaces/IUniswap.sol";
-import { IUniswapX } from "../../interfaces/IUniswap.sol";
+import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 import { IBazaarFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 contract BazaarFacet {
     // State variables for Uniswap interfaces, adjust types and names as per actual interface definitions
-    IUniswapV4 uniswapV4;
-    IUniswapX uniswapX;
+    IPoolManager uniswap;
 
     // Event definitions, for example:
     event CreatorTokenListed(uint256 indexed tokenId, uint256 initialPrice, uint256 supply, bool isAuction);
@@ -27,9 +25,8 @@ contract BazaarFacet {
 
     mapping(uint256 => Listing) public listings;
 
-    constructor(address _uniswapV4Address, address _uniswapXAddress) {
-        uniswapV4 = IUniswapV4(_uniswapV4Address);
-        uniswapX = IUniswapX(_uniswapXAddress);
+    constructor(address _uniswapAddress, address _uniswapAddress) {
+        uniswap = IPoolManager(_uniswapAddress);
     }
 
     // Initialize BazaarFacet setting the contract owner
@@ -41,9 +38,9 @@ contract BazaarFacet {
     // Function to list a new CreatorToken (Steez) for sale or auction
     // Note: Details to integrate with Uniswap X and SteezFacet.sol for pre-order auctions
     function listCreatorToken(uint256 tokenId, uint256 initialPrice, uint256 supply, bool isAuction) external {
-        // Example implementation details, assuming UniswapX and UniswapV4 interfaces support these operations
+        // Example implementation details, assuming Uniswap and UniswapV4 interfaces support these operations
         if (isAuction) {
-            uniswapX.createAuction(tokenId, initialPrice, supply, msg.sender);
+            uniswap.createAuction(tokenId, initialPrice, supply, msg.sender);
         } else {
             // Direct sale, or listing on UniswapV4 for liquidity pool creation could be handled here
         }
@@ -51,16 +48,16 @@ contract BazaarFacet {
     }
 
     // Function to bid on CreatorTokens (Steez)
-    // Note: Integrate with UniswapX for auctions
+    // Note: Integrate with Uniswap for auctions
     function bidCreatorToken(uint256 tokenId, uint256 amount) external payable {
-        uniswapX.bid(tokenId, amount);
+        uniswap.bid(tokenId, amount);
         emit CreatorTokenBid(tokenId, amount, msg.sender);
     }
 
     // Function to buy CreatorTokens (Steez)
     // Note: Integrate with Uniswap v4 and GPBToken for trading and token pools
     function buyCreatorToken(uint256 tokenId, uint256 amount) external payable {
-        uniswapV4.swap(tokenId, amount);
+        uniswap.swap(tokenId, amount);
         emit CreatorTokenPurchased(tokenId, amount, msg.sender);
     }
 

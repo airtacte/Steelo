@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ISteeloFacet } from "../../interfaces/ISteeloFacet.sol";
@@ -13,6 +13,7 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     ISteeloFacet public steeloFacet;
 
+
     // Events
     event Staked(address indexed user, uint256 amount);
     event Unstaked(address indexed user, uint256 amount);
@@ -22,46 +23,54 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     mapping(address => uint256) public stakes;
     mapping(address => bool) public isStakeholder;
     mapping(address => uint256) public stakeDuration;
+    mapping(address => uint256) public totalRewardPool;
+    mapping(address => uint256) public totalStakingPool;
+    mapping(uint256 => bool) stakeholders;
 
     function initialize(address _steeloFacet) public initializer {
         __Ownable_init();
         __ReentrancyGuard_init();
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        ds.steeloFacet = IERC20Upgradeable(_steeloFacet);
+        steeloFacet = ISteeloFacet(_steeloFacet);
     }
 
     function stake(uint256 _amount) external nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        STEELOFacet steeloFacet = STEELOFacet(ds.contractAddress);
         require(_amount > 0, "Amount must be greater than 0");
-        stakes[msg.sender] += _amount;
-        isStakeholder[msg.sender] = true;
+        ds.stakes[msg.sender] += _amount;
+        if (!ds.isStakeholder[msg.sender]) {
+            ds.stakeholders.push(msg.sender);
+            ds.isStakeholder[msg.sender] = true;
+        }
         steeloFacet.safeTransferFrom(msg.sender, address(this), _amount);
         emit Staked(msg.sender, _amount);
     }
 
     function unstake(uint256 _amount) external nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        STEELOFacet steeloFacet = STEELOFacet(ds.contractAddress);
         require(_amount > 0, "Amount must be greater than 0");
-        require(stakes[msg.sender] >= _amount, "Not enough stake");
-        stakes[msg.sender] -= _amount;
-        if (stakes[msg.sender] == 0) {
-            isStakeholder[msg.sender] = false;
+        require(ds.stakes[msg.sender] >= _amount, "Not enough stake");
+        ds.stakes[msg.sender] -= _amount;
+        if (ds.stakes[msg.sender] == 0) {
+            for (uint i = 0; i < ds.stakeholders.length; i++) {
+                if (ds.stakeholders[i] == msg.sender) {
+                    ds.stakeholders[i] = ds.stakeholders[ds.stakeholders.length - 1];
+                    ds.stakeholders.pop();
+                    ds.isStakeholder[msg.sender] = false;
+                    break;
+                }
+            }
         }
         steeloFacet.safeTransfer(msg.sender, _amount);
         emit Unstaked(msg.sender, _amount);
     }
-
+    
     // Placeholder for actual reward calculation logic
     function calculateReward(address stakeholder) internal view returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        uint256 totalStaked = getTotalStaked(); // This would sum all staked amounts
+        totalStakingPool = getTotalStaked(); // This would sum all staked amounts
         uint256 stakeholderAmount = stakes[stakeholder];
-        StakeDuration = ds.stakeDuration[stakeholder]; // Assuming stake duration is tracked
-
-        // Assuming a total reward pool available for distribution
-        uint256 totalRewardPool = ds.totalRewardPool; // This should be managed and updated separately
+        stakeDuration = stakeDuration[stakeholder];
 
         if(totalStaked == 0) return 0; // Prevent division by zero
 
@@ -87,11 +96,8 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     
     function distributeRewards() external nonReentrant onlyOwner {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        STEELOFacet steeloFacet = STEELOFacet(ds.contractAddress);
         uint256 totalStaked = getTotalStaked();
         require(totalStaked > 0, "No stakes to distribute rewards to");
-
-        uint256 totalRewardPool = totalRewardPool; // Ensure this value is managed and funded
         require(totalRewardPool > 0, "No rewards available for distribution");
 
         for (uint i = 0; i < ds.stakeholders.length; i++) {
@@ -109,15 +115,13 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     // Helper function to get total staked amount
     function getTotalStaked() internal view returns (uint256 totalStaked) {
-        address[] memory stakeholders = stakeholders; // Assume this is a dynamic array tracking all stakeholders
         for (uint i = 0; i < stakeholders.length; i++) {
             totalStaked += stakes[stakeholders[i]];
         }
         return totalStaked;
     }
 
-    // Use the automatically generated getter function
-    bool isStakeholder = contractInstance.isStakeholder(_user);
+    bool stakeholderStatus = contractInstance.isStakeholder(_user);
 
     function stakeAmount(address _user) external view returns (uint256) {
         return stakes[_user];

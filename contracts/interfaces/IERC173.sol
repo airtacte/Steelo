@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 /// @title ERC-173 Contract Ownership Standard
 ///  Note: the ERC-165 identifier for this interface is 0x7f5828d0

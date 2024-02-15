@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 
 contract SocialNetworkFacet {
     ISafe private safeCore;
-    ILensProtocol private lensProtocol;
+    ILensHub private lensHub;
     mapping(address => address) private userSafes;
     mapping(address => uint256) private userProfileIds; // Mapping user address to Lens profile ID
 
@@ -15,9 +16,9 @@ contract SocialNetworkFacet {
     event LensProfileCreated(address indexed userAddress, uint256 profileId);
     event SafeLinkedToProfile(address indexed userAddress, address safeAddress);
 
-    constructor(address _safeCoreAddress, address _lensProtocolAddress) {
+    constructor(address _safeCoreAddress, address _lensHubAddress) {
         safeCore = ISafe(_safeCoreAddress);
-        lensProtocol = ILensProtocol(_lensProtocolAddress);
+        lensHub = ILensHub(_lensHubAddress);
     }
 
     // Function to ensure a user has a Safe and Lens profile, and creates them if not
@@ -31,7 +32,7 @@ contract SocialNetworkFacet {
         }
         // Check and create Lens profile if necessary
         if (userProfileIds[userAddress] == 0) {
-            uint256 profileId = lensProtocol.createProfile(userAddress);
+            uint256 profileId = lensHub.createProfile(userAddress);
             userProfileIds[userAddress] = profileId;
             emit LensProfileCreated(userAddress, profileId);
         }
@@ -79,8 +80,8 @@ contract SocialNetworkFacet {
     function postContent(uint256 profileId, string calldata contentUri) public {
         // Ensure the caller owns the profile
         require(userProfileIds[msg.sender] == profileId, "Caller does not own the profile");
-        // Call the LensProtocol contract to post content
-        lensProtocol.postContent(profileId, contentUri);
+        // Call the LensHub contract to post content
+        lensHub.postContent(profileId, contentUri);
     }
 
     // Function to follow another user's Lens profile
@@ -88,16 +89,16 @@ contract SocialNetworkFacet {
         uint256 followerProfileId = userProfileIds[msg.sender];
         // Ensure the caller has a Lens profile
         require(followerProfileId != 0, "Caller does not have a Lens profile");
-        // Call the LensProtocol contract to follow the profile
-        lensProtocol.followProfile(followerProfileId, profileIdToFollow);
+        // Call the LensHub contract to follow the profile
+        lensHub.followProfile(followerProfileId, profileIdToFollow);
     }
 
     // Function to like a post on the Lens Protocol
     function likePost(uint256 postId) public {
         // Ensure the caller has a Lens profile
         require(userProfileIds[msg.sender] != 0, "Caller does not have a Lens profile");
-        // Call the LensProtocol contract to like the post
-        lensProtocol.likePost(postId);
+        // Call the LensHub contract to like the post
+        lensHub.likePost(postId);
     }
     
     // Additional functions for interacting with the Lens Protocol

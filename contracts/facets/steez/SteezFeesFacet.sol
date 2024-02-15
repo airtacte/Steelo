@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -102,7 +102,7 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             uint256 fromBalance = ds.balances[tokenId][from];
             require(fromBalance >= amount, "Royalties: Insufficient balance");
             uint256 fromBalanceAfterTransfer = fromBalance.sub(amount);
-            uint256 undistributedRoyalties = ds.undistributedRoyalties[tokenId][address(this)].add(communityFee);
+            undistributedRoyalties = undistributedRoyalties[tokenId][address(this)].add(communityFee);
             require(fromBalanceAfterTransfer >= undistributedRoyalties, "Royalties: Undistributed royalties not accounted for");
             require(amount.sub(creatorFee).sub(steeloFee).sub(communityFee) > 0, "Royalties: Insufficient amount for seller");
 

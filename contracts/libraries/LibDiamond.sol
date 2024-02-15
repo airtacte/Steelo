@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
 
@@ -11,17 +11,13 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
+    bytes32 constant STORAGE_SLOT = keccak256("diamond.storage");
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
 
-    uint private _lastSnapshotTimestamp;
-    uint private snapshotCounter;
-    mapping(uint256 => mapping(address => uint256)) private _snapshotBalances;
-    bool private _takeSnapshot;
-    
-    modifier dailySnapshot() {if (block.timestamp >= _lastSnapshotTimestamp.add(1 days)) {_takeSnapshot(); _lastSnapshotTimestamp = block.timestamp;} _;}
 
+    
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
         assembly {
             ds.slot := STORAGE_SLOT
@@ -37,7 +33,7 @@ library LibDiamond {
         bytes4[] functionSelectors;
         uint256 facetAddressPosition;
     }
-
+    
     // STEELO MULTI-SIG WALLETS
     address private constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
     address private constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
@@ -70,24 +66,20 @@ library LibDiamond {
     uint256 public constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
     uint256 public constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
 
-    // STEEZ ROYALTY DISTRIBUTION
-    address public treasury; uint256 public trasuryTGE = 35; uint256 public treasuryMint = 35;
-    address public liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 public liquidityProvidersMint = 55;
-    address public ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 public ecosystemProvidersMint = 10;
-    address public foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 public foundersTGE = 20;
-    address public earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 public earlyInvestorsTGE = 10;
-    address public communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 public communityTGE = 35;
-    address public steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public FEE_RATE = 25;
+    // TREASURY ROYALTY DISTRIBUTION
+    address public constant treasury = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
+    uint256 public constant trasuryTGE = 35;
+    uint256 public constant treasuryMint = 35;
 
-    struct Snapshot {
-        uint256 id;
-        uint256 timestamp;
-        uint256 value;
-        mapping(address => uint256) balances;
-    }
+    // COMMUNITY ROYALTY DISTRIBUTION
+    address public constant liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 public constant liquidityProvidersMint = 55;
+    address public constant ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 public constant ecosystemProvidersMint = 10;
+    address public constant foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 public constant foundersTGE = 20;
+    address public constant earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 public constant earlyInvestorsTGE = 10;
+    address public constant communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 public constant communityTGE = 35;
+    address public constant steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public constant FEE_RATE = 25;
 
     struct DiamondStorage {
-
         // Diamond Standard parameters
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
         mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
@@ -100,17 +92,6 @@ library LibDiamond {
         bytes32 jobId;
         uint256 fee;
         uint256 volume;
-    }
-
-    // Increment the snapshot counter to create a new snapshot
-    function _incrementSnapshot() internal returns (uint256) {
-        return ++snapshotCounter;
-    }
-
-    // Record the balance for an address at the current snapshot
-    function snapshotBalances(address account, uint256 balance) internal {
-        uint256 currentId = _incrementSnapshot();
-        _snapshotBalances[currentId][account] = balance;
     }
 
     function setContractOwner(address _newOwner) internal {

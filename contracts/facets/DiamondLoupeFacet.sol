@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../libraries/LibDiamond.sol";
 import { IDiamondLoupe } from "../interfaces/IDiamondLoupe.sol";
@@ -60,7 +60,6 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     // This implements ERC-165.
     function supportsInterface(bytes4 _interfaceId) external override view returns (bool) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        return ds.supportedInterfaces[_interfaceId];
-        return interfaceId == _INTERFACE_ID_ERC165; // other supported interfaces
+        return ds.supportedInterfaces[_interfaceId] || _interfaceId == _INTERFACE_ID_ERC165; // other supported interfaces
     }
 }

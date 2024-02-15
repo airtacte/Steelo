@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2023 Edmund Berkmann
-pragma solidity 0.8.20;
+pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IProfileFacet } from "../../interfaces/IFeaturesFacet.sol";
-import { ILens } from "../../interfaces/ILens.sol";
+import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "../app/MultiSigFacet.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     struct ProfileInfo {
@@ -20,13 +19,44 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         address walletAddress;
     }
 
+    struct ContentList {
+        uint256 contentId;
+        address creator;
+        bool isPublic;
+    }
+
+    struct CreatorData {
+        uint256 creatorId;
+        address creator;
+        uint256 totalEarnings;
+        uint256 totalInvestments;
+        uint256 totalFollowers;
+    }
+    
+    struct InvestorList {
+        address creator;
+        address[] investors;
+    }
+
     struct OwnedSteez {
         uint256 tokenId;
         address creator;
     }
 
-    struct PortfolioData {
+    struct PortfolioList {
         OwnedSteez[] ownedSteez;
+    }
+
+    struct ContributorData {
+        uint256 contentId;
+        address contributor;
+        uint256 earnings;
+    }
+
+    struct SpaceData {
+        uint256 spaceId;
+        address creator;
+        uint256[] contentIds;
     }
 
     event ProfileUpdated(address indexed user);
@@ -44,7 +74,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
     mapping(uint256 => ContributorData) contributors;
     mapping(uint256 => SpaceData) spaces;
 
-    ILens lens;
+    ILensHub lens;
     ISafe safe;
 
     function initialize() external {
@@ -57,7 +87,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         __Ownable_init();
         __ReentrancyGuard_init();
 
-        lens = ILens(_lensAddress);
+        lens = ILensHub(_lensAddress);
         safe = ISafe(_safeAddress);
     }
 
@@ -106,12 +136,12 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         }
 
         // Function to view a user's profile
-        function viewProfile(address user) external view returns (ProfileData memory) {
+        function viewProfile(address user) external view returns (ProfileInfo memory) {
             return profiles[user];
         }
 
         // Function to view content by ID
-        function viewContent(uint256 contentId) external view returns (ContentData memory) {
+        function viewContent(uint256 contentId) external view returns (ContentList memory) {
             return contents[contentId];
         }
 
@@ -121,8 +151,8 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         }
 
         // Function to view the portfolio of STEEZ tokens a user owns
-        function viewPortfolio(address user) external view returns (STEEZFacet.PortfolioData[] memory) {
-            return STEEZFacet.portfolios[user];
+        function viewPortfolio(address user) external view returns (PortfolioList[] memory) {
+            return portfolios[user];
         }
 
         // Function to view a Space and its contents
