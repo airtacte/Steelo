@@ -2,6 +2,7 @@
 // Copyright (c) 2023 Edmund Berkmann
 pragma solidity ^0.8.10;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
@@ -15,8 +16,6 @@ library LibDiamond {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
-
-
     
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
         assembly {
@@ -80,12 +79,12 @@ library LibDiamond {
     address public constant steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public constant FEE_RATE = 25;
 
     struct DiamondStorage {
-        // Diamond Standard parameters
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
         mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
         mapping(bytes4 => bool) supportedInterfaces;
         address[] facetAddresses;
         address contractOwner;
+        // Additional storage variables as needed
 
         // Chainlink parameters
         address oracle;

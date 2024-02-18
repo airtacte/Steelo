@@ -2,6 +2,15 @@ require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
 require('dotenv').config();
 
+// Define common settings for reuse
+const commonCompilerSettings = {
+    optimizer: {
+        enabled: true,
+        runs: 200
+    },
+    evmVersion: "istanbul"
+};
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -9,35 +18,59 @@ module.exports = {
     solidity: {
         compilers: [
             {
-                version: "0.8.24",
-                settings: {
-                    optimizer: {
-                        enabled: true,
-                        runs: 200
-                    },
-                    evmVersion: "istanbul"
-                },
+                version: "0.8.24", // Uniswap-v4
+                settings: { ...commonCompilerSettings },
             },
             {
-                version: "0.8.20",
-                settings: {
-                    optimizer: {
-                        enabled: true,
-                        runs: 200
-                    },
-                    evmVersion: "istanbul"
-                },
+                version: "0.8.20", // Uniswap-v4
+                 settings: { ...commonCompilerSettings },
             },
             {
-                version: "0.8.10",
-                settings: {
-                    optimizer: {
-                        enabled: true,
-                        runs: 200
-                    },
-                    evmVersion: "istanbul"
-                },
+                version: "0.8.19", // Uniswap-v4
+                 settings: { ...commonCompilerSettings },
             },
+            {
+                version: "0.8.15", // Uniswap-v4
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.8.10", // Lens
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.8.9", // Lido DAO
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.8.4", // Lido DAO
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.8.0", // Uniswap-v4
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.7.6", // Safe Contracts
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.6.12", // Lido DAO
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.6.11", // Lido DAO
+                 settings: { ...commonCompilerSettings },
+            },
+            {
+                version: "0.4.24", // Lido DAO
+                 settings: { ...commonCompilerSettings },
+            },
+        ],
+        ignore: [
+            './lib/lido-dao/contracts/0.4.24/**',
+            './lib/lido-dao/contracts/0.6.11/**',
+            './lib/lido-dao/contracts/0.6.12/**',
+            './lib/lido-dao/contracts/0.8.4/**',
         ],
     },
     networks: {
@@ -57,7 +90,7 @@ module.exports = {
     },
     external: {
         contracts: [
-            {
+        {
                 artifact: "./artifacts/contracts/ExternalContract.sol/ExternalContract.json",
                 address: "0xYourContractAddress",
             },
@@ -83,7 +116,6 @@ task('accounts', 'Prints the list of accounts', async () => {
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
-// Moved inside a Hardhat task to ensure it's correctly scoped and HRE is available
 task("initSafe", "Initializes a Gnosis Safe with given owners and threshold")
     .addParam("owners", "The owners of the Safe")
     .addParam("threshold", "The threshold for the Safe")

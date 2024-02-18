@@ -22,15 +22,16 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
 
     /// @notice Gets all facets and their selectors.
     /// @return facets_ Facet
-    function facets() external override view returns (Facet[] memory facets_) {
+    function facets() external view override returns (Facet[] memory) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         uint256 numFacets = ds.facetAddresses.length;
-        facets_ = new Facet[](numFacets);
-        for (uint256 i; i < numFacets; i++) {
+        Facet[] memory facets_ = new Facet[](numFacets);
+        for (uint256 i = 0; i < numFacets; i++) {
             address facetAddress_ = ds.facetAddresses[i];
             facets_[i].facetAddress = facetAddress_;
             facets_[i].functionSelectors = ds.facetFunctionSelectors[facetAddress_].functionSelectors;
         }
+        return facets_; // Ensure to return the constructed array
     }
 
     /// @notice Gets all the function selectors provided by a facet.
