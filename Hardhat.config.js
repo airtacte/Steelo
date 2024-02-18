@@ -79,7 +79,7 @@ task('accounts', 'Prints the list of accounts', async () => {
 // This is removed from the global scope of the config file to prevent HH9 errors
 // const { ethers } = require("hardhat");
 // const { Safe, SafeFactory } = require("@safe-global/safe-core-sdk");
-// const { EthersAdapter } = require("@gnosis.pm/safe-ethers-adapters");
+// const { EthersAdapter } = require("@safe-global/safe-ethers-adapters");
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
@@ -89,7 +89,7 @@ task("initSafe", "Initializes a Gnosis Safe with given owners and threshold")
     .addParam("threshold", "The threshold for the Safe")
     .setAction(async ({ owners, threshold }, { ethers }) => {
         const { Safe, SafeFactory } = require("@safe-global/safe-core-sdk");
-        const { EthersAdapter } = require("@gnosis.pm/safe-ethers-adapters");
+        const { EthersAdapter } = require("@safe-global/safe-ethers-adapters");
 
         const provider = ethers.provider;
         const ethAdapter = new EthersAdapter({

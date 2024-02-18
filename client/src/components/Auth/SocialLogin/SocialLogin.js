@@ -1,6 +1,6 @@
 import firebase from '../../services/firebase';
 import { ethers } from 'ethers';
-import { SafeFactory } from '@gnosis.pm/safe-core-sdk';
+import { SafeFactory } from '@safe-global/safe-core-sdk';
 
 // Assuming you have initialized your Firebase and ethers providers
 const provider = new ethers.providers.Web3Provider(window.ethereum);

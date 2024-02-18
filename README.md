@@ -65,14 +65,6 @@ The **PROFILE** section is where users curate their digital identity on Steelo. 
 - **Smart Contract Development**: Smart contracts, essential for transaction validation and platform functionalities, are developed using Solidity and adhere to the best security practices. ✍️
 - **Data Storage and Management**: Employing decentralized storage solutions like IPFS and Arweave, alongside traditional solutions like Amazon S3, for comprehensive data management. 📦
 
-## Getting Started 🚀
-
-Instructions on how to set up the development environment, install dependencies, and run the application will be provided here. Stay tuned!
-
-### License 📄
-
-This project currently uses the MIT license, suspect to change. See the [MIT](https://opensource.org/license/mit/) file for more details.
-
 ### Contact 📧
 
 For more information, questions, or feedback, reach out to us at [info@steelo.io](mailto:info@steelo.io).
@@ -81,50 +73,7 @@ For more information, questions, or feedback, reach out to us at [info@steelo.io
 
 ## Blockchain and Ethereum Development 🕹️
 
-    ensdomains
-    nomiclabs
-    ethereum-waffle
-    ethers
-    ganache
-    hardhat
-    hardhat-deploy
-    gnosis.pm/safe-ethers-adapters
-    openzeppelin
-    safe-global
-    web3
-
-## React Native and UI 🌟
-
-    react-native-community
-    react-native-firebase
-    react-native-google-signin
-    react-navigation
-    lottie-react-native
-    react-native-push-notification
-    react-native-webview
-    walletconnect/react-native-dapp
-
-## State Management 📰
-
-    react-redux
-    reduxjs
-    redux
-
-## Backend and Server 🗳️
-
-    axios
-    bcryptjs
-    dotenv
-    express
-    jsonwebtoken
-    pg
-    pg-hstore
-    sequelize
-    tough-cookie
-
-## Testing and Development 🔄
-
-    testing-library/jest-native
-    testing-library/react-native
-    jest
-    yargs-parser
+    Lens protocol
+    Uniswap v4
+    Lido DAO
+    Safe{core}

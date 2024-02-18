@@ -12,7 +12,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
-    struct ProfileInfo {
+    struct ProfileList {
         string username;
         string bio;
         string avatarURI;
@@ -25,7 +25,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         bool isPublic;
     }
 
-    struct CreatorData {
+    struct CreatorList {
         uint256 creatorId;
         address creator;
         uint256 totalEarnings;
@@ -47,7 +47,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         OwnedSteez[] ownedSteez;
     }
 
-    struct ContributorData {
+    struct ContributorList {
         uint256 contentId;
         address contributor;
         uint256 earnings;
@@ -66,12 +66,12 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
     event SpaceCreated(address indexed user, uint256 spaceId);
 
     mapping(string => bool) usernameExists;
-    mapping(address => ProfileInfo) profiles;
-    mapping(uint256 => CreatorData) analytics;
+    mapping(address => ProfileList) profiles;
+    mapping(uint256 => CreatorList) analytics;
     mapping(uint256 => ContentList) contents;
     mapping(address => InvestorList) investors;
     mapping(address => PortfolioList) portfolios;
-    mapping(uint256 => ContributorData) contributors;
+    mapping(uint256 => ContributorList) contributors;
     mapping(uint256 => SpaceData) spaces;
 
     ILensHub lens;
@@ -95,7 +95,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         function setProfile(address user, string memory username, string memory bio, string memory avatarURI) external override nonReentrant {
             LibDiamond.enforceIsContractOwner();
             require(!usernameTaken(username), "Username already taken");
-            profiles[user] = ProfileInfo(username, bio, avatarURI, user);
+            profiles[user] = ProfileList(username, bio, avatarURI, user);
             usernameExists[username] = true;
             emit ProfileUpdated(user);
         }
@@ -106,7 +106,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         }
 
         // Function to retrieve a user's profile
-        function getProfile(address user) internal view returns (ProfileInfo memory) {
+        function getProfile(address user) internal view returns (ProfileList memory) {
             return profiles[user];
         }
 
@@ -136,7 +136,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         }
 
         // Function to view a user's profile
-        function viewProfile(address user) external view returns (ProfileInfo memory) {
+        function viewProfile(address user) external view returns (ProfileList memory) {
             return profiles[user];
         }
 
