@@ -1,13 +1,12 @@
 [submodule "lib/safe-contracts"]
 	path = lib/safe-contracts
-	url = https://github.com/safe-global/safe-smart-account.git
-[submodule "lib/lido-dao"]
-	path = lib/lido-dao
-	url = https://github.com/lidofinance/lido-dao
-[submodule "lib/Uniswap-v4"]
-	path = lib/Uniswap-v4
-	url = https://github.com/Uniswap/v4-core
+	url = https://github.com/airtacte/safe-core-for-steelo.io.git
 [submodule "lib/lens-protocol"]
 	path = lib/lens-protocol
-	url = https://github.com/lens-protocol/core
-	branch = main
+	url = https://github.com/airtacte/Lens-core-for-Steelo.io.git
+[submodule "lib/Uniswap-v4"]
+	path = lib/Uniswap-v4
+	url = https://github.com/airtacte/uniswap-core-for-steelo.io.git
+[submodule "lib/lido-dao"]
+	path = lib/lido-dao
+	url = https://github.com/airtacte/lido-core-for-steelo.io.git
