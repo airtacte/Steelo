@@ -1,5 +1,7 @@
 # Ignore external dependencies and resources
 node_modules/
+lib/
 
 # Ignore environment variables file
 .env
+serviceAccountKey.json
