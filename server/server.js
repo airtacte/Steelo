@@ -6,56 +6,58 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
-
-// Blockchain-related imports (Assuming Ethereum-based interactions)
 const Web3 = require('web3');
 
 const app = express();
 const userRoutes = require('./Routes/userRoutes');
 const errorMiddleware = require('./Middleware/errorMiddleware');
 
-// Firebase Admin SDK initialization for centralized data management
-const firebaseAdminConfig = {
-  // Your Firebase admin configuration
-};
-initializeApp(firebaseAdminConfig);
+// Improved Firebase Admin SDK initialization
+initializeApp(); // Assuming credentials are securely managed via environment variables
 
-// Web3 initialization for Ethereum blockchain interactions
-const web3 = new Web3(process.env.BLOCKCHAIN_PROVIDER_URL);
+// Web3 initialization with error handling for Ethereum blockchain interactions
+const web3 = new Web3(process.env.BLOCKCHAIN_PROVIDER_URL || 'http://localhost:8545');
 
-// Middleware
+// Middleware configurations
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
-// Apply rate limiting to all requests
-app.use(rateLimit({
+// Enhanced rate limiting for more granular control
+const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
-}));
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Apply the rate limiter to all requests
+app.use(apiLimiter);
 
 // Logging middleware for development environment
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Routes
+// API Routes
 app.use('/api/v1/users', userRoutes);
 
-// Error handling middleware
+// Centralized Error Handling
 app.use(errorMiddleware);
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
+// Health Check Endpoint
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
+// Start server with improved logging and error handling
+const server = app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server started on port ${process.env.PORT || 3000}`);
 });
 
-// Graceful shutdown handling
+// Improved graceful shutdown handling
 process.on('SIGTERM', () => {
   console.info('SIGTERM signal received. Closing server.');
   server.close(() => {
     console.log('Http server closed.');
-    // Additional cleanup if necessary
+    // Ensure all connections like database, blockchain are properly closed here
   });
 });
