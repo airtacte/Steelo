@@ -48,13 +48,13 @@ library LibDiamond {
     uint256 private constant beta = 10;
 
     // STEEZ TOKENOMICS
+    uint256 public constant AUCTION_DURATION = 24 hours;
     uint256 public constant INITIAL_CAP = 500;
     uint256 public constant TRANSACTION_MULTIPLIER = 2;
     uint256 public constant PRE_ORDER_MINIMUM_SOLD = 250; // 100% of 250
     uint256 public constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
     uint256 public constant PRICE_INCREMENT = 10 ether; // Increment value
     uint256 public constant TOKEN_BATCH_SIZE = 250;
-    uint256 public constant AUCTION_DURATION = 24 hours;
     uint256 public constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
     uint256 public constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
     uint256 public constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator

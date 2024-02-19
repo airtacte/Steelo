@@ -5,6 +5,7 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IProfileFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
+import { STEEZFacet } from "../steez/STEEZFacet.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
@@ -158,6 +159,18 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         // Function to view a Space and its contents
         function viewSpace(uint256 spaceId) external view returns (SpaceData memory) {
             return spaces[spaceId];
+        }
+
+        function _addInvestor(address creator, address investor) internal {
+            // implementation here
+        }
+
+        function _updatePortfolio(address user, uint256 tokenId, uint256 amount) internal {
+            // implementation here
+        }
+
+        function _createSpace(address creator, uint256[] calldata contentIds) internal returns (uint256) {
+            // implementation here
         }
 
         // Additional helper functions as needed for accessing nested or complex data structures

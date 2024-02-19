@@ -4,7 +4,7 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ISteeloFacet } from "../../interfaces/ISteeloFacet.sol";
-import { IStakingModule} from "../../../lib/lido-dao/contracts/0.8.9/interfaces/IStakingModule.sol";
+// import { IStakingModule} from "../../../lib/lido-dao/contracts/0.8.9/interfaces/IStakingModule.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";

@@ -25,7 +25,7 @@ contract BazaarFacet {
 
     mapping(uint256 => Listing) public listings;
 
-    constructor(address _uniswapAddress, address _uniswapAddress) {
+    constructor(address _uniswapAddress) {
         uniswap = IPoolManager(_uniswapAddress);
     }
 

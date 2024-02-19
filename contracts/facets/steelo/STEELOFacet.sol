@@ -28,8 +28,8 @@ contract STEELOFacet is
     event steeloTGEExecuted(uint256 tgeAmount);
 
     // Storage
-    mapping(uint256 => mapping(uint256 => uint256)) private _snapshotBalances;
-    mapping(uint256 => uint256) private _lastSnapshot;
+
+    mapping(uint256 => uint256) private _mintedInLastYear;
     int256 steezTransactionCount;
     uint256 steeloCurrentPrice;
     uint256 steezCurrentPrice;

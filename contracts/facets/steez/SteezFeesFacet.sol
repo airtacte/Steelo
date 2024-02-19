@@ -22,15 +22,20 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         uint256 share;
         uint256 value;
     }
+    
+    uint256 private _totalShareholdings;
 
     event RoyaltyPaid(uint256 indexed tokenId, address indexed recipient, uint256 amount);
     event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
     event DistributionPolicySet(uint256 tokenId, address recipient, uint256 share);
 
     mapping(uint256 => mapping(address => uint256)) public undistributedRoyalties;
+    mapping(uint256 => mapping(address => uint256)) private _undistributedRoyalties;
     mapping(uint256 => uint256[]) public communitySplits;
     mapping(uint256 => address[]) public tokenHolders;
     mapping(uint256 => mapping(address => uint256)) public balances;
+    mapping(uint256 => uint256) private _communityRoyaltyRates;
+    mapping(address => uint256) private _shareholdings;
 
     modifier payRoyaltiesOnTransfer(uint256 id, uint256 value, address from, address to) { _; payRoyalties(id, value, from, to) ;}
     modifier onlyAdmin() {require(ds.steezFacet.isAdmin(msg.sender), "Royalties: Caller is not an admin"); _;}

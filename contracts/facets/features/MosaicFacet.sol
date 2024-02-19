@@ -16,7 +16,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
  * supporting features like collect, follow, like, comment, invest, and credits.
  */
 contract MosaicFacet is OwnableUpgradeable{
-    ILens public lens;
+    ILensHub public lens;
     ISteezFacet public steez;
 
     // contentId => exclusivity level
@@ -34,7 +34,7 @@ contract MosaicFacet is OwnableUpgradeable{
 
     // Constructor to set initial contracts for Lens Protocol and STEEZ tokens
     constructor(address _lens, address _steez) {
-        lens = ILens(_lens);
+        lens = ILensHub(_lens);
         steez = ISteezFacet(_steez);
     }
 

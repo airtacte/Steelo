@@ -3,9 +3,14 @@
 pragma solidity ^0.8.10;
 
 contract SnapshotFacet {
-    uint private _lastSnapshotTimestamp;
-    uint private snapshotCounter;
-    mapping(uint256 => mapping(address => uint256)) private _snapshotBalances;
+    uint256 private _snapshotCounter;
+    uint256 private snapshotCounter;
+    uint256 private _lastSnapshotTimestamp;
+
+    mapping(uint256 => mapping(uint256 => uint256)) private _snapshotBalances;
+    mapping(uint256 => uint256) private _lastSnapshot;
+    mapping(uint256 => mapping(address => Snapshot[])) _holderSnapshots;
+    mapping(uint256 => Snapshot[]) _totalUndistributedSnapshots;
 
     struct Snapshot {
         uint256 id;
@@ -35,6 +40,10 @@ contract SnapshotFacet {
     function snapshotBalances(address account, uint256 balance) internal {
         uint256 currentId = _incrementSnapshot();
         _snapshotBalances[currentId][account] = balance;
+    }
+
+    function takeSnapshot() external {
+        _takeSnapshot();
     }
 
     // Define the _takeSnapshot function
