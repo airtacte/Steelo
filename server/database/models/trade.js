@@ -3,13 +3,13 @@ const db = require('../../../firebase-config');
 class Trade {
     constructor(id, buyPrice, profileID, buyDate, steezID, tradeID, tradeType, status) {
       this.id = id;
+      this.buyDate = buyDate;
       this.buyPrice = buyPrice;
       this.profileID = profileID;
-      this.buyDate = buyDate;
+      this.status = status;
       this.steezID = steezID;
       this.tradeID = tradeID;
       this.tradeType = tradeType;
-      this.status = status;
     }
   
     async save() {

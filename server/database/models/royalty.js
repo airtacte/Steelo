@@ -3,24 +3,28 @@ const db = require('../../../firebase-config');
 class Royalty {
     constructor(id, profileID, saleType, developerRoyalty, communityRoyalty, royaltyID, tradePrice, tradeID) {
       this.id = id;
-      this.profileID = profileID;
-      this.saleType = saleType;
-      this.developerRoyalty = developerRoyalty;
       this.communityRoyalty = communityRoyalty;
+      this.creatorRoyalty = creatorRoyalty;
+      this.developerRoyalty = developerRoyalty;
+      this.isEligibleForRoyalty = isEligibleForRoyalty;
+      this.profileID = profileID;
       this.royaltyID = royaltyID;
-      this.tradePrice = tradePrice;
+      this.saleType = saleType;
       this.tradeID = tradeID;
+      this.tradePrice = tradePrice;
     }
   
     async save() {
       await db.collection('royalties').doc(this.id).set({
         profileID: this.profileID,
         saleType: this.saleType,
-        developerRoyalty: this.developerRoyalty,
         communityRoyalty: this.communityRoyalty,
+        creatorcreatorRoyalty: this.creatorRoyalty,
+        developerRoyalty: this.developerRoyalty,
+        isEligibleForRoyalty: this.isEligibleForRoyalty,
         royaltyID: this.royaltyID,
         tradePrice: this.tradePrice,
-        tradeID: this.tradeID
+        tradeID: this.tradeID,
       });
     }
   

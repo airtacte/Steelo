@@ -3,12 +3,12 @@ const db = require('../../../firebase-config');
 class Contributor {
     constructor(id, role, contributorID, genre, collectRoyalty, contentID, creatorID, type) {
       this.id = id;
-      this.role = role;
-      this.contributorID = contributorID;
-      this.genre = genre;
       this.collectRoyalty = collectRoyalty;
       this.contentID = contentID;
+      this.contributorID = contributorID;
       this.creatorID = creatorID;
+      this.genre = genre;
+      this.role = role;
       this.type = type;
     }
   

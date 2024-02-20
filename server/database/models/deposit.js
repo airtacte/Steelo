@@ -3,13 +3,13 @@ const db = require('../../../firebase-config');
 class Deposit {
     constructor(id, depositAmount, depositDate, depositID, address, method, profileID, fee) {
       this.id = id;
+      this.address = address;
       this.depositAmount = depositAmount;
       this.depositDate = depositDate;
       this.depositID = depositID;
-      this.address = address;
+      this.fee = fee;
       this.method = method;
       this.profileID = profileID;
-      this.fee = fee;
     }
   
     async save() {

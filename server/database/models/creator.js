@@ -3,12 +3,12 @@ const db = require('../../../firebase-config');
 class Creator {
     constructor(data) {
       this.id = data.id;
+      this.artForm = data.artForm;
       this.communityType = data.communityType;
-      this.profileID = data.profileID;
       this.creatorID = data.creatorID;
       this.genre = data.genre;
+      this.profileID = data.profileID;
       this.steezID = data.steezID;
-      this.artForm = data.artForm;
     }
   
     static async fetchById(id) {

@@ -3,10 +3,11 @@ const db = require('../../../firebase-config');
 class Like {
     constructor(id, profileID, contentID, likeDate, likeSpeed) {
       this.id = id;
-      this.profileID = profileID;
       this.contentID = contentID;
       this.likeDate = likeDate;
+      this.likeID = likeID;
       this.likeSpeed = likeSpeed;
+      this.profileID = profileID;
     }
   
     async save() {
@@ -14,7 +15,7 @@ class Like {
         profileID: this.profileID,
         contentID: this.contentID,
         likeDate: this.likeDate,
-        likeSpeed: this.likeSpeed
+        likeSpeed: this.likeSpeed,
       });
     }
   

@@ -3,15 +3,16 @@ const db = require('../../../firebase-config');
 class Transaction {
     constructor(id, buyPrice, buyerID, buyAmount, sellerID, buyDate, steezID, type, transactionID, status) {
       this.id = id;
+      this.buyAmount = buyAmount;
+      this.buyDate = buyDate;
       this.buyPrice = buyPrice;
       this.buyerID = buyerID;
-      this.buyAmount = buyAmount;
       this.sellerID = sellerID;
-      this.buyDate = buyDate;
-      this.steezID = steezID;
-      this.type = type;
-      this.transactionID = transactionID;
       this.status = status;
+      this.steezID = steezID;
+      this.steeloID = steeloID;
+      this.transactionID = transactionID;
+      this.type = type;
     }
   
     async save() {

@@ -3,12 +3,12 @@ const db = require('../../../firebase-config');
 class Space {
     constructor(id, spaceID, contributorID, likeID, contentID, commentID, rank) {
       this.id = id;
-      this.spaceID = spaceID;
+      this.commentID = commentID;
+      this.contentID = contentID;
       this.contributorID = contributorID;
       this.likeID = likeID;
-      this.contentID = contentID;
-      this.commentID = commentID;
       this.rank = rank;
+      this.spaceID = spaceID;
     }
   
     async save() {
@@ -18,7 +18,7 @@ class Space {
         likeID: this.likeID,
         contentID: this.contentID,
         commentID: this.commentID,
-        rank: this.rank
+        rank: this.rank,
       });
     }
   

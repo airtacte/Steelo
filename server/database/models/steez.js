@@ -3,29 +3,31 @@ const db = require('../../../firebase-config');
 class Steez {
     constructor(id, steezAmount, royaltiesGenerated, hasSoldInvestment, preOrderPrice, ownerHistory, creatorID, currentPrice, sellPrice, sellDate, transactionCount) {
       this.id = id;
-      this.steezAmount = steezAmount;
-      this.royaltiesGenerated = royaltiesGenerated;
-      this.hasSoldInvestment = hasSoldInvestment;
-      this.preOrderPrice = preOrderPrice;
-      this.ownerHistory = ownerHistory;
       this.creatorID = creatorID;
       this.currentPrice = currentPrice;
+      this.hasSoldInvestment = hasSoldInvestment;
+      this.ownerHistory = ownerHistory;
+      this.preOrderPrice = preOrderPrice;
+      this.royaltiesGenerated = royaltiesGenerated;
       this.sellPrice = sellPrice;
       this.sellDate = sellDate;
+      this.steezAmount = steezAmount;
+      this.steezID = steezID;
       this.transactionCount = transactionCount;
     }
   
     async save() {
       await db.collection('steez').doc(this.id).set({
-        steezAmount: this.steezAmount,
-        royaltiesGenerated: this.royaltiesGenerated,
-        hasSoldInvestment: this.hasSoldInvestment,
-        preOrderPrice: this.preOrderPrice,
-        ownerHistory: this.ownerHistory,
         creatorID: this.creatorID,
         currentPrice: this.currentPrice,
+        hasSoldInvestment: this.hasSoldInvestment,
+        ownerHistory: this.ownerHistory,
+        preOrderPrice: this.preOrderPrice,
+        royaltiesGenerated: this.royaltiesGenerated,
         sellPrice: this.sellPrice,
         sellDate: this.sellDate,
+        steezAmount: this.steezAmount,
+        steezID: this.steezID,
         transactionCount: this.transactionCount,
       });
     }

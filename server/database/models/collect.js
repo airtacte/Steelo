@@ -4,9 +4,9 @@ class Collect {
     constructor(data) {
       this.id = data.id;
       this.collectID = data.collectID;
-      this.profileID = data.profileID;
-      this.contentID = data.contentID;
       this.collectionDate = data.collectionDate;
+      this.contentID = data.contentID;
+      this.profileID = data.profileID;
     }
   
     static async fetchById(id) {

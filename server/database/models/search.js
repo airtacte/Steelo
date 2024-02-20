@@ -3,11 +3,11 @@ const db = require('../../../firebase-config');
 class Search {
     constructor(id, result, discoveryID, searchID, profileID, searchDate) {
       this.id = id;
-      this.result = result;
       this.discoveryID = discoveryID;
-      this.searchID = searchID;
       this.profileID = profileID;
+      this.result = result;
       this.searchDate = searchDate;
+      this.searchID = searchID;
     }
   
     async save() {
@@ -16,7 +16,7 @@ class Search {
         discoveryID: this.discoveryID,
         searchID: this.searchID,
         profileID: this.profileID,
-        searchDate: this.searchDate
+        searchDate: this.searchDate,
       });
     }
   

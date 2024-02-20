@@ -3,34 +3,34 @@ const db = require('../../../firebase-config');
 class Steelo {
     constructor(id, mintAmount, marketCap, burnAmount, isDeflationary, burnRate, tokenSupply, lastMint, currentPrice, steeloID, transactionCount, lastBurn, mintRate) {
       this.id = id;
-      this.mintAmount = mintAmount;
-      this.marketCap = marketCap;
       this.burnAmount = burnAmount;
-      this.isDeflationary = isDeflationary;
       this.burnRate = burnRate;
-      this.tokenSupply = tokenSupply;
-      this.lastMint = lastMint;
       this.currentPrice = currentPrice;
-      this.steeloID = steeloID;
-      this.transactionCount = transactionCount;
+      this.isDeflationary = isDeflationary;
       this.lastBurn = lastBurn;
+      this.lastMint = lastMint;
+      this.marketCap = marketCap;
+      this.mintAmount = mintAmount;
       this.mintRate = mintRate;
+      this.steeloID = steeloID;
+      this.tokenSupply = tokenSupply;
+      this.transactionCount = transactionCount;
     }
   
     async save() {
       await db.collection('steelos').doc(this.id).set({
-        mintAmount: this.mintAmount,
-        marketCap: this.marketCap,
         burnAmount: this.burnAmount,
-        isDeflationary: this.isDeflationary,
         burnRate: this.burnRate,
-        tokenSupply: this.tokenSupply,
-        lastMint: this.lastMint,
         currentPrice: this.currentPrice,
-        steeloID: this.steeloID,
-        transactionCount: this.transactionCount,
+        isDeflationary: this.isDeflationary,
         lastBurn: this.lastBurn,
-        mintRate: this.mintRate
+        lastMint: this.lastMint,
+        marketCap: this.marketCap,
+        mintAmount: this.mintAmount,
+        mintRate: this.mintRate,
+        steeloID: this.steeloID,
+        tokenSupply: this.tokenSupply,
+        transactionCount: this.transactionCount,
       });
     }
   

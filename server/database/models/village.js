@@ -3,13 +3,13 @@ const db = require('../../../firebase-config');
 class Village {
     constructor(id, buyPrice, royaltiesCollected, culture, buyDate, genre, investorID, purchaseOrigin, steezID, type, villageID) {
       this.id = id;
-      this.buyPrice = buyPrice;
-      this.royaltiesCollected = royaltiesCollected;
-      this.culture = culture;
       this.buyDate = buyDate;
+      this.buyPrice = buyPrice;
+      this.culture = culture;
       this.genre = genre;
       this.investorID = investorID;
       this.purchaseOrigin = purchaseOrigin;
+      this.royaltiesCollected = royaltiesCollected;
       this.steezID = steezID;
       this.type = type;
       this.villageID = villageID;

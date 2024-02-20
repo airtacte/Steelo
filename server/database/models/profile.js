@@ -3,20 +3,20 @@ const db = require('../../../firebase-config');
 class Profile {
     constructor(data) {
       this.id = data.id;
-      this.avatarURI = data.avatarURI;
-      this.socialLinks = data.socialLinks;
-      this.billingDetails = data.billingDetails;
-      this.isVerified = data.isVerified;
-      this.bio = data.bio;
-      this.privacySettings = data.privacySettings;
-      this.phone = data.phone;
-      this.email = data.email;
       this.authentication = data.authentication;
-      this.username = data.username;
-      this.postingDetails = data.postingDetails;
+      this.avatarURI = data.avatarURI;
+      this.billingDetails = data.billingDetails;
+      this.bio = data.bio;
+      this.email = data.email;
       this.identificationProof = data.identificationProof;
-      this.walletAddress = data.walletAddress;
+      this.isVerified = data.isVerified;
+      this.phone = data.phone;
+      this.postingDetails = data.postingDetails;
+      this.privacySettings = data.privacySettings;
       this.profileID = data.profileID;
+      this.socialLinks = data.socialLinks;
+      this.username = data.username;
+      this.walletAddress = data.walletAddress;
     }
   
     static async fetchById(id) {

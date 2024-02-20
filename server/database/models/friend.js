@@ -3,13 +3,13 @@ const db = require('../../../firebase-config');
 class Friend {
     constructor(id, receiverID, friendID, receiverFollowID, profileID, privacy, followerID, friendDate) {
       this.id = id;
-      this.receiverID = receiverID;
-      this.friendID = friendID;
-      this.receiverFollowID = receiverFollowID;
-      this.profileID = profileID;
-      this.privacy = privacy;
       this.followerID = followerID;
       this.friendDate = friendDate;
+      this.friendID = friendID;
+      this.privacy = privacy;
+      this.profileID = profileID;
+      this.receiverFollowID = receiverFollowID;
+      this.receiverID = receiverID;
     }
   
     async save() {

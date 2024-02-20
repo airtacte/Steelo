@@ -3,12 +3,12 @@ const db = require('../../../firebase-config');
 class Investor {
     constructor(id, profileID, taste, investorID, steezID, villageID, network) {
       this.id = id;
-      this.profileID = profileID;
-      this.taste = taste;
       this.investorID = investorID;
-      this.steezID = steezID;
-      this.villageID = villageID;
       this.network = network;
+      this.profileID = profileID;
+      this.steezID = steezID;
+      this.taste = taste;
+      this.villageID = villageID;
     }
   
     async save() {
@@ -18,7 +18,7 @@ class Investor {
         investorID: this.investorID,
         steezID: this.steezID,
         villageID: this.villageID,
-        network: this.network
+        network: this.network,
       });
     }
   

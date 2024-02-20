@@ -3,10 +3,10 @@ const db = require('../../../firebase-config');
 class Follower {
     constructor(id, profileID, followDate, followeeID, followerID) {
       this.id = id;
-      this.profileID = profileID;
       this.followDate = followDate;
       this.followeeID = followeeID;
       this.followerID = followerID;
+      this.profileID = profileID;
     }
   
     async save() {

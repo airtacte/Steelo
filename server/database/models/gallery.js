@@ -3,12 +3,12 @@ const db = require('../../../firebase-config');
 class Gallery {
     constructor(id, royaltiesCollected, purchaseDate, galleryID, investorID, steezID, returnOnInvestment, transactionID) {
       this.id = id;
-      this.royaltiesCollected = royaltiesCollected;
-      this.purchaseDate = purchaseDate;
       this.galleryID = galleryID;
       this.investorID = investorID;
-      this.steezID = steezID;
+      this.purchaseDate = purchaseDate;
       this.returnOnInvestment = returnOnInvestment;
+      this.royaltiesCollected = royaltiesCollected;
+      this.steezID = steezID;
       this.transactionID = transactionID;
     }
   

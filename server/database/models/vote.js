@@ -3,16 +3,16 @@ const db = require('../../../firebase-config');
 class Vote {
     constructor(id, rewardShare, voteTime, sipID, hasVoted, profileID, stakingID, rewardPool, voteWeight, voterType, voteID) {
       this.id = id;
-      this.rewardShare = rewardShare;
-      this.voteTime = voteTime;
-      this.sipID = sipID;
       this.hasVoted = hasVoted;
       this.profileID = profileID;
-      this.stakingID = stakingID;
       this.rewardPool = rewardPool;
+      this.rewardShare = rewardShare;
+      this.sipID = sipID;
+      this.stakingID = stakingID;
+      this.voteID = voteID;
+      this.voteTime = voteTime;
       this.voteWeight = voteWeight;
       this.voterType = voterType;
-      this.voteID = voteID;
     }
   
     async save() {

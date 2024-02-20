@@ -3,12 +3,12 @@ const db = require('../../../firebase-config');
 class History {
     constructor(id, feedback, browseDate, viewingTime, historyID, profileID, creatorID) {
       this.id = id;
-      this.feedback = feedback;
       this.browseDate = browseDate;
-      this.viewingTime = viewingTime;
+      this.creatorID = creatorID;
+      this.feedback = feedback;
       this.historyID = historyID;
       this.profileID = profileID;
-      this.creatorID = creatorID;
+      this.viewingTime = viewingTime;
     }
   
     async save() {

@@ -3,14 +3,14 @@ const db = require('../../../firebase-config');
 class Collection {
     constructor(data) {
       this.id = data.id;
-      this.salePrice = data.salePrice;
       this.collectID = data.collectID;
-      this.isSold = data.isSold;
-      this.collectionPrice = data.collectionPrice;
-      this.saleDate = data.saleDate;
-      this.returnOnInvestment = data.returnOnInvestment;
-      this.collectionID = data.collectionID;
       this.collectionDate = data.collectionDate;
+      this.collectionID = data.collectionID;
+      this.collectionPrice = data.collectionPrice;
+      this.isSold = data.isSold;
+      this.returnOnInvestment = data.returnOnInvestment;
+      this.saleDate = data.saleDate;
+      this.salePrice = data.salePrice;
       this.transactionID = data.transactionID;
     }
   

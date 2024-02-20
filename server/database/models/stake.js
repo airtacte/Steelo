@@ -3,13 +3,13 @@ const db = require('../../../firebase-config');
 class Stake {
     constructor(id, stakeDate, stakeAmount, stakeID, profileID, yieldRate, steeloID, stakeDuration) {
       this.id = id;
-      this.stakeDate = stakeDate;
-      this.stakeAmount = stakeAmount;
-      this.stakeID = stakeID;
       this.profileID = profileID;
-      this.yieldRate = yieldRate;
-      this.steeloID = steeloID;
+      this.stakeAmount = stakeAmount;
+      this.stakeDate = stakeDate;
       this.stakeDuration = stakeDuration;
+      this.stakeID = stakeID;
+      this.steeloID = steeloID;
+      this.yieldRate = yieldRate;
     }
   
     async save() {
@@ -20,7 +20,7 @@ class Stake {
         profileID: this.profileID,
         yieldRate: this.yieldRate,
         steeloID: this.steeloID,
-        stakeDuration: this.stakeDuration
+        stakeDuration: this.stakeDuration,
       });
     }
   

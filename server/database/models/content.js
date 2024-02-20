@@ -3,16 +3,16 @@ const db = require('../../../firebase-config');
 class Content {
     constructor(data) {
       this.id = data.id;
-      this.spaceRank = data.spaceRank;
-      this.spaceID = data.spaceID;
-      this.contentURI = data.contentURI;
+      this.category = data.category;
       this.contentID = data.contentID;
-      this.inSpace = data.inSpace;
+      this.contentURI = data.contentURI;
       this.creatorID = data.creatorID;
       this.exclusive = data.exclusive;
-      this.viewCount = data.viewCount;
-      this.category = data.category;
+      this.inSpace = data.inSpace;
       this.postedDate = data.postedDate;
+      this.spaceID = data.spaceID;
+      this.spaceRank = data.spaceRank;
+      this.viewCount = data.viewCount;
     }
   
     static async fetchById(id) {

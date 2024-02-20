@@ -3,13 +3,13 @@ const db = require('../../../firebase-config');
 class Comment {
     constructor(data) {
       this.id = data.id;
-      this.profileID = data.profileID;
-      this.commentDate = data.commentDate;
-      this.contentID = data.contentID;
-      this.replyID = data.replyID;
-      this.commentID = data.commentID;
       this.comment = data.comment;
+      this.commentDate = data.commentDate;
+      this.commentID = data.commentID;
+      this.contentID = data.contentID;
       this.isReply = data.isReply;
+      this.profileID = data.profileID;
+      this.replyID = data.replyID;
     }
   
     static async fetchById(id) {

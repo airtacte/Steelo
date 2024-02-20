@@ -3,11 +3,11 @@ const db = require('../../../firebase-config');
 class Discovery {
     constructor(id, result, discoveryDate, profileID, origin, creatorID) {
       this.id = id;
-      this.result = result;
-      this.discoveryDate = discoveryDate;
-      this.profileID = profileID;
-      this.origin = origin;
       this.creatorID = creatorID;
+      this.discoveryDate = discoveryDate;
+      this.origin = origin;
+      this.profileID = profileID;
+      this.result = result;
     }
   
     async save() {

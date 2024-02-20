@@ -3,13 +3,13 @@ const db = require('../../../firebase-config');
 class Withdrawal {
     constructor(id, withdrawalID, address, withdrawalDate, method, withdrawalAmount, profileID, fee) {
       this.id = id;
-      this.withdrawalID = withdrawalID;
       this.address = address;
-      this.withdrawalDate = withdrawalDate;
-      this.method = method;
-      this.withdrawalAmount = withdrawalAmount;
-      this.profileID = profileID;
       this.fee = fee;
+      this.method = method;
+      this.profileID = profileID;
+      this.withdrawalAmount = withdrawalAmount;
+      this.withdrawalDate = withdrawalDate;
+      this.withdrawalID = withdrawalID;
     }
   
     async save() {
