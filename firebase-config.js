@@ -1,10 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp } from "firebase-admin/app";
+import { getAppCheck } from "firebase-admin/app-check";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -15,7 +11,26 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const firebaseApp = initializeApp(firebaseConfig);
 
-export default app;
+async function appCheckVerification(req, res, next) {
+  const appCheckToken = req.header("X-Firebase-AppCheck");
+
+  if (!appCheckToken) {
+      res.status(401);
+      return next("Unauthorized");
+  }
+
+  try {
+      const appCheckClaims = await getAppCheck(firebaseApp).verifyToken(appCheckToken);
+
+      // If verifyToken() succeeds, continue with the next middleware
+      // function in the stack.
+      return next();
+  } catch (err) {
+      res.status(401);
+      return next("Unauthorized");
+  }
+}
+
+export default { firebaseApp, appCheckVerification };

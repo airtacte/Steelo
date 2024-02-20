@@ -17,13 +17,39 @@ class Collect {
       return new Collect({ id: doc.id, ...doc.data() });
     }
   
+    static async fetchByProfileId(profileID) {
+      const snapshot = await db.collection('collects').where('profileID', '==', profileID).get();
+      if (snapshot.empty) {
+        throw new Error('No collects found for this profile');
+      }
+      return snapshot.docs.map(doc => new Collect({ id: doc.id, ...doc.data() }));
+    }
+
+    static async fetchByContentId(contentID) {
+      const snapshot = await db.collection('collects').where('contentID', '==', contentID).get();
+      if (snapshot.empty) {
+        throw new Error('No collects found for this content');
+      }
+      return snapshot.docs.map(doc => new Collect({ id: doc.id, ...doc.data() }));
+    }
+
     async save() {
-      await db.collection('collects').doc(this.id).set({ ...this });
+      if (!this.profileID || !this.contentID) {
+        throw new Error('ProfileID and ContentID are required');
+      }
+      // Perform any additional validation as necessary...
+
+      try {
+        await db.collection('collects').doc(this.id).set({ ...this });
+      } catch (error) {
+        throw new Error('Failed to save collect: ' + error.message);
+      }
     }
   
     async update(updateData) {
       await db.collection('collects').doc(this.id).update(updateData);
     }
+    
   
     async delete() {
       await db.collection('collects').doc(this.id).delete();

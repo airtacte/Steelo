@@ -1,57 +1,65 @@
 const db = require('../../../firebase-config');
 
 class Steelo {
-    constructor(id, mintAmount, marketCap, burnAmount, isDeflationary, burnRate, tokenSupply, lastMint, currentPrice, steeloID, transactionCount, lastBurn, mintRate) {
-      this.id = id;
-      this.burnAmount = burnAmount;
-      this.burnRate = burnRate;
-      this.currentPrice = currentPrice;
-      this.isDeflationary = isDeflationary;
-      this.lastBurn = lastBurn;
-      this.lastMint = lastMint;
-      this.marketCap = marketCap;
-      this.mintAmount = mintAmount;
-      this.mintRate = mintRate;
-      this.steeloID = steeloID;
-      this.tokenSupply = tokenSupply;
-      this.transactionCount = transactionCount;
+    constructor(data) {
+      this.id = data.id;
+      this.mintAmount = data.mintAmount;
+      this.marketCap = data.marketCap;
+      this.burnAmount = data.burnAmount;
+      this.isDeflationary = data.isDeflationary;
+      this.burnRate = data.burnRate;
+      this.tokenSupply = data.tokenSupply;
+      this.lastMint = data.lastMint;
+      this.currentPrice = data.currentPrice;
+      this.steeloID = data.steeloID;
+      this.transactionCount = data.transactionCount;
+      this.lastBurn = data.lastBurn;
+      this.mintRate = data.mintRate;
     }
-  
-    async save() {
-      await db.collection('steelos').doc(this.id).set({
-        burnAmount: this.burnAmount,
-        burnRate: this.burnRate,
-        currentPrice: this.currentPrice,
-        isDeflationary: this.isDeflationary,
-        lastBurn: this.lastBurn,
-        lastMint: this.lastMint,
-        marketCap: this.marketCap,
-        mintAmount: this.mintAmount,
-        mintRate: this.mintRate,
-        steeloID: this.steeloID,
-        tokenSupply: this.tokenSupply,
-        transactionCount: this.transactionCount,
-      });
+
+    validate() {
+      if (!this.id || !this.mintAmount || !this.marketCap || !this.burnAmount || this.isDeflationary === undefined || !this.burnRate || !this.tokenSupply || !this.lastMint || !this.currentPrice || !this.steeloID || !this.transactionCount || !this.lastBurn || !this.mintRate) {
+        throw new Error('Missing required fields');
+      }
     }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('steelos').doc(id).get();
       if (!doc.exists) {
         throw new Error('Steelo not found');
       }
-      return new Steelo(doc.id, doc.data().mintAmount, doc.data().marketCap, doc.data().burnAmount, 
-        doc.data().isDeflationary, doc.data().burnRate, doc.data().tokenSupply, doc.data().lastMint,
-        doc.data().currentPrice, doc.data().steeloID, doc.data().transactionCount, doc.data().lastBurn,
-        doc.data().mintRate);
+      return new Steelo({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchBySteeloID(steeloID) {
+      if (!steeloID) {
+        throw new Error('Missing steeloID');
+      }
+      const snapshot = await db.collection('steelos').where('steeloID', '==', steeloID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching steelos found');
+      }
+      return snapshot.docs.map(doc => new Steelo({ id: doc.id, ...doc.data() }));
+    }
+  
+    async save() {
+      this.validate();
+      await db.collection('steelos').doc(this.id).set({ ...this });
     }
   
     async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
       await db.collection('steelos').doc(this.id).update(updateData);
     }
   
     async delete() {
       await db.collection('steelos').doc(this.id).delete();
     }
-  }
-  
-  module.exports = Steelo;  
+}
+
+module.exports = Steelo;

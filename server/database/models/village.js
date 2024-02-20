@@ -1,46 +1,57 @@
 const db = require('../../../firebase-config');
 
 class Village {
-    constructor(id, buyPrice, royaltiesCollected, culture, buyDate, genre, investorID, purchaseOrigin, steezID, type, villageID) {
-      this.id = id;
-      this.buyDate = buyDate;
-      this.buyPrice = buyPrice;
-      this.culture = culture;
-      this.genre = genre;
-      this.investorID = investorID;
-      this.purchaseOrigin = purchaseOrigin;
-      this.royaltiesCollected = royaltiesCollected;
-      this.steezID = steezID;
-      this.type = type;
-      this.villageID = villageID;
+    constructor(data) {
+      this.id = data.id;
+      this.buyPrice = data.buyPrice;
+      this.royaltiesCollected = data.royaltiesCollected;
+      this.culture = data.culture;
+      this.buyDate = data.buyDate;
+      this.genre = data.genre;
+      this.investorID = data.investorID;
+      this.purchaseOrigin = data.purchaseOrigin;
+      this.steezID = data.steezID;
+      this.type = data.type;
+      this.villageID = data.villageID;
     }
-  
-    async save() {
-      await db.collection('village').doc(this.id).set({
-        buyPrice: this.buyPrice,
-        royaltiesCollected: this.royaltiesCollected,
-        culture: this.culture,
-        buyDate: this.buyDate,
-        genre: this.genre,
-        investorID: this.investorID,
-        purchaseOrigin: this.purchaseOrigin,
-        steezID: this.steezID,
-        type: this.type,
-        villageID: this.villageID,
-      });
+
+    validate() {
+      if (!this.id || !this.buyPrice || !this.royaltiesCollected || !this.culture || !this.buyDate || !this.genre || !this.investorID || !this.purchaseOrigin || !this.steezID || !this.type || !this.villageID) {
+        throw new Error('Missing required fields');
+      }
     }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('village').doc(id).get();
       if (!doc.exists) {
         throw new Error('Village not found');
       }
-      return new Village(doc.id, doc.data().buyPrice, doc.data().royaltiesCollected, doc.data().culture,
-        doc.data().buyDate, doc.data().genre, doc.data().investorID, doc.data().purchaseOrigin,
-        doc.data().steezID, doc.data().type, doc.data().villageID);
+      return new Village({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchByInvestorID(investorID) {
+      if (!investorID) {
+        throw new Error('Missing investorID');
+      }
+      const snapshot = await db.collection('village').where('investorID', '==', investorID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching villages found');
+      }
+      return snapshot.docs.map(doc => new Village({ id: doc.id, ...doc.data() }));
+    }
+  
+    async save() {
+      this.validate();
+      await db.collection('village').doc(this.id).set({ ...this });
     }
   
     async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
       await db.collection('village').doc(this.id).update(updateData);
     }
   

@@ -1,44 +1,56 @@
 const db = require('../../../firebase-config');
 
 class Transaction {
-    constructor(id, buyPrice, buyerID, buyAmount, sellerID, buyDate, steezID, type, transactionID, status) {
-      this.id = id;
-      this.buyAmount = buyAmount;
-      this.buyDate = buyDate;
-      this.buyPrice = buyPrice;
-      this.buyerID = buyerID;
-      this.sellerID = sellerID;
-      this.status = status;
-      this.steezID = steezID;
-      this.steeloID = steeloID;
-      this.transactionID = transactionID;
-      this.type = type;
+    constructor(data) {
+      this.id = data.id;
+      this.buyPrice = data.buyPrice;
+      this.buyerID = data.buyerID;
+      this.buyAmount = data.buyAmount;
+      this.sellerID = data.sellerID;
+      this.buyDate = data.buyDate;
+      this.steezID = data.steezID;
+      this.type = data.type;
+      this.transactionID = data.transactionID;
+      this.status = data.status;
     }
-  
-    async save() {
-      await db.collection('transaction').doc(this.id).set({
-        buyPrice: this.buyPrice,
-        buyerID: this.buyerID,
-        buyAmount: this.buyAmount,
-        sellerID: this.sellerID,
-        buyDate: this.buyDate,
-        steezID: this.steezID,
-        type: this.type,
-        transactionID: this.transactionID,
-        status: this.status,
-      });
+
+    validate() {
+      if (!this.id || !this.buyPrice || !this.buyerID || !this.buyAmount || !this.sellerID || !this.buyDate || !this.steezID || !this.type || !this.transactionID || !this.status) {
+        throw new Error('Missing required fields');
+      }
     }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('transaction').doc(id).get();
       if (!doc.exists) {
         throw new Error('Transaction not found');
       }
-      return new Transaction(doc.id, doc.data().buyPrice, doc.data().buyerID, doc.data().buyAmount, doc.data().sellerID,
-        doc.data().buyDate, doc.data().steezID, doc.data().type, doc.data().transactionID, doc.data().status);
+      return new Transaction({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchByBuyerID(buyerID) {
+      if (!buyerID) {
+        throw new Error('Missing buyerID');
+      }
+      const snapshot = await db.collection('transaction').where('buyerID', '==', buyerID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching transactions found');
+      }
+      return snapshot.docs.map(doc => new Transaction({ id: doc.id, ...doc.data() }));
+    }
+  
+    async save() {
+      this.validate();
+      await db.collection('transaction').doc(this.id).set({ ...this });
     }
   
     async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
       await db.collection('transaction').doc(this.id).update(updateData);
     }
   

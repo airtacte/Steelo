@@ -1,44 +1,57 @@
 const db = require('../../../firebase-config');
 
 class Stablecoin {
-  constructor(id, currencyName, holderID, regulatoryInfo, transactionInfo) {
-    this.id = id;
-    this.currencyName = currencyName;
-    this.holderID = holderID; // { profileID: 'reference', verification: bool }
-    this.regulatoryInfo = regulatoryInfo; // { AMLStatus: 'string', KYCStatus: 'string' }
-    this.transactionInfo = transactionInfo; // { transactionLimits: number, transactionHistory: { owner1: { amount: number, profileID: 'reference', transactionID: 'reference' } } }
-  }
+        constructor(data) {
+            this.id = data.id;
+            this.currencyName = data.currencyName;
+            this.holderID = data.holderID;
+            this.regulatoryInfo = data.regulatoryInfo;
+            this.transactionInfo = data.transactionInfo;
+        }
 
-  async save() {
-    await db.collection('stablecoins').doc(this.id).set({
-      currencyName: this.currencyName,
-      holderID: this.holderID,
-      regulatoryInfo: this.regulatoryInfo,
-      transactionInfo: this.transactionInfo
-    });
-  }
+        validate() {
+            if (!this.id || !this.currencyName || !this.holderID || !this.regulatoryInfo || !this.transactionInfo) {
+                throw new Error('Missing required fields');
+            }
+        }
+    
+        static async fetchById(id) {
+            if (!id) {
+                throw new Error('Missing id');
+            }
+            const doc = await db.collection('stablecoins').doc(id).get();
+            if (!doc.exists) {
+                throw new Error('Stablecoin not found');
+            }
+            return new Stablecoin({ id: doc.id, ...doc.data() });
+        }
 
-  static async fetchById(id) {
-    const doc = await db.collection('stablecoins').doc(id).get();
-    if (!doc.exists) {
-      throw new Error('Stablecoin not found');
-    }
-    return new Stablecoin(
-      doc.id,
-      doc.data().currencyName,
-      doc.data().holderID,
-      doc.data().regulatoryInfo,
-      doc.data().transactionInfo
-    );
-  }
-
-  async update(updateData) {
-    await db.collection('stablecoins').doc(this.id).update(updateData);
-  }
-
-  async delete() {
-    await db.collection('stablecoins').doc(this.id).delete();
-  }
+        static async fetchByHolderID(holderID) {
+            if (!holderID) {
+                throw new Error('Missing holderID');
+            }
+            const snapshot = await db.collection('stablecoins').where('holderID', '==', holderID).get();
+            if (snapshot.empty) {
+                throw new Error('No matching stablecoins found');
+            }
+            return snapshot.docs.map(doc => new Stablecoin({ id: doc.id, ...doc.data() }));
+        }
+    
+        async save() {
+            this.validate();
+            await db.collection('stablecoins').doc(this.id).set({ ...this });
+        }
+    
+        async update(updateData) {
+            if (!updateData || Object.keys(updateData).length === 0) {
+                throw new Error('Missing update data');
+            }
+            await db.collection('stablecoins').doc(this.id).update(updateData);
+        }
+    
+        async delete() {
+            await db.collection('stablecoins').doc(this.id).delete();
+        }
 }
 
 module.exports = Stablecoin;

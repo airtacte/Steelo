@@ -1,39 +1,54 @@
 const db = require('../../../firebase-config');
 
 class Withdrawal {
-    constructor(id, withdrawalID, address, withdrawalDate, method, withdrawalAmount, profileID, fee) {
-      this.id = id;
-      this.address = address;
-      this.fee = fee;
-      this.method = method;
-      this.profileID = profileID;
-      this.withdrawalAmount = withdrawalAmount;
-      this.withdrawalDate = withdrawalDate;
-      this.withdrawalID = withdrawalID;
+    constructor(data) {
+      this.id = data.id;
+      this.withdrawalID = data.withdrawalID;
+      this.address = data.address;
+      this.withdrawalDate = data.withdrawalDate;
+      this.method = data.method;
+      this.withdrawalAmount = data.withdrawalAmount;
+      this.profileID = data.profileID;
+      this.fee = data.fee;
     }
-  
-    async save() {
-      await db.collection('withdrawals').doc(this.id).set({
-        withdrawalID: this.withdrawalID,
-        address: this.address,
-        withdrawalDate: this.withdrawalDate,
-        method: this.method,
-        withdrawalAmount: this.withdrawalAmount,
-        profileID: this.profileID,
-        fee: this.fee
-      });
+
+    validate() {
+      if (!this.id || !this.withdrawalID || !this.address || !this.withdrawalDate || !this.method || !this.withdrawalAmount || !this.profileID || !this.fee) {
+        throw new Error('Missing required fields');
+      }
     }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('withdrawals').doc(id).get();
       if (!doc.exists) {
         throw new Error('Withdrawal not found');
       }
-      return new Withdrawal(doc.id, doc.data().withdrawalID, doc.data().address, doc.data().withdrawalDate,
-        doc.data().method, doc.data().withdrawalAmount, doc.data().profileID, doc.data().fee);
+      return new Withdrawal({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchByProfileID(profileID) {
+      if (!profileID) {
+        throw new Error('Missing profileID');
+      }
+      const snapshot = await db.collection('withdrawals').where('profileID', '==', profileID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching withdrawals found');
+      }
+      return snapshot.docs.map(doc => new Withdrawal({ id: doc.id, ...doc.data() }));
+    }
+  
+    async save() {
+      this.validate();
+      await db.collection('withdrawals').doc(this.id).set({ ...this });
     }
   
     async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
       await db.collection('withdrawals').doc(this.id).update(updateData);
     }
   

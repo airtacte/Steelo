@@ -1,34 +1,59 @@
 const db = require('../../../firebase-config');
 
 class Investor {
-    constructor(id, profileID, taste, investorID, steezID, villageID, network) {
-      this.id = id;
-      this.investorID = investorID;
-      this.network = network;
-      this.profileID = profileID;
-      this.steezID = steezID;
-      this.taste = taste;
-      this.villageID = villageID;
+    constructor(data) {
+      this.id = data.id;
+      this.investorID = data.investorID;
+      this.network = data.network;
+      this.profileID = data.profileID;
+      this.steezID = data.steezID;
+      this.taste = data.taste;
+      this.villageID = data.villageID;
+    }
+
+    validate() {
+      if (!this.id || !this.investorID || !this.network || !this.profileID || !this.steezID || !this.taste || !this.villageID) {
+        throw new Error('Missing required fields');
+      }
+    }
+  
+    static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
+      const doc = await db.collection('investors').doc(id).get();
+      if (!doc.exists) {
+        throw new Error('Investor not found');
+      }
+      return new Investor({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchByProfileID(profileID) {
+      if (!profileID) {
+        throw new Error('Missing profileID');
+      }
+      const snapshot = await db.collection('investors').where('profileID', '==', profileID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching investors found');
+      }
+      return snapshot.docs.map(doc => new Investor({ id: doc.id, ...doc.data() }));
     }
   
     async save() {
-      await db.collection('investors').doc(this.id).set({
-        profileID: this.profileID,
-        taste: this.taste,
-        investorID: this.investorID,
-        steezID: this.steezID,
-        villageID: this.villageID,
-        network: this.network,
-      });
+      this.validate();
+      await db.collection('investors').doc(this.id).set({ ...this });
     }
   
-    async update(data) {
-        await db.collection('investors').doc(this.id).update(data);
+    async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
+      await db.collection('investors').doc(this.id).update(updateData);
     }
-
+  
     async delete() {
-        await db.collection('investors').doc(this.id).delete();
+      await db.collection('investors').doc(this.id).delete();
     }
 }
 
-module.exports = Investor;  
+module.exports = Investor;

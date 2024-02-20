@@ -1,39 +1,54 @@
 const db = require('../../../firebase-config');
 
 class Trade {
-    constructor(id, buyPrice, profileID, buyDate, steezID, tradeID, tradeType, status) {
-      this.id = id;
-      this.buyDate = buyDate;
-      this.buyPrice = buyPrice;
-      this.profileID = profileID;
-      this.status = status;
-      this.steezID = steezID;
-      this.tradeID = tradeID;
-      this.tradeType = tradeType;
+    constructor(data) {
+      this.id = data.id;
+      this.buyPrice = data.buyPrice;
+      this.profileID = data.profileID;
+      this.buyDate = data.buyDate;
+      this.steezID = data.steezID;
+      this.tradeID = data.tradeID;
+      this.tradeType = data.tradeType;
+      this.status = data.status;
     }
-  
-    async save() {
-      await db.collection('trade').doc(this.id).set({
-        buyPrice: this.buyPrice,
-        profileID: this.profileID,
-        buyDate: this.buyDate,
-        steezID: this.steezID,
-        tradeID: this.tradeID,
-        tradeType: this.tradeType,
-        status: this.status,
-      });
+
+    validate() {
+      if (!this.id || !this.buyPrice || !this.profileID || !this.buyDate || !this.steezID || !this.tradeID || !this.tradeType || !this.status) {
+        throw new Error('Missing required fields');
+      }
     }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('trade').doc(id).get();
       if (!doc.exists) {
         throw new Error('Trade not found');
       }
-      return new Trade(doc.id, doc.data().buyPrice, doc.data().profileID, doc.data().buyDate, doc.data().steezID,
-        doc.data().tradeID, doc.data().tradeType, doc.data().status);
+      return new Trade({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchByProfileID(profileID) {
+      if (!profileID) {
+        throw new Error('Missing profileID');
+      }
+      const snapshot = await db.collection('trade').where('profileID', '==', profileID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching trades found');
+      }
+      return snapshot.docs.map(doc => new Trade({ id: doc.id, ...doc.data() }));
+    }
+  
+    async save() {
+      this.validate();
+      await db.collection('trade').doc(this.id).set({ ...this });
     }
   
     async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
       await db.collection('trade').doc(this.id).update(updateData);
     }
   

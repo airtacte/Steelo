@@ -1,42 +1,59 @@
 const db = require('../../../firebase-config');
 
 class History {
-    constructor(id, feedback, browseDate, viewingTime, historyID, profileID, creatorID) {
-      this.id = id;
-      this.browseDate = browseDate;
-      this.creatorID = creatorID;
-      this.feedback = feedback;
-      this.historyID = historyID;
-      this.profileID = profileID;
-      this.viewingTime = viewingTime;
+    constructor(data) {
+      this.id = data.id;
+      this.feedback = data.feedback;
+      this.browseDate = data.browseDate;
+      this.viewingTime = data.viewingTime;
+      this.historyID = data.historyID;
+      this.profileID = data.profileID;
+      this.creatorID = data.creatorID;
     }
-  
-    async save() {
-      await db.collection('histories').doc(this.id).set({
-        feedback: this.feedback,
-        browseDate: this.browseDate,
-        viewingTime: this.viewingTime,
-        historyID: this.historyID,
-        profileID: this.profileID,
-        creatorID: this.creatorID,
-      });
+
+    validate() {
+      if (!this.id || !this.feedback || !this.browseDate || !this.viewingTime || !this.historyID || !this.profileID || !this.creatorID) {
+        throw new Error('Missing required fields');
+      }
     }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('histories').doc(id).get();
       if (!doc.exists) {
         throw new Error('History not found');
       }
-      return new History(doc.id, doc.data());
-    }
-  
-    async update(data) {
-        await db.collection('histories').doc(this.id).update(data);
+      return new History({ id: doc.id, ...doc.data() });
     }
 
+    static async fetchByProfileID(profileID) {
+      if (!profileID) {
+        throw new Error('Missing profileID');
+      }
+      const snapshot = await db.collection('histories').where('profileID', '==', profileID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching histories found');
+      }
+      return snapshot.docs.map(doc => new History({ id: doc.id, ...doc.data() }));
+    }
+  
+    async save() {
+      this.validate();
+      await db.collection('histories').doc(this.id).set({ ...this });
+    }
+  
+    async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
+      await db.collection('histories').doc(this.id).update(updateData);
+    }
+  
     async delete() {
-        await db.collection('histories').doc(this.id).delete();
+      await db.collection('histories').doc(this.id).delete();
     }
 }
 
-module.exports = History;  
+module.exports = History;

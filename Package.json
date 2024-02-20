@@ -4,7 +4,7 @@
   "description": "Demo for the Steelo Tokenomic Ecosystem",
   "main": "Hardhat.config.js",
   "scripts": {
-    "test": "jest",
+    "test": "mocha",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "dev": "nodemon index.js"
@@ -19,11 +19,13 @@
     "@react-native-async-storage/async-storage": "^1.22.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.3.2",
+    "chai": "^5.1.0",
     "ethereum-waffle": "^4.0.10",
     "ganache": "7.9.1",
     "hardhat": "^2.19.5",
     "hardhat-deploy": "^0.11.27",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "mocha": "^10.3.0"
   },
   "dependencies": {
     "@apollo/client": "^3.9.4",

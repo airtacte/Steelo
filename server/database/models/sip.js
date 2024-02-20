@@ -1,46 +1,65 @@
 const db = require('../../../firebase-config');
 
 class SIP {
-    constructor(id, duration, sipID, isVoteSuccess, sipRules, executionDeadline, initiator, executionDetails, description, startTime, sipVotes, executionConfirmation, sipType) {
-      this.id = id;
-      this.description = description;
-      this.duration = duration;
-      this.executionConfirmation = executionConfirmation;
-      this.executionDeadline = executionDeadline;
-      this.executionDetails = executionDetails;
-      this.initiator = initiator;
-      this.isVoteSuccess = isVoteSuccess;
-      this.sipID = sipID;
-      this.sipRules = sipRules;
-      this.sipType = sipType;
-      this.sipVotes = sipVotes;
-      this.startTime = startTime;
+    constructor(data) {
+      this.id = data.id;
+      this.description = data.description;
+      this.duration = data.duration;
+      this.executionConfirmation = data.executionConfirmation;
+      this.executionDeadline = data.executionDeadline;
+      this.executionDetails = data.executionDetails;
+      this.initiator = data.initiator;
+      this.isVoteSuccess = data.isVoteSuccess;
+      this.sipID = data.sipID;
+      this.sipRules = data.sipRules;
+      this.sipType = data.sipType;
+      this.sipVotes = data.sipVotes;
+      this.startTime = data.startTime;
+    }
+
+    validate() {
+      if (!this.id || !this.description || !this.duration || !this.executionConfirmation || !this.executionDeadline || !this.executionDetails || !this.initiator || !this.isVoteSuccess || !this.sipID || !this.sipRules || !this.sipType || !this.sipVotes || !this.startTime) {
+        throw new Error('Missing required fields');
+      }
+    }
+  
+    static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
+      const doc = await db.collection('sips').doc(id).get();
+      if (!doc.exists) {
+        throw new Error('SIP not found');
+      }
+      return new SIP({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchByInitiator(initiator) {
+      if (!initiator) {
+        throw new Error('Missing initiator');
+      }
+      const snapshot = await db.collection('sips').where('initiator', '==', initiator).get();
+      if (snapshot.empty) {
+        throw new Error('No matching SIPs found');
+      }
+      return snapshot.docs.map(doc => new SIP({ id: doc.id, ...doc.data() }));
     }
   
     async save() {
-      await db.collection('sips').doc(this.id).set({
-        duration: this.duration,
-        sipID: this.sipID,
-        isVoteSuccess: this.isVoteSuccess,
-        sipRules: this.sipRules,
-        executionDeadline: this.executionDeadline,
-        initiator: this.initiator,
-        executionDetails: this.executionDetails,
-        description: this.description,
-        startTime: this.startTime,
-        sipVotes: this.sipVotes,
-        executionConfirmation: this.executionConfirmation,
-        sipType: this.sipType,
-      });
+      this.validate();
+      await db.collection('sips').doc(this.id).set({ ...this });
     }
   
-    async update(data) {
-        await db.collection('sips').doc(this.id).update(data);
+    async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
+      await db.collection('sips').doc(this.id).update(updateData);
     }
-
+  
     async delete() {
-        await db.collection('sips').doc(this.id).delete();
+      await db.collection('sips').doc(this.id).delete();
     }
 }
 
-module.exports = SIP;  
+module.exports = SIP;

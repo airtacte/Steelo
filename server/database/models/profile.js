@@ -18,20 +18,44 @@ class Profile {
       this.username = data.username;
       this.walletAddress = data.walletAddress;
     }
+
+    validate() {
+      if (!this.id || !this.authentication || !this.avatarURI || !this.billingDetails || !this.bio || !this.email || !this.identificationProof || !this.isVerified || !this.phone || !this.postingDetails || !this.privacySettings || !this.profileID || !this.socialLinks || !this.username || !this.walletAddress) {
+        throw new Error('Missing required fields');
+      }
+    }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('profiles').doc(id).get();
       if (!doc.exists) {
         throw new Error('Profile not found');
       }
       return new Profile({ id: doc.id, ...doc.data() });
     }
+
+    static async fetchByUsername(username) {
+      if (!username) {
+        throw new Error('Missing username');
+      }
+      const snapshot = await db.collection('profiles').where('username', '==', username).get();
+      if (snapshot.empty) {
+        throw new Error('No matching profiles found');
+      }
+      return snapshot.docs.map(doc => new Profile({ id: doc.id, ...doc.data() }));
+    }
   
     async save() {
+      this.validate();
       await db.collection('profiles').doc(this.id).set({ ...this });
     }
   
     async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
       await db.collection('profiles').doc(this.id).update(updateData);
     }
   
@@ -40,4 +64,4 @@ class Profile {
     }
 }
 
-module.exports = Profile;  
+module.exports = Profile;

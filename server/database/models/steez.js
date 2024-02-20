@@ -1,48 +1,57 @@
 const db = require('../../../firebase-config');
 
 class Steez {
-    constructor(id, steezAmount, royaltiesGenerated, hasSoldInvestment, preOrderPrice, ownerHistory, creatorID, currentPrice, sellPrice, sellDate, transactionCount) {
-      this.id = id;
-      this.creatorID = creatorID;
-      this.currentPrice = currentPrice;
-      this.hasSoldInvestment = hasSoldInvestment;
-      this.ownerHistory = ownerHistory;
-      this.preOrderPrice = preOrderPrice;
-      this.royaltiesGenerated = royaltiesGenerated;
-      this.sellPrice = sellPrice;
-      this.sellDate = sellDate;
-      this.steezAmount = steezAmount;
-      this.steezID = steezID;
-      this.transactionCount = transactionCount;
+    constructor(data) {
+      this.id = data.id;
+      this.steezAmount = data.steezAmount;
+      this.royaltiesGenerated = data.royaltiesGenerated;
+      this.hasSoldInvestment = data.hasSoldInvestment;
+      this.preOrderPrice = data.preOrderPrice;
+      this.ownerHistory = data.ownerHistory;
+      this.creatorID = data.creatorID;
+      this.currentPrice = data.currentPrice;
+      this.sellPrice = data.sellPrice;
+      this.sellDate = data.sellDate;
+      this.transactionCount = data.transactionCount;
     }
-  
-    async save() {
-      await db.collection('steez').doc(this.id).set({
-        creatorID: this.creatorID,
-        currentPrice: this.currentPrice,
-        hasSoldInvestment: this.hasSoldInvestment,
-        ownerHistory: this.ownerHistory,
-        preOrderPrice: this.preOrderPrice,
-        royaltiesGenerated: this.royaltiesGenerated,
-        sellPrice: this.sellPrice,
-        sellDate: this.sellDate,
-        steezAmount: this.steezAmount,
-        steezID: this.steezID,
-        transactionCount: this.transactionCount,
-      });
+
+    validate() {
+      if (!this.id || !this.steezAmount || !this.royaltiesGenerated || this.hasSoldInvestment === undefined || !this.preOrderPrice || !this.ownerHistory || !this.creatorID || !this.currentPrice || !this.sellPrice || !this.sellDate || !this.transactionCount) {
+        throw new Error('Missing required fields');
+      }
     }
   
     static async fetchById(id) {
+      if (!id) {
+        throw new Error('Missing id');
+      }
       const doc = await db.collection('steez').doc(id).get();
       if (!doc.exists) {
         throw new Error('Steez not found');
       }
-      return new Steez(doc.id, doc.data().steezAmount, doc.data().royaltiesGenerated, doc.data().hasSoldInvestment,
-        doc.data().preOrderPrice, doc.data().ownerHistory, doc.data().creatorID, doc.data().currentPrice,
-        doc.data().sellPrice, doc.data().sellDate, doc.data().transactionCount);
+      return new Steez({ id: doc.id, ...doc.data() });
+    }
+
+    static async fetchByCreatorID(creatorID) {
+      if (!creatorID) {
+        throw new Error('Missing creatorID');
+      }
+      const snapshot = await db.collection('steez').where('creatorID', '==', creatorID).get();
+      if (snapshot.empty) {
+        throw new Error('No matching steez found');
+      }
+      return snapshot.docs.map(doc => new Steez({ id: doc.id, ...doc.data() }));
+    }
+  
+    async save() {
+      this.validate();
+      await db.collection('steez').doc(this.id).set({ ...this });
     }
   
     async update(updateData) {
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new Error('Missing update data');
+      }
       await db.collection('steez').doc(this.id).update(updateData);
     }
   
