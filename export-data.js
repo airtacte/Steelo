@@ -5,30 +5,31 @@ const fs = require('fs');
 // Initialize Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://firestore.googleapis.com/v1/projects/steelo-47/databases/(default)/documents'
+  databaseURL: 'https://steelo-testnet.firebaseio.com'
 });
 
 // Access Firestore database
 const db = admin.firestore();
 
-// Fetch data from Firestore
-const fetchData = async () => {
-  try {
-    const snapshot = await db.collection('Investor').get();
-    const data = snapshot.docs.map(doc => doc.data());
-    return data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return null;
-  }
-};
-
 // Export data
 const exportData = async () => {
-  const data = await fetchData();
-  if (data) {
+  try {
+    const collections = await db.listCollections();
+    const data = [];
+
+    for (const collectionRef of collections) {
+      const collectionSnapshot = await collectionRef.get();
+      collectionSnapshot.forEach(doc => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+    }
+
     const jsonData = JSON.stringify(data, null, 2);
+    // Save JSON data to a file
     fs.writeFileSync('firebaseData.json', jsonData);
+    console.log('Data exported successfully.');
+  } catch (error) {
+    console.error('Error exporting data:', error);
   }
 };
 
