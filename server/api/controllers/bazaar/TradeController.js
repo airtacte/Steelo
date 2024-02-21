@@ -14,6 +14,11 @@ exports.getMyOrders = async (req, res) => {
     // Code for a user to view their active and past orders
 };
 
-exports.executeTrade = async (req, res) => {
-    // Code to match and execute trades based on the order book
+exports.processTransaction = async (req, res) => {
+    try {
+        const transaction = await TransactionsService.processTransaction(req.body);
+        res.json(transaction);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 };

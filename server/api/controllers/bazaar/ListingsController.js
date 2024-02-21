@@ -1,9 +1,19 @@
 exports.createListing = async (req, res) => {
-    // Code to create a new listing
+    try {
+        const listing = await ListingsService.createListing(req.body);
+        res.status(201).json(listing);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 };
 
-exports.getListingDetails = async (req, res) => {
-    // Code to retrieve details of a listing
+exports.getListings = async (req, res) => {
+    try {
+        const listings = await ListingsService.fetchAllListings();
+        res.json(listings);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 };
 
 exports.updateListing = async (req, res) => {

@@ -1,0 +1,10 @@
+{
+    "SafeCore": "0x...",
+    "UniswapV4": "0x...",
+    "LensProtocol": "0x...",
+    "LidoDAO": "0x...",
+    "SteeloDiamond": {
+        "mainnet": "0xMainnetContractAddressForSteeloToken",
+        "testnet": "0xTestnetContractAddressForSteeloToken"
+      }    
+}
