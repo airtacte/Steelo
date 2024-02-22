@@ -1,4 +1,7 @@
 const AuctionsService = require('../services/auctionsService');
+const express = require('express');
+const { startAuction, placeBid, endAuction } = require('../../controllers/bazaar/transactions/auctionController');
+const router = express.Router();
 
 // Auction Management
 router.post('/initiateAuction', protect, initiateAuction);
@@ -23,3 +26,6 @@ exports.placeBid = async (req, res) => {
     }
 };
 
+router.post('/end', endAuction);
+
+module.exports = router;

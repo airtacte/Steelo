@@ -1,5 +1,6 @@
 const express = require('express');
-const { protect } = require('../middleware/authMiddleware');
+const analyticsController = require('../../controllers/bazaar/analyticsController');
+const { protect } = require('../../middleware/authMiddleware');
 const {
   addLiquidity,
   createPool,
@@ -10,7 +11,7 @@ const {
   stakeTokens,
   calculateYield,
   distributeRewards,
-} = require('../controllers/bazaarController');
+} = require('../../controllers/bazaarController');
 
 const router = express.Router();
 
@@ -19,5 +20,7 @@ exports.getSummary = async (req, res) => {
     // Code to retrieve market metrics or summary
 };
 
+// Route to get analytics data for a specific asset
+router.get('/analytics/:assetId', analyticsController.getAssetAnalytics);
 
 module.exports = router;

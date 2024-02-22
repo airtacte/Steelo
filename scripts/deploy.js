@@ -1,6 +1,3 @@
-/* global ethers */
-/* eslint prefer-const: "off" */
-
 const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
 
 async function deployContract(name) {

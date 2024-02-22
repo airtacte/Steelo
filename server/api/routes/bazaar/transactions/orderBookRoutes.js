@@ -1,7 +1,8 @@
-exports.getOrderBook = async (req, res) => {
-    // Code to retrieve the current state of the order book
-};
+const express = require('express');
+const { addOrder, removeOrder } = require('../../controllers/bazaar/transactions/OrderBookController');
+const router = express.Router();
 
-exports.getTopOrders = async (req, res) => {
-    // Code to retrieve the top 'n' buy and sell orders
-};
+router.post('/add', addOrder);
+router.post('/remove', removeOrder);
+
+module.exports = router;

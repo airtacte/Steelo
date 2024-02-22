@@ -1,15 +1,13 @@
-exports.createPurchase = async (req, res) => {
-    // Code to create a new purchase order
-};
+// server/api/controllers/bazaar/transactions/PurchaseController.js
 
-exports.getPurchaseDetails = async (req, res) => {
-    // Code to retrieve details of a purchase
+exports.initiatePurchase = async (req, res) => {
+    res.send('Purchase initiation functionality here.');
+  };
+  
+exports.completePurchase = async (req, res) => {
+    res.send('Purchase completion functionality here.');
 };
-
-exports.updatePurchaseStatus = async (req, res) => {
-    // Code to update the status of a purchase
-};
-
-exports.getAllPurchases = async (req, res) => {
-    // Code to retrieve all purchases for a user or seller
-};
+  
+exports.cancelPurchase = async (req, res) => {
+    res.send('Purchase cancellation functionality here.');
+}

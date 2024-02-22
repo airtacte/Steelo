@@ -1,19 +1,14 @@
-exports.getAllBlogs = async (req, res) => {
-    // Code to retrieve all blog posts or articles
-};
+const { getFirestore } = require('firebase-admin/firestore');
 
-exports.getBlogDetails = async (req, res) => {
-    // Code to retrieve details of a particular blog post or article
-};
-
-exports.createBlog = async (req, res) => {
-    // Code to create a new blog post or article
-};
-
-exports.updateBlog = async (req, res) => {
-    // Code to update a particular blog post or article
-};
-
-exports.deleteBlog = async (req, res) => {
-    // Code to delete a particular blog post or article
+exports.displayBlog = async (req, res) => {
+  try {
+    const db = getFirestore();
+    const doc = await db.collection('blogs').doc(req.params.id).get();
+    if (!doc.exists) {
+      return res.status(404).send('Blog not found');
+    }
+    res.status(200).json(doc.data());
+  } catch (error) {
+    res.status(500).send('Error retrieving blog');
+  }
 };

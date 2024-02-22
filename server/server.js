@@ -60,4 +60,11 @@ process.on('SIGTERM', () => {
     console.log('Http server closed.');
     // Ensure all connections like database, blockchain are properly closed here
   });
+
+const complianceRoutes = require('./api/routes/bazaar/security/complianceRoutes');
+app.use('/api/bazaar/security/compliance', complianceRoutes);
+  
+const inventoryRoutes = require('./api/routes/bazaar/transactions/inventoryRoutes');
+app.use('/api/bazaar/transactions/inventory', inventoryRoutes);
+
 });

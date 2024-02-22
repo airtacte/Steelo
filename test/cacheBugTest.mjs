@@ -1,11 +1,6 @@
-/* global ethers describe before it */
-/* eslint-disable prefer-const */
-
-const { deployDiamond } = require('../scripts/deploy.js')
-
-const { FacetCutAction } = require('../scripts/libraries/diamond.js')
-
-const { assert } = require('chai')
+import { deployDiamond } from '../scripts/deploy.js';
+import { FacetCutAction } from '../scripts/libraries/diamond.js';
+import { assert } from 'chai';
 
 // The diamond example comes with 8 function selectors
 // [cut, loupe, loupe, loupe, loupe, erc165, transferOwnership, owner]
@@ -106,4 +101,16 @@ describe('Cache bug test', async () => {
     assert.isFalse(selectors.includes(sel10), 'Contains sel10')
     assert.isFalse(selectors.includes(sel5), 'Contains sel5')
   })
+  
+  it('should not exhibit the cache bug', async () => {
+    try {
+      let selectors = await diamondLoupeFacet.facetFunctionSelectors(test1Facet.address);
+      assert.isTrue(selectors.includes(sel0), 'sel0 should be present in the facet selectors');
+      // Repeat for other selectors
+      assert.isFalse(selectors.includes(ownerSel), 'ownerSel should not be present in the facet selectors');
+      // Repeat for sel10 and sel5
+    } catch (error) {
+      assert.fail(`Unexpected error during test: ${error.message}`);
+    }
+  });
 })

@@ -1,7 +1,8 @@
-exports.getTopCreators = async (req, res) => {
-    // Code to retrieve a list of top creators
-};
+const express = require('express');
+const router = express.Router();
+const highlightController = require('../../controllers/bazaar/userExperience/highlightController');
 
-exports.getCreatorDetails = async (req, res) => {
-    // Code to retrieve details of a particular creator
-};
+router.get('/', highlightController.getHighlights);
+router.post('/', highlightController.addHighlight);
+
+module.exports = router;

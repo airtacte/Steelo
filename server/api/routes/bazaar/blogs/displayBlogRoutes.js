@@ -1,19 +1,8 @@
-exports.getAllBlogs = async (req, res) => {
-    // Code to retrieve all blog posts or articles
-};
+const express = require('express');
+const router = express.Router();
+const blogController = require('../../controllers/blogController');
 
-exports.getBlogDetails = async (req, res) => {
-    // Code to retrieve details of a particular blog post or article
-};
+// Route to display a specific blog post by ID
+router.get('/display/:id', blogController.displayBlog);
 
-exports.createBlog = async (req, res) => {
-    // Code to create a new blog post or article
-};
-
-exports.updateBlog = async (req, res) => {
-    // Code to update a particular blog post or article
-};
-
-exports.deleteBlog = async (req, res) => {
-    // Code to delete a particular blog post or article
-};
+module.exports = router;

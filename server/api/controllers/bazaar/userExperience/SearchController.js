@@ -1,3 +1,4 @@
-exports.searchListings = async (req, res) => {
-    // Code to search through listings based on provided criteria
-};
+exports.performSearch = async (req, res) => {
+    // Placeholder: Execute a search based on query parameters
+    res.json([{ id: 'searchResult1', title: 'Search Result 1' }]);
+  };

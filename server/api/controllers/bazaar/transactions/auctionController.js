@@ -17,3 +17,7 @@ exports.placeBid = async (req, res) => {
         res.status(500).send(error.message);
     }
 };
+
+exports.endAuction = async (req, res) => {
+    res.send('Auction end functionality here.');
+  };

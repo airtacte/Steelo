@@ -1,3 +1,7 @@
+const express = require('express');
+const { createListing, deleteListing } = require('../../controllers/bazaar/transactions/listingController');
+const router = express.Router();
+
 exports.createListing = async (req, res) => {
     try {
         const listing = await ListingsService.createListing(req.body);
@@ -27,3 +31,5 @@ exports.deleteListing = async (req, res) => {
 exports.getAllListings = async (req, res) => {
     // Code to retrieve all listings in the marketplace
 };
+
+module.exports = router;

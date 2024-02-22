@@ -1,7 +1,5 @@
-exports.calculateFees = async (req, res) => {
-    // Code to calculate fees for a particular transaction or listing
-};
+const displayRoyaltiesRoutes = require('./api/routes/bazaar/royalties/displayRoyaltiesRoutes');
+const royaltyRoutes = require('./api/routes/bazaar/royalties/royaltyRoutes');
 
-exports.updateFeeStructure = async (req, res) => {
-    // Code to update the marketplace's fee structure
-};
+app.use('/api/bazaar/royalties/display', displayRoyaltiesRoutes);
+app.use('/api/bazaar/royalties/manage', royaltyRoutes);
