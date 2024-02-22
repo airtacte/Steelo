@@ -1,11 +1,9 @@
-exports.sendGift = async (req, res) => {
-    // Code to send a gift
-};
+const express = require('express');
+const router = express.Router();
+const giftController = require('../../controllers/gallery/transactions/giftController');
 
-exports.receiveGift = async (req, res) => {
-    // Code to confirm receipt of a gift
-};
+router.post('/gift/send', giftController.sendGift);
+router.post('/gift/receive', giftController.receiveGift);
+router.get('/gift/history', giftController.getGiftHistory);
 
-exports.getGiftHistory = async (req, res) => {
-    // Code to retrieve gift history
-};
+module.exports = router;

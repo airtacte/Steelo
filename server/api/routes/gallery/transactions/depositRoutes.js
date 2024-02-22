@@ -1,11 +1,9 @@
-exports.initiateDeposit = async (req, res) => {
-    // Code to initiate a deposit
-};
+const express = require('express');
+const router = express.Router();
+const depositController = require('../../controllers/gallery/transactions/depositController');
 
-exports.confirmDeposit = async (req, res) => {
-    // Code to confirm a deposit
-};
+router.post('/deposit/initiate', depositController.initiateDeposit);
+router.post('/deposit/confirm', depositController.confirmDeposit);
+router.get('/deposit/history', depositController.getDepositHistory);
 
-exports.getDepositHistory = async (req, res) => {
-    // Code to retrieve deposit history
-};
+module.exports = router;

@@ -1,11 +1,9 @@
-exports.initiateWithdrawal = async (req, res) => {
-    // Code to initiate a withdrawal
-};
+const express = require('express');
+const router = express.Router();
+const withdrawalController = require('../../controllers/gallery/transactions/withdrawalController');
 
-exports.confirmWithdrawal = async (req, res) => {
-    // Code to confirm a withdrawal
-};
+router.post('/withdraw/initiate', withdrawalController.initiateWithdrawal);
+router.post('/withdraw/confirm', withdrawalController.confirmWithdrawal);
+router.get('/withdraw/history', withdrawalController.getWithdrawalHistory);
 
-exports.getWithdrawalHistory = async (req, res) => {
-    // Code to retrieve withdrawal history
-};
+module.exports = router;

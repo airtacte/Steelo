@@ -14,6 +14,7 @@ library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
     bytes32 constant STORAGE_SLOT = keccak256("diamond.storage");
 
+    event FacetOperation(address indexed facetAddress, string operationType);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
     
@@ -124,6 +125,8 @@ library LibDiamond {
             } else {
                 revert("LibDiamondCut: Incorrect FacetCutAction");
             }
+            // Emit the FacetOperation event
+            emit FacetOperation(facetAddress, "Added");
         }
         emit DiamondCut(_diamondCut, _init, _calldata);
         initializeDiamondCut(_init, _calldata);

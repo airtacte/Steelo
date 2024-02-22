@@ -1,15 +1,9 @@
-exports.createUserWallet = async (req, res) => {
-    // Code to create a user's wallet
-};
+const express = require('express');
+const router = express.Router();
+const { createSteez, updateSteez, deleteSteez } = require('../../controllers/gallery/steez/steezManagementController');
 
-exports.getUserWalletDetails = async (req, res) => {
-    // Code to retrieve a user's wallet details
-};
+router.post('/', createSteez);
+router.put('/:steezId', updateSteez);
+router.delete('/:steezId', deleteSteez);
 
-exports.updateUserWallet = async (req, res) => {
-    // Code to update a user's wallet details
-};
-
-exports.deleteUserWallet = async (req, res) => {
-    // Code to delete a user's wallet
-};
+module.exports = router;

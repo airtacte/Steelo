@@ -1,19 +1,11 @@
-exports.createTransaction = async (req, res) => {
-    // Code to create a new transaction
-};
+const express = require('express');
+const router = express.Router();
+const transactionsController = require('../../controllers/gallery/transactions/transactionsController');
 
-exports.getTransactionDetails = async (req, res) => {
-    // Code to retrieve details of a transaction
-};
+router.post('/create', transactionsController.createTransaction);
+router.get('/details', transactionsController.getTransactionDetails);
+router.put('/update', transactionsController.updateTransaction);
+router.delete('/delete', transactionsController.deleteTransaction);
+router.get('/history', transactionsController.getTransactionHistory);
 
-exports.updateTransaction = async (req, res) => {
-    // Code to update details of a transaction
-};
-
-exports.deleteTransaction = async (req, res) => {
-    // Code to delete a transaction
-};
-
-exports.getAllTransactions = async (req, res) => {
-    // Code to retrieve all transactions for a user
-};
+module.exports = router;

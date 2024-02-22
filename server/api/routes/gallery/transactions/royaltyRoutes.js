@@ -1,7 +1,8 @@
-exports.calculateFees = async (req, res) => {
-    // Code to calculate fees for a given transaction
-};
+const express = require('express');
+const router = express.Router();
+const royaltyController = require('../../controllers/gallery/transactions/royaltyController');
 
-exports.getFeesHistory = async (req, res) => {
-    // Code to retrieve history of fees collected
-};
+router.get('/calculate', royaltyController.calculateRoyalties);
+router.post('/distribute', royaltyController.distributeRoyalties);
+
+module.exports = router;

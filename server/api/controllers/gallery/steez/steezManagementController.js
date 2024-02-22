@@ -1,15 +1,14 @@
-exports.createUserWallet = async (req, res) => {
-    // Code to create a user's wallet
+exports.createSteez = async (req, res) => {
+    // Logic to create a new Steez
+    res.status(201).json({ message: 'Steez created successfully.' });
 };
-
-exports.getUserWalletDetails = async (req, res) => {
-    // Code to retrieve a user's wallet details
+  
+exports.updateSteez = async (req, res) => {
+    // Logic to update an existing Steez
+    res.status(200).json({ message: 'Steez updated successfully.' });
 };
-
-exports.updateUserWallet = async (req, res) => {
-    // Code to update a user's wallet details
-};
-
-exports.deleteUserWallet = async (req, res) => {
-    // Code to delete a user's wallet
+  
+exports.deleteSteez = async (req, res) => {
+    // Logic to delete a Steez
+    res.status(200).json({ message: 'Steez deleted successfully.' });
 };
