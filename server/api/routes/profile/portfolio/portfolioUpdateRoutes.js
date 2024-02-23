@@ -1,10 +1,8 @@
-exports.addUserInvestment = async (req, res) => {
-    try {
-        const newInvestment = new InvestmentModel(req.body);
-        const savedInvestment = await newInvestment.save();
+const express = require('express');
+const portfolioUpdateController = require('../../controllers/profile/portfolio/portfolioUpdateController');
+const router = express.Router();
 
-        res.status(201).json(savedInvestment);
-    } catch (error) {
-        res.status(500).send('Server error.');
-    }
-};
+// Update portfolio
+router.put('/profile/portfolio/:id', portfolioUpdateController.updatePortfolio);
+
+module.exports = router;

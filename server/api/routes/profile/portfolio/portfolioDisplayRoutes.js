@@ -1,13 +1,8 @@
-const InvestmentModel = require('../../models/InvestmentModel'); // Assuming you have an investments model. Adjust path accordingly.
+const express = require('express');
+const portfolioDisplayController = require('../../controllers/profile/portfolio/portfolioDisplayController');
+const router = express.Router();
 
-exports.getUserInvestments = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const investments = await InvestmentModel.find({ userId: userId });
+// Display portfolio
+router.get('/profile/portfolio/:id', portfolioDisplayController.getPortfolio);
 
-        res.status(200).json(investments);
-    } catch (error) {
-        res.status(500).send('Server error.');
-    }
-};
-
+module.exports = router;

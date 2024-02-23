@@ -1,11 +1,8 @@
 const express = require('express');
-const { uploadContent } = require('../controllers/contentController');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-
+const contentUploadController = require('../../controllers/profile/content/contentUploadController');
 const router = express.Router();
 
-// Route for content upload
-router.post('/upload', upload.single('file'), uploadContent);
+// Upload content
+router.post('/profile/content', contentUploadController.uploadContent);
 
 module.exports = router;

@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const firebaseAuth = require('../../services/firebaseAuth');
-const web3Service = require('../../services/web3Service');
+const AuthService = require('../../../services/AuthService'); // Assuming the path
+const web3Service = require('../../../services/web3Service'); // Assuming the path
 const jwt = require('jsonwebtoken');
 
 // Middleware to validate web3 token
-const { validateWeb3Token } = require('../../middleware/authMiddleware');
+const { validateWeb3Token } = require('../../../middleware/authMiddleware'); // Assuming the path
 
 // Route to handle user registration via Firebase and blockchain account linking
 router.post('/register', async (req, res) => {
     try {
         const { email, password, blockchainAddress } = req.body;
-        const userCredential = await firebaseAuth.register(email, password);
+        const userCredential = await AuthService.register(email, password);
         const token = jwt.sign({ uid: userCredential.user.uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Link blockchain address with Firebase user
@@ -27,7 +27,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const userCredential = await firebaseAuth.login(email, password);
+        const userCredential = await AuthService.login(email, password);
         const token = jwt.sign({ uid: userCredential.user.uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({ token, uid: userCredential.user.uid });

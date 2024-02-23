@@ -1,19 +1,35 @@
-// Necessary imports
-// ...
+const express = require('express');
+const InvestorUpdateService = require('../../../services/InvestorUpdateService'); // Assuming the path
+const router = express.Router();
 
-exports.getIncomingInvestments = async (req, res) => {
-    // Fetches all investments made towards the logged-in user.
-    // ...
-};
+// Get incoming investments
+router.get('/incoming', async (req, res) => {
+    try {
+        const investments = await InvestorUpdateService.getIncomingInvestments(req.user.id);
+        res.json(investments);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
 
-exports.acknowledgeInvestment = async (req, res) => {
-    // Allows the user to acknowledge or confirm an incoming investment.
-    // ...
-};
+// Acknowledge investment
+router.put('/acknowledge/:id', async (req, res) => {
+    try {
+        await InvestorUpdateService.acknowledgeInvestment(req.params.id);
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
 
-exports.declineInvestment = async (req, res) => {
-    // Gives the user an option to decline or refuse an incoming investment.
-    // ...
-};
+// Decline investment
+router.put('/decline/:id', async (req, res) => {
+    try {
+        await InvestorUpdateService.declineInvestment(req.params.id);
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
 
-// Add any other necessary functions related to handling investments received by the user.
+module.exports = router;

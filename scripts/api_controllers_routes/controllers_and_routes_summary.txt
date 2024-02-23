@@ -1,0 +1,428 @@
+List of Routes and Controllers
+
+Folder: bazaar/analytics
+---- File: analyticController.js
+-------- Relevant line: exports.getAssetAnalytics = async (req, res) => {
+
+Folder: bazaar/blogs
+---- File: displayBlogController.js
+-------- Relevant line: exports.displayBlog = async (req, res) => {
+---- File: payMeToReadController.js
+-------- Relevant line: exports.payMeToRead = async (req, res) => {
+---- File: uploadBlogController.js
+-------- Relevant line: exports.uploadBlog = async (req, res) => {
+
+Folder: bazaar/royalties
+---- File: displayRoyaltiesController.js
+-------- Relevant line: exports.displayRoyalties = async (req, res) => {
+---- File: royaltyController.js
+-------- Relevant line: exports.createRoyalty = async (req, res) => {
+
+Folder: bazaar/security
+---- File: complianceController.js
+-------- Relevant line: exports.checkCompliance = async (req, res) => {
+
+Folder: bazaar/transactions
+---- File: auctionController.js
+-------- Relevant line: exports.startAuction = async (req, res) => {
+-------- Relevant line: exports.placeBid = async (req, res) => {
+-------- Relevant line: exports.endAuction = async (req, res) => {
+---- File: exchangeController.js
+-------- Relevant line: exports.tradeAssets = async (req, res) => {
+-------- Relevant line: exports.getExchangeRates = async (req, res) => {
+---- File: inventoryController.js
+-------- Relevant line: exports.listInventoryItems = async (req, res) => {
+-------- Relevant line: exports.addInventoryItem = async (req, res) => {
+-------- Relevant line: exports.updateInventoryItem = async (req, res) => {
+-------- Relevant line: exports.deleteInventoryItem = async (req, res) => {
+---- File: listingController.js
+-------- Relevant line: exports.createListing = async (req, res) => {
+-------- Relevant line: exports.getListings = async (req, res) => {
+-------- Relevant line: exports.updateListing = async (req, res) => {
+-------- Relevant line: exports.deleteListing = async (req, res) => {
+-------- Relevant line: exports.getAllListings = async (req, res) => {
+---- File: OrderBookController.js
+-------- Relevant line: exports.addOrder = async (req, res) => {
+-------- Relevant line: exports.removeOrder = async (req, res) => {
+---- File: PurchaseController.js
+-------- Relevant line: exports.initiatePurchase = async (req, res) => {
+-------- Relevant line: exports.completePurchase = async (req, res) => {
+-------- Relevant line: exports.cancelPurchase = async (req, res) => {
+
+Folder: bazaar/userExperience
+---- File: categoryController.js
+-------- Relevant line: exports.getCategories = async (req, res) => {
+-------- Relevant line: exports.addCategory = async (req, res) => {
+---- File: highlightController.js
+-------- Relevant line: exports.getHighlights = async (req, res) => {
+-------- Relevant line: exports.addHighlight = async (req, res) => {
+---- File: historyController.js
+-------- Relevant line: exports.getUserHistory = async (req, res) => {
+-------- Relevant line: exports.clearHistory = async (req, res) => {
+---- File: recommendationController.js
+-------- Relevant line: exports.getRecommendations = async (req, res) => {
+---- File: reviewController.js
+-------- Relevant line: exports.postReview = async (req, res) => {
+-------- Relevant line: exports.editReview = async (req, res) => {
+-------- Relevant line: exports.deleteReview = async (req, res) => {
+---- File: SearchController.js
+-------- Relevant line: exports.performSearch = async (req, res) => {
+---- File: watchListController.js
+-------- Relevant line: router.post('/', async (req, res) => {
+-------- Relevant line: router.delete('/:id', async (req, res) => {
+-------- Relevant line: router.put('/:id', async (req, res) => {
+-------- Relevant line: router.get('/', async (req, res) => {
+
+Folder: common/admin
+---- File: contentControlController.js
+-------- Relevant line: router.put('/:id/contentControl', async (req, res) => {
+---- File: moderationController.js
+-------- Relevant line: router.put('/:id/moderate', async (req, res) => {
+---- File: systemSettingController.js
+-------- Relevant line: router.put('/:id/systemSetting', async (req, res) => {
+
+Folder: common/analytics
+---- File: adminReportController.js
+-------- Relevant line: router.get('/:id/adminReport', async (req, res) => {
+---- File: engagementController.js
+-------- Relevant line: router.get('/:id/engagement', async (req, res) => {
+---- File: featureUsageController.js
+-------- Relevant line: router.get('/:id/featureUsage', async (req, res) => {
+
+Folder: common/auth
+---- File: authController.js
+-------- Relevant line: router.post('/register', async (req, res) => {
+-------- Relevant line: router.post('/login', async (req, res) => {
+-------- Relevant line: router.post('/token', validateWeb3Token, (req, res) => {
+
+Folder: common/help
+---- File: FAQController.js
+-------- Relevant line: router.get('/faqs', async (req, res) => {
+---- File: helpController.js
+-------- Relevant line: router.get('/resources', async (req, res) => {
+---- File: ticketController.js
+-------- Relevant line: router.post('/ticket', async (req, res) => {
+
+Folder: common/notifications
+---- File: eventController.js
+-------- Relevant line: router.get('/events', async (req, res) => {
+---- File: notificationController.js
+-------- Relevant line: router.get('/notifications', async (req, res) => {
+---- File: updateController.js
+-------- Relevant line: router.get('/updates', async (req, res) => {
+
+Folder: common/payments
+---- File: cryptoController.js
+-------- Relevant line: router.get('/crypto', async (req, res) => {
+---- File: paymentController.js
+-------- Relevant line: router.get('/payments', async (req, res) => {
+---- File: walletController.js
+-------- Relevant line: router.get('/wallet', async (req, res) => {
+
+Folder: common/userSettings
+---- File: customisationController.js
+-------- Relevant line: router.get('/customisation', async (req, res) => {
+---- File: preferencesController.js
+-------- Relevant line: router.get('/preferences', async (req, res) => {
+---- File: settingsController.js
+-------- Relevant line: router.get('/settings', async (req, res) => {
+
+Folder: common/utils
+---- File: commonController.js
+-------- Relevant line: router.get('/common', async (req, res) => {
+---- File: filterController.js
+-------- Relevant line: router.get('/filters', async (req, res) => {
+---- File: searchController.js
+-------- Relevant line: router.get('/search', async (req, res) => {
+---- File: sortController.js
+-------- Relevant line: router.get('/sort', async (req, res) => {
+
+Folder: gallery/analytics
+---- File: analyticsDataController.js
+-------- Relevant line: exports.getAnalyticsData = async (req, res) => {
+---- File: performanceReportController.js
+-------- Relevant line: exports.getPerformanceReport = async (req, res) => {
+
+Folder: gallery/collection
+---- File: collectionDeletionController.js
+-------- Relevant line: exports.deleteCollection = async (req, res) => {
+---- File: collectionDisplayController.js
+-------- Relevant line: exports.displayCollection = async (req, res) => {
+---- File: collectionTradeController.js
+-------- Relevant line: exports.initiateTrade = async (req, res) => {
+-------- Relevant line: exports.completeTrade = async (req, res) => {
+---- File: collectionUpdateController.js
+-------- Relevant line: exports.updateCollection = async (req, res) => {
+---- File: collectionUploadController.js
+-------- Relevant line: exports.uploadCollection = async (req, res) => {
+
+Folder: gallery/engagement
+---- File: communitySharingController.js
+-------- Relevant line: exports.shareWithCommunity = async (req, res) => {
+---- File: contentInteractionController.js
+-------- Relevant line: exports.likeContent = async (req, res) => {
+-------- Relevant line: exports.commentOnContent = async (req, res) => {
+---- File: userPreferencesController.js
+-------- Relevant line: exports.updatePreferences = async (req, res) => {
+
+Folder: gallery/management
+---- File: metadataUpdateController.js
+-------- Relevant line: exports.updateMetadata = async (req, res) => {
+---- File: rightsAllocationController.js
+-------- Relevant line: exports.allocateRights = async (req, res) => {
+---- File: steezDeletionController.js
+-------- Relevant line: exports.deleteSteez = async (req, res) => {
+---- File: steezRetrievalController.js
+-------- Relevant line: exports.retrieveSteez = async (req, res) => {
+---- File: steezUpdateController.js
+-------- Relevant line: exports.updateSteez = async (req, res) => {
+---- File: steezUploadController.js
+-------- Relevant line: exports.uploadSteez = async (req, res) => {
+
+Folder: gallery/stakingRewards
+---- File: rewardCalculationController.js
+-------- Relevant line: exports.calculateRewards = async (req, res) => {
+---- File: stakeManagementController.js
+-------- Relevant line: exports.stakeSteelo = async (req, res) => {
+-------- Relevant line: exports.unstakeSteelo = async (req, res) => {
+-------- Relevant line: exports.getStakedAmount = async (req, res) => {
+---- File: stakeRewardsController.js
+-------- Relevant line: exports.distributeRewards = async (req, res) => {
+
+Folder: gallery/steez
+---- File: steezDisplayController.js
+-------- Relevant line: exports.displaySteez = async (req, res) => {
+---- File: steezManagementController.js
+-------- Relevant line: exports.createSteez = async (req, res) => {
+-------- Relevant line: exports.updateSteez = async (req, res) => {
+-------- Relevant line: exports.deleteSteez = async (req, res) => {
+---- File: steezTradeController.js
+-------- Relevant line: exports.tradeSteez = async (req, res) => {
+
+Folder: gallery/transactions
+---- File: conversionRateController.js
+-------- Relevant line: exports.getConversionRates = async (req, res) => {
+---- File: depositController.js
+-------- Relevant line: exports.makeDeposit = async (req, res) => {
+-------- Relevant line: exports.getDepositHistory = async (req, res) => {
+---- File: giftController.js
+-------- Relevant line: exports.sendGift = async (req, res) => {
+-------- Relevant line: exports.receiveGift = async (req, res) => {
+-------- Relevant line: exports.getGiftHistory = async (req, res) => {
+---- File: royaltyController.js
+-------- Relevant line: exports.calculateRoyalties = async (req, res) => {
+-------- Relevant line: exports.distributeRoyalties = async (req, res) => {
+---- File: transactionsController.js
+-------- Relevant line: exports.createTransaction = async (req, res) => {
+-------- Relevant line: exports.getTransactionDetails = async (req, res) => {
+-------- Relevant line: exports.updateTransaction = async (req, res) => {
+-------- Relevant line: exports.deleteTransaction = async (req, res) => {
+-------- Relevant line: exports.getTransactionHistory = async (req, res) => {
+---- File: withdrawalController.js
+-------- Relevant line: exports.initiateWithdrawal = async (req, res) => {
+-------- Relevant line: exports.confirmWithdrawal = async (req, res) => {
+-------- Relevant line: exports.getWithdrawalHistory = async (req, res) => {
+
+Folder: mosaic/analytics
+---- File: contentAnalyticsController.js
+-------- Relevant line: exports.getContentAnalytics = async (req, res) => {
+---- File: InteractionAnalyticsController.js
+-------- Relevant line: exports.getInteractionAnalytics = async (req, res) => {
+
+Folder: mosaic/credits
+---- File: creditAllocationController.js
+---- File: creditCollectionSplitController.js
+-------- Relevant line: exports.splitCollectionCredits = async (req, res) => {
+---- File: creditUpdateController.js
+-------- Relevant line: exports.updateCredits = async (req, res) => {
+
+Folder: mosaic/discovery
+---- File: contentFeedController.js
+-------- Relevant line: exports.getContentFeed = async (req, res) => {
+---- File: contentSuggestionController.js
+-------- Relevant line: exports.getContentSuggestions = async (req, res) => {
+---- File: trendAnalysisController.js
+-------- Relevant line: exports.analyzeTrends = async (req, res) => {
+---- File: userPreferenceController.js
+-------- Relevant line: exports.updateUserPreferences = async (req, res) => {
+
+Folder: mosaic/management
+---- File: collectionSettingsController.js
+-------- Relevant line: exports.updateSettings = async (req, res) => {
+-------- Relevant line: exports.getSettings = async (req, res) => {
+---- File: contentDeletionController.js
+-------- Relevant line: exports.deleteContent = async (req, res) => {
+---- File: contentPromotionController.js
+-------- Relevant line: exports.promoteContent = async (req, res) => {
+---- File: contentUpdateController.js
+-------- Relevant line: exports.updateContent = async (req, res) => {
+---- File: contentUploadController.js
+-------- Relevant line: exports.uploadContent = async (req, res) => {
+---- File: contentVisibilityController.js
+-------- Relevant line: exports.setVisibility = async (req, res) => {
+
+Folder: mosaic/steez
+---- File: steezAccessController.js
+-------- Relevant line: exports.getSteezDetails = async (req, res) => {
+-------- Relevant line: exports.transferSteez = async (req, res) => {
+
+Folder: mosaic/userInteraction
+---- File: contentCollectionController.js
+-------- Relevant line: exports.createCollection = async (req, res) => {
+-------- Relevant line: exports.addToCollection = async (req, res) => {
+-------- Relevant line: exports.removeFromCollection = async (req, res) => {
+---- File: contentInteractionController.js
+-------- Relevant line: exports.likeContent = async (req, res) => {
+-------- Relevant line: exports.commentOnContent = async (req, res) => {
+---- File: contentSharingController.js
+-------- Relevant line: exports.shareContent = async (req, res) => {
+
+Folder: profile/analytics
+---- File: profileAnalyticsController.js
+-------- Relevant line: router.get('/:id', async (req, res) => {
+-------- Relevant line: router.put('/:id', async (req, res) => {
+
+Folder: profile/collaborations
+---- File: collabDisplayController.js
+-------- Relevant line: router.get('/:id', async (req, res) => {
+---- File: collabManagementController.js
+-------- Relevant line: router.post('/', async (req, res) => {
+-------- Relevant line: router.delete('/:id', async (req, res) => {
+---- File: collabProposalController.js
+-------- Relevant line: router.post('/', async (req, res) => {
+---- File: collabUpdateController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+
+Folder: profile/community
+---- File: communityCreationController.js
+-------- Relevant line: router.post('/', async (req, res) => {
+---- File: communityManagementController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+-------- Relevant line: router.delete('/:id', async (req, res) => {
+---- File: investorDisplayController.js
+-------- Relevant line: router.get('/:id', async (req, res) => {
+-------- Relevant line: module.exports = router;exports.getInvestorDetails = async (req, res) => {
+---- File: investorInsightsController.js
+-------- Relevant line: router.get('/:id', async (req, res) => {
+---- File: investorUpdateController.js
+-------- Relevant line: router.get('/incoming', async (req, res) => {
+-------- Relevant line: router.put('/acknowledge/:id', async (req, res) => {
+-------- Relevant line: router.put('/decline/:id', async (req, res) => {
+
+Folder: profile/content
+---- File: contentDeletionController.js
+-------- Relevant line: router.delete('/:id', async (req, res) => {
+---- File: contentDisplayController.js
+-------- Relevant line: router.get('/:id', async (req, res) => {
+---- File: contentUpdateController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+---- File: contentUploadController.js
+-------- Relevant line: router.post('/', async (req, res) => {
+
+Folder: profile/credits
+---- File: creditDisplayController.js
+-------- Relevant line: router.get('/', async (req, res) => {
+---- File: creditEarningController.js
+-------- Relevant line: router.post('/', async (req, res) => {
+---- File: creditUpdateController.js
+-------- Relevant line: router.put('/', async (req, res) => {
+
+Folder: profile/followers
+---- File: displayFollowersController.js
+-------- Relevant line: router.get('/', async (req, res) => {
+---- File: userFollowController.js
+-------- Relevant line: router.post('/:id', async (req, res) => {
+---- File: userUnfollowController.js
+-------- Relevant line: router.delete('/:id', async (req, res) => {
+
+Folder: profile/management
+---- File: profileCreationController.js
+-------- Relevant line: router.post('/', async (req, res) => {
+---- File: profilePersonalisationController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+---- File: profileSettingsController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+---- File: profileVisibilityController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+
+Folder: profile/portfolio
+---- File: portfolioDisplayController.js
+-------- Relevant line: router.get('/:id', async (req, res) => {
+---- File: portfolioInsightsController.js
+-------- Relevant line: router.get('/:id/insights', async (req, res) => {
+---- File: portfolioUpdateController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+
+Folder: profile/security
+---- File: profileAccessController.js
+-------- Relevant line: router.put('/:id/access', async (req, res) => {
+---- File: profileSecurityController.js
+-------- Relevant line: router.put('/:id/security', async (req, res) => {
+
+Folder: profile/spaces
+---- File: spaceDeletionController.js
+-------- Relevant line: router.delete('/:id', async (req, res) => {
+---- File: spaceDisplayController.js
+-------- Relevant line: router.get('/:id', async (req, res) => {
+---- File: spaceUpdateController.js
+-------- Relevant line: router.put('/:id', async (req, res) => {
+
+Folder: profile/verification
+---- File: profileVerificationController.js
+-------- Relevant line: router.put('/:id/verify', async (req, res) => {
+
+Folder: village/analytics
+---- File: engagementAnalyticsController.js
+-------- Relevant line: router.get('/engagement', async (req, res) => {
+---- File: memberAnalyticsController.js
+-------- Relevant line: router.get('/members', async (req, res) => {
+
+Folder: village/community
+---- File: accessManagementController.js
+-------- Relevant line: router.put('/:id/access', async (req, res) => {
+---- File: collaborationController.js
+-------- Relevant line: router.post('/:id/collaborate', async (req, res) => {
+---- File: communityBoardController.js
+-------- Relevant line: router.get('/:id/board', async (req, res) => {
+---- File: eventController.js
+-------- Relevant line: router.post('/:id/event', async (req, res) => {
+
+Folder: village/feedback
+---- File: feedbackCollectionController.js
+-------- Relevant line: router.post('/:id/feedback', async (req, res) => {
+---- File: feedbackResponseController.js
+-------- Relevant line: router.put('/feedback/:id/response', async (req, res) => {
+
+Folder: village/governance
+---- File: governanceAnalyticsController.js
+-------- Relevant line: router.get('/analytics', async (req, res) => {
+---- File: proposalController.js
+-------- Relevant line: router.post('/:id/proposal', async (req, res) => {
+---- File: rewardDistributionController.js
+-------- Relevant line: router.post('/:id/rewards', async (req, res) => {
+---- File: rewardPolicyController.js
+-------- Relevant line: router.put('/:id/rewardPolicy', async (req, res) => {
+---- File: voteController.js
+-------- Relevant line: router.post('/:id/vote', async (req, res) => {
+
+Folder: village/messaging
+---- File: communityChatController.js
+-------- Relevant line: router.get('/:chatId/messages', async (req, res) => {
+-------- Relevant line: router.post('/:chatId/message', async (req, res) => {
+---- File: directMessagesController.js
+-------- Relevant line: router.get('/:senderId/:receiverId/messages', async (req, res) => {
+-------- Relevant line: router.post('/:senderId/:receiverId/message', async (req, res) => {
+---- File: notificationController.js
+-------- Relevant line: router.post('/:id/notification', async (req, res) => {
+
+Folder: village/moderation
+---- File: contentModerationController.js
+-------- Relevant line: router.put('/:id/moderate', async (req, res) => {
+---- File: moderationPolicyController.js
+-------- Relevant line: router.put('/:id/moderationPolicy', async (req, res) => {
+
+Folder: village/security
+---- File: incidentResponseController.js
+-------- Relevant line: router.post('/:id/incident', async (req, res) => {
+---- File: securityController.js
+-------- Relevant line: router.put('/:id/security', async (req, res) => {

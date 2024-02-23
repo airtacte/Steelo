@@ -1,4 +1,4 @@
-const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
+const { getSelectors, FacetCutAction } = require('../../libraries/diamond.js')
 
 async function deployContract(name) {
   const ContractFactory = await ethers.getContractFactory(name)

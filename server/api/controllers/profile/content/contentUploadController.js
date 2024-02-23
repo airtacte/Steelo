@@ -1,31 +1,15 @@
-const { getStorage } = require('firebase-admin/storage');
-const { getFirestore } = require('firebase-admin/firestore');
+const express = require('express');
+const ContentUploadService = require('../../../services/ContentUploadService'); // Assuming the path
+const router = express.Router();
 
-exports.uploadContent = async (req, res) => {
+// Upload content
+router.post('/', async (req, res) => {
   try {
-    const file = req.file; // File uploaded via Multer
-    const { userId, description } = req.body; // Assuming these are provided
-
-    const storage = getStorage();
-    const bucket = storage.bucket(); // Use default bucket, or specify if needed
-
-    // Upload file to Firebase Storage
-    const storageFile = await bucket.upload(file.path, {
-      destination: `content/${file.originalname}`, // Customize path as needed
-    });
-
-    // Save content metadata in Firestore
-    const db = getFirestore();
-    const contentRef = await db.collection('content').add({
-      userId,
-      description,
-      filePath: storageFile[0].metadata.fullPath,
-      // Add any additional metadata as needed
-    });
-
-    res.status(201).send({ contentId: contentRef.id, ...storageFile[0].metadata });
+    const contentMetadata = await ContentUploadService.uploadContent(req.file, req.body);
+    res.status(201).json(contentMetadata);
   } catch (error) {
-    console.error('Error uploading content:', error);
-    res.status(500).send('Error uploading content.');
+    res.status(500).send(error.message);
   }
-};
+});
+
+module.exports = router;

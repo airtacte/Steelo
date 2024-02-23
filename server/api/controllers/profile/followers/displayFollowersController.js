@@ -1,34 +1,15 @@
-const FollowerModel = require('../../models/FollowerModel'); // Assuming you have a followers model. Adjust path accordingly.
+const express = require('express');
+const FollowerService = require('../../../services/FollowerService'); // Assuming the path
+const router = express.Router();
 
-exports.getUserFollowers = async (req, res) => {
+// Display followers
+router.get('/', async (req, res) => {
     try {
-        const userId = req.params.id;
-        const followers = await FollowerModel.find({ followedUserId: userId });
-
-        res.status(200).json(followers);
+        const followers = await FollowerService.getFollowers(req.user.id);
+        res.json(followers);
     } catch (error) {
-        res.status(500).send('Server error.');
+        res.status(500).send(error.message);
     }
-};
+});
 
-exports.addFollower = async (req, res) => {
-    try {
-        const newFollower = new FollowerModel(req.body);
-        const savedFollower = await newFollower.save();
-
-        res.status(201).json(savedFollower);
-    } catch (error) {
-        res.status(500).send('Server error.');
-    }
-};
-
-exports.removeFollower = async (req, res) => {
-    try {
-        const followerId = req.params.id;
-        await FollowerModel.findByIdAndDelete(followerId);
-
-        res.status(200).send('Follower removed.');
-    } catch (error) {
-        res.status(500).send('Server error.');
-    }
-};
+module.exports = router;

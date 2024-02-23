@@ -1,0 +1,240 @@
+Contracts Summary: Functions and State Variables
+
+Folder: .
+---- File: DiamondCutFacet.sol
+-------- Functions:
+---------- initialize
+---------- diamondCut
+-------- State Variables:
+---------- facetVersion
+---- File: DiamondLoupeFacet.sol
+-------- Functions:
+---------- facets
+---------- facetFunctionSelectors
+---------- facetAddresses
+---------- facetAddress
+---------- supportsInterface
+-------- State Variables:
+---------- _INTERFACE_ID_ERC165
+---- File: DiamondOracleFacet.sol
+-------- Functions:
+---------- initialize
+---------- requestVolumeData
+---------- fulfill
+---------- getLatestPrice
+---------- getSteezTransactionCount
+---------- getSteeloCurrentPrice
+
+Folder: app
+---- File: AccessControlFacet.sol
+-------- Functions:
+---------- grantUpgradeRole
+---------- upgradeDiamond
+---------- grantRoleBasedOnTokenHolding
+-------- State Variables:
+---------- UPGRADE_ROLE
+---------- STEELO_ROLE
+---------- STEEZ_ROLE
+---- File: GasOptimisationFacet.sol
+-------- Functions:
+---------- bulkProcessData
+---- File: MultiSigFacet.sol
+-------- Functions:
+---------- initialize
+---------- exampleMultisigFunctionality
+---------- transferOwnership
+---- File: NotificationFacet.sol
+-------- Functions:
+---------- initialize
+---- File: OwnershipFacet.sol
+-------- Functions:
+---------- transferOwnership
+---------- owner
+---- File: SnapshotFacet.sol
+-------- Functions:
+---------- initialize
+---------- _incrementSnapshot
+---------- snapshotBalances
+---------- takeSnapshot
+---------- _takeSnapshot
+---- File: SocialNetworkFacet.sol
+-------- Functions:
+---------- ensureOrCreateUserProfile
+---------- executeUserTransaction
+---------- linkSafeToProfile
+---------- postContent
+---------- followProfile
+---------- likePost
+---------- getUserSafe
+---------- getUserProfileId
+---- File: UserExperienceFacet.sol
+-------- Functions:
+---------- initialize
+
+Folder: features
+---- File: BazaarFacet.sol
+-------- Functions:
+---------- initialize
+---------- listCreatorToken
+---------- bidCreatorToken
+---------- buyCreatorToken
+---------- getSuggestions
+---------- search
+---------- viewAnalytics
+---------- payForBlogPlacement
+---- File: GalleryFacet.sol
+-------- Functions:
+---------- initialize
+---------- displayNFTs
+---------- manageSteez
+---------- viewPortfolioAnalytics
+---------- transferNFT
+---------- transferSteez
+---- File: MosaicFacet.sol
+-------- Functions:
+---------- initialize
+---------- collectContent
+---------- follow
+---------- like
+---------- commentOnContent
+---------- invest
+---------- assignCredit
+---------- setExclusivity
+---------- checkExclusivity
+---- File: ProfileFacet.sol
+-------- Functions:
+---------- initialize
+---------- initialize
+---------- setProfile
+---------- usernameTaken
+---------- getProfile
+---------- postContent
+---------- addInvestor
+---------- updatePortfolio
+---------- createSpace
+---------- viewProfile
+---------- viewContent
+---------- viewInvestors
+---------- viewPortfolio
+---------- viewSpace
+---------- _addInvestor
+---------- _updatePortfolio
+---------- _createSpace
+---- File: VillageFacet.sol
+-------- Functions:
+---------- getKeyPair
+---------- initiateTransaction
+---------- releaseFunds
+---------- refund
+---------- initialize
+---------- createChat
+---------- sendMessage
+---------- groupChatGovernance
+---------- initiateP2PTransaction
+
+Folder: steelo
+---- File: STEELOFacet.sol
+-------- Functions:
+---------- initialize
+---------- steeloTGE
+---------- _transfer
+---------- tokenTransfer
+---------- steeloMint
+---------- calculateMintAmount
+---------- calculateSupplyCap
+---------- calculateBurnAmount
+---------- adjustMintRate
+---------- adjustBurnRate
+---------- burnTokens
+---------- getOwner
+---------- updateSteezTransactionCount
+---------- updateParameters
+---------- requestVolumeData
+---------- fulfill
+---------- stringToBytes32
+---- File: SteeloGovernanceFacet.sol
+-------- Functions:
+---------- initialize
+---------- createSIP
+---------- voteOnSIP
+---------- checkForExecution
+---------- executeSIP
+---- File: SteeloImprovementProposalFacet.sol
+-------- Functions:
+---------- initialize
+---------- createSIP
+---------- voteOnSIP
+---------- executeSIP
+---- File: SteeloStakingFacet.sol
+-------- Functions:
+---------- initialize
+---------- stake
+---------- unstake
+---------- calculateReward
+---------- distributeRewards
+---------- getTotalStaked
+---------- stakeAmount
+
+Folder: steez
+---- File: Collection.sol
+---- File: STEEZFacet.sol
+-------- Functions:
+---------- initialize
+---------- transferTokenOwnership
+---------- mint
+---------- preOrder
+---------- concludeAuction
+---------- launchToken
+---------- expandToken
+---------- expansionEligible
+---------- checkAndInitiateAnniversary
+---------- transferToken
+---------- safeBatchTransfer
+---------- safeBatchTransferFrom
+---------- _addLiquidityForToken
+---------- _mint
+---------- _convertTokenIdToAddress
+---------- _transfer
+---------- _removeInvestor
+---------- _addInvestor
+---------- getMaxAllowedMint
+---- File: SteezFeesFacet.sol
+-------- Functions:
+---------- initialize
+---------- setCommunitySplit
+---------- payRoyalties
+---------- claimRoyalty
+---------- viewRoyalties
+---------- updateRoyaltyRates
+---------- createSnapshot
+---------- _findSnapshotIndex
+---- File: SteezGovernanceFacet.sol
+-------- Functions:
+---------- initialize
+---------- proposeBenefitChange
+---------- voteOnProposal
+---------- executeProposal
+---------- _isSteezTokenHolder
+-------- State Variables:
+---------- MODERATOR_ROLE
+---- File: SteezManagementFacet.sol
+-------- Functions:
+---------- initialize
+---------- setMaxCreatorTokens
+---------- getMaxCreatorTokens
+---------- setBaseURI
+---------- baseURI
+---------- updateCreatorAddress
+---------- getCreatorAddress
+---------- setCreatorSplit
+---------- setTokenHolders
+---------- getHolders
+---------- pause
+---------- unpause
+---------- receive
+---------- _takeSnapshot
+---------- _isCreator
+---------- _exists
+-------- State Variables:
+---------- MANAGER_ROLE
+---------- PAUSER_ROLE
