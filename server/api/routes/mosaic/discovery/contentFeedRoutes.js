@@ -1,11 +1,7 @@
-const ContentService = require('../services/ContentService');
+const express = require('express');
+const router = express.Router();
+const contentFeedController = require('../../controllers/mosaic/discovery/contentFeedController');
 
-class MosaicContentViewerController {
-    async getContentDetails(req, res) {
-        let contentId = req.params.id;
-        let content = await ContentService.getContentById(contentId);
-        res.render('MosaicContentViewerView', { content: content });
-    }
-}
+router.get('/feed', contentFeedController.getContentFeed);
 
-module.exports = MosaicContentViewerController;
+module.exports = router;

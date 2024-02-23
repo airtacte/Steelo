@@ -1,11 +1,7 @@
 const express = require('express');
-const { uploadContent } = require('../controllers/contentController');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-
 const router = express.Router();
+const contentUploadController = require('../../controllers/mosaic/management/contentUploadController');
 
-// Route for content upload
-router.post('/upload', upload.single('file'), uploadContent);
+router.post('/upload', contentUploadController.uploadContent);
 
 module.exports = router;
