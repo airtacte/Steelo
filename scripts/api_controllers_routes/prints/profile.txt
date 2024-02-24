@@ -1,0 +1,290 @@
+List of Routes and Controllers in profile
+
+Sub-folder: analytics
+-- File: profileAnalyticsController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileAnalyticsService = require('../../../services/ProfileAnalyticsService'); // Assuming the path
+------ const router = express.Router();
+------ const analytics = await ProfileAnalyticsService.getAnalytics(req.params.id);
+------ const updatedAnalytics = await ProfileAnalyticsService.updateAnalytics(req.params.id, req.body);
+---- Functions:
+------ router.get('/:id', async (req, res) => {
+------ router.put('/:id', async (req, res) => {
+
+Sub-folder: collaborations
+-- File: collabDisplayController.js
+---- Constants:
+------ const express = require('express');
+------ const CollabDisplayService = require('../../../services/CollabDisplayService'); // Assuming the path
+------ const router = express.Router();
+------ const collabs = await CollabDisplayService.getCollabs(req.params.id);
+---- Functions:
+------ router.get('/:id', async (req, res) => {
+-- File: collabManagementController.js
+---- Constants:
+------ const express = require('express');
+------ const CollabManagementService = require('../../../services/CollabManagementService'); // Assuming the path
+------ const router = express.Router();
+------ const collab = await CollabManagementService.addCollab(req.body);
+---- Functions:
+------ router.post('/', async (req, res) => {
+------ router.delete('/:id', async (req, res) => {
+-- File: collabProposalController.js
+---- Constants:
+------ const express = require('express');
+------ const CollabProposalService = require('../../../services/CollabProposalService'); // Assuming the path
+------ const router = express.Router();
+------ const proposal = await CollabProposalService.proposeCollab(req.body);
+---- Functions:
+------ router.post('/', async (req, res) => {
+-- File: collabUpdateController.js
+---- Constants:
+------ const express = require('express');
+------ const CollabUpdateService = require('../../../services/CollabUpdateService'); // Assuming the path
+------ const router = express.Router();
+------ const updatedCollab = await CollabUpdateService.updateCollab(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+
+Sub-folder: community
+-- File: communityCreationController.js
+---- Constants:
+------ const express = require('express');
+------ const CommunityCreationService = require('../../../services/CommunityCreationService'); // Assuming the path
+------ const router = express.Router();
+------ const community = await CommunityCreationService.createCommunity(req.body);
+---- Functions:
+------ router.post('/', async (req, res) => {
+-- File: communityManagementController.js
+---- Constants:
+------ const express = require('express');
+------ const CommunityManagementService = require('../../../services/CommunityManagementService'); // Assuming the path
+------ const router = express.Router();
+------ const updatedCommunity = await CommunityManagementService.updateCommunity(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+------ router.delete('/:id', async (req, res) => {
+-- File: investorDisplayController.js
+---- Constants:
+------ const express = require('express');
+------ const InvestorDisplayService = require('../../../services/InvestorDisplayService'); // Assuming the path
+------ const router = express.Router();
+------ const investors = await InvestorDisplayService.getInvestors(req.params.id);
+---- Functions:
+------ router.get('/:id', async (req, res) => {
+------ module.exports = router;exports.getInvestorDetails = async (req, res) => {
+-- File: investorInsightsController.js
+---- Constants:
+------ const express = require('express');
+------ const InvestorInsightsService = require('../../../services/InvestorInsightsService'); // Assuming the path
+------ const router = express.Router();
+------ const insights = await InvestorInsightsService.getInsights(req.params.id);
+---- Functions:
+------ router.get('/:id', async (req, res) => {
+-- File: investorUpdateController.js
+---- Constants:
+------ const express = require('express');
+------ const InvestorUpdateService = require('../../../services/InvestorUpdateService'); // Assuming the path
+------ const router = express.Router();
+------ const investments = await InvestorUpdateService.getIncomingInvestments(req.user.id);
+---- Functions:
+------ router.get('/incoming', async (req, res) => {
+------ router.put('/acknowledge/:id', async (req, res) => {
+------ router.put('/decline/:id', async (req, res) => {
+
+Sub-folder: content
+-- File: contentDeletionController.js
+---- Constants:
+------ const express = require('express');
+------ const ContentDeletionService = require('../../../services/ContentDeletionService'); // Assuming the path
+------ const router = express.Router();
+---- Functions:
+------ router.delete('/:id', async (req, res) => {
+-- File: contentDisplayController.js
+---- Constants:
+------ const express = require('express');
+------ const ContentDisplayService = require('../../../services/ContentDisplayService'); // Assuming the path
+------ const router = express.Router();
+------ const content = await ContentDisplayService.getContent(req.params.id);
+---- Functions:
+------ router.get('/:id', async (req, res) => {
+-- File: contentUpdateController.js
+---- Constants:
+------ const express = require('express');
+------ const ContentUpdateService = require('../../../services/ContentUpdateService'); // Assuming the path
+------ const router = express.Router();
+------ const updatedContent = await ContentUpdateService.updateContent(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+-- File: contentUploadController.js
+---- Constants:
+------ const express = require('express');
+------ const ContentUploadService = require('../../../services/ContentUploadService'); // Assuming the path
+------ const router = express.Router();
+------ const contentMetadata = await ContentUploadService.uploadContent(req.file, req.body);
+---- Functions:
+------ router.post('/', async (req, res) => {
+
+Sub-folder: credits
+-- File: creditDisplayController.js
+---- Constants:
+------ const express = require('express');
+------ const CreditDisplayService = require('../../../services/CreditDisplayService'); // Assuming the path
+------ const router = express.Router();
+------ const credits = await CreditDisplayService.getCredits(req.user.id);
+---- Functions:
+------ router.get('/', async (req, res) => {
+-- File: creditEarningController.js
+---- Constants:
+------ const express = require('express');
+------ const CreditEarningService = require('../../../services/CreditEarningService'); // Assuming the path
+------ const router = express.Router();
+------ const newCredits = await CreditEarningService.earnCredits(req.user.id, req.body.amount);
+---- Functions:
+------ router.post('/', async (req, res) => {
+-- File: creditUpdateController.js
+---- Constants:
+------ const express = require('express');
+------ const CreditUpdateService = require('../../../services/CreditUpdateService'); // Assuming the path
+------ const router = express.Router();
+------ const updatedCredits = await CreditUpdateService.updateCredits(req.user.id, req.body.amount);
+---- Functions:
+------ router.put('/', async (req, res) => {
+
+Sub-folder: followers
+-- File: displayFollowersController.js
+---- Constants:
+------ const express = require('express');
+------ const FollowerService = require('../../../services/FollowerService'); // Assuming the path
+------ const router = express.Router();
+------ const followers = await FollowerService.getFollowers(req.user.id);
+---- Functions:
+------ router.get('/', async (req, res) => {
+-- File: userFollowController.js
+---- Constants:
+------ const express = require('express');
+------ const FollowerService = require('../../../services/FollowerService'); // Assuming the path
+------ const router = express.Router();
+---- Functions:
+------ router.post('/:id', async (req, res) => {
+-- File: userUnfollowController.js
+---- Constants:
+------ const express = require('express');
+------ const FollowerService = require('../../../services/FollowerService'); // Assuming the path
+------ const router = express.Router();
+---- Functions:
+------ router.delete('/:id', async (req, res) => {
+
+Sub-folder: management
+-- File: profileCreationController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileService = require('../../../services/ProfileService'); // Assuming the path
+------ const router = express.Router();
+------ const profile = await ProfileService.createProfile(req.body);
+---- Functions:
+------ router.post('/', async (req, res) => {
+-- File: profilePersonalisationController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileService = require('../../../services/ProfileService'); // Assuming the path
+------ const router = express.Router();
+------ const profile = await ProfileService.personaliseProfile(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+-- File: profileSettingsController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileService = require('../../../services/ProfileService'); // Assuming the path
+------ const router = express.Router();
+------ const profile = await ProfileService.updateSettings(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+-- File: profileVisibilityController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileService = require('../../../services/ProfileService'); // Assuming the path
+------ const router = express.Router();
+------ const profile = await ProfileService.updateVisibility(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+
+Sub-folder: portfolio
+-- File: portfolioDisplayController.js
+---- Constants:
+------ const express = require('express');
+------ const PortfolioService = require('../../../services/PortfolioService'); // Assuming the path
+------ const router = express.Router();
+------ const portfolio = await PortfolioService.getPortfolio(req.params.id);
+---- Functions:
+------ router.get('/:id', async (req, res) => {
+-- File: portfolioInsightsController.js
+---- Constants:
+------ const express = require('express');
+------ const PortfolioService = require('../../../services/PortfolioService'); // Assuming the path
+------ const router = express.Router();
+------ const insights = await PortfolioService.getInsights(req.params.id);
+---- Functions:
+------ router.get('/:id/insights', async (req, res) => {
+-- File: portfolioUpdateController.js
+---- Constants:
+------ const express = require('express');
+------ const PortfolioService = require('../../../services/PortfolioService'); // Assuming the path
+------ const router = express.Router();
+------ const portfolio = await PortfolioService.updatePortfolio(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+
+Sub-folder: security
+-- File: profileAccessController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileService = require('../../../services/ProfileService'); // Assuming the path
+------ const router = express.Router();
+------ const profile = await ProfileService.updateAccess(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id/access', async (req, res) => {
+-- File: profileSecurityController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileService = require('../../../services/ProfileService'); // Assuming the path
+------ const router = express.Router();
+------ const profile = await ProfileService.updateSecurity(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id/security', async (req, res) => {
+
+Sub-folder: spaces
+-- File: spaceDeletionController.js
+---- Constants:
+------ const express = require('express');
+------ const SpaceService = require('../../../services/SpaceService'); // Assuming the path
+------ const router = express.Router();
+---- Functions:
+------ router.delete('/:id', async (req, res) => {
+-- File: spaceDisplayController.js
+---- Constants:
+------ const express = require('express');
+------ const SpaceService = require('../../../services/SpaceService'); // Assuming the path
+------ const router = express.Router();
+------ const space = await SpaceService.getSpace(req.params.id);
+---- Functions:
+------ router.get('/:id', async (req, res) => {
+-- File: spaceUpdateController.js
+---- Constants:
+------ const express = require('express');
+------ const SpaceService = require('../../../services/SpaceService'); // Assuming the path
+------ const router = express.Router();
+------ const space = await SpaceService.updateSpace(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id', async (req, res) => {
+
+Sub-folder: verification
+-- File: profileVerificationController.js
+---- Constants:
+------ const express = require('express');
+------ const ProfileService = require('../../../services/ProfileService'); // Assuming the path
+------ const router = express.Router();
+------ const profile = await ProfileService.verifyProfile(req.params.id);
+---- Functions:
+------ router.put('/:id/verify', async (req, res) => {

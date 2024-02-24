@@ -1,0 +1,80 @@
+List of Routes and Controllers in mosaic
+
+Sub-folder: analytics
+-- File: contentAnalyticsController.js
+---- Constants:
+------ const { getFirestore } = require('firebase-admin/firestore');
+------ const contentId = req.params.contentId;
+------ const db = getFirestore();
+------ const analyticsData = await db.collection('contentAnalytics').doc(contentId).get();
+---- Functions:
+------ exports.getContentAnalytics = async (req, res) => {
+-- File: InteractionAnalyticsController.js
+---- Constants:
+------ const contentId = req.params.contentId;
+---- Functions:
+------ exports.getInteractionAnalytics = async (req, res) => {
+
+Sub-folder: credits
+-- File: creditAllocationController.js
+-- File: creditCollectionSplitController.js
+---- Functions:
+------ exports.splitCollectionCredits = async (req, res) => {
+-- File: creditUpdateController.js
+---- Functions:
+------ exports.updateCredits = async (req, res) => {
+
+Sub-folder: discovery
+-- File: contentFeedController.js
+---- Functions:
+------ exports.getContentFeed = async (req, res) => {
+-- File: contentSuggestionController.js
+---- Functions:
+------ exports.getContentSuggestions = async (req, res) => {
+-- File: trendAnalysisController.js
+---- Functions:
+------ exports.analyzeTrends = async (req, res) => {
+-- File: userPreferenceController.js
+---- Functions:
+------ exports.updateUserPreferences = async (req, res) => {
+
+Sub-folder: management
+-- File: collectionSettingsController.js
+---- Functions:
+------ exports.updateSettings = async (req, res) => {
+------ exports.getSettings = async (req, res) => {
+-- File: contentDeletionController.js
+---- Functions:
+------ exports.deleteContent = async (req, res) => {
+-- File: contentPromotionController.js
+---- Functions:
+------ exports.promoteContent = async (req, res) => {
+-- File: contentUpdateController.js
+---- Functions:
+------ exports.updateContent = async (req, res) => {
+-- File: contentUploadController.js
+---- Functions:
+------ exports.uploadContent = async (req, res) => {
+-- File: contentVisibilityController.js
+---- Functions:
+------ exports.setVisibility = async (req, res) => {
+
+Sub-folder: steez
+-- File: steezAccessController.js
+---- Functions:
+------ exports.getSteezDetails = async (req, res) => {
+------ exports.transferSteez = async (req, res) => {
+
+Sub-folder: userInteraction
+-- File: contentCollectionController.js
+---- Functions:
+------ exports.createCollection = async (req, res) => {
+------ exports.addToCollection = async (req, res) => {
+------ exports.removeFromCollection = async (req, res) => {
+-- File: contentInteractionController.js
+---- Functions:
+------ exports.likeContent = async (req, res) => {
+------ exports.commentOnContent = async (req, res) => {
+-- File: contentSharingController.js
+---- Functions:
+------ exports.shareContent = async (req, res) => {

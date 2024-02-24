@@ -1,0 +1,84 @@
+Contracts Summary: Functions and State Variables
+
+Folder: app
+
+-- File: AccessControlFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
+------ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+------ import "@openzeppelin/contracts/access/AccessControl.sol";
+---- State Variables:
+------ constant UPGRADE_ROLE
+------ constant STEELO_ROLE
+------ constant STEEZ_ROLE
+---- Functions:
+------ grantUpgradeRole requires: address account
+------ upgradeDiamond requires: IDiamondCut.FacetCut[] memory cuts
+------ grantRoleBasedOnTokenHolding requires: address account
+
+-- File: GasOptimisationFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+---- Functions:
+------ bulkProcessData requires: uint256[] calldata data
+
+-- File: MultiSigFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+------ import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+------ import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
+---- State Variables:
+------ constant SAFE_PROXY_FACTORY
+------ constant SAFE_MASTER_COPY
+---- Functions:
+------ initialize requires: 
+------ exampleMultisigFunctionality requires: 
+------ transferOwnership requires: address newOwner
+
+-- File: NotificationFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+---- Functions:
+------ initialize requires: 
+
+-- File: OwnershipFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { IERC173 } from "../../interfaces/IERC173.sol";
+---- Functions:
+------ transferOwnership requires: address _newOwner
+------ owner requires: 
+
+-- File: SnapshotFacet.sol
+---- State Variables:
+------ private _snapshotCounter
+------ private snapshotCounter
+------ private _lastSnapshotTimestamp
+---- Functions:
+------ initialize requires: 
+------ _incrementSnapshot requires: 
+------ snapshotBalances requires: address account, uint256 balance
+------ takeSnapshot requires: 
+------ _takeSnapshot requires: 
+
+-- File: SocialNetworkFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
+---- Functions:
+------ ensureOrCreateUserProfile requires: 
+------ linkSafeToProfile requires: address safeAddress
+------ postContent requires: uint256 profileId, string calldata contentUri
+------ followProfile requires: uint256 profileIdToFollow
+------ likePost requires: uint256 postId
+------ getUserSafe requires: address userAddress
+------ getUserProfileId requires: address userAddress
+
+-- File: UserExperienceFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+---- Functions:
+------ initialize requires: 

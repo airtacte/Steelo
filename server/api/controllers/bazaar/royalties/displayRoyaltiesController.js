@@ -1,4 +1,12 @@
-const { getFirestore } = require('firebase-admin/firestore');
+const Web3 = require('web3');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+require('dotenv').config();
+
+const provider = new HDWalletProvider(
+  process.env.MNEMONIC,
+  process.env.POLYGON_ZKEVM_TESTNET_RPC_URL
+);
+const web3 = new Web3(provider);
 
 exports.displayRoyalties = async (req, res) => {
   try {
@@ -12,6 +20,25 @@ exports.displayRoyalties = async (req, res) => {
     let royalties = [];
     royaltiesSnapshot.forEach(doc => {
       royalties.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Placeholder for the contract address and ABI
+    const contractAddress = 'your-contract-address';
+    const contractABI = []; // your contract ABI
+
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    // Placeholder for the creator's address
+    const creatorAddress = 'creator-address';
+
+    // Fetch the creator's royalties from the smart contract
+    const creatorRoyalties = await contract.methods.getRoyalties(creatorAddress).call();
+
+    // Add the creator's royalties from the smart contract to the royalties array
+    royalties.push({
+      id: 'from-smart-contract',
+      creatorId: req.params.creatorId,
+      royalties: creatorRoyalties
     });
     
     res.status(200).json(royalties);

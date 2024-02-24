@@ -1,0 +1,212 @@
+List of Routes and Controllers in common
+
+Sub-folder: admin
+-- File: contentControlController.js
+---- Constants:
+------ const express = require('express');
+------ const AdminService = require('../../../services/AdminService'); // Assuming the path
+------ const router = express.Router();
+------ const control = await AdminService.controlContent(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id/contentControl', async (req, res) => {
+-- File: moderationController.js
+---- Constants:
+------ const express = require('express');
+------ const AdminService = require('../../../services/AdminService'); // Assuming the path
+------ const router = express.Router();
+------ const moderation = await AdminService.moderateContent(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id/moderate', async (req, res) => {
+-- File: systemSettingController.js
+---- Constants:
+------ const express = require('express');
+------ const AdminService = require('../../../services/AdminService'); // Assuming the path
+------ const router = express.Router();
+------ const settings = await AdminService.updateSystemSettings(req.params.id, req.body);
+---- Functions:
+------ router.put('/:id/systemSetting', async (req, res) => {
+
+Sub-folder: analytics
+-- File: adminReportController.js
+---- Constants:
+------ const express = require('express');
+------ const AnalyticsService = require('../../../services/AnalyticsService'); // Assuming the path
+------ const router = express.Router();
+------ const report = await AnalyticsService.generateAdminReport(req.params.id);
+---- Functions:
+------ router.get('/:id/adminReport', async (req, res) => {
+-- File: engagementController.js
+---- Constants:
+------ const express = require('express');
+------ const AnalyticsService = require('../../../services/AnalyticsService'); // Assuming the path
+------ const router = express.Router();
+------ const engagement = await AnalyticsService.getEngagementData(req.params.id);
+---- Functions:
+------ router.get('/:id/engagement', async (req, res) => {
+-- File: featureUsageController.js
+---- Constants:
+------ const express = require('express');
+------ const AnalyticsService = require('../../../services/AnalyticsService'); // Assuming the path
+------ const router = express.Router();
+------ const usage = await AnalyticsService.getFeatureUsageData(req.params.id);
+---- Functions:
+------ router.get('/:id/featureUsage', async (req, res) => {
+
+Sub-folder: auth
+-- File: authController.js
+---- Constants:
+------ const express = require('express');
+------ const router = express.Router();
+------ const AuthService = require('../../../services/AuthService'); // Assuming the path
+------ const web3Service = require('../../../services/web3Service'); // Assuming the path
+------ const jwt = require('jsonwebtoken');
+------ const { validateWeb3Token } = require('../../../middleware/authMiddleware'); // Assuming the path
+------ const { email, password, blockchainAddress } = req.body;
+------ const userCredential = await AuthService.register(email, password);
+------ const token = jwt.sign({ uid: userCredential.user.uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
+------ const { email, password } = req.body;
+------ const userCredential = await AuthService.login(email, password);
+------ const token = jwt.sign({ uid: userCredential.user.uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
+------ const newToken = jwt.sign({ uid: req.user.uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
+---- Functions:
+------ router.post('/register', async (req, res) => {
+------ router.post('/login', async (req, res) => {
+------ router.post('/token', validateWeb3Token, (req, res) => {
+
+Sub-folder: help
+-- File: FAQController.js
+---- Constants:
+------ const express = require('express');
+------ const HelpService = require('../../../services/HelpService'); // Assuming the path
+------ const router = express.Router();
+------ const faqs = await HelpService.getFAQs();
+---- Functions:
+------ router.get('/faqs', async (req, res) => {
+-- File: helpController.js
+---- Constants:
+------ const express = require('express');
+------ const HelpService = require('../../../services/HelpService'); // Assuming the path
+------ const router = express.Router();
+------ const resources = await HelpService.getHelpResources();
+---- Functions:
+------ router.get('/resources', async (req, res) => {
+-- File: ticketController.js
+---- Constants:
+------ const express = require('express');
+------ const HelpService = require('../../../services/HelpService'); // Assuming the path
+------ const router = express.Router();
+------ const ticket = await HelpService.submitTicket(req.body);
+---- Functions:
+------ router.post('/ticket', async (req, res) => {
+
+Sub-folder: notifications
+-- File: eventController.js
+---- Constants:
+------ const express = require('express');
+------ const NotificationService = require('../../../services/NotificationService'); // Assuming the path
+------ const router = express.Router();
+------ const events = await NotificationService.getEvents();
+---- Functions:
+------ router.get('/events', async (req, res) => {
+-- File: notificationController.js
+---- Constants:
+------ const express = require('express');
+------ const NotificationService = require('../../../services/NotificationService'); // Assuming the path
+------ const router = express.Router();
+------ const notifications = await NotificationService.getNotifications();
+---- Functions:
+------ router.get('/notifications', async (req, res) => {
+-- File: updateController.js
+---- Constants:
+------ const express = require('express');
+------ const NotificationService = require('../../../services/NotificationService'); // Assuming the path
+------ const router = express.Router();
+------ const updates = await NotificationService.getUpdates();
+---- Functions:
+------ router.get('/updates', async (req, res) => {
+
+Sub-folder: payments
+-- File: cryptoController.js
+---- Constants:
+------ const express = require('express');
+------ const PaymentService = require('../../../services/PaymentService'); // Assuming the path
+------ const router = express.Router();
+------ const cryptoPayments = await PaymentService.getCryptoPayments();
+---- Functions:
+------ router.get('/crypto', async (req, res) => {
+-- File: paymentController.js
+---- Constants:
+------ const express = require('express');
+------ const PaymentService = require('../../../services/PaymentService'); // Assuming the path
+------ const router = express.Router();
+------ const payments = await PaymentService.getPayments();
+---- Functions:
+------ router.get('/payments', async (req, res) => {
+-- File: walletController.js
+---- Constants:
+------ const express = require('express');
+------ const PaymentService = require('../../../services/PaymentService'); // Assuming the path
+------ const router = express.Router();
+------ const wallet = await PaymentService.getWalletDetails();
+---- Functions:
+------ router.get('/wallet', async (req, res) => {
+
+Sub-folder: userSettings
+-- File: customisationController.js
+---- Constants:
+------ const express = require('express');
+------ const UserSettingsService = require('../../../services/UserSettingsService'); // Assuming the path
+------ const router = express.Router();
+------ const customisation = await UserSettingsService.getCustomisation();
+---- Functions:
+------ router.get('/customisation', async (req, res) => {
+-- File: preferencesController.js
+---- Constants:
+------ const express = require('express');
+------ const UserSettingsService = require('../../../services/UserSettingsService'); // Assuming the path
+------ const router = express.Router();
+------ const preferences = await UserSettingsService.getPreferences();
+---- Functions:
+------ router.get('/preferences', async (req, res) => {
+-- File: settingsController.js
+---- Constants:
+------ const express = require('express');
+------ const UserSettingsService = require('../../../services/UserSettingsService'); // Assuming the path
+------ const router = express.Router();
+------ const settings = await UserSettingsService.getSettings();
+---- Functions:
+------ router.get('/settings', async (req, res) => {
+
+Sub-folder: utils
+-- File: commonController.js
+---- Constants:
+------ const express = require('express');
+------ const UtilsService = require('../../../services/UtilsService'); // Assuming the path
+------ const router = express.Router();
+------ const commonUtils = await UtilsService.getCommonUtils();
+---- Functions:
+------ router.get('/common', async (req, res) => {
+-- File: filterController.js
+---- Constants:
+------ const express = require('express');
+------ const UtilsService = require('../../../services/UtilsService'); // Assuming the path
+------ const router = express.Router();
+------ const filters = await UtilsService.getFilters();
+---- Functions:
+------ router.get('/filters', async (req, res) => {
+-- File: searchController.js
+---- Constants:
+------ const express = require('express');
+------ const UtilsService = require('../../../services/UtilsService'); // Assuming the path
+------ const router = express.Router();
+------ const searchResults = await UtilsService.getSearchResults(req.query);
+---- Functions:
+------ router.get('/search', async (req, res) => {
+-- File: sortController.js
+---- Constants:
+------ const express = require('express');
+------ const UtilsService = require('../../../services/UtilsService'); // Assuming the path
+------ const router = express.Router();
+------ const sortedResults = await UtilsService.getSortedResults(req.query);
+---- Functions:
+------ router.get('/sort', async (req, res) => {

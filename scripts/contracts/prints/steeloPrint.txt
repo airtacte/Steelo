@@ -1,0 +1,74 @@
+Contracts Summary: Functions and State Variables
+
+Folder: steelo
+
+-- File: STEELOFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+------ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+------ import "@openzeppelin/contracts/utils/Strings.sol";
+------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+---- Functions:
+------ steeloTGE requires: uint256 _steezTransactions, uint256 _currentPrice
+------ _transfer requires: address sender, address recipient, uint256 amount
+------ tokenTransfer requires: address recipient, uint256 amount
+------ steeloMint requires: uint256 _steezTransactions, uint256 _currentPrice
+------ calculateMintAmount requires: uint256 _steezTransactions, uint256 _currentPrice
+------ calculateSupplyCap requires: uint256 _currentPrice
+------ calculateBurnAmount requires: uint256 amount
+------ adjustMintRate requires: uint256 _newMintRate
+------ adjustBurnRate requires: uint256 _newBurnRate
+------ burnTokens requires: 
+------ getOwner requires: 
+------ updateSteezTransactionCount requires: uint256 _mintAmount
+------ updateParameters requires: uint256 _steezTransactionCount, uint256 _currentPrice
+------ requestVolumeData requires: 
+------ fulfill requires: bytes32 _requestId, uint256 _steezTransactionCount
+------ stringToBytes32 requires: string memory source
+
+-- File: SteeloGovernanceFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { IAppFacet } from  "../../interfaces/IAppFacet.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+---- State Variables:
+------ public sipCount
+---- Functions:
+------ initialize requires: 
+------ createSIP requires: SIPType _sipType, string memory _description
+------ voteOnSIP requires: uint256 _sipId, bool _voteFor
+------ checkForExecution requires: uint256 _sipId
+------ executeSIP requires: uint256 _sipId
+
+-- File: SteeloImprovementProposalFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "hardhat/console.sol";
+---- Functions:
+------ initialize requires: 
+------ createSIP requires: string memory _description, ProposalType _type, uint256 _duration
+------ voteOnSIP requires: uint256 _sipId, bool _support
+------ executeSIP requires: uint256 _sipId
+
+-- File: SteeloStakingFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ISteeloFacet } from "../../interfaces/ISteeloFacet.sol";
+------ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+---- Functions:
+------ initialize requires: address _steeloFacet
+------ stake requires: uint256 _amount
+------ unstake requires: uint256 _amount
+------ calculateReward requires: address stakeholder
+------ distributeRewards requires: 
+------ getTotalStaked requires: 
+------ stakeAmount requires: address _user

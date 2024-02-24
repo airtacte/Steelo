@@ -1,9 +1,20 @@
+const Category = require('../../models/Category');
+
 exports.getCategories = async (req, res) => {
-    // Placeholder: Fetch categories from database
-    res.json([{ id: 1, name: 'Art' }, { id: 2, name: 'Music' }]);
-  };
-  
-  exports.addCategory = async (req, res) => {
-    // Placeholder: Add a new category to the database
+  try {
+    const categories = await Category.find();
+    res.json(categories);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.addCategory = async (req, res) => {
+  try {
+    const category = new Category(req.body);
+    await category.save();
     res.status(201).send('Category added successfully');
-  };  
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};

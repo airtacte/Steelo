@@ -7,7 +7,7 @@ def extract_info_from_sol_files(contracts_directory, output_directory):
     if not os.path.exists(output_directory_path):
         os.makedirs(output_directory_path)
     
-    output_file_path = os.path.join(output_directory_path, "contracts_summary.txt")
+    output_file_path = os.path.join(output_directory_path, "diamondPrint.txt")
 
     with open(output_file_path, 'w', encoding='utf-8') as out_file:
         def write_to_file(content):
@@ -23,31 +23,38 @@ def extract_info_from_sol_files(contracts_directory, output_directory):
 
                 for sol_file in sol_files:
                     file_path = os.path.join(root, sol_file)
-                    write_to_file("---- File: " + sol_file)
+                    write_to_file("\n-- File: " + sol_file)
 
                     with open(file_path, 'r', encoding='utf-8') as file:
                         content = file.read()
 
+                    # Extract import lines
+                    import_lines = re.findall(r'^import .*;$', content, re.MULTILINE)
+                    if import_lines:
+                        write_to_file("---- Imports:")
+                        for line in import_lines:
+                            write_to_file("------ " + line)
+
                     # Extract functions and state variables using regex
-                    state_vars = re.findall(r'(?:public|private|internal|external)\s+([a-zA-Z0-9_]+\s+[a-zA-Z0-9_]+)\s*(?:=.*?;|;)' , content)
+                    state_vars = re.findall(r'(?:event|string|address|uint256|int256|bool|mapping|modifier|struct|public|private|internal|external)\s+([a-zA-Z0-9_]+\s+[a-zA-Z0-9_]+)\s*(?:=.*?;|;)', content)
                     functions = re.findall(r'\bfunction\s+([a-zA-Z0-9_]+)\s*\((.*?)\)\s*(?:public|private|internal|external)', content)
 
                     if state_vars:
-                        write_to_file("-------- State Variables:")
+                        write_to_file("---- State Variables:")
                         for var in state_vars:
-                            var = re.sub(r'\s*=\s*.*?;', ';', var)  # Remove default values
-                            write_to_file("---------- " + var)
+                            var = re.sub(r'\s*=\s*.*?;', ';', var)
+                            write_to_file("------ " + var)
                             
                     if functions:
-                        write_to_file("-------- Functions:")
+                        write_to_file("---- Functions:")
                         for func in functions:
                             func_name = func[0]
-                            func_params = re.sub(r'\s*=\s*.*?,', ',', func[1])  # Remove default values
-                            func_params = re.sub(r'\s*=\s*.*?\)', ')', func_params)  # Remove default values
-                            write_to_file("---------- " + func_name + " requires: " + func_params)
+                            func_params = re.sub(r'\s*=\s*.*?,', ',', func[1])
+                            func_params = re.sub(r'\s*=\s*.*?\)', ')', func_params)
+                            write_to_file("------ " + func_name + " requires: " + func_params)
 
 # Define the base directory to analyze and the output directory
 contracts_directory = "contracts/facets"
-output_directory = "scripts/contracts"
+output_directory = "scripts/contracts/prints"
 
 extract_info_from_sol_files(contracts_directory, output_directory)

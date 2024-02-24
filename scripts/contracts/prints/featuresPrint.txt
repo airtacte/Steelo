@@ -1,0 +1,103 @@
+Contracts Summary: Functions and State Variables
+
+Folder: features
+
+-- File: BazaarFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
+------ import { IBazaarFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+---- Functions:
+------ initialize requires: 
+------ listCreatorToken requires: uint256 tokenId, uint256 initialPrice, uint256 supply, bool isAuction
+------ bidCreatorToken requires: uint256 tokenId, uint256 amount
+------ buyCreatorToken requires: uint256 tokenId, uint256 amount
+------ getSuggestions requires: 
+------ search requires: string memory query
+------ viewAnalytics requires: 
+------ payForBlogPlacement requires: uint256 amount, string memory content
+
+-- File: GalleryFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+------ import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+------ import { IGalleryFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import "@openzeppelin/contracts/utils/Strings.sol";
+---- Functions:
+------ initialize requires: 
+------ displayNFTs requires: address nftContract, uint256 tokenId
+------ manageSteez requires: address tokenContract, uint256 tokenId, uint256 amount, string memory action
+------ viewPortfolioAnalytics requires: 
+------ transferNFT requires: address nftContract, uint256 tokenId, address to
+------ transferSteez requires: address tokenContract, uint256 tokenId, uint256 amount, address to
+
+-- File: MosaicFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
+------ import { IMosaicFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
+------ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+------ import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+---- Functions:
+------ initialize requires: 
+------ collectContent requires: uint256 contentId
+------ follow requires: address userToFollow
+------ like requires: uint256 contentId
+------ commentOnContent requires: uint256 contentId, string calldata comment
+------ invest requires: address creator, uint256 amount
+------ assignCredit requires: uint256 contentId, address contributor, uint256 proportion
+------ setExclusivity requires: uint256 contentId, uint8 exclusivityLevel
+------ checkExclusivity requires: uint256 contentId, address user
+
+-- File: ProfileFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { IProfileFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
+------ import { STEEZFacet } from "../steez/STEEZFacet.sol";
+------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+------ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+------ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+---- Functions:
+------ initialize requires: 
+------ initialize requires: address _lensAddress, address _safeAddress
+------ setProfile requires: address user, string memory username, string memory bio, string memory avatarURI
+------ usernameTaken requires: string memory username
+------ getProfile requires: address user
+------ postContent requires: uint256 contentId, bool isPublic
+------ addInvestor requires: address investor
+------ updatePortfolio requires: uint256 tokenId, uint256 amount
+------ createSpace requires: uint256[] calldata contentIds
+------ viewProfile requires: address user
+------ viewContent requires: uint256 contentId
+------ viewInvestors requires: address creator
+------ viewPortfolio requires: address user
+------ viewSpace requires: uint256 spaceId
+------ _addInvestor requires: address creator, address investor
+------ _updatePortfolio requires: address user, uint256 tokenId, uint256 amount
+------ _createSpace requires: address creator, uint256[] calldata contentIds
+
+-- File: VillageFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+------ import { IVillageFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+------ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+---- Functions:
+------ getKeyPair requires: address user
+------ initiateTransaction requires: address sender, address receiver, uint amount, address token
+------ releaseFunds requires: uint transactionId
+------ refund requires: uint transactionId
+------ initialize requires: 
+------ createChat requires: address[] calldata participants, bool isGroup
+------ sendMessage requires: uint256 chatId, string calldata message
+------ groupChatGovernance requires: uint256 chatId, uint256 proposalId, bool vote
+------ initiateP2PTransaction requires: address receiver, uint amount, address token
