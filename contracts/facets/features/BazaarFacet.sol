@@ -5,17 +5,23 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 import { IBazaarFacet } from "../../interfaces/IFeaturesFacet.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol"; // For GBPToken
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"; // For GBPToken
 
 contract BazaarFacet {
     // State variables for Uniswap interfaces, adjust types and names as per actual interface definitions
     IPoolManager uniswap;
+    IERC20 public gbpt;
+    IERC20 public STEEL0;
 
     // Event definitions, for example:
     event CreatorTokenListed(uint256 indexed tokenId, uint256 initialPrice, uint256 supply, bool isAuction);
     event CreatorTokenPurchased(uint256 indexed tokenId, uint256 amount, address buyer);
     event BlogPlacementPaid(string content, uint256 amount, address creator);
     event CreatorTokenBid(uint256 indexed tokenId, uint256 amount, address bidder);
+    event LiquidityAdded(uint256 indexed tokenId, uint256 amountToken, uint256 amountSTEEL, uint256 liquidity);
 
     struct Listing {
         address seller;
@@ -26,7 +32,9 @@ contract BazaarFacet {
     mapping(uint256 => Listing) public listings;
 
     constructor(address _uniswapAddress) {
-        uniswap = IPoolManager(_uniswapAddress);
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        uniswap = IPoolManager(ds.uniswapAddress);
+        gbpt = IERC20(ds.gbptAddress);
     }
 
     // Initialize BazaarFacet setting the contract owner
@@ -45,6 +53,13 @@ contract BazaarFacet {
             // Direct sale, or listing on UniswapV4 for liquidity pool creation could be handled here
         }
         emit CreatorTokenListed(tokenId, initialPrice, supply, isAuction);
+
+        // Additional logic to create token pool on UniswapV4 with GBPToken
+        // use marketListing function to store listing details
+    }
+
+    function marketListing(uint256 tokenId) external view returns (Listing memory) {
+        return listings[tokenId];
     }
 
     // Function to bid on CreatorTokens (Steez)
@@ -59,6 +74,31 @@ contract BazaarFacet {
     function buyCreatorToken(uint256 tokenId, uint256 amount) external payable {
         uniswap.swap(tokenId, amount);
         emit CreatorTokenPurchased(tokenId, amount, msg.sender);
+    }
+
+    function _addLiquidityForToken(uint256 tokenId, uint256 tokenAmount, uint256 steelAmount) internal {
+        address tokenAddress = steezFacet.convertTokenIdToAddress(tokenId);
+        IERC20(tokenAddress).approve(address(uniswap), tokenAmount);
+        IERC20(STEELO).approve(address(uniswap), steelAmount);
+
+        (uint amountToken, uint amountSTEEL, uint liquidity) = uniswap.addLiquidity(
+            tokenAddress,
+            STEELO,
+            tokenAmount,
+            steelAmount,
+            0, // amountTokenMin: accepting any amount of Token
+            0, // amountSTEELMin: accepting any amount of STEEL
+            address(this),
+            block.timestamp
+        );
+        
+        emit LiquidityAdded(tokenId, amountToken, amountSTEEL, liquidity);
+    }
+
+    // Implementation example (adjust according to your logic)
+    // After the last line of the contract
+    function _addLiquidity(address uniswapAddress, address tokenAddress, uint256 additionalSteeloAmount, uint256 additionalTokenAmount) internal {
+        // Your logic here
     }
 
     // Function to provide network/taste-based suggestions

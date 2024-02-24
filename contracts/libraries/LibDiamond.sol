@@ -2,7 +2,6 @@
 // Copyright (c) 2023 Edmund Berkmann
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
@@ -12,72 +11,54 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
-    bytes32 constant STORAGE_SLOT = keccak256("diamond.storage");
-
-    event FacetOperation(address indexed facetAddress, string operationType);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
-    
-    function diamondStorage() internal pure returns (DiamondStorage storage ds) {
-        assembly {
-            ds.slot := STORAGE_SLOT
-        }
-    }
-    
-    struct FacetAddressAndPosition {
-        address facetAddress;
-        uint96 functionSelectorPosition;
-    }
-
-    struct FacetFunctionSelectors {
-        bytes4[] functionSelectors;
-        uint256 facetAddressPosition;
-    }
     
     // STEELO MULTI-SIG WALLETS
-    address private constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
-    address private constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
-    address private constant STEELO_WALLET = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
+    address constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
+    address constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
+    address constant STEELO_WALLET = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
 
     // STEELO TOKENOMICS
-    uint256 public constant TGE_AMOUNT = 825_000_000 * 10**18;
-    uint256 public constant BURN_THRESHOLD = 1e9;
-    uint256 public constant pMin = 0.5 ether;
-    uint256 public constant pMax = 5 ether;
-    uint256 private constant rho = 1 ether;
-    uint256 private constant alpha = 10;
-    uint256 private constant beta = 10;
+    uint256 constant TGE_AMOUNT = 825_000_000 * 10**18;
+    uint256 constant BURN_THRESHOLD = 1e9;
+    uint256 constant pMin = 0.5 ether;
+    uint256 constant pMax = 5 ether;
+    uint256 constant rho = 1 ether;
+    uint256 constant alpha = 10;
+    uint256 constant beta = 10;
 
     // STEEZ TOKENOMICS
-    uint256 public constant AUCTION_DURATION = 24 hours;
-    uint256 public constant INITIAL_CAP = 500;
-    uint256 public constant TRANSACTION_MULTIPLIER = 2;
-    uint256 public constant PRE_ORDER_MINIMUM_SOLD = 250; // 100% of 250
-    uint256 public constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
-    uint256 public constant PRICE_INCREMENT = 10 ether; // Increment value
-    uint256 public constant TOKEN_BATCH_SIZE = 250;
-    uint256 public constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
-    uint256 public constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
-    uint256 public constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
-    uint256 public constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
-    uint256 public constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
-    uint256 public constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
-    uint256 public constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
-    uint256 public constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
-    uint256 public constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
+    uint256 constant AUCTION_DURATION = 24 hours;
+    uint256 constant INITIAL_CAP = 500;
+    uint256 constant TRANSACTION_MULTIPLIER = 2;
+    uint256 constant PRE_ORDER_MINIMUM_SOLD = 250; // 100% of 250
+    uint256 constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
+    uint256 constant PRICE_INCREMENT = 10 ether; // Increment value
+    uint256 constant TOKEN_BATCH_SIZE = 250;
+    uint256 constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
+    uint256 constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
+    uint256 constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
+    uint256 constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
+    uint256 constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
+    uint256 constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
+    uint256 constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
+    uint256 constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
+    uint256 constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
 
     // TREASURY ROYALTY DISTRIBUTION
-    address public constant treasury = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
-    uint256 public constant trasuryTGE = 35;
-    uint256 public constant treasuryMint = 35;
+    address constant treasury = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
+    uint256 constant trasuryTGE = 35;
+    uint256 constant treasuryMint = 35;
 
     // COMMUNITY ROYALTY DISTRIBUTION
-    address public constant liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 public constant liquidityProvidersMint = 55;
-    address public constant ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 public constant ecosystemProvidersMint = 10;
-    address public constant foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 public constant foundersTGE = 20;
-    address public constant earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 public constant earlyInvestorsTGE = 10;
-    address public constant communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 public constant communityTGE = 35;
-    address public constant steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 public constant FEE_RATE = 25;
+    address constant liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 constant liquidityProvidersMint = 55;
+    address constant ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 constant ecosystemProvidersMint = 10;
+    address constant foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 constant foundersTGE = 20;
+    address constant earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 constant earlyInvestorsTGE = 10;
+    address constant communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 constant communityTGE = 35;
+    address constant steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 constant FEE_RATE = 25;
+
+    address constant uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984; // Uniswap default (UNI) contract address
+    address constant gbptAddress = 0x86B4dBE5D203e634a12364C0e428fa242A3FbA98; // Used for STEEZ stable liquidity pools
 
     struct DiamondStorage {
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
@@ -94,19 +75,25 @@ library LibDiamond {
         uint256 volume;
     }
 
-    function setContractOwner(address _newOwner) internal {
-        DiamondStorage storage ds = diamondStorage();
-        address previousOwner = ds.contractOwner;
-        ds.contractOwner = _newOwner;
-        emit OwnershipTransferred(previousOwner, _newOwner);
+    struct FacetAddressAndPosition {
+        address facetAddress;
+        uint96 functionSelectorPosition;
     }
 
-    function contractOwner() internal view returns (address contractOwner_) {
-        contractOwner_ = diamondStorage().contractOwner;
+    struct FacetFunctionSelectors {
+        bytes4[] functionSelectors;
+        uint256 facetAddressPosition;
     }
 
-    function enforceIsContractOwner() internal view {
-        require(msg.sender == diamondStorage().contractOwner, "LibDiamond: Must be contract owner");
+    event FacetOperation(address indexed facetAddress, string operationType);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
+
+    function diamondStorage() internal pure returns (DiamondStorage storage ds) {
+        bytes32 position = DIAMOND_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
     }
 
     function diamondCut(
@@ -126,7 +113,7 @@ library LibDiamond {
                 revert("LibDiamondCut: Incorrect FacetCutAction");
             }
             // Emit the FacetOperation event
-            emit FacetOperation(facetAddress, "Added");
+            emit FacetOperation(_diamondCut[facetIndex].facetAddress, "Operation Performed");
         }
         emit DiamondCut(_diamondCut, _init, _calldata);
         initializeDiamondCut(_init, _calldata);
@@ -187,7 +174,6 @@ library LibDiamond {
         ds.facetAddresses.push(_facetAddress);
     }    
 
-
     function addFunction(DiamondStorage storage ds, bytes4 _selector, uint96 _selectorPosition, address _facetAddress) internal {
         ds.selectorToFacetAndPosition[_selector].functionSelectorPosition = _selectorPosition;
         ds.facetFunctionSelectors[_facetAddress].functionSelectors.push(_selector);
@@ -246,6 +232,7 @@ library LibDiamond {
         }
     }
 
+    // Ensure the initialization function checks for code size to prevent contracts without implementation
     function enforceHasContractCode(address _contract, string memory _errorMessage) internal view {
         uint256 contractSize;
         assembly {
@@ -253,4 +240,6 @@ library LibDiamond {
         }
         require(contractSize > 0, _errorMessage);
     }
+
+    // Implementation of DiamondCut, Loupe functions, and other utility functions
 }

@@ -1,17 +1,17 @@
 {
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "yarn --cwd \"functions\" run lint"
-      ]
-    }
-  ]
+  "functions": {
+    "source": "functions",
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log"
+    ],
+    "predeploy": [
+      "yarn --cwd \"functions\" run lint"
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
 }

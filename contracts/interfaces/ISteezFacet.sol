@@ -48,6 +48,3 @@ interface ISteezFacet {
     // This function handles the royalty payment logic
     function payRoyaltiesOnTransfer(uint256 id, uint256 value, address from, address to) external;
 }
-
-interface ISteezFeesFacet {
-}
