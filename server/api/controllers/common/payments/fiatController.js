@@ -1,5 +1,5 @@
 const express = require('express');
-const NotificationService = require('../../../services/NotificationService'); // Assuming the path
+const PaymentService = require('../../../services/PaymentService'); // Assuming the path
 const router = express.Router();
 
 // Middleware for user authorization
@@ -16,21 +16,21 @@ const validateInput = (req, res, next) => {
     next();
 };
 
-// Get updates
-router.get('/updates', authorize, async (req, res) => {
+// Get payments
+router.get('/payments', authorize, async (req, res) => {
         try {
-                const updates = await NotificationService.getUpdates();
-                res.json(updates);
+                const payments = await PaymentService.getPayments();
+                res.json(payments);
         } catch (error) {
                 res.status(500).send(error.message);
         }
 });
 
-// Subscribe to updates
-router.post('/subscribe', authorize, validateInput, async (req, res) => {
+// Process fiat payment
+router.post('/fiat', authorize, validateInput, async (req, res) => {
         try {
-                const subscription = await NotificationService.subscribeToUpdates(req.user, req.body);
-                res.status(201).json(subscription);
+                const payment = await PaymentService.fiatPayment(req.user, req.body);
+                res.status(201).json(payment);
         } catch (error) {
                 res.status(500).send(error.message);
         }

@@ -1,5 +1,5 @@
 const express = require('express');
-const sortController = require('../../controllers/common/utils/sortController');
+const fiatController = require('../../controllers/common/payments/fiatController');
 const router = express.Router();
 
 // Middleware for user authorization
@@ -16,7 +16,10 @@ const validateInput = (req, res, next) => {
     next();
 };
 
-// Get sorted results
-router.get('/common/utils/sort', authorize, sortController.getSortedResults);
+// Get payments
+router.get('/common/payments/payments', authorize, fiatController.getPayments);
+
+// Process crypto payment
+router.post('/common/payments/crypto', authorize, validateInput, fiatController.processCryptoPayment);
 
 module.exports = router;
