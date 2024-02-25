@@ -7,12 +7,16 @@ Folder: features
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 ------ import { IBazaarFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 ------ import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 ---- Functions:
 ------ initialize requires: 
 ------ listCreatorToken requires: uint256 tokenId, uint256 initialPrice, uint256 supply, bool isAuction
+------ marketListing requires: uint256 tokenId
 ------ bidCreatorToken requires: uint256 tokenId, uint256 amount
 ------ buyCreatorToken requires: uint256 tokenId, uint256 amount
+------ _addLiquidityForToken requires: uint256 tokenId, uint256 tokenAmount, uint256 steelAmount
+------ _addLiquidity requires: address uniswapAddress, address tokenAddress, uint256 additionalSteeloAmount, uint256 additionalTokenAmount
 ------ getSuggestions requires: 
 ------ search requires: string memory query
 ------ viewAnalytics requires: 

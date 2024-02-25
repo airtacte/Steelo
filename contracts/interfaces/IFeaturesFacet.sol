@@ -20,6 +20,7 @@ interface IMosaicFacet {
 
 interface IBazaarFacet {
     // Declare the functions for the IBazaarFacet interface here
+    function addLiquidityForToken(uint256 creatorId, uint256 amountSteez, uint256 amountGBPT) external;
 }
 
 interface IGalleryFacet {

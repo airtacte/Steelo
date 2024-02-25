@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
 import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 import { IBazaarFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -12,16 +13,16 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"; // F
 
 contract BazaarFacet {
     // State variables for Uniswap interfaces, adjust types and names as per actual interface definitions
+    ISteezFacet public steezFacet;
     IPoolManager uniswap;
     IERC20 public gbpt;
-    IERC20 public STEEL0;
 
     // Event definitions, for example:
     event CreatorTokenListed(uint256 indexed tokenId, uint256 initialPrice, uint256 supply, bool isAuction);
     event CreatorTokenPurchased(uint256 indexed tokenId, uint256 amount, address buyer);
     event BlogPlacementPaid(string content, uint256 amount, address creator);
     event CreatorTokenBid(uint256 indexed tokenId, uint256 amount, address bidder);
-    event LiquidityAdded(uint256 indexed tokenId, uint256 amountToken, uint256 amountSTEEL, uint256 liquidity);
+    event LiquidityAdded(uint256 indexed tokenId, uint256 amountSteez, uint256 amountGBPT, uint256 liquidity);
 
     struct Listing {
         address seller;
@@ -35,6 +36,7 @@ contract BazaarFacet {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         uniswap = IPoolManager(ds.uniswapAddress);
         gbpt = IERC20(ds.gbptAddress);
+        steezFacet = ISteezFacet(address(this)); // Initialize steezFacet with the address of this contract
     }
 
     // Initialize BazaarFacet setting the contract owner
@@ -76,28 +78,28 @@ contract BazaarFacet {
         emit CreatorTokenPurchased(tokenId, amount, msg.sender);
     }
 
-    function _addLiquidityForToken(uint256 tokenId, uint256 tokenAmount, uint256 steelAmount) internal {
+    function _addLiquidityForToken(uint256 tokenId, uint256 steezAmount, uint256 gbptAmount) internal {
         address tokenAddress = steezFacet.convertTokenIdToAddress(tokenId);
-        IERC20(tokenAddress).approve(address(uniswap), tokenAmount);
-        IERC20(STEELO).approve(address(uniswap), steelAmount);
+        IERC20(tokenAddress).approve(address(uniswap), steezAmount);
+        IERC20(gbpt).approve(address(uniswap), gbptAmount);
 
-        (uint amountToken, uint amountSTEEL, uint liquidity) = uniswap.addLiquidity(
+        (uint amountSteez, uint amountGBPT, uint liquidity) = uniswap.addLiquidity(
             tokenAddress,
-            STEELO,
-            tokenAmount,
-            steelAmount,
-            0, // amountTokenMin: accepting any amount of Token
-            0, // amountSTEELMin: accepting any amount of STEEL
+            gbpt,
+            steezAmount,
+            gbptAmount,
+            0, // amountSteezMin: accepting any amount of creator Steez
+            0, // amountGBPTMin: accepting any amount of GBPT
             address(this),
             block.timestamp
         );
         
-        emit LiquidityAdded(tokenId, amountToken, amountSTEEL, liquidity);
+        emit LiquidityAdded(tokenId, amountSteez, amountGBPT, liquidity);
     }
 
     // Implementation example (adjust according to your logic)
     // After the last line of the contract
-    function _addLiquidity(address uniswapAddress, address tokenAddress, uint256 additionalSteeloAmount, uint256 additionalTokenAmount) internal {
+    function _addLiquidity(address uniswapAddress, address tokenAddress, uint256 additionalgbptAmount, uint256 additionalsteezAmount) internal {
         // Your logic here
     }
 

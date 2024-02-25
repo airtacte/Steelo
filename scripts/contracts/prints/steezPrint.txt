@@ -9,9 +9,7 @@ Folder: steez
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
 ------ import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
------- import { ISteezFeesFacet } from "../../interfaces/ISteezFacet.sol";
 ------ import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
------- import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
 ------ import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 ------ import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 ------ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
@@ -22,36 +20,26 @@ Folder: steez
 ------ import "@openzeppelin/contracts/utils/Strings.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ---- State Variables:
------- public _baseURI
------- public _safeAddress
------- public _creatorTokenAddress
------- public _maxCreatorTokens
------- public _transactionFee
------- public _currentTokenID
------- public currentPrice
------- public tokensSecuredThisBatch
------- public auctionStartTime
------- private auctionConcluded
 ------ private uniswapRouterAddress
+------ private _lastTokenId
 ---- Functions:
------- initialize requires: string memory baseURI, uint256 maxCreatorTokens, uint256 transactionFee
------- transferTokenOwnership requires: address newInvestor, uint256 tokenId
------- mint requires: address to, uint256 tokenId, uint256 amount, bytes memory data
+------ initialize requires: string memory baseURI
+------ transferTokenOwnership requires: address newInvestor, uint256 tokenId, uint256 steezId
+------ createSteez requires: address to, bytes memory data
 ------ preOrder requires: uint256 tokenId, uint256 amount
 ------ concludeAuction requires: 
 ------ launchToken requires: uint256 tokenId, uint256 amount
 ------ expandToken requires: uint256 tokenId, uint256 amount
 ------ expansionEligible requires: uint256 tokenId
------- checkAndInitiateAnniversary requires: uint256 tokenId
+------ initiateAnniversary requires: uint256 tokenId
 ------ transferToken requires: uint256 tokenId, uint256 amount, address from, address to
 ------ safeBatchTransfer requires: address[] memory to, uint256[] memory tokenIds, uint256[] memory amounts, bytes memory data
------- safeBatchTransferFrom requires: address from, address[] memory to, uint256[] memory tokenIds, uint256[] memory amounts, bytes memory data
------- _addLiquidityForToken requires: uint256 tokenId, uint256 tokenAmount, uint256 steelAmount
------- _mint requires: address to, uint256 tokenId, uint256 amount, bytes memory data
+------ _mint requires: address to, uint256 tokenId, uint256 steezId, uint256 amount, bytes memory data
 ------ _convertTokenIdToAddress requires: uint256 tokenId
------- _transfer requires: address from, address to, uint256 tokenId
+------ _transfer requires: address from, address to, uint256 steezId
 ------ _removeInvestor requires: uint256 tokenId, address currentInvestor
 ------ _addInvestor requires: uint256 tokenId, address newInvestor
+------ _addRole requires: address to, bytes32 role
 ------ getMaxAllowedMint requires: address sender, uint256 tokenId
 
 -- File: SteezFeesFacet.sol

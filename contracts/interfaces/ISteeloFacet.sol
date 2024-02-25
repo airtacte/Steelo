@@ -40,6 +40,9 @@ interface ISteeloFacet {
 
     // Transfers Steelo tokens from one account to another.
     function tokenTransfer(address recipient, uint256 amount) external;
+
+    // Used in Bazaar
+    function convertTokenIdToAddress(uint256 tokenId) external view returns (address);
 }
 
 interface ISteeloStakingFacet {

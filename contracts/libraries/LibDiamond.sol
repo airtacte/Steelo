@@ -28,9 +28,10 @@ library LibDiamond {
 
     // STEEZ TOKENOMICS
     uint256 constant AUCTION_DURATION = 24 hours;
-    uint256 constant INITIAL_CAP = 500;
+    uint256 constant PRE_ORDER_SUPPLY = 250;
+    uint256 constant LAUNCH_SUPPLY = 250;
+    uint256 constant EXPANSION_SUPPLY = 500;
     uint256 constant TRANSACTION_MULTIPLIER = 2;
-    uint256 constant PRE_ORDER_MINIMUM_SOLD = 250; // 100% of 250
     uint256 constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
     uint256 constant PRICE_INCREMENT = 10 ether; // Increment value
     uint256 constant TOKEN_BATCH_SIZE = 250;
