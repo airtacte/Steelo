@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { STEEZFacet } from "../steez/STEEZFacet.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
