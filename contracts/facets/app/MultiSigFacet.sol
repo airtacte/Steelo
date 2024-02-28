@@ -6,6 +6,8 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
+import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
+
 
 contract MultiSigFacet {
     // Placeholder addresses for the SafeProxyFactory and SafeMasterCopy. 

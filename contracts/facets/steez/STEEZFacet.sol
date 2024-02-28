@@ -6,21 +6,18 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
 import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
 import { BazaarFacet } from "../features/BazaarFacet.sol";
-import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
-import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
-import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { SteezFeesFacet } from "./SteezFeesFacet.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
-contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
+contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant ROLE_OPERATOR = keccak256("ROLE_OPERATOR");
     bytes32 public constant ROLE_OWNER = keccak256("ROLE_OWNER");
     using LibDiamond for LibDiamond.DiamondStorage;
@@ -37,34 +34,37 @@ contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableU
     event AnniversaryMinted(uint256 indexed creatorId, uint256 totalSupply, uint256 currentPrice, address indexed investors, uint256 amount);
     event SteezTransfer(address indexed from, address indexed to, uint256 indexed steezId, uint256 amount, uint256 royaltyAmount);
 
+    struct Investor {
+        uint256 profileId; // ID of the investor's user profile
+        uint256 balance; // quantity of Steez owned by the investor
+    }
+
+    struct Royalty {
+        uint256 totalRoyalties; // Total royalties accrued for this Steez
+        mapping(address => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
+        mapping(address => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
+    }
+    
     struct Steez {
         address creator; // one creator holds 500+ steezIds
         uint256 steezId; // mapping(creatorId => mapping(steezId => investors) 
-        bool creatorExists;
         uint256 totalSupply; // starting at 500 and increasing by 500 annually
         uint256 transactionCount;
         uint256 lastMintTime; // to check when to next initiate Anniversary
-        uint256 initiateAnniversary;
+        uint256 anniversaryDate; // to check when to next initiate Anniversary
         uint256 currentPrice; // determined by pre-order auction price, then via Supply x Demand AMM model
-        string baseURI;
         uint256 auctionStartTime; // 250 out of the 500 initially minted tokens for pre-order
         uint256 auctionSlotsSecured; // increments price by £10 every 250 token auctions at new price 
-        bool auctionConcluded;
-        RoyaltyInfo royalties; // Integrated RoyaltyInfo struct for managing royalties
+        string baseURI; // base URI for token metadata
+        bool creatorExists; // only one steez per creator
+        bool auctionConcluded; // 24hr auction after 1 week of pre-order
+        Investor[] investors; // investors array
+        Royalty royalties; // Integrated Royalty struct for managing royalties
     }
 
-    struct RoyaltyInfo {
-        uint256 totalRoyalties; // Total royalties accrued for this Steez
-        uint256 unclaimedRoyalties; // Royalties yet to be claimed
-        mapping(address => uint256) shareholderRoyalties; // Mapping from shareholder address to their accrued royalties
-    }
-    
-    mapping(address => uint256) investors; // capturing all investors
-    mapping(address => uint256) balances; // capturing all balances
     mapping(address => Steez) public creatorSteez;
     uint256 oneYearInSeconds = 365 days;
     uint256 oneWeekInSeconds = 7 days;
-    address private uniswapRouterAddress;
     uint256 private _lastCreatorId;
     string public baseURI;
 
@@ -103,26 +103,35 @@ contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableU
             require(!Steez[creatorSteez].creatorExists, "CreatorToken: token already exists");
 
             Steez memory steez = Steez({
-                creator: msg.sender,
+                creator: msg.sender, // = profileId
                 steezId: _lastCreatorId++, // increment _lastCreatorId for each new Steez
                 creatorExists: true,
-                totalSupply: 0,
+                totalSupply: 0, // 250 post-auction, 250 post-launch, 500 post-anniversaries
                 transactionCount: 0,
                 lastMintTime: block.timestamp, // set to current time
-                initiateAnniversary: block.timestamp + oneYearInSeconds, // set to one year from now
+                anniversaryDate: block.timestamp + oneYearInSeconds, // set to one year from now
                 currentPrice: 30 ether, // £30 initial price
                 baseURI: baseURI,
                 auctionStartTime: block.timestamp + oneWeekInSeconds, // set to one week from now
-                auctionSlotsSecured: 0,
-                auctionConcluded: false,
-                royalties: RoyaltyInfo({totalRoyalties: 0, unclaimedRoyalties: 0}) // Initialize RoyaltyInfo
+                auctionSlotsSecured: 0, // up to 250 slots secured, reset each incremental round
+                auctionConcluded: false, // 24hr after auctionStartTime (8 days after mint)
+                investors: new Investor[](0), // Initialize an empty array of Investor structs
+                royalties: Royalty({totalRoyalties: 0, unclaimedRoyalties: 0}) // Initialize Royalty
             });
+
+            Investor memory newInvestor = Investor({
+                investorAddress: msg.sender,
+                balance: 0 // initial balance
+            });
+
+            Investor memory investor = steez.investors[i]; // Get investor
+            uint256[] memory royalties = steez.royalties.investorRoyalties[investor.investorAddress]; // Get investor's royalties
 
             // Add entries to the investors and balances mappings
             investors[msg.sender] = 0; // example values
             balances[msg.sender] = 0; // example values
             creatorSteez[msg.sender] = steez; // stores steez object in creatorSteez mapping
-
+            
             uint256 creatorId = _lastCreatorId;
             _mint(to, creatorId, creatorSteez[creatorId].steezId, data);
 
@@ -305,12 +314,35 @@ contract STEEZFacet is SafeL2, ERC1155Upgradeable, OwnableUpgradeable, PausableU
         }
 
         function _removeInvestor(uint256 creatorId, address currentInvestor) private {
-            require(creatorSteez[creatorId].investors == currentInvestor, "This address does not own the token");
-            creatorSteez[creatorId].investors = address(0);
+            // Find the investor in the array
+            uint256 investorIndex = _findInvestorIndex(creatorId, currentInvestor);
+            require(investorIndex != uint256(-1), "This address does not own the token");
+
+            // Remove the investor from the array
+            uint256 lastIndex = creatorSteez[creatorId].investors.length - 1;
+            creatorSteez[creatorId].investors[investorIndex] = creatorSteez[creatorId].investors[lastIndex];
+            creatorSteez[creatorId].investors.pop();
         }
 
         function _addInvestor(uint256 creatorId, address newInvestor) private {
-            require(creatorSteez[creatorId].investors == address(0), "This token is already owned");
-            creatorSteez[creatorId].investors = newInvestor;
+            // Check that the investor is not already in the array
+            uint256 investorIndex = _findInvestorIndex(creatorId, newInvestor);
+            require(investorIndex == uint256(-1), "This token is already owned");
+
+            // Add the investor to the array
+            Investor memory investor = Investor({
+                profileId: 0, // Replace with actual profile ID
+                balance: 0 // Replace with actual balance
+            });
+            creatorSteez[creatorId].investors.push(investor);
+        }
+
+        function _findInvestorIndex(uint256 creatorId, address investorAddress) private view returns (uint256) {
+            for (uint256 i = 0; i < creatorSteez[creatorId].investors.length; i++) {
+                if (creatorSteez[creatorId].investors[i].investorAddress == investorAddress) {
+                    return i;
+                }
+            }
+            return uint256(-1);
         }
 }

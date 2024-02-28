@@ -14,18 +14,13 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    STEEZFacet.Steez public steez;
+    STEEZFacet.Investor public investor;
+    STEEZFacet.Royalty public royalty;
 
-    struct RoyaltyInfo {
-        address creator;
-        address investors;
-        uint256 share;
-        uint256 value;
-    }
-    
-
-    event RoyaltiesDistributed(uint256 indexed creatorId, address indexed investors, uint256 amount);
-    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
-    event DistributionPolicySet(uint256 creatorId, address investors, uint256 share);
+    event RoyaltiesDistributed(uint256 indexed steezId, address indexed investors, uint256 amount);
+    event TransferProcessed(uint256 indexed steezId, address indexed from, address indexed to, uint256 amount, uint256 royaltyAmount);
+    event ShareholderUpdated(uint256 indexed steezId, address indexed shareholder, uint256 balance);
 
     mapping(uint256 => uint256[]) public communitySplits;
     mapping(uint256 => mapping(address => uint256)) public balances;
@@ -41,6 +36,14 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
         transferOwnership(owner);
     }
 
+        function updateRoyaltyInfo(uint256 creatorId, uint256 amount) internal {
+            require(msg.sender == address(this) || isAuthorized(msg.sender), "Unauthorized");
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            STEEZFacet.Steez storage steez = STEEZFacet(address(this)).creatorSteez(creatorId);
+            royalty.totalRoyalties += amount;
+            // Additional logic here
+        }
+
         function setCommunitySplit(uint256 creatorId, uint256[] memory splits) external onlyOwner {
             // Ensure the sum of splits is 100
             uint256 total = 0;
@@ -50,19 +53,19 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
             require(total == 100, "Total split must be 100");
 
             // Store the splits
-            communitySplits[creatorId] = splits;
+            royalty.shareholderRoyalties[creatorId] = splits;
         }
 
         function payRoyalties(uint256 creatorId, uint256 amount, address from, address to, bytes memory data) external payable nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            STEEZFacet steez = STEEZFacet(ds.steezFacetAddress);
+            STEEZFacet.Steez storage steez = STEEZFacet(address(this)).creatorSteez(creatorId);
             require(creatorId > 0, "Royalties: Invalid token ID");
             require(amount > 0, "CreatorToken: Transfer amount must be greater than zero");
             require(msg.value >= amount, "Royalties: Insufficient payment");
             require(msg.sender == owner(), "Royalties: Caller is not the owner");
 
             // Called by steezFeesFacet.payRoyalties(creatorId, amount, from, creatorSteez[creatorId].investors);
-            // From STEEZFeesFacet.sol's function transferSteez(uint256 creatorId, uint256 steezId, uint256 amount, address from, address to) external nonReentrant {
+            // From STEEZFeesFacet.sol's function transferSteez(uint256 creatorId, uint256 creatorId, uint256 amount, address from, address to) external nonReentrant {
 
             uint256 creatorRate;
             uint256 steeloRate;
@@ -93,21 +96,27 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
             require(totalRoyalty <= amount, "Royalties: Royalty exceeds transfer amount");
 
             // Pay the creator royalty
-            (bool sent, ) = payable(from).call{value: creatorFee}("");
+            (bool sent, ) = payable(steez.creator).call{value: creatorFee}("");
             require(sent, "Failed to send Ether");
-            payable(owner()).transfer(steeloFee);
 
             // Distribute the community royalty among investors
             for (uint256 i = 0; i < steez.investors.length; i++) {
-                uint256 balance = steez.balance;
-                uint256 share = steez.totalSupply > 0 ? (communityFee * balance) / steez.totalSupply : 0;
-                payable(steez.investors[i]).transfer(share);
+                Investor storage investor = steez.investors[i];
+                uint256 shareholdingPercentage = (investor.balance * 100) / steez.totalSupply;
+                uint256 royalty = (communityFee * shareholdingPercentage) / 100;
+
+                // Update the total royalties and individual investor's royalties
+                steez.royalties.totalRoyalties += royalty;
+                steez.royalties.royaltyAmounts[investor.profileId] += royalty;
+
+                // Add the royalty payment to the investor's list of payments
+                steez.royalties.royaltyPayments[investor.profileId].push(royalty);
             }
 
             // Ensure royalties are distributed correctly
             uint256 fromBalance = steez.balance;
             require(fromBalance >= amount, "Royalties: Insufficient balance");
-            uint256 fromBalanceAfterTransfer = fromBalance.sub(amount);
+            uint256 fromBalanceAfterTransfer = fromBalance - amount;
             require(amount - creatorFee - steeloFee - communityFee > 0, "Royalties: Insufficient amount for seller");
 
             // Pay the seller royalty (only for second-hand sales)
@@ -116,21 +125,16 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
                 payable(from).transfer(sellerFee);
             }
 
-            // Update balances in diamond storage
-            steez.balance -= amount;
-            steez.balance += amount;
-
-            // Update creator and contract balances for royalties
-            steez.balance += creatorFee;
-            steez.balance += steeloFee;
-
             emit RoyaltiesDistributed(from, to, creatorId, amount, creatorFee, steeloFee, communityFee, data);
         }
 
-        function claimRoyalty(uint256 creatorId) external nonReentrant {
+        function claimRoyalty(uint256 creatorId, address shareholder) external nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             SnapshotFacet snapshot = SnapshotFacet(ds.snapshotFacetAddress);
+            STEEZFacet.Steez storage steez = STEEZFacet(address(this)).creatorSteez(creatorId);
+            uint256 owedRoyalties = royalty.shareholderRoyalties[shareholder];
             require(creatorId > 0, "Royalties: Invalid token ID");
+            require(owedRoyalties > 0, "No royalties to claim");
 
             // Find the correct snapshot for the investor and the total undistributed royalties
             uint256 investorSnapshotIndex = snapshot.findSnapshotIndex(creatorId, msg.sender);

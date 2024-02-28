@@ -7,6 +7,8 @@ import { IProfileFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 import { STEEZFacet } from "../steez/STEEZFacet.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
