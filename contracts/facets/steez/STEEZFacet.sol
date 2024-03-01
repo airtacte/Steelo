@@ -4,10 +4,10 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
-import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
 import { BazaarFacet } from "../features/BazaarFacet.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { SteezFeesFacet } from "./SteezFeesFacet.sol";
+import { SnapshotFacet } from "../app/SnapshotFacet.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
@@ -40,16 +40,20 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     }
 
     struct Royalty {
-        uint256 totalRoyalties; // Total royalties accrued for this Steez
+        uint256 totalRoyalties; // in Steelo, equiv. to 10% of the price of Steez transacted on Bazaar
+        uint256 unclaimedRoyalties; // Total unclaimed royalties for this Steez
+        uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
+        uint256 investorRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
+        uint256 steeloRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
         mapping(address => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
         mapping(address => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
     }
     
     struct Steez {
-        address creator; // one creator holds 500+ steezIds
+        address creatorId; // one creatorId holds 500+ steezIds
         uint256 steezId; // mapping(creatorId => mapping(steezId => investors) 
         uint256 totalSupply; // starting at 500 and increasing by 500 annually
-        uint256 transactionCount;
+        uint256 transactionCount; // drives anniversary requirements and $STEELO mint rate 
         uint256 lastMintTime; // to check when to next initiate Anniversary
         uint256 anniversaryDate; // to check when to next initiate Anniversary
         uint256 currentPrice; // determined by pre-order auction price, then via Supply x Demand AMM model
@@ -58,17 +62,18 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
         string baseURI; // base URI for token metadata
         bool creatorExists; // only one steez per creator
         bool auctionConcluded; // 24hr auction after 1 week of pre-order
-        Investor[] investors; // investors array
+        Investor[] investors; // investors array updated to show "current holders"
         Royalty royalties; // Integrated Royalty struct for managing royalties
     }
 
     mapping(address => Steez) public creatorSteez;
+
     uint256 oneYearInSeconds = 365 days;
     uint256 oneWeekInSeconds = 7 days;
     uint256 private _lastCreatorId;
     string public baseURI;
 
-    modifier canCreateToken(address creator) {require(!Steez[creator].creatorExists, "CreatorToken: Creator has already created a token.");
+    modifier canCreateToken(address creator) {require(!Steez[creatorId].creatorExists, "CreatorToken: Creator has already created a token.");
         _;
     }
 
@@ -96,14 +101,30 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
          */
         function createSteez(address to, bytes memory data) public onlyOwner nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            SnapshotFacet snapshot = SnapshotFacet(ds.snapshotFacetAddress);
             require(canCreateToken(msg.sender), "CreatorToken: Creator has already created a token.");
-            require(Steez[creatorSteez].creator != 0, "CreatorToken: Token ID cannot be 0");
-            require(Steez[creatorSteez].creator.current() < type(uint256).max, "CreatorToken: creator overflow");
+            require(Steez[creatorSteez].creatorId != 0, "CreatorToken: Token ID cannot be 0");
+            require(Steez[creatorSteez].creatorId.current() < type(uint256).max, "CreatorToken: creator overflow");
             require(to != address(0), "CreatorToken: Cannot mint to zero address");
             require(!Steez[creatorSteez].creatorExists, "CreatorToken: token already exists");
 
+            Investor memory newInvestor = Investor({
+                investorAddress: msg.sender,
+                balance: 0 // initial balance
+            });
+
+            Royalty memory newRoyalty = Royalty ({
+                totalRoyalties: 0, // needs to be the same value for royalties associated to the same SteezId
+                unclaimedRoyalties: 0, // needs to be the same value for royalties associated to the same SteezId
+                creatorRoyalties: 0, // initial balance
+                investorRoyalties: 0, // initial balance
+                steeloRoyalties: 0, // initial balance
+                royaltyAmounts: 0, // initial balance
+                royaltyPayments: 0 // initial balance
+            });
+    
             Steez memory steez = Steez({
-                creator: msg.sender, // = profileId
+                creatorId: msg.sender, // = profileId
                 steezId: _lastCreatorId++, // increment _lastCreatorId for each new Steez
                 creatorExists: true,
                 totalSupply: 0, // 250 post-auction, 250 post-launch, 500 post-anniversaries
@@ -119,19 +140,9 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
                 royalties: Royalty({totalRoyalties: 0, unclaimedRoyalties: 0}) // Initialize Royalty
             });
 
-            Investor memory newInvestor = Investor({
-                investorAddress: msg.sender,
-                balance: 0 // initial balance
-            });
-
-            Investor memory investor = steez.investors[i]; // Get investor
-            uint256[] memory royalties = steez.royalties.investorRoyalties[investor.investorAddress]; // Get investor's royalties
-
-            // Add entries to the investors and balances mappings
-            investors[msg.sender] = 0; // example values
-            balances[msg.sender] = 0; // example values
             creatorSteez[msg.sender] = steez; // stores steez object in creatorSteez mapping
-            
+
+            uint256[] memory royalties = steez.royalties.investorRoyalties[investor.profileId];            
             uint256 creatorId = _lastCreatorId;
             _mint(to, creatorId, creatorSteez[creatorId].steezId, data);
 
@@ -143,13 +154,13 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             emit NewCreatorSteez(creatorId);
 
             // Take a snapshot after minting tokens
-            ds.snapshotFacet.takeSnapshot();
+            snapshotFacet.takeSnapshot();
         }
 
         // Pre-order function
         function preOrder(uint256 creatorId, uint256 amount) public payable {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            BazaarFacet bazaar = BazaarFacet(ds.bazaarFacetAddress);
+            BazaarFacet bazaar = BazaarFacet(ds.bazaarAddress);
             require(creatorId[msg.sender], "CreatorToken: Only creators can initiate pre-orders.");
             require(!creatorSteez[creatorId].auctionConcluded, "CreatorToken: Auction has concluded.");
             creatorSteez[creatorId].totalSupply = ds.PRE_ORDER_SUPPLY;
@@ -191,14 +202,14 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             creatorSteez[creatorId].totalSupply += amount;
 
             emit PreOrderMinted(creatorId, msg.sender, amount);
-            bazaarFacet.addLiquidityForToken(creatorId, amount, msg.value);
+            bazaar.addLiquidityForToken(creatorId, amount, msg.value);
             launch(creatorId, amount);
         }
 
         // Launch function
         function launch(uint256 creatorId, uint256 amount) internal {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            BazaarFacet bazaar = BazaarFacet(ds.bazaarFacetAddress);
+            BazaarFacet bazaar = BazaarFacet(ds.bazaarAddress);
             require(block.timestamp >= creatorSteez[creatorId].auctionStartTime + ds.AUCTION_DURATION, "Auction is still active");
             require(!creatorSteez[creatorId].auctionConcluded, "Auction has already been concluded");
             
@@ -209,7 +220,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
 
             // List the minted tokens at INITIAL_PRICE
             // Assuming list is a function that lists the tokens at a given price
-            bazaarFacet.listCreatorToken(creatorId, creatorSteez[creatorId].currentPrice);
+            bazaar.listCreatorToken(creatorId, creatorSteez[creatorId].currentPrice);
 
             emit auctionConcluded(creatorId, creatorSteez[creatorId].currentPrice, creatorSteez[creatorId].totalSupply);
 
@@ -225,16 +236,16 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
         }
 
         // Anniversary Expansion function
-        function initiateAnniversary(uint256 creatorId, uint256 amount) external payable onlyOwner nonReentrant {
+        function anniversary(uint256 creatorId, uint256 amount) external payable onlyOwner nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            BazaarFacet bazaar = BazaarFacet(ds.bazaarFacetAddress);
+            BazaarFacet bazaar = BazaarFacet(ds.bazaarAddress);
             require(creatorSteez[creatorId].totalSupply > 0, "CreatorToken: Token does not exist");
             require(creatorSteez[creatorId].totalSupply + amount <= ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap exceeded");
             require(creatorSteez[creatorId].transactionCount >= creatorSteez[creatorId].totalSupply * 2, "CreatorToken: Expansion not eligible");
             require(creatorId == msg.sender, "CreatorToken: Only the token creator can initiate an annual token increase.");
             require(block.timestamp >= creatorSteez[creatorId].lastMintTime + ds.ANNIVERSARY_DELAY, "CreatorToken: Annual token increase not yet available.");
 
-            bazaarFacet.addLiquidity(creatorId, ds.EXPANSION_SUPPLY, creatorSteez[creatorId].currentPrice);
+            bazaar.addLiquidity(creatorId, ds.EXPANSION_SUPPLY, creatorSteez[creatorId].currentPrice);
 
             uint256 currentSupply = creatorSteez[creatorId].totalSupply;
             uint256 newSupply = currentSupply + (currentSupply * ds.ANNUAL_TOKEN_INCREASE_PERCENTAGE / 100);
@@ -249,7 +260,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
         function transferSteez(uint256 creatorId, uint256 steezId, uint256 amount, address from, address to) external nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             AccessControlFacet accessControl = AccessControlFacet(ds.accessControlAddress);
-            SteezFeesFacet steezFees = SteezFeesFacet(ds.steezFeesFacetAddress);
+            SteezFeesFacet steezFees = SteezFeesFacet(ds.steezFeesAddress);
             require(to != address(0), "CreatorToken: Transfer to zero address");
             require(from == msg.sender || accessControl.hasRole(ROLE_OPERATOR, msg.sender), "CreatorToken: Transfer caller is not owner nor approved");
             require(to != creatorId, "CreatorToken: Creator cannot buy their own token");
@@ -260,15 +271,15 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             bool isCreator = creator == from && !(creatorSteez[creatorId].balances[from] > 0);
 
             // Update balances in diamond storage
-            creatorSteez[creatorId].balances[to] += amount;
             creatorSteez[creatorId].balances[from] -= amount;
+            creatorSteez[creatorId].balances[to] += amount;
 
             // Transfer ownership
             creatorSteez[creatorId].investors = to;
 
             _transfer(from, to, creatorId);
             accessControl.grantRole(ROLE_OWNER, to);
-            steezFeesFacet.payRoyalties(creatorId, amount, from, creatorSteez[creatorId].investors);
+            steezFees.payRoyalties(creatorId, amount, from, creatorSteez[creatorId].investors);
 
             if (creatorSteez[creatorId].balances[from] == 0) {
                 _removeInvestor(creatorId, from);
@@ -294,11 +305,11 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
 
         function _mint(address to, uint256 creatorId, uint256 steezId, uint256 amount, bytes memory data) internal {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            SteezFeesFacet steezFees = SteezFeesFacet(ds.steezFeesFacetAddress);
+            SteezFeesFacet steezFees = SteezFeesFacet(ds.steezFeesAddress);
             for (uint256 i = 0; i < amount; i++) {
                 _mint(to, creatorSteez[creatorId].steezId + i);
                 creatorSteez[creatorId].steezId + i = to;
-                steezFeesFacet.payRoyalties(creatorId, amount, creatorSteez[creatorId].investors);
+                steezFees.payRoyalties(creatorId, amount, creatorSteez[creatorId].investors);
             }
         }
 

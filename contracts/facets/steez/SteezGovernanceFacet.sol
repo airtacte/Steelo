@@ -24,8 +24,6 @@ contract SteezGovernanceFacet is Initializable, AccessControlUpgradeable, Govern
         // Set up roles
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(MODERATOR_ROLE, msg.sender);
-
-        // Granting the contract itself a moderator role allows internal functions to manage governance actions
         _setupRole(MODERATOR_ROLE, address(this));
     }
 

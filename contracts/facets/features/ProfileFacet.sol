@@ -103,6 +103,15 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
             emit ProfileUpdated(user);
         }
 
+        function verifyCreator(/* Creator data */) public {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
+            // Verification logic here
+
+            localSteez.creatorId++; // Increment the creatorId
+            localSteez.steez[creatorId] = /* new Creator */;
+        }
+
         // Function to check if a username already exists
         function usernameTaken(string memory username) internal view returns (bool) {
             return usernameExists[username];

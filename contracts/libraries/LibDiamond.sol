@@ -19,7 +19,6 @@ library LibDiamond {
 
     // STEELO TOKENOMICS
     uint256 constant TGE_AMOUNT = 825_000_000 * 10**18;
-    uint256 constant BURN_THRESHOLD = 1e9;
     uint256 constant pMin = 0.5 ether;
     uint256 constant pMax = 5 ether;
     uint256 constant rho = 1 ether;
@@ -45,19 +44,14 @@ library LibDiamond {
     uint256 constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
     uint256 constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
 
-    // TREASURY ROYALTY DISTRIBUTION
-    address constant treasury = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
-    uint256 constant trasuryTGE = 35;
-    uint256 constant treasuryMint = 35;
-
-    // COMMUNITY ROYALTY DISTRIBUTION
+    // STAKEHOLDER'S ROYALTY DISTRIBUTION
+    address constant treasury = 0x07720111f3d48427e55e35CB07b5D203A4edCd08; uint256 constant trasuryTGE = 35; uint256 constant treasuryMint = 35;
     address constant liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 constant liquidityProvidersMint = 55;
     address constant ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 constant ecosystemProvidersMint = 10;
     address constant foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 constant foundersTGE = 20;
     address constant earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 constant earlyInvestorsTGE = 10;
     address constant communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 constant communityTGE = 35;
     address constant steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 constant FEE_RATE = 25;
-
     address constant uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984; // Uniswap default (UNI) contract address
     address constant gbptAddress = 0x86B4dBE5D203e634a12364C0e428fa242A3FbA98; // Used for STEEZ stable liquidity pools
 
