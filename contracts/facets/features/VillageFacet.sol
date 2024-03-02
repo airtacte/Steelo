@@ -27,7 +27,6 @@ interface IESCROW {
 contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    IDiamondCut diamondCut;
     IEncryptionKeyManager encryptionKeyManager;
     IESCROW escrow;
 
@@ -37,6 +36,8 @@ contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
         bool isGroup;
         // Additional fields as necessary
     }
+
+    uint256 public nextChatId = 0;
 
     // Mapping from chatId to Chat struct
     mapping(uint256 => Chat) public chats;
@@ -52,7 +53,6 @@ contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     }
 
     constructor(address _diamondCutAddress, address _encryptionKeyManagerAddress, address _escrowAddress) {
-        diamondCut = IDiamondCut(_diamondCutAddress);
         encryptionKeyManager = IEncryptionKeyManager(_encryptionKeyManagerAddress);
         escrow = IESCROW(_escrowAddress);
     }
@@ -61,7 +61,12 @@ contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
 
     // Example function to create a new chat
     function createChat(address[] calldata participants, bool isGroup) external whenNotPaused returns (uint256) {
-        // Logic to create a new chat and emit event
+        uint256 chatId = nextChatId;
+        chats[chatId] = Chat({isGroup: isGroup});
+        for (uint256 i = 0; i < participants.length; i++) {
+            chats[chatId].participants.add(participants[i]);
+        }
+        nextChatId++;
         emit ChatCreated(chatId, isGroup);
         return chatId;
     }

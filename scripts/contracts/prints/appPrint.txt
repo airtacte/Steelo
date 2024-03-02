@@ -7,7 +7,7 @@ Folder: app
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
 ------ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
------- import "@openzeppelin/contracts/access/AccessControl.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 ---- State Variables:
 ------ constant UPGRADE_ROLE
 ------ constant STEELO_ROLE
@@ -29,6 +29,7 @@ Folder: app
 ------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 ------ import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 ------ import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
+------ import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 ---- State Variables:
 ------ constant SAFE_PROXY_FACTORY
 ------ constant SAFE_MASTER_COPY
@@ -52,6 +53,9 @@ Folder: app
 ------ owner requires: 
 
 -- File: SnapshotFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { STEEZFacet } from "../steez/STEEZFacet.sol";
 ---- State Variables:
 ------ private _snapshotCounter
 ------ private snapshotCounter
@@ -62,6 +66,8 @@ Folder: app
 ------ snapshotBalances requires: address account, uint256 balance
 ------ takeSnapshot requires: 
 ------ _takeSnapshot requires: 
+------ createSnapshot requires: uint256 creatorId
+------ _findSnapshotIndex requires: uint256 creatorId, address account
 
 -- File: SocialNetworkFacet.sol
 ---- Imports:

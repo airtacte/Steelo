@@ -51,3 +51,6 @@ interface ISteezFacet {
 
 interface ISteezFeesFacet {
 }
+
+interface ISteezGovernanceFacet {
+}

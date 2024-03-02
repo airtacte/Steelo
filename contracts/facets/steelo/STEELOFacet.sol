@@ -34,8 +34,9 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
     uint256 public burnAmount;
     uint256 private burnRate;
     uint256 private mintRate;
-    bool public isDeflationary;
     bool public tgeExecuted;
+    bool public isDeflationary;
+    address public creatorId;
 
     function initialize(address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken) public initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
@@ -57,7 +58,7 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
     // Function to mint tokens dynamically based on $Steez transactions and current price
     function steeloTGE(uint256 _steeloCurrentPrice) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorIdId);
+        STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
         require(!ds.tgeExecuted, "steeloTGE can only be executed once");
         require(localSteez.transactionCount == 0, "steezTransactionCount must be equal to 0");
         require(steeloCurrentPrice > 0, "steeloCurrentPrice must be greater than 0");
@@ -91,18 +92,27 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
         }
         steezTransactionCount += int256(totalTransactions); // Make sure to cast totalTransactions to int256
 
-        // Check if steezTransactionCount has reached 0 and transition to deflationary system
+        // Check if a billion steez transactions have occured to transition to deflationary tokenomics
         if (steezTransactionCount >= 0) {
-            // Transition to deflationary system
+            isDeflationary = true;
         }
     }
 
-    // Override the _transfer function to mint tokens automatically
+    // Override the _transfer function to integrate burning mechanism
     function _transfer(address sender, address recipient, uint256 amount) internal override nonReentrant {
         super._transfer(sender, recipient, amount);
-        if (isDeflationary) {
-            burnAmount = calculateBurnAmount(amount); // Calculate the amount to burn
-            _burn(sender, burnAmount);
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+
+        // Calculate the burn amount based on the transaction value
+        burnAmount = calculateBurnAmount(amount);
+        
+        // Check if there's a need to burn from the transaction
+        if(burnAmount > 0) {
+            // Proceed to burn the calculated amount from the Treasury's balance
+            // Assume treasuryBalance tracks the Treasury's $Steelo balance
+            require(ds.treasuryBalance >= burnAmount, "Insufficient funds in Treasury for burning");
+            _burn(ds.treasury, burnAmount);
+            emit TokensBurned(burnAmount);
         }
     }
 
@@ -167,24 +177,28 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
     }
 
     // Function to calculate the amount to burn based on the burn rate
-    function calculateBurnAmount() private view returns (uint256) {
+    function calculateBurnAmount(uint256 transactionValue) private view returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        return amount * burnRate / 10000; // Using ds.burnRate
+
+        if(steezTransactionCount >= 0) {          
+            burnAmount = transactionValue * ds.FEE_RATE * burnRate / 1e4 / 1e4; // in basis of 1/100 of a percent
+            return burnAmount;
+        } else {return 0;}
     }
     
     // Function to adjust the mint rate, can be called through governance decisions (SIPs)
-    function adjustMintRate() external onlyOwner nonReentrant {
+    function adjustMintRate(uint256 _newMintRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(_newMintRate > 0 && _newMintRate <= ds.mintRateMax, "Invalid mint rate");
-        ds.mintRate = _newMintRate;
+        require(_newMintRate >= ds.MIN_MINT_RATE && _newMintRate <= ds.MAX_MINT_RATE, "Invalid mint rate");
+        mintRate = _newMintRate;
         emit MintRateUpdated(_newMintRate);
     }
 
     // Function to adjust the burn rate, can be called through governance decisions (SIPs)
-    function adjustBurnRate() external onlyOwner nonReentrant {
+    function adjustBurnRate(uint256 _newBurnRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(_newBurnRate > 0 && _newBurnRate <= ds.burnRateMax, "Invalid burn rate");
-        ds.burnRate = _newBurnRate;
+        require(_newBurnRate >= ds.MIN_BURN_RATE && _newBurnRate <= ds.MAX_BURN_RATE, "Invalid burn rate");
+        burnRate = _newBurnRate;
         emit BurnRateUpdated(_newBurnRate);
     }
     
@@ -192,7 +206,7 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
     function burnTokens() private {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         uint256 treasuryBalance = balanceOf(address(this)); // Assuming _balanceOf was a typo, use balanceOf
-        burnAmount = (SteeloCurrentPrice * ds.FEE_RATE / 1000) * ds.burnRate / 100;
+        burnAmount = (steeloCurrentPrice * ds.FEE_RATE / 1000) * burnRate / 100;
 
         require(treasuryBalance >= burnAmount, "Not enough tokens to burn");
         require(burnAmount > 0, "Burn amount must be greater than 0");
@@ -223,8 +237,8 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
     function requestVolumeData() public returns (bytes32 requestId) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         Chainlink.Request memory request = buildChainlinkRequest(ds.jobId, address(this), this.fulfill.selector);
-        req.add("get", "https://us-central1-steelo.io.cloudfunctions.net/functionName");
-        req.add("path", "volume");
+        request.add("get", "https://us-central1-steelo.io.cloudfunctions.net/functionName");
+        request.add("path", "volume");
         return sendChainlinkRequestTo(ds.oracle, request, ds.fee);
     }
 

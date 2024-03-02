@@ -5,9 +5,9 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract AccessControlFacet is AccessControl {
+contract AccessControlFacet is AccessControlUpgradeable {
     bytes32 public constant UPGRADE_ROLE = keccak256("UPGRADE_ROLE");
     bytes32 public constant STEELO_ROLE = keccak256("STEELO_ROLE");
     bytes32 public constant STEEZ_ROLE = keccak256("STEEZ_ROLE");

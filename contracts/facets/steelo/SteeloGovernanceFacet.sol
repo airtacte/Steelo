@@ -4,10 +4,12 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { IAppFacet } from  "../../interfaces/IAppFacet.sol";
+import { ISteeloGovernanceFacet } from "../../interfaces/ISteeloFacet.sol";
+import { SteeloStakingFacet } from "./SteeloStakingFacet.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract SteeloGovernanceFacet is IGovernanceFacet, Initializable, OwnableUpgradeable {
+contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, OwnableUpgradeable {
     using LibDiamond for LibDiamond.DiamondStorage;
 
     event SIPCreated(uint256 indexed sipId, SIPType indexed sipType, address indexed proposer, string description);
@@ -78,7 +80,7 @@ contract SteeloGovernanceFacet is IGovernanceFacet, Initializable, OwnableUpgrad
         }
     }
 
-    function executeSIP(uint256 _sipId) external onlyOwner {
+    function executeSIP(uint256 _sipId) public onlyOwner {
         SIP storage sip = sips[_sipId];
         require(!sip.executed, "SIP already executed");
         

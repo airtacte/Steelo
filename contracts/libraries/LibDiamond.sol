@@ -24,6 +24,10 @@ library LibDiamond {
     uint256 constant rho = 1 ether;
     uint256 constant alpha = 10;
     uint256 constant beta = 10;
+    uint256 constant MIN_MINT_RATE = 0.5 ether;
+    uint256 constant MAX_MINT_RATE = 5 ether;
+    uint256 constant MIN_BURN_RATE = 0 ether;
+    uint256 constant MAX_BURN_RATE = 5.5 ether;
 
     // STEEZ TOKENOMICS
     uint256 constant AUCTION_DURATION = 24 hours;

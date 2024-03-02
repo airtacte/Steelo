@@ -3,11 +3,14 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
+import { STEEZFacet } from "./STEEZFacet.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 
-contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
@@ -30,26 +33,12 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
         __AccessControl_init();
         __Ownable_init();
         __ReentrancyGuard_init();
+        __Pausable_init();
 
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(MANAGER_ROLE, msg.sender);
-        _setupRole(PAUSER_ROLE, msg.sender);
+        super._setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        super._setupRole(MANAGER_ROLE, msg.sender);
+        super._setupRole(PAUSER_ROLE, msg.sender);
     }
-
-        // Update the maximum number of creator tokens
-        function setMaxCreatorTokens(uint256 maxTokens) public onlyRole(MANAGER_ROLE) {
-            require(maxTokens >= ds.totalTokensCreated, "Cannot set max below current total");
-            require(maxTokens > 0, "Max tokens must be positive");
-            require(!_isCreator(newCreatorAddress), "Address is already a creator");
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            ds.maxCreatorTokens = maxTokens;
-            emit MaxCreatorTokensUpdated(maxTokens);
-        }
-        
-        // Retrieve the maximum number of creator tokens
-        function getMaxCreatorTokens() public view returns (uint256) {
-            return LibDiamond.diamondStorage().maxCreatorTokens;
-        }
 
         // Update the base URI for token metadata
         function setBaseURI(string memory newBaseURI) public onlyRole(MANAGER_ROLE) {
@@ -65,16 +54,24 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
 
         // Update the creator's address for a specific token
         function updateCreatorAddress(uint256 tokenId, address newCreatorAddress) external onlyRole(MANAGER_ROLE) {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(newCreatorAddress != address(0), "New creator address cannot be zero address");
             require(tokenId > 0, "Token ID must be positive");
-            ds.creatorAddresses[tokenId] = newCreatorAddress;
+
+            STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(newCreatorAddress);
+            localSteez.creatorId = tokenId;
+
             emit CreatorAddressUpdated(tokenId, newCreatorAddress);
         }
 
         // Retrieve the current creator address for a specific token
         function getCreatorAddress(uint256 tokenId) public view returns (address) {
-            return _creator[tokenId];
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            for (uint i = 0; i < creators.length; i++) {
+                if (STEEZFacet(creators[i]).creatorSteez(creators[i]).creatorId == tokenId) {
+                    return creators[i];
+                }
+            }
+            return address(0); // return zero address if no creator found for the given tokenId
         }
 
         // Update the revenue or royalty split for a specific token
@@ -130,28 +127,12 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
         // Fallback function
         receive() external payable {}
 
-        // Function to take a snapshot of the current token balances
-        function _takeSnapshot() internal {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            // Assuming snapshotCounter and snapshotBalances are properly defined in LibDiamond
-            ds.snapshotCounter++;
-            for (uint256 tokenId = 1; tokenId <= ds.currentTokenID; tokenId++) {
-                ds.snapshotBalances[ds.snapshotCounter][tokenId] = ds.totalSupply[tokenId];
-            }
-            // Emitting an event could be considered here to log snapshot actions
-        }
-
         // Helper function to check if an address is already a creator
-        function _isCreator(address addr) private view returns (bool) {
+        function _isCreator(address profileAddress) private view returns (bool) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            for (uint256 i = 1; i <= ds.currentTokenID; i++) {
-                if(ds.creatorAddresses[i] == addr) {
-                    return true;
-                }
-            }
-            return false;
+            STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(profileAddress);
+            return localSteez.creatorExists;
         }
-
         // Ensure the token exists
         function _exists(uint256 tokenId) private view returns (bool) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();

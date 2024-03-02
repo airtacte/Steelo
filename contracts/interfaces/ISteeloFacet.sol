@@ -47,3 +47,6 @@ interface ISteeloFacet {
 
 interface ISteeloStakingFacet {
 }
+
+interface ISteeloGovernanceFacet {
+}

@@ -5,6 +5,7 @@ Folder: steelo
 -- File: STEELOFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { STEEZFacet } from "../steez/STEEZFacet.sol";
 ------ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
@@ -12,28 +13,45 @@ Folder: steelo
 ------ import "@openzeppelin/contracts/utils/Strings.sol";
 ------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 ------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+---- State Variables:
+------ public steezTransactionCount
+------ public steeloCurrentPrice
+------ public totalMinted
+------ public totalBurned
+------ public lastMintEvent
+------ public lastBurnEvent
+------ public mintAmount
+------ public burnAmount
+------ private burnRate
+------ private mintRate
+------ public isDeflationary
+------ public tgeExecuted
+------ public creatorId
 ---- Functions:
------- steeloTGE requires: uint256 _steezTransactions, uint256 _currentPrice
+------ initialize requires: address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken
+------ steeloTGE requires: uint256 _steeloCurrentPrice
+------ calculateTotalTransactions requires: 
 ------ _transfer requires: address sender, address recipient, uint256 amount
 ------ tokenTransfer requires: address recipient, uint256 amount
------- steeloMint requires: uint256 _steezTransactions, uint256 _currentPrice
------- calculateMintAmount requires: uint256 _steezTransactions, uint256 _currentPrice
------- calculateSupplyCap requires: uint256 _currentPrice
------- calculateBurnAmount requires: uint256 amount
+------ steeloMint requires: 
+------ calculateMintAmount requires: 
+------ calculateSupplyCap requires: 
+------ calculateBurnAmount requires: 
 ------ adjustMintRate requires: uint256 _newMintRate
 ------ adjustBurnRate requires: uint256 _newBurnRate
 ------ burnTokens requires: 
 ------ getOwner requires: 
------- updateSteezTransactionCount requires: uint256 _mintAmount
------- updateParameters requires: uint256 _steezTransactionCount, uint256 _currentPrice
+------ updateParameters requires: 
 ------ requestVolumeData requires: 
------- fulfill requires: bytes32 _requestId, uint256 _steezTransactionCount
+------ fulfill requires: bytes32 _requestId
 ------ stringToBytes32 requires: string memory source
 
 -- File: SteeloGovernanceFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { IAppFacet } from  "../../interfaces/IAppFacet.sol";
+------ import { ISteeloGovernanceFacet } from "../../interfaces/ISteeloFacet.sol";
+------ import { SteeloStakingFacet } from "./SteeloStakingFacet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 ---- State Variables:
@@ -70,5 +88,6 @@ Folder: steelo
 ------ unstake requires: uint256 _amount
 ------ calculateReward requires: address stakeholder
 ------ distributeRewards requires: 
------- getTotalStaked requires: 
+------ getTotalStakingPool requires: 
+------ stakeholderStatus requires: address _user
 ------ stakeAmount requires: address _user

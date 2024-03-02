@@ -15,6 +15,8 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    STEEZFacet steezFacet;
+
     struct ProfileList {
         string username;
         string bio;
@@ -103,13 +105,13 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
             emit ProfileUpdated(user);
         }
 
-        function verifyCreator(/* Creator data */) public {
+        function verifyCreator(uint256 creatorId) public {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
             // Verification logic here
 
             localSteez.creatorId++; // Increment the creatorId
-            localSteez.steez[creatorId] = /* new Creator */;
+            localSteez.steez[creatorId]; // new Creator
         }
 
         // Function to check if a username already exists

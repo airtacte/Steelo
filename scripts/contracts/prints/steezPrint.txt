@@ -8,89 +8,96 @@ Folder: steez
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
------- import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
------- import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
------- import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
------- import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
+------ import { BazaarFacet } from "../features/BazaarFacet.sol";
+------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
+------ import { SteezFeesFacet } from "./SteezFeesFacet.sol";
+------ import { SnapshotFacet } from "../app/SnapshotFacet.sol";
 ------ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 ------ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 ------ import "@openzeppelin/contracts/utils/Address.sol";
 ------ import "@openzeppelin/contracts/utils/Strings.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ---- State Variables:
------- private uniswapRouterAddress
------- private _lastTokenId
+------ constant ROLE_OPERATOR
+------ constant ROLE_OWNER
+------ private _lastCreatorId
+------ private _lastProfileId
+------ private _lastSteezId
+------ public baseURI
+------ uint256 creatorId
 ---- Functions:
------- initialize requires: string memory baseURI
------- transferTokenOwnership requires: address newInvestor, uint256 tokenId, uint256 steezId
+------ initialize requires: string memory _baseURI
 ------ createSteez requires: address to, bytes memory data
------- preOrder requires: uint256 tokenId, uint256 amount
------- concludeAuction requires: 
------- launchToken requires: uint256 tokenId, uint256 amount
------- expandToken requires: uint256 tokenId, uint256 amount
------- expansionEligible requires: uint256 tokenId
------- initiateAnniversary requires: uint256 tokenId
------- transferToken requires: uint256 tokenId, uint256 amount, address from, address to
------- safeBatchTransfer requires: address[] memory to, uint256[] memory tokenIds, uint256[] memory amounts, bytes memory data
------- _mint requires: address to, uint256 tokenId, uint256 steezId, uint256 amount, bytes memory data
------- _convertTokenIdToAddress requires: uint256 tokenId
+------ preOrder requires: uint256 creatorId, uint256 amount
+------ launch requires: uint256 creatorId, uint256 amount
+------ anniversary requires: uint256 creatorId, uint256 amount
+------ transferSteez requires: uint256 creatorId, uint256 steezId, uint256 amount, address from, address to
+------ safeBatchTransfer requires: address[] memory to, uint256[] memory creatorIds, uint256[] memory amounts, bytes memory data
+------ _mint requires: address to, uint256 creatorId, uint256 steezId, uint256 amount, bytes memory data
 ------ _transfer requires: address from, address to, uint256 steezId
------- _removeInvestor requires: uint256 tokenId, address currentInvestor
------- _addInvestor requires: uint256 tokenId, address newInvestor
------- _addRole requires: address to, bytes32 role
------- getMaxAllowedMint requires: address sender, uint256 tokenId
+------ _removeInvestor requires: uint256 creatorId, address currentInvestor
+------ _addInvestor requires: uint256 creatorId, address newInvestor, uint256 profileId, uint256 balance
+------ _findInvestorIndex requires: uint256 creatorId, address investorAddress
 
 -- File: SteezFeesFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
------- import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+------ import { STEEZFacet } from "./STEEZFacet.sol";
+------ import { STEELOFacet } from "../steelo/STEELOFacet.sol";
+------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 ------ import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
+------ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ---- State Variables:
------- private _totalShareholdings
+------ payable recipient
 ---- Functions:
 ------ initialize requires: address owner
------- setCommunitySplit requires: uint256 tokenId, uint256[] memory splits
------- payRoyalties requires: uint256 tokenId, uint256 amount, address from, address to, bytes memory data
------- claimRoyalty requires: uint256 tokenId
------- viewRoyalties requires: address user, uint256 tokenId
------- updateRoyaltyRates requires: uint256[] calldata tokenIds, RoyaltyInfo[] calldata newRoyalties
------- createSnapshot requires: uint256 tokenId
------- _findSnapshotIndex requires: uint256 tokenId, address account
+------ updateRoyaltyInfo requires: uint256 creatorId, uint256 amount
+------ setCommunitySplit requires: uint256 creatorId, uint256[] memory splits
+------ transferSteez requires: uint256 creatorId, uint256 creatorId, uint256 amount, address from, address to
+------ payRoyalties requires: uint256 creatorId, uint256 amount, address from, address to, bytes memory data
+------ viewRoyalties requires: address user, uint256 creatorId
+------ queueRoyaltyPayment requires: uint256 _creatorId, uint256 _amount, address payable _recipient
+------ processRoyaltyQueue requires: 
+------ isValidParticipant requires: address participant
+------ queueRoyaltyPayment requires: uint256 _creatorId, uint256 _amount, address payable _recipient
+------ processRoyaltyQueue requires: 
 
 -- File: SteezGovernanceFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesUpgradeable.sol";
+------ import { STEEZFacet } from "./STEEZFacet.sol";
+------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
+------ import { ISteeloGovernanceFacet } from "../../interfaces/ISteeloFacet.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
----- State Variables:
------- constant MODERATOR_ROLE
 ---- Functions:
 ------ initialize requires: address steezTokenAddress
 ------ proposeBenefitChange requires: string memory benefitDescription, bytes memory callData
 ------ voteOnProposal requires: uint256 proposalId, bool support
 ------ executeProposal requires: uint256 proposalId
 ------ _isSteezTokenHolder requires: address account
+------ propose requires: bytes memory callData, string memory benefitDescription
+------ castVote requires: uint256 proposalId, uint8 vote
+------ execute requires: uint256 proposalId
 
 -- File: SteezManagementFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
+------ import { STEEZFacet } from "./STEEZFacet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 ---- State Variables:
 ------ constant MANAGER_ROLE
 ------ constant PAUSER_ROLE
 ---- Functions:
 ------ initialize requires: address owner
------- setMaxCreatorTokens requires: uint256 maxTokens
------- getMaxCreatorTokens requires: 
 ------ setBaseURI requires: string memory newBaseURI
 ------ baseURI requires: 
 ------ updateCreatorAddress requires: uint256 tokenId, address newCreatorAddress
@@ -101,6 +108,5 @@ Folder: steez
 ------ pause requires: 
 ------ unpause requires: 
 ------ receive requires: 
------- _takeSnapshot requires: 
------- _isCreator requires: address addr
+------ _isCreator requires: address profileAddress
 ------ _exists requires: uint256 tokenId

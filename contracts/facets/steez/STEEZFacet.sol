@@ -36,6 +36,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
 
     struct Investor {
         uint256 profileId; // ID of the investor's user profile
+        address investorAddress; // address of the investor
         uint256 balance; // quantity of Steez owned by the investor
     }
 
@@ -50,8 +51,8 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     }
     
     struct Steez {
-        address creatorId; // one creatorId holds 500+ steezIds
-        uint256 steezId; // mapping(creatorId => mapping(steezId => investors) 
+        uint256 creatorId; // one creatorId holds 500+ steezIds
+        uint256 steezId; // mapping(creatorId => mapping(steezId => investors)
         uint256 totalSupply; // starting at 500 and increasing by 500 annually
         uint256 transactionCount; // drives anniversary requirements and $STEELO mint rate 
         uint256 lastMintTime; // to check when to next initiate Anniversary
@@ -71,9 +72,12 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     uint256 oneYearInSeconds = 365 days;
     uint256 oneWeekInSeconds = 7 days;
     uint256 private _lastCreatorId;
+    uint256 private _lastProfileId;
+    uint256 private _lastSteezId;
     string public baseURI;
 
-    modifier canCreateToken(address creator) {require(!Steez[creatorId].creatorExists, "CreatorToken: Creator has already created a token.");
+    modifier canCreateToken(address creator) {
+        require(!creatorSteez[creator].creatorExists, "CreatorToken: Creator has already created a token.");
         _;
     }
 
@@ -109,6 +113,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             require(!Steez[creatorSteez].creatorExists, "CreatorToken: token already exists");
 
             Investor memory newInvestor = Investor({
+                profileId: _lastProfileId++ ,// ID of the investor's user profile
                 investorAddress: msg.sender,
                 balance: 0 // initial balance
             });
@@ -124,8 +129,8 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             });
     
             Steez memory steez = Steez({
-                creatorId: msg.sender, // = profileId
-                steezId: _lastCreatorId++, // increment _lastCreatorId for each new Steez
+                creatorId:_lastCreatorId++, // = profileId
+                steezId: _lastSteezId++, // increment _lastCreatorId for each new Steez
                 creatorExists: true,
                 totalSupply: 0, // 250 post-auction, 250 post-launch, 500 post-anniversaries
                 transactionCount: 0,
@@ -141,9 +146,11 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             });
 
             creatorSteez[msg.sender] = steez; // stores steez object in creatorSteez mapping
-
-            uint256[] memory royalties = steez.royalties.investorRoyalties[investor.profileId];            
+         
             uint256 creatorId = _lastCreatorId;
+            uint256 profileId = _lastProfileId;
+            uint256 steezId = _lastSteezId;
+
             _mint(to, creatorId, creatorSteez[creatorId].steezId, data);
 
             // Update the minting state for annual token increase
@@ -154,7 +161,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             emit NewCreatorSteez(creatorId);
 
             // Take a snapshot after minting tokens
-            snapshotFacet.takeSnapshot();
+            snapshot.takeSnapshot();
         }
 
         // Pre-order function
@@ -219,7 +226,6 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             _mint(msg.sender, creatorId, creatorSteez[creatorId].steez, ds.EXTRA_TOKENS_AFTER_AUCTION, "");
 
             // List the minted tokens at INITIAL_PRICE
-            // Assuming list is a function that lists the tokens at a given price
             bazaar.listCreatorToken(creatorId, creatorSteez[creatorId].currentPrice);
 
             emit auctionConcluded(creatorId, creatorSteez[creatorId].currentPrice, creatorSteez[creatorId].totalSupply);
@@ -294,7 +300,6 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             emit SteezTransfer(from, to, creatorId, amount);
         }
 
-        // Transfers multiple tokens of different types and amounts to different addresses, while checking for the recipient's ability to receive ERC1155
         function safeBatchTransfer(address[] memory to, uint256[] memory creatorIds, uint256[] memory amounts, bytes memory data) public {
             require(to.length == creatorIds.length && creatorIds.length == amounts.length, "CreatorToken: Arrays length must match");
 
@@ -314,13 +319,25 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
         }
 
         function _transfer(address from, address to, uint256 steezId) internal virtual {
-            require(creatorSteez[creatorId].investor == from, "ERC721: transfer of token that is not own");
             require(to != address(0), "ERC721: transfer to the zero address");
 
-            creatorSteez[steezId].balances[from] -= 1;
-            creatorSteez[steezId].balances[to] += 1;
-            creatorSteez[steezId].investors = to;
+            Steez storage steez = creatorSteez[steezId];
+            bool isInvestor = false;
+            uint i;
+            for (i = 0; i < steez.investors.length; i++) {
+                if (steez.investors[i].investorAddress == from) {
+                    isInvestor = true;
+                    break;
+                }
+            }
+            require(isInvestor, "ERC721: transfer of token that is not own");
 
+            steez.balances[from] -= 1;
+            steez.balances[to] += 1;
+
+            if (isInvestor) {
+                steez.investors[i].investorAddress = to;
+            }
             emit SteezTransfer(from, to, steezId);
         }
 
@@ -335,15 +352,15 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             creatorSteez[creatorId].investors.pop();
         }
 
-        function _addInvestor(uint256 creatorId, address newInvestor) private {
+        function _addInvestor(uint256 creatorId, address newInvestor, uint256 profileId, uint256 balance) private {
             // Check that the investor is not already in the array
             uint256 investorIndex = _findInvestorIndex(creatorId, newInvestor);
             require(investorIndex == uint256(-1), "This token is already owned");
 
             // Add the investor to the array
             Investor memory investor = Investor({
-                profileId: 0, // Replace with actual profile ID
-                balance: 0 // Replace with actual balance
+                profileId: profileId, // Use the provided profile ID
+                balance: balance // Use the provided balance
             });
             creatorSteez[creatorId].investors.push(investor);
         }

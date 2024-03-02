@@ -27,6 +27,14 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
         
     );
 
+    struct QueuedRoyalty {
+        uint256 creatorId;
+        uint256 amount;
+        address payable recipient;
+    }
+
+    QueuedRoyalty[] private royaltyQueue;
+
     modifier onlyAdmin() {
         require(AccessControlFacet.diamondStorage().isAdmin[msg.sender], "Royalties: Caller is not an admin");
         _;
@@ -168,4 +176,68 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
 
             return (userShare, userRoyalty);
         }
+
+        // New Function to Add to Queue (Example)
+        function queueRoyaltyPayment(uint256 _creatorId, uint256 _amount, address payable _recipient) internal {
+            royaltyQueue.push(QueuedRoyalty({creatorId: _creatorId, amount: _amount, recipient: _recipient}));
+        }
+
+        // Implementing additional checks within the processRoyaltyQueue function
+        function processRoyaltyQueue() public onlyAdmin {
+            require(royaltyQueue.length > 0, "No royalties to process");
+            uint256 totalRoyaltiesProcessed = 0;
+
+            for (uint i = 0; i < royaltyQueue.length; i++) {
+                QueuedRoyalty memory queuedPayment = royaltyQueue[i];
+                // Additional security checks can be added here
+                // For example, verify that the recipient is still a valid participant in the system
+                require(isValidParticipant(queuedPayment.recipient), "Invalid recipient");
+
+                queuedPayment.recipient.transfer(queuedPayment.amount);
+                totalRoyaltiesProcessed += queuedPayment.amount;
+
+                // Emit an event or log as necessary
+                emit RoyaltiesDistributed(queuedPayment.from, queuedPayment.to, queuedPayment.creatorId, queuedPayment.amount, queuedPayment.creatorFee, queuedPayment.steeloFee, queuedPayment.communityFee, queuedPayment.data);
+            }
+
+            delete royaltyQueue;
+            // Log the total royalties processed in this batch
+        }
+
+        // New helper function for validating participants
+        function isValidParticipant(address participant) private view returns (bool) {
+            // Placeholder for validation logic
+            return true;
+        }
+
+        // New Function to Add to Queue
+        function queueRoyaltyPayment(uint256 _creatorId, uint256 _amount, address payable _recipient) public onlyAdmin {
+            require(_amount > 0, "Amount must be greater than zero");
+            require(isValidParticipant(_recipient), "Invalid recipient");
+            royaltyQueue.push(QueuedRoyalty({creatorId: _creatorId, amount: _amount, recipient: _recipient}));
+        }
+
+        function processRoyaltyQueue() public onlyAdmin {
+            require(royaltyQueue.length > 0, "No royalties to process");
+            uint256 totalRoyaltiesProcessed = 0;
+
+            for (uint i = 0; i < royaltyQueue.length; i++) {
+                QueuedRoyalty memory queuedPayment = royaltyQueue[i];
+                require(queuedPayment.amount > 0, "Invalid amount");
+                require(isValidParticipant(queuedPayment.recipient), "Invalid recipient");
+
+                queuedPayment.recipient.transfer(queuedPayment.amount);
+                totalRoyaltiesProcessed += queuedPayment.amount;
+
+                emit RoyaltiesDistributed(queuedPayment.from, queuedPayment.to, queuedPayment.creatorId, queuedPayment.amount, queuedPayment.creatorFee, queuedPayment.steeloFee, queuedPayment.communityFee, queuedPayment.data);
+            }
+
+            delete royaltyQueue;
+            // Log the total royalties processed in this batch
+        }
+        // Assuming the use of an external keeper or automated job for triggering
+        // This would be set up outside of the Solidity contract, utilizing a service like Chainlink Keepers
+        // to call `processRoyaltyQueue()` based on predefined conditions such as time intervals or queue size.
+        // The processRoyaltyQueue function above inherently uses the batch processing capabilities of zkEVM
+        // by aggregating multiple transactions. Further optimization can be explored based on zkEVM's specific features
 }

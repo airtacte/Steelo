@@ -68,7 +68,7 @@ contract SteeloImprovementProposalFacet is OwnableUpgradeable, ReentrancyGuardUp
             sip.executed = true;
             emit SIPExecuted(_sipId, success, reason);
         } else {
-            emit SIPExecuted(_sipId, failure, reason);
+            emit SIPExecuted(_sipId, !success, reason);
         }
     }
 

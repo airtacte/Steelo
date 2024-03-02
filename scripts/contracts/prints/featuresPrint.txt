@@ -5,6 +5,7 @@ Folder: features
 -- File: BazaarFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
 ------ import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 ------ import { IBazaarFacet } from "../../interfaces/IFeaturesFacet.sol";
 ------ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -15,8 +16,8 @@ Folder: features
 ------ marketListing requires: uint256 tokenId
 ------ bidCreatorToken requires: uint256 tokenId, uint256 amount
 ------ buyCreatorToken requires: uint256 tokenId, uint256 amount
------- _addLiquidityForToken requires: uint256 tokenId, uint256 tokenAmount, uint256 steelAmount
------- _addLiquidity requires: address uniswapAddress, address tokenAddress, uint256 additionalSteeloAmount, uint256 additionalTokenAmount
+------ _addLiquidityForToken requires: uint256 tokenId, uint256 steezAmount, uint256 gbptAmount
+------ _addLiquidity requires: address uniswapAddress, address tokenAddress, uint256 additionalgbptAmount, uint256 additionalsteezAmount
 ------ getSuggestions requires: 
 ------ search requires: string memory query
 ------ viewAnalytics requires: 
@@ -64,6 +65,8 @@ Folder: features
 ------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 ------ import { STEEZFacet } from "../steez/STEEZFacet.sol";
 ------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+------ import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+------ import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 ------ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 ------ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -72,6 +75,7 @@ Folder: features
 ------ initialize requires: 
 ------ initialize requires: address _lensAddress, address _safeAddress
 ------ setProfile requires: address user, string memory username, string memory bio, string memory avatarURI
+------ verifyCreator requires: uint256 creatorId
 ------ usernameTaken requires: string memory username
 ------ getProfile requires: address user
 ------ postContent requires: uint256 contentId, bool isPublic
@@ -95,6 +99,8 @@ Folder: features
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 ------ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+---- State Variables:
+------ public nextChatId
 ---- Functions:
 ------ getKeyPair requires: address user
 ------ initiateTransaction requires: address sender, address receiver, uint amount, address token

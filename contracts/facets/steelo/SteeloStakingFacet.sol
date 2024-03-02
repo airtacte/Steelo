@@ -69,14 +69,14 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // Placeholder for actual reward calculation logic
     function calculateReward(address stakeholder) internal view returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        totalStakingPool = getTotalStaked(); // This would sum all staked amounts
+        totalStakingPool = getTotalStakingPool(); // This would sum all staked amounts
         uint256 stakeholderAmount = stakes[stakeholder];
         stakeDuration = stakeDuration[stakeholder];
 
-        if(totalStaked == 0) return 0; // Prevent division by zero
+        if(totalStakingPool == 0) return 0; // Prevent division by zero
 
         // Calculate the proportion of the total staked amount that the stakeholder owns
-        uint256 stakeholderShare = (stakeholderAmount * totalRewardPool) / totalStaked;
+        uint256 stakeholderShare = (stakeholderAmount * totalRewardPool) / totalStakingPool;
 
         // Define yield rates based on staking duration as specified
         uint256 yieldRate;
@@ -97,7 +97,7 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     
     function distributeRewards() external nonReentrant onlyOwner {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        uint256 totalStaked = getTotalStaked();
+        uint256 totalStaked = getTotalStakingPool();
         require(totalStaked > 0, "No stakes to distribute rewards to");
         require(totalRewardPool > 0, "No rewards available for distribution");
 
@@ -115,14 +115,16 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     // Helper function to get total staked amount
-    function getTotalStaked() internal view returns (uint256 totalStaked) {
+    function getTotalStakingPool() internal view returns (uint256 totalStaked) {
         for (uint i = 0; i < stakeholders.length; i++) {
             totalStaked += stakes[stakeholders[i]];
         }
         return totalStaked;
     }
 
-    bool stakeholderStatus = contractInstance.isStakeholder(_user);
+    function stakeholderStatus(address _user) public view returns (bool) {
+        return isStakeholder[_user];
+    }
 
     function stakeAmount(address _user) external view returns (uint256) {
         return stakes[_user];
