@@ -14,17 +14,45 @@ contract Diamond {
         address owner;
     }
 
-    constructor(IDiamondCut.FacetCut[] memory _diamondCut, DiamondArgs memory _args) payable {
-        LibDiamond.diamondCut(_diamondCut, address(0), new bytes(0));
+    constructor(IDiamondCut.FacetCut[] memory _diamondCut, DiamondArgs memory _args, address _diamondLoupeFacet) payable {
+        // Prepare the DiamondLoupeFacet cut (assuming you have the address and function selectors)
+        // This is a simplified example. You would dynamically prepare this based on the actual facets and selectors.
+        IDiamondCut.FacetCut[] memory initialCut = new IDiamondCut.FacetCut[](_diamondCut.length + 1);
+        for (uint256 i = 0; i < _diamondCut.length; i++) {
+            initialCut[i] = _diamondCut[i];
+        }
+
+        // Assuming diamondLoupeFacet is the address of your DiamondLoupeFacet contract
+        // and diamondLoupeSelectors are the selectors for the functions in DiamondLoupeFacet
+        address diamondLoupeFacet = _diamondLoupeFacet;
+        bytes4[] memory diamondLoupeSelectors = new bytes4[](4); // Example: populate with actual function selectors
+        diamondLoupeSelectors[0] = IDiamondLoupe.facets.selector;
+        diamondLoupeSelectors[1] = IDiamondLoupe.facetFunctionSelectors.selector;
+        diamondLoupeSelectors[2] = IDiamondLoupe.facetAddresses.selector;
+        diamondLoupeSelectors[3] = IDiamondLoupe.facetAddress.selector;
+
+        initialCut[_diamondCut.length] = IDiamondCut.FacetCut({
+            facetAddress: diamondLoupeFacet,
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: diamondLoupeSelectors
+        });
+
+        // Perform the diamond cut with the initial setup including DiamondLoupeFacet
+        LibDiamond.diamondCut(initialCut, address(0), new bytes(0));
+
+        // Set contract owner
         LibDiamond.setContractOwner(_args.owner);
 
+        // Initialize DiamondStorage
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
-        // adding ERC165 data
+        // Adding ERC165 data and other interfaces
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+
+        // Additional setup for DiamondLoupeFacet if needed
     }
 
     // Find facet for function that is called and execute the

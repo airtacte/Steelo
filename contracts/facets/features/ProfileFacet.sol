@@ -97,7 +97,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
     }
 
         // Function to set up or update a user profile
-        function setProfile(address user, string memory username, string memory bio, string memory avatarURI) external override nonReentrant {
+        function setProfile(address user, string memory username, string memory bio, string memory avatarURI) external nonReentrant {
             LibDiamond.enforceIsContractOwner();
             require(!usernameTaken(username), "Username already taken");
             profiles[user] = ProfileList(username, bio, avatarURI, user);
@@ -125,26 +125,26 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
         }
 
         // Function to post content, with privacy settings
-        function postContent(uint256 contentId, bool isPublic) external override nonReentrant {
+        function postContent(uint256 contentId, bool isPublic) external nonReentrant {
             lens.postContent(msg.sender, contentId, isPublic);
             emit ContentPosted(msg.sender, contentId);
         }
 
         // Function to add an investor to a creator's profile
-        function addInvestor(address investor) external override nonReentrant {
+        function addInvestor(address investor) external nonReentrant {
             _addInvestor(msg.sender, investor);
             // Needs to check if new investor actually owns their STEEZ
             emit InvestorAdded(msg.sender, investor);
         }
 
         // Function to update the portfolio of STEEZ tokens a user owns
-        function updatePortfolio(uint256 tokenId, uint256 amount) external override nonReentrant {
+        function updatePortfolio(uint256 tokenId, uint256 amount) external nonReentrant {
             _updatePortfolio(msg.sender, tokenId, amount);
             emit PortfolioUpdated(msg.sender, tokenId, amount);
         }
 
         // Function to create a Playlist Space
-        function createSpace(uint256[] calldata contentIds) external override nonReentrant {
+        function createSpace(uint256[] calldata contentIds) external nonReentrant {
             uint256 spaceId = _createSpace(msg.sender, contentIds);
             emit SpaceCreated(msg.sender, spaceId);
         }

@@ -24,9 +24,9 @@ contract SnapshotFacet {
         mapping(address => uint256) balances;
     }
 
-        function initialize() public {
-            _takeSnapshot();
-        }
+    function initialize() public {
+        _takeSnapshot();
+    }
 
         modifier dailySnapshot() {
             if (block.timestamp >= _lastSnapshotTimestamp + 1 days) {
@@ -68,33 +68,33 @@ contract SnapshotFacet {
             // Emitting an event could be considered here to log snapshot actions
         }
 
-      function createSnapshot(uint256 creatorId) internal {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
-        uint256 blockNumber = block.number;
-        uint256 totalSupply = localSteez.totalSupply;
+        function createSnapshot(uint256 creatorId) internal {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
+            uint256 blockNumber = block.number;
+            uint256 totalSupply = localSteez.totalSupply;
 
-        for (uint256 i = 0; i < totalSupply; i++) {
-            address holder = localSteez.ownerOf(i);
-            uint256 holderBalance = localSteez.balance;
-            _holderSnapshots[creatorId][holder].push(Snapshot(blockNumber, holderBalance));
-        }
-    }
-
-    function _findSnapshotIndex(uint256 creatorId, address account) private view returns (uint256) {
-        Snapshot[] storage snapshots = _holderSnapshots[creatorId][account];
-        uint256 left = 0;
-        uint256 right = snapshots.length;
-
-        while (left < right) {
-            uint256 mid = left.add(right).div(2);
-            if (snapshots[mid].blockNumber <= block.number) {
-                left = mid + 1;
-            } else {
-                right = mid;
+            for (uint256 i = 0; i < totalSupply; i++) {
+                address holder = localSteez.ownerOf(i);
+                uint256 holderBalance = localSteez.balance;
+                _holderSnapshots[creatorId][holder].push(Snapshot(blockNumber, holderBalance));
             }
         }
 
-        return left.sub(1);
-    }
+        function _findSnapshotIndex(uint256 creatorId, address account) private view returns (uint256) {
+            Snapshot[] storage snapshots = _holderSnapshots[creatorId][account];
+            uint256 left = 0;
+            uint256 right = snapshots.length;
+
+            while (left < right) {
+                uint256 mid = left.add(right).div(2);
+                if (snapshots[mid].blockNumber <= block.number) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+
+            return left.sub(1);
+        }
 }

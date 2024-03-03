@@ -12,11 +12,6 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
     
-    // STEELO MULTI-SIG WALLETS
-    address constant GNOSIS_SAFE_MASTER_COPY = 0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F;
-    address constant GNOSIS_SAFE_PROXY_FACTORY = 0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F48;
-    address constant STEELO_WALLET = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
-
     // STEELO TOKENOMICS
     uint256 constant TGE_AMOUNT = 825_000_000 * 10**18;
     uint256 constant pMin = 0.5 ether;
@@ -65,7 +60,54 @@ library LibDiamond {
         mapping(bytes4 => bool) supportedInterfaces;
         address[] facetAddresses;
         address contractOwner;
-        // Additional storage variables as needed
+
+        // STEELO TOKENOMICS
+        uint256 TGE_AMOUNT;
+        uint256 pMin;
+        uint256 pMax;
+        uint256 rho;
+        uint256 alpha;
+        uint256 beta;
+        uint256 MIN_MINT_RATE;
+        uint256 MAX_MINT_RATE;
+        uint256 MIN_BURN_RATE;
+        uint256 MAX_BURN_RATE;
+        address treasury;
+        uint256 trasuryTGE;
+        uint256 treasuryMint;
+        address liquidityProviders;
+        uint256 liquidityProvidersMint;
+        address ecosystemProviders;
+        uint256 ecosystemProvidersMint;
+        address foundersAddress;
+        uint256 foundersTGE;
+        address earlyInvestorsAddress;
+        uint256 earlyInvestorsTGE;
+        address communityAddress;
+        uint256 communityTGE;
+        address steeloAddresss;
+        uint256 FEE_RATE;
+        address uniswapAddress;
+        address gbptAddress;
+
+        // STEEZ TOKENOMICS
+        uint256 AUCTION_DURATION;
+        uint256 PRE_ORDER_SUPPLY;
+        uint256 LAUNCH_SUPPLY;
+        uint256 EXPANSION_SUPPLY;
+        uint256 TRANSACTION_MULTIPLIER;
+        uint256 INITIAL_PRICE;
+        uint256 PRICE_INCREMENT;
+        uint256 TOKEN_BATCH_SIZE;
+        uint256 PRE_ORDER_CREATOR_ROYALTY;
+        uint256 PRE_ORDER_STEELO_ROYALTY;
+        uint256 LAUNCH_CREATOR_ROYALTY;
+        uint256 LAUNCH_STEELO_ROYALTY;
+        uint256 LAUNCH_COMMUNITY_ROYALTY;
+        uint256 SECOND_HAND_SELLER_ROYALTY;
+        uint256 SECOND_HAND_CREATOR_ROYALTY;
+        uint256 SECOND_HAND_STEELO_ROYALTY;
+        uint256 SECOND_HAND_COMMUNITY_ROYALTY;
 
         // Chainlink parameters
         address oracle;
@@ -95,6 +137,26 @@ library LibDiamond {
         }
     }
 
+    function setContractOwner(address _owner) internal {
+        DiamondStorage storage ds = diamondStorage();
+        ds.contractOwner = _owner;
+    }
+
+    function transferOwnership(address _newOwner) external {
+        enforceIsContractOwner();
+        setContractOwner(_newOwner);
+    }
+
+    function enforceIsContractOwner() internal {
+        DiamondStorage storage ds = diamondStorage();
+        require(msg.sender == ds.contractOwner, "Must be contract owner");
+    }
+
+    function owner() external view returns (address owner_) {
+        DiamondStorage storage ds = diamondStorage();
+        owner_ = ds.contractOwner;
+    }
+    
     function diamondCut(
         IDiamondCut.FacetCut[] memory _diamondCut,
         address _init,
@@ -238,6 +300,17 @@ library LibDiamond {
             contractSize := extcodesize(_contract)
         }
         require(contractSize > 0, _errorMessage);
+    }
+
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            result := mload(add(source, 32))
+        }
     }
 
     // Implementation of DiamondCut, Loupe functions, and other utility functions

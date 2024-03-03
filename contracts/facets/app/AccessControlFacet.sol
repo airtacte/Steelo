@@ -17,14 +17,18 @@ contract AccessControlFacet is AccessControlUpgradeable {
 
     modifier onlyAdmin() {require(admins[msg.sender], "Only Admin can call this function"); _;}
     modifier onlyCreator() {require(creators[msg.sender] && !admins[msg.sender], "CreatorToken: Only Creators can call this function"); _;}
-    modifier onlyOwner() {require(!creators[msg.sender] && !admins[msg.sender] && owners[msg.sender], "CreatorToken: Only Owners can call this function"); _;}
+    modifier onlyOwner() {require(!creators[msg.sender] && !admins[msg.sender] && investors[msg.sender], "CreatorToken: Only investors can call this function"); _;}
     modifier onlyUser() {require(users[msg.sender], "Only User can call this function"); _;}
-    modifier onlyCreatorOrOwner() {require(owners[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or Owners can call this function"); _;}
+    modifier onlyCreatorOrOwner() {require(investors[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or investors can call this function"); _;}
 
-    mapping (address => bool) private admins;
-    mapping (address => bool) private creators;
-    mapping (address => bool) private owners; // to rename to investors
-    mapping (address => bool) private users;
+    // System Roles allow users to upgrade to either (or both) STEELO_ROLE or STEEZ_ROLE
+    /* Tier 5 */ mapping (address => bool) private admins; // SYSTEM_ROLE
+    /* Tier 4 */ mapping (address => bool) private stakers; // STEELO_ROLE
+    /* Tier 3 */ mapping (address => bool) private creators; // STEEZ_ROLE
+    /* Tier 2 */ mapping (address => bool) private investors; // STEEZ_ROLE
+    /* Tier 1 */ mapping (address => bool) private subscribers; // STEEZ_ROLE
+    /* Tier 0 */ mapping (address => bool) private users; // USER_ROLE
+    /* Tier -1 */ mapping (address => bool) private unverifiedUser; // DEFAULT_ROLE, pre-KYC
 
     // Event to be emitted when an upgrade is performed
     event DiamondUpgraded(address indexed upgradedBy, IDiamondCut.FacetCut[] cuts);
@@ -35,6 +39,36 @@ contract AccessControlFacet is AccessControlUpgradeable {
 
         grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         grantRole(UPGRADE_ROLE, msg.sender);
+    }
+
+    // System Roles include: Admin, Staker => Voter, Creator => Company, Investor, Subscriber, User
+    function grantAdminRole(address account) external {
+        grantRole(DEFAULT_ADMIN_ROLE, account);
+        admins[account] = true;
+    }
+
+    function grantStakerRole(address account) external {
+        grantRole(DEFAULT_ADMIN_ROLE, account);
+        stakers[account] = true;
+    }
+
+    function grantCreatorRole(address account) external {
+        grantRole(STEELO_ROLE, account);
+        creators[account] = true;
+    }
+
+    function grantInvestorRole(address account) external {
+        grantRole(STEEZ_ROLE, account);
+        investors[account] = true;
+    }
+
+    function grantSubscriberRole(address account) external {
+        grantRole(STEEZ_ROLE, account);
+        subscribers[account] = true;
+    }
+
+    function grantUser(address account) external {
+        users[account] = true;
     }
 
     function grantUpgradeRole(address account) external {

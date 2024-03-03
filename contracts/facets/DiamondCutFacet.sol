@@ -14,7 +14,7 @@ contract DiamondCutFacet is IDiamondCut, OwnableUpgradeable {
     event FacetAdded(address indexed facetAddress, bytes4[] functionSelectors);
 
     function initialize() public initializer {
-        __Ownable_init();
+        __Ownable_init(msg.sender);
     }
 
     /// @notice Add/replace/remove any number of functions and optionally execute

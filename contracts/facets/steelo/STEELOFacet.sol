@@ -4,7 +4,7 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { STEEZFacet } from "../steez/STEEZFacet.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -12,8 +12,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 
-contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuard, ChainlinkClient {
-    STEEZFacet.Steez public steez;
+contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuard, ChainlinkClient {
+    STEEZFacet.Steez internal steez;
     STEEZFacet.Investor public investor;
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -40,9 +40,8 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
 
     function initialize(address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken) public initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        ERC20("Steelo", "STEELO");
-
         require(_treasury != address(0), "Treasury cannot be the zero address");
+        __ERC20_init("Steelo", "STL");
 
         // Setting up Chainlink
         setChainlinkToken(_linkToken);
@@ -52,14 +51,14 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
         ds.treasury = _treasury;
         _mint(_treasury, ds.TGE_AMOUNT);
         emit TokensMinted(_treasury, ds.TGE_AMOUNT);
-        ds.lastMintEvent = block.timestamp;
+        lastMintEvent = block.timestamp;
     }
 
     // Function to mint tokens dynamically based on $Steez transactions and current price
     function steeloTGE(uint256 _steeloCurrentPrice) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
-        require(!ds.tgeExecuted, "steeloTGE can only be executed once");
+        require(!tgeExecuted, "steeloTGE can only be executed once");
         require(localSteez.transactionCount == 0, "steezTransactionCount must be equal to 0");
         require(steeloCurrentPrice > 0, "steeloCurrentPrice must be greater than 0");
         require(totalSupply() == ds.TGE_AMOUNT, "steeloTGE can only be called for the Token Generation Event");
@@ -99,8 +98,9 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
     }
 
     // Override the _transfer function to integrate burning mechanism
-    function _transfer(address sender, address recipient, uint256 amount) internal override nonReentrant {
-        super._transfer(sender, recipient, amount);
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal {
+        super._beforeTokenTransfer(from, to, amount);
+
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         // Calculate the burn amount based on the transaction value
@@ -125,8 +125,8 @@ contract STEELOFacet is ERC20, OwnableUpgradeable, PausableUpgradeable, Reentran
         uint256 feeAmount = (amount * ds.FEE_RATE) / 10000;
         uint256 transferAmount = amount - feeAmount;
 
-        _transfer(msg.sender, recipient, transferAmount);
-        _transfer(msg.sender, ds.steeloAddress, feeAmount);
+        _beforeTokenTransfer(msg.sender, recipient, transferAmount);
+        _beforeTokenTransfer(msg.sender, ds.steeloAddress, feeAmount);
     }
 
     function steeloMint() external onlyOwner nonReentrant {

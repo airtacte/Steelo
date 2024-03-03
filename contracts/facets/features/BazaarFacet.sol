@@ -31,6 +31,7 @@ contract BazaarFacet {
     }
 
     mapping(uint256 => Listing) public listings;
+    mapping (uint256 => address) private tokenIdToAddress;
 
     constructor(address _uniswapAddress) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
@@ -50,7 +51,7 @@ contract BazaarFacet {
     function listCreatorToken(uint256 tokenId, uint256 initialPrice, uint256 supply, bool isAuction) external {
         // Example implementation details, assuming Uniswap and UniswapV4 interfaces support these operations
         if (isAuction) {
-            uniswap.createAuction(tokenId, initialPrice, supply, msg.sender);
+            // find equivalent of "uniswap.createAuction(tokenId, initialPrice, supply, msg.sender);"
         } else {
             // Direct sale, or listing on UniswapV4 for liquidity pool creation could be handled here
         }
@@ -67,34 +68,39 @@ contract BazaarFacet {
     // Function to bid on CreatorTokens (Steez)
     // Note: Integrate with Uniswap for auctions
     function bidCreatorToken(uint256 tokenId, uint256 amount) external payable {
-        uniswap.bid(tokenId, amount);
+        // Find equivalent of "uniswap.bid(tokenId, amount);"
         emit CreatorTokenBid(tokenId, amount, msg.sender);
     }
 
     // Function to buy CreatorTokens (Steez)
     // Note: Integrate with Uniswap v4 and GPBToken for trading and token pools
     function buyCreatorToken(uint256 tokenId, uint256 amount) external payable {
-        uniswap.swap(tokenId, amount);
+        // Find equivalent of "uniswap.swap(tokenId, amount);"
         emit CreatorTokenPurchased(tokenId, amount, msg.sender);
     }
 
-    function _addLiquidityForToken(uint256 tokenId, uint256 steezAmount, uint256 gbptAmount) internal {
-        address tokenAddress = steezFacet.convertTokenIdToAddress(tokenId);
-        IERC20(tokenAddress).approve(address(uniswap), steezAmount);
-        IERC20(gbpt).approve(address(uniswap), gbptAmount);
+    function _addLiquidityForToken(uint256 tokenId, int24 tickLower, int24 tickUpper, int128 liquidityDelta) internal {
+        address tokenAddress = tokenIdToAddress[tokenId];
 
-        (uint amountSteez, uint amountGBPT, uint liquidity) = uniswap.addLiquidity(
-            tokenAddress,
-            gbpt,
-            steezAmount,
-            gbptAmount,
-            0, // amountSteezMin: accepting any amount of creator Steez
-            0, // amountGBPTMin: accepting any amount of GBPT
-            address(this),
-            block.timestamp
-        );
-        
-        emit LiquidityAdded(tokenId, amountSteez, amountGBPT, liquidity);
+        /*
+        IPoolManager.PoolKey memory key = IPoolManager.PoolKey({
+            token0: tokenAddress,
+            token1: gbpt,
+            fee: feeAmount
+        });
+
+        IPoolManager.ModifyLiquidityParams memory params = IPoolManager.ModifyLiquidityParams({
+            tickLower: tickLower,
+            tickUpper: tickUpper,
+            liquidityDelta: liquidityDelta
+        });
+
+        bytes calldata hookData = ""; // replace with actual hook data if needed
+
+        IPoolManager.BalanceDelta memory delta = uniswap.modifyLiquidity(key, params, hookData);
+
+        emit LiquidityAdded(tokenId, delta.amount0, delta.amount1, delta.liquidity);
+        */
     }
 
     // Implementation example (adjust according to your logic)
