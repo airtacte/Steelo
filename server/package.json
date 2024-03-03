@@ -25,10 +25,11 @@
     },
     "homepage": "https://github.com/airtacte/Steelo#readme",
     "dependencies": {
-        "express": "^4.17.1"
+        "express": "^4.17.1",
+        "mongodb": "^6.4.0"
     },
     "devDependencies": {
-        "mocha": "^8.4.0",
-        "chai": "^4.3.4"
+        "chai": "^4.3.4",
+        "mocha": "^8.4.0"
     }
 }

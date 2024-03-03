@@ -6,7 +6,7 @@ Folder: steelo
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { STEEZFacet } from "../steez/STEEZFacet.sol";
------- import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+------ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 ------ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -24,19 +24,19 @@ Folder: steelo
 ------ public burnAmount
 ------ private burnRate
 ------ private mintRate
------- public isDeflationary
 ------ public tgeExecuted
+------ public isDeflationary
 ------ public creatorId
 ---- Functions:
 ------ initialize requires: address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken
 ------ steeloTGE requires: uint256 _steeloCurrentPrice
 ------ calculateTotalTransactions requires: 
------- _transfer requires: address sender, address recipient, uint256 amount
+------ _beforeTokenTransfer requires: address from, address to, uint256 amount
 ------ tokenTransfer requires: address recipient, uint256 amount
 ------ steeloMint requires: 
 ------ calculateMintAmount requires: 
 ------ calculateSupplyCap requires: 
------- calculateBurnAmount requires: 
+------ calculateBurnAmount requires: uint256 transactionValue
 ------ adjustMintRate requires: uint256 _newMintRate
 ------ adjustBurnRate requires: uint256 _newBurnRate
 ------ burnTokens requires: 

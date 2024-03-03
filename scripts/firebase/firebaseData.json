@@ -2,169 +2,55 @@
   {
     "id": "collect_default",
     "collectID": 0,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "contentID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Content",
-          "content_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "collectionDate": {
-      "_seconds": 1708200198,
-      "_nanoseconds": 617000000
-    }
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "contentID": "DocumentReference(Content/content_default)",
+    "collectionDate": "Timestamp(2024-02-17T20:03:18.617Z)"
   },
   {
     "id": "collection_default",
     "salePrice": 0,
-    "collectID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Collect",
-          "collect_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "collectID": "DocumentReference(Collect/collect_default)",
     "isSold": false,
     "collectionPrice": 0,
-    "saleDate": {
-      "_seconds": 1708202556,
-      "_nanoseconds": 31000000
-    },
+    "saleDate": "Timestamp(2024-02-17T20:42:36.031Z)",
     "returnOnInvestment": 0,
     "collectionID": 0,
-    "collectionDate": {
-      "_seconds": 1708185069,
-      "_nanoseconds": 166000000
-    },
-    "transactionID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Transaction",
-          "transaction_default"
-        ]
-      },
-      "_converter": {}
-    }
+    "collectionDate": "Timestamp(2024-02-17T15:51:09.166Z)",
+    "transactionID": "DocumentReference(Transaction/transaction_default)"
   },
   {
     "id": "comment_default",
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "commentDate": {
-      "_seconds": 1708199671,
-      "_nanoseconds": 647000000
-    },
-    "contentID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Content",
-          "content_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "replyID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Comment",
-          "comment_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "commentDate": "Timestamp(2024-02-17T19:54:31.647Z)",
+    "contentID": "DocumentReference(Content/content_default)",
+    "replyID": "DocumentReference(Comment/comment_default)",
     "commentID": 0,
     "comment": "",
     "isReply": false
   },
   {
     "id": "content_default",
-    "spaceRank": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10
-    ],
-    "spaceID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Space",
-          "space_default"
-        ]
-      },
-      "_converter": {}
+    "spaceRank": {
+      "0": 1,
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 5,
+      "5": 6,
+      "6": 7,
+      "7": 8,
+      "8": 9,
+      "9": 10
     },
+    "spaceID": "DocumentReference(Space/space_default)",
     "contentURI": "",
     "contentID": 0,
     "inSpace": false,
-    "creatorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Creator",
-          "creator_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "creatorID": "DocumentReference(Creator/creator_default)",
     "exclusive": false,
     "viewCount": 0,
     "category": "",
-    "postedDate": {
-      "_seconds": 1708199484,
-      "_nanoseconds": 348000000
-    }
+    "postedDate": "Timestamp(2024-02-17T19:51:24.348Z)"
   },
   {
     "id": "contributor_default",
@@ -172,420 +58,118 @@
     "contributorID": 0,
     "genre": "",
     "collectRoyalty": 0,
-    "contentID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Content",
-          "content_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "creatorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Creator",
-          "creator_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "contentID": "DocumentReference(Content/content_default)",
+    "creatorID": "DocumentReference(Creator/creator_default)",
     "type": ""
   },
   {
     "id": "creator_default",
     "communityType": "",
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "profileID": "DocumentReference(Profile/profile_default)",
     "creatorID": 0,
     "genre": "",
-    "steezID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steez",
-          "steez_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "steezID": "DocumentReference(Steez/steez_default)",
     "artForm": ""
   },
   {
     "id": "deposit_default",
     "depositAmount": 0,
-    "depositDate": {
-      "_seconds": 1708144335,
-      "_nanoseconds": 477000000
-    },
+    "depositDate": "Timestamp(2024-02-17T04:32:15.477Z)",
     "depositID": 0,
     "address": "",
-    "method": [
-      "Bank Card",
-      "PayPal",
-      "Apple/Google Pay",
-      "Ethereum"
-    ],
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
+    "method": {
+      "0": "Bank Card",
+      "1": "PayPal",
+      "2": "Apple/Google Pay",
+      "3": "Ethereum"
     },
+    "profileID": "DocumentReference(Profile/profile_default)",
     "fee": 0
   },
   {
     "id": "discovery_default",
-    "result": [
-      1,
-      2,
-      3,
-      4,
-      5
-    ],
-    "discoveryDate": {
-      "_seconds": 1708181684,
-      "_nanoseconds": 992000000
+    "result": {
+      "0": 1,
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 5
     },
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
+    "discoveryDate": "Timestamp(2024-02-17T14:54:44.992Z)",
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "origin": {
+      "0": "Link/WoM",
+      "1": "Village link",
+      "2": "Search",
+      "3": "Mosaic",
+      "4": "Profile",
+      "5": "Bazaar",
+      "6": "Village"
     },
-    "origin": [
-      "Link/WoM",
-      "Village link",
-      "Search",
-      "Mosaic",
-      "Profile",
-      "Bazaar",
-      "Village"
-    ],
-    "creatorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Creator",
-          "creator_default"
-        ]
-      },
-      "_converter": {}
-    }
+    "creatorID": "DocumentReference(Creator/creator_default)"
   },
   {
     "id": "follower_default",
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "followDate": {
-      "_seconds": 1708182623,
-      "_nanoseconds": 259000000
-    },
-    "followeeID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "followDate": "Timestamp(2024-02-17T15:10:23.259Z)",
+    "followeeID": "DocumentReference(Profile/profile_default)",
     "followerID": 0
   },
   {
     "id": "friend_default",
-    "receiverID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "receiverID": "DocumentReference(Profile/profile_default)",
     "friendID": 0,
-    "receiverFollowID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Follower",
-          "follower_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "receiverFollowID": "DocumentReference(Follower/follower_default)",
+    "profileID": "DocumentReference(Profile/profile_default)",
     "privacy": false,
-    "followerID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Follower",
-          "follower_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "friendDate": {
-      "_seconds": 1708182521,
-      "_nanoseconds": 108000000
-    }
+    "followerID": "DocumentReference(Follower/follower_default)",
+    "friendDate": "Timestamp(2024-02-17T15:08:41.108Z)"
   },
   {
     "id": "gallery_default",
     "royaltiesCollected": 0,
-    "purchaseDate": {
-      "_seconds": 1708184873,
-      "_nanoseconds": 211000000
-    },
+    "purchaseDate": "Timestamp(2024-02-17T15:47:53.211Z)",
     "galleryID": 0,
-    "investorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Investor",
-          "investor_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "steezID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steez",
-          "steez_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "investorID": "DocumentReference(Investor/investor_default)",
+    "steezID": "DocumentReference(Steez/steez_default)",
     "returnOnInvestment": 0,
-    "transactionID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Transaction",
-          "transaction_default"
-        ]
-      },
-      "_converter": {}
-    }
+    "transactionID": "DocumentReference(Transaction/transaction_default)"
   },
   {
     "id": "history_default",
-    "feedback": [
-      1,
-      2,
-      3,
-      4,
-      5
-    ],
-    "browseDate": {
-      "_seconds": 1708182189,
-      "_nanoseconds": 149000000
+    "feedback": {
+      "0": 1,
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 5
     },
-    "viewingTime": {
-      "_seconds": 1708182193,
-      "_nanoseconds": 990000000
-    },
-    "historyID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "History",
-          "history_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "creatorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Creator",
-          "creator_default"
-        ]
-      },
-      "_converter": {}
-    }
+    "browseDate": "Timestamp(2024-02-17T15:03:09.149Z)",
+    "viewingTime": "Timestamp(2024-02-17T15:03:13.990Z)",
+    "historyID": "DocumentReference(History/history_default)",
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "creatorID": "DocumentReference(Creator/creator_default)"
   },
   {
     "id": "investor_default",
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "profileID": "DocumentReference(Profile/profile_default)",
     "taste": "",
     "investorID": 0,
-    "steezID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steez",
-          "steez_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "villageID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Village",
-          "village_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "steezID": "DocumentReference(Steez/steez_default)",
+    "villageID": "DocumentReference(Village/village_default)",
     "network": ""
   },
   {
     "id": "like_default",
-    "likeSpeed": {
-      "_seconds": 1708199760,
-      "_nanoseconds": 318000000
-    },
-    "likeDate": {
-      "_seconds": 1708199776,
-      "_nanoseconds": 205000000
-    },
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "likeSpeed": "Timestamp(2024-02-17T19:56:00.318Z)",
+    "likeDate": "Timestamp(2024-02-17T19:56:16.205Z)",
+    "profileID": "DocumentReference(Profile/profile_default)",
     "likeID": 0,
-    "contentID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Content",
-          "content_default"
-        ]
-      },
-      "_converter": {}
-    }
+    "contentID": "DocumentReference(Content/content_default)"
   },
   {
     "id": "profile_default",
-    "avatarURI": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "users",
-          "avatars"
-        ]
-      },
-      "_converter": {}
-    },
+    "avatarURI": "DocumentReference(users/avatars)",
     "socialLinks": {
       "youtube": "https://youtube.com/",
       "twitter": "https://twitter.com/",
@@ -632,40 +216,18 @@
     "id": "royalty_default",
     "isEligibleForRoyalty": false,
     "creatorRoyalty": 0,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "saleType": {
+      "0": "pre-order",
+      "1": "launch",
+      "2": "second hand",
+      "3": "expansion"
     },
-    "saleType": [
-      "pre-order",
-      "launch",
-      "second hand",
-      "expansion"
-    ],
     "developerRoyalty": 0,
     "communityRoyalty": 0,
     "royaltyID": 0,
     "tradePrice": 0,
-    "tradeID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Trade",
-          "trade_default"
-        ]
-      },
-      "_converter": {}
-    }
+    "tradeID": "DocumentReference(Trade/trade_default)"
   },
   {
     "id": "sip_default",
@@ -673,195 +235,73 @@
     "sipID": 0,
     "isVoteSuccess": false,
     "sipRules": "",
-    "executionDeadline": {
-      "_seconds": 1708149656,
-      "_nanoseconds": 496000000
-    },
+    "executionDeadline": "Timestamp(2024-02-17T06:00:56.496Z)",
     "initiator": "",
     "executionDetails": "",
     "description": "",
-    "startTime": {
-      "_seconds": 1708148214,
-      "_nanoseconds": 935000000
-    },
+    "startTime": "Timestamp(2024-02-17T05:36:54.935Z)",
     "sipVotes": {
-      "voter_2": {
-        "_firestore": {
-          "projectId": "steelo-testnet"
-        },
-        "_path": {
-          "segments": [
-            "Stake",
-            "stake_default"
-          ]
-        },
-        "_converter": {}
-      },
-      "voter_1": {
-        "_firestore": {
-          "projectId": "steelo-testnet"
-        },
-        "_path": {
-          "segments": [
-            "Stake",
-            "stake_default"
-          ]
-        },
-        "_converter": {}
-      }
+      "voter_2": "DocumentReference(Stake/stake_default)",
+      "voter_1": "DocumentReference(Stake/stake_default)"
     },
     "executionConfirmation": false,
-    "sipType": [
-      "creatorSIP",
-      "investorSIP",
-      "developerSIP"
-    ]
+    "sipType": {
+      "0": "creatorSIP",
+      "1": "investorSIP",
+      "2": "developerSIP"
+    }
   },
   {
     "id": "search_default",
-    "result": [
-      "unsuccessful",
-      "viewed profile",
-      "consumed content",
-      "followed profile",
-      "invested in creator"
-    ],
-    "discoveryID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Discovery",
-          "discovery_default"
-        ]
-      },
-      "_converter": {}
+    "result": {
+      "0": "unsuccessful",
+      "1": "viewed profile",
+      "2": "consumed content",
+      "3": "followed profile",
+      "4": "invested in creator"
     },
+    "discoveryID": "DocumentReference(Discovery/discovery_default)",
     "searchID": 0,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "searchDate": {
-      "_seconds": 1708181522,
-      "_nanoseconds": 45000000
-    }
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "searchDate": "Timestamp(2024-02-17T14:52:02.045Z)"
   },
   {
     "id": "space_default",
     "spaceID": 0,
-    "contributorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Contributor",
-          "contributor_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "likeID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Like",
-          "like_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "contentID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Content",
-          "content_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "commentID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Comment",
-          "comment_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "rank": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10
-    ]
+    "contributorID": "DocumentReference(Contributor/contributor_default)",
+    "likeID": "DocumentReference(Like/like_default)",
+    "contentID": "DocumentReference(Content/content_default)",
+    "commentID": "DocumentReference(Comment/comment_default)",
+    "rank": {
+      "0": 1,
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 5,
+      "5": 6,
+      "6": 7,
+      "7": 8,
+      "8": 9,
+      "9": 10
+    }
   },
   {
     "id": "stake_default",
-    "stakeDate": {
-      "_seconds": 1708150216,
-      "_nanoseconds": 892000000
-    },
+    "stakeDate": "Timestamp(2024-02-17T06:10:16.892Z)",
     "stakeAmount": 0,
     "stakeID": 0,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "yield": {
+      "0": 3.5,
+      "1": 5,
+      "2": 7.5
     },
-    "yield": [
-      3.5,
-      5,
-      7.5
-    ],
-    "steeloID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steelo",
-          "steelo_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "stakeDuration": [
-      "1 month",
-      "3 months",
-      "6 months"
-    ]
+    "steeloID": "DocumentReference(Steelo/steelo_default)",
+    "stakeDuration": {
+      "0": "1 month",
+      "1": "3 months",
+      "2": "6 months"
+    }
   },
   {
     "id": "steelo_default",
@@ -871,71 +311,21 @@
     "isDeflationary": false,
     "burnRate": 0,
     "tokenSupply": 825000000,
-    "lastMint": {
-      "_seconds": 1708117780,
-      "_nanoseconds": 355000000
-    },
+    "lastMint": "Timestamp(2024-02-16T21:09:40.355Z)",
     "currentPrice": 0.05,
     "steeloID": 0,
     "transactionCount": 0,
-    "lastBurn": {
-      "_seconds": 1708117960,
-      "_nanoseconds": 802000000
-    },
+    "lastBurn": "Timestamp(2024-02-16T21:12:40.802Z)",
     "mintRate": "1"
   },
   {
     "id": "steeloholder_default",
-    "depositID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Deposit",
-          "deposit_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "withdrawalID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Withdrawal",
-          "withdrawal_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "depositID": "DocumentReference(Deposit/deposit_default)",
+    "withdrawalID": "DocumentReference(Withdrawal/withdrawal_default)",
     "steeloAmount": 0,
     "steeloHolderID": 0,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "steeloID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steelo",
-          "steelo_default"
-        ]
-      },
-      "_converter": {}
-    }
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "steeloID": "DocumentReference(Steelo/steelo_default)"
   },
   {
     "id": "steez_default",
@@ -948,259 +338,126 @@
     "hasSoldInvestment": true,
     "preOrderPrice": 0,
     "ownerHistory": {
-      "address_0": {
-        "_seconds": 1708185830,
-        "_nanoseconds": 970000000
-      },
-      "address_1": {
-        "_seconds": 1708185865,
-        "_nanoseconds": 257000000
-      }
+      "address_0": "Timestamp(2024-02-17T16:03:50.970Z)",
+      "address_1": "Timestamp(2024-02-17T16:04:25.257Z)"
     },
-    "creatorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Creator",
-          "creator_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "creatorID": "DocumentReference(Creator/creator_default)",
     "steezID": 0,
     "currentPrice": 0,
     "sellPrice": 0,
-    "sellDate": {
-      "_seconds": 1708186344,
-      "_nanoseconds": 500000000
-    },
+    "sellDate": "Timestamp(2024-02-17T16:12:24.500Z)",
     "transactionCount": 0
   },
   {
     "id": "trade_default",
     "buyPrice": 0,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "buyDate": {
-      "_seconds": 1708190533,
-      "_nanoseconds": 600000000
-    },
-    "steezID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steez",
-          "steez_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "buyDate": "Timestamp(2024-02-17T17:22:13.600Z)",
+    "steezID": "DocumentReference(Steez/steez_default)",
     "tradeID": 0,
-    "tradeType": [
-      "bazaar",
-      "mosaic",
-      "village"
-    ],
-    "status": [
-      "verifying",
-      "processing",
-      "confirmed"
-    ]
+    "tradeType": {
+      "0": "bazaar",
+      "1": "mosaic",
+      "2": "village"
+    },
+    "status": {
+      "0": "verifying",
+      "1": "processing",
+      "2": "confirmed"
+    }
   },
   {
     "id": "transaction_default",
     "buyPrice": 0,
-    "buyerUD": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
     "buyAmount": 0,
-    "sellerID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
+    "sellerID": "DocumentReference(Profile/profile_default)",
+    "buyDate": "Timestamp(2024-02-17T03:55:48.594Z)",
+    "steeloID": "DocumentReference(Steelo/steelo_default)",
+    "type": {
+      "0": "Steelo via Third Parties",
+      "1": "Steez via Bazaar",
+      "2": "Steelo via Village",
+      "3": "Steez via Village",
+      "4": "Collect via Bazaar",
+      "5": "Collect via Mosaic",
+      "6": "Subscription",
+      "7": "P2P via Escrow",
+      "8": "P2P via Village"
     },
-    "buyDate": {
-      "_seconds": 1708142148,
-      "_nanoseconds": 594000000
-    },
-    "steeloID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steelo",
-          "steelo_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "type": [
-      "Steelo via Third Parties",
-      "Steez via Bazaar",
-      "Steelo via Village",
-      "Steez via Village",
-      "Collect via Bazaar",
-      "Collect via Mosaic",
-      "Subscription",
-      "P2P via Escrow",
-      "P2P via Village"
-    ],
     "transactionID": 0,
-    "status": [
-      "verifying",
-      "processing",
-      "confirmed"
-    ]
+    "status": {
+      "0": "verifying",
+      "1": "processing",
+      "2": "confirmed"
+    },
+    "buyerID": "DocumentReference(Profile/profile_default)",
+    "steezID": "DocumentReference(Steez/steez_default)"
   },
   {
     "id": "village_default",
     "buyPrice": 0,
     "royaltiesCollected": 0,
     "culture": "",
-    "buyDate": {
-      "_seconds": 1708185683,
-      "_nanoseconds": 765000000
-    },
+    "buyDate": "Timestamp(2024-02-17T16:01:23.765Z)",
     "genre": "",
-    "investorID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Investor",
-          "investor_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "investorID": "DocumentReference(Investor/investor_default)",
     "purchaseOrigin": "",
-    "steezID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Steez",
-          "steez_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "steezID": "DocumentReference(Steez/steez_default)",
     "type": "",
     "villageID": 0
   },
   {
     "id": "vote_default",
     "rewardShare": 0,
-    "voteTime": {
-      "_seconds": 1708150045,
-      "_nanoseconds": 540000000
-    },
-    "sipID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "SIP",
-          "sip_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "voteTime": "Timestamp(2024-02-17T06:07:25.540Z)",
+    "sipID": "DocumentReference(SIP/sip_default)",
     "hasVoted": false,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
-    "stakingID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Staking",
-          "staking_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "profileID": "DocumentReference(Profile/profile_default)",
+    "stakingID": "DocumentReference(Staking/staking_default)",
     "rewardPool": 0,
     "voteWeight": 0,
-    "voterType": [
-      "creator",
-      "investor",
-      "developer"
-    ],
+    "voterType": {
+      "0": "creator",
+      "1": "investor",
+      "2": "developer"
+    },
     "voteID": 0
   },
   {
     "id": "withdrawal_default",
     "withdrawalID": 0,
     "address": "",
-    "withdrawalDate": {
-      "_seconds": 1708145571,
-      "_nanoseconds": 290000000
+    "withdrawalDate": "Timestamp(2024-02-17T04:52:51.290Z)",
+    "method": {
+      "0": "Bank Card",
+      "1": "PayPal",
+      "2": "Apple/Google Pay",
+      "3": "Ethereum"
     },
-    "method": [
-      "Bank Card",
-      "PayPal",
-      "Apple/Google Pay",
-      "Ethereum"
-    ],
     "withdrawalAmount": 0,
-    "profileID": {
-      "_firestore": {
-        "projectId": "steelo-testnet"
-      },
-      "_path": {
-        "segments": [
-          "Profile",
-          "profile_default"
-        ]
-      },
-      "_converter": {}
-    },
+    "profileID": "DocumentReference(Profile/profile_default)",
     "fee": 0
+  },
+  {
+    "id": "88r16gpCqHS5SPW4XxcB",
+    "currencyName": "GBPT",
+    "regulatoryInfo": {
+      "KYC Status": "",
+      "AML Status": ""
+    },
+    "holderID": {
+      "profileID": "DocumentReference(Profile/profile_default)",
+      "verification": false
+    },
+    "transactionInfo": {
+      "transactionHistory": {
+        "owner1": {
+          "amount": 0,
+          "profileID": "DocumentReference(Profile/profile_default)",
+          "transactionID": "DocumentReference(Transaction/transaction_default)"
+        }
+      },
+      "transactionLimits": 0
+    }
   }
 ]

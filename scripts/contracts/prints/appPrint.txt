@@ -13,6 +13,12 @@ Folder: app
 ------ constant STEELO_ROLE
 ------ constant STEEZ_ROLE
 ---- Functions:
+------ grantAdminRole requires: address account
+------ grantStakerRole requires: address account
+------ grantCreatorRole requires: address account
+------ grantInvestorRole requires: address account
+------ grantSubscriberRole requires: address account
+------ grantUser requires: address account
 ------ grantUpgradeRole requires: address account
 ------ upgradeDiamond requires: IDiamondCut.FacetCut[] memory cuts
 ------ grantRoleBasedOnTokenHolding requires: address account
@@ -43,14 +49,6 @@ Folder: app
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ---- Functions:
 ------ initialize requires: 
-
--- File: OwnershipFacet.sol
----- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { IERC173 } from "../../interfaces/IERC173.sol";
----- Functions:
------- transferOwnership requires: address _newOwner
------- owner requires: 
 
 -- File: SnapshotFacet.sol
 ---- Imports:

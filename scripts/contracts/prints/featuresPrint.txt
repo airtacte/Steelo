@@ -16,7 +16,7 @@ Folder: features
 ------ marketListing requires: uint256 tokenId
 ------ bidCreatorToken requires: uint256 tokenId, uint256 amount
 ------ buyCreatorToken requires: uint256 tokenId, uint256 amount
------- _addLiquidityForToken requires: uint256 tokenId, uint256 steezAmount, uint256 gbptAmount
+------ _addLiquidityForToken requires: uint256 tokenId, int24 tickLower, int24 tickUpper, int128 liquidityDelta
 ------ _addLiquidity requires: address uniswapAddress, address tokenAddress, uint256 additionalgbptAmount, uint256 additionalsteezAmount
 ------ getSuggestions requires: 
 ------ search requires: string memory query

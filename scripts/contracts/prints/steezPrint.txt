@@ -2,8 +2,6 @@ Contracts Summary: Functions and State Variables
 
 Folder: steez
 
--- File: Collection.sol
-
 -- File: STEEZFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -63,8 +61,6 @@ Folder: steez
 ------ queueRoyaltyPayment requires: uint256 _creatorId, uint256 _amount, address payable _recipient
 ------ processRoyaltyQueue requires: 
 ------ isValidParticipant requires: address participant
------- queueRoyaltyPayment requires: uint256 _creatorId, uint256 _amount, address payable _recipient
------- processRoyaltyQueue requires: 
 
 -- File: SteezGovernanceFacet.sol
 ---- Imports:

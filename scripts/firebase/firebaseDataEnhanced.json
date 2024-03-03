@@ -1,0 +1,3392 @@
+{
+  "Collect": [
+    {
+      "id": "collect_default",
+      "collectID": 0,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "contentID": {
+        "spaceRank": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "spaceID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Space",
+              "space_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "contentURI": "",
+        "contentID": 0,
+        "inSpace": false,
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "exclusive": false,
+        "viewCount": 0,
+        "category": "",
+        "postedDate": {
+          "_seconds": 1708199484,
+          "_nanoseconds": 348000000
+        }
+      },
+      "collectionDate": "2024-02-17T20:03:18.617Z"
+    }
+  ],
+  "Collection": [
+    {
+      "id": "collection_default",
+      "salePrice": 0,
+      "collectID": {
+        "collectID": 0,
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "contentID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Content",
+              "content_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "collectionDate": {
+          "_seconds": 1708200198,
+          "_nanoseconds": 617000000
+        }
+      },
+      "isSold": false,
+      "collectionPrice": 0,
+      "saleDate": "2024-02-17T20:42:36.031Z",
+      "returnOnInvestment": 0,
+      "collectionID": 0,
+      "collectionDate": "2024-02-17T15:51:09.166Z",
+      "transactionID": {
+        "buyPrice": 0,
+        "buyAmount": 0,
+        "sellerID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "buyDate": {
+          "_seconds": 1708142148,
+          "_nanoseconds": 594000000
+        },
+        "steeloID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steelo",
+              "steelo_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "type": [
+          "Steelo via Third Parties",
+          "Steez via Bazaar",
+          "Steelo via Village",
+          "Steez via Village",
+          "Collect via Bazaar",
+          "Collect via Mosaic",
+          "Subscription",
+          "P2P via Escrow",
+          "P2P via Village"
+        ],
+        "transactionID": 0,
+        "status": [
+          "verifying",
+          "processing",
+          "confirmed"
+        ],
+        "buyerID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        }
+      }
+    }
+  ],
+  "Comment": [
+    {
+      "id": "comment_default",
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "commentDate": "2024-02-17T19:54:31.647Z",
+      "contentID": {
+        "spaceRank": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "spaceID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Space",
+              "space_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "contentURI": "",
+        "contentID": 0,
+        "inSpace": false,
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "exclusive": false,
+        "viewCount": 0,
+        "category": "",
+        "postedDate": {
+          "_seconds": 1708199484,
+          "_nanoseconds": 348000000
+        }
+      },
+      "replyID": {
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "commentDate": {
+          "_seconds": 1708199671,
+          "_nanoseconds": 647000000
+        },
+        "contentID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Content",
+              "content_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "replyID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Comment",
+              "comment_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "commentID": 0,
+        "comment": "",
+        "isReply": false
+      },
+      "commentID": 0,
+      "comment": "",
+      "isReply": false
+    }
+  ],
+  "Content": [
+    {
+      "id": "content_default",
+      "spaceRank": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "spaceID": {
+        "spaceID": 0,
+        "contributorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Contributor",
+              "contributor_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "likeID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Like",
+              "like_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "contentID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Content",
+              "content_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "commentID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Comment",
+              "comment_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "rank": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "contentURI": "",
+      "contentID": 0,
+      "inSpace": false,
+      "creatorID": {
+        "communityType": "",
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "creatorID": 0,
+        "genre": "",
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "artForm": ""
+      },
+      "exclusive": false,
+      "viewCount": 0,
+      "category": "",
+      "postedDate": "2024-02-17T19:51:24.348Z"
+    }
+  ],
+  "Contributor": [
+    {
+      "id": "contributor_default",
+      "role": "",
+      "contributorID": 0,
+      "genre": "",
+      "collectRoyalty": 0,
+      "contentID": {
+        "spaceRank": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "spaceID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Space",
+              "space_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "contentURI": "",
+        "contentID": 0,
+        "inSpace": false,
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "exclusive": false,
+        "viewCount": 0,
+        "category": "",
+        "postedDate": {
+          "_seconds": 1708199484,
+          "_nanoseconds": 348000000
+        }
+      },
+      "creatorID": {
+        "communityType": "",
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "creatorID": 0,
+        "genre": "",
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "artForm": ""
+      },
+      "type": ""
+    }
+  ],
+  "Creator": [
+    {
+      "id": "creator_default",
+      "communityType": "",
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "creatorID": 0,
+      "genre": "",
+      "steezID": {
+        "steezAmount": 0,
+        "royaltiesGenerated": {
+          "creator": 0,
+          "developers": 0,
+          "investors": 0
+        },
+        "hasSoldInvestment": true,
+        "preOrderPrice": 0,
+        "ownerHistory": {
+          "address_0": {
+            "_seconds": 1708185830,
+            "_nanoseconds": 970000000
+          },
+          "address_1": {
+            "_seconds": 1708185865,
+            "_nanoseconds": 257000000
+          }
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": 0,
+        "currentPrice": 0,
+        "sellPrice": 0,
+        "sellDate": {
+          "_seconds": 1708186344,
+          "_nanoseconds": 500000000
+        },
+        "transactionCount": 0
+      },
+      "artForm": ""
+    }
+  ],
+  "Deposit": [
+    {
+      "id": "deposit_default",
+      "depositAmount": 0,
+      "depositDate": "2024-02-17T04:32:15.477Z",
+      "depositID": 0,
+      "address": "",
+      "method": [
+        "Bank Card",
+        "PayPal",
+        "Apple/Google Pay",
+        "Ethereum"
+      ],
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "fee": 0
+    }
+  ],
+  "Discovery": [
+    {
+      "id": "discovery_default",
+      "result": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "discoveryDate": "2024-02-17T14:54:44.992Z",
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "origin": [
+        "Link/WoM",
+        "Village link",
+        "Search",
+        "Mosaic",
+        "Profile",
+        "Bazaar",
+        "Village"
+      ],
+      "creatorID": {
+        "communityType": "",
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "creatorID": 0,
+        "genre": "",
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "artForm": ""
+      }
+    }
+  ],
+  "Follower": [
+    {
+      "id": "follower_default",
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "followDate": "2024-02-17T15:10:23.259Z",
+      "followeeID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "followerID": 0
+    }
+  ],
+  "Friend": [
+    {
+      "id": "friend_default",
+      "receiverID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "friendID": 0,
+      "receiverFollowID": {
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "followDate": {
+          "_seconds": 1708182623,
+          "_nanoseconds": 259000000
+        },
+        "followeeID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "followerID": 0
+      },
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "privacy": false,
+      "followerID": {
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "followDate": {
+          "_seconds": 1708182623,
+          "_nanoseconds": 259000000
+        },
+        "followeeID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "followerID": 0
+      },
+      "friendDate": "2024-02-17T15:08:41.108Z"
+    }
+  ],
+  "Gallery": [
+    {
+      "id": "gallery_default",
+      "royaltiesCollected": 0,
+      "purchaseDate": "2024-02-17T15:47:53.211Z",
+      "galleryID": 0,
+      "investorID": {
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "taste": "",
+        "investorID": 0,
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "villageID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Village",
+              "village_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "network": ""
+      },
+      "steezID": {
+        "steezAmount": 0,
+        "royaltiesGenerated": {
+          "creator": 0,
+          "developers": 0,
+          "investors": 0
+        },
+        "hasSoldInvestment": true,
+        "preOrderPrice": 0,
+        "ownerHistory": {
+          "address_0": {
+            "_seconds": 1708185830,
+            "_nanoseconds": 970000000
+          },
+          "address_1": {
+            "_seconds": 1708185865,
+            "_nanoseconds": 257000000
+          }
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": 0,
+        "currentPrice": 0,
+        "sellPrice": 0,
+        "sellDate": {
+          "_seconds": 1708186344,
+          "_nanoseconds": 500000000
+        },
+        "transactionCount": 0
+      },
+      "returnOnInvestment": 0,
+      "transactionID": {
+        "buyPrice": 0,
+        "buyAmount": 0,
+        "sellerID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "buyDate": {
+          "_seconds": 1708142148,
+          "_nanoseconds": 594000000
+        },
+        "steeloID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steelo",
+              "steelo_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "type": [
+          "Steelo via Third Parties",
+          "Steez via Bazaar",
+          "Steelo via Village",
+          "Steez via Village",
+          "Collect via Bazaar",
+          "Collect via Mosaic",
+          "Subscription",
+          "P2P via Escrow",
+          "P2P via Village"
+        ],
+        "transactionID": 0,
+        "status": [
+          "verifying",
+          "processing",
+          "confirmed"
+        ],
+        "buyerID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        }
+      }
+    }
+  ],
+  "History": [
+    {
+      "id": "history_default",
+      "feedback": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "browseDate": "2024-02-17T15:03:09.149Z",
+      "viewingTime": "2024-02-17T15:03:13.990Z",
+      "historyID": {
+        "feedback": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "browseDate": {
+          "_seconds": 1708182189,
+          "_nanoseconds": 149000000
+        },
+        "viewingTime": {
+          "_seconds": 1708182193,
+          "_nanoseconds": 990000000
+        },
+        "historyID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "History",
+              "history_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        }
+      },
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "creatorID": {
+        "communityType": "",
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "creatorID": 0,
+        "genre": "",
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "artForm": ""
+      }
+    }
+  ],
+  "Investor": [
+    {
+      "id": "investor_default",
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "taste": "",
+      "investorID": 0,
+      "steezID": {
+        "steezAmount": 0,
+        "royaltiesGenerated": {
+          "creator": 0,
+          "developers": 0,
+          "investors": 0
+        },
+        "hasSoldInvestment": true,
+        "preOrderPrice": 0,
+        "ownerHistory": {
+          "address_0": {
+            "_seconds": 1708185830,
+            "_nanoseconds": 970000000
+          },
+          "address_1": {
+            "_seconds": 1708185865,
+            "_nanoseconds": 257000000
+          }
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": 0,
+        "currentPrice": 0,
+        "sellPrice": 0,
+        "sellDate": {
+          "_seconds": 1708186344,
+          "_nanoseconds": 500000000
+        },
+        "transactionCount": 0
+      },
+      "villageID": {
+        "buyPrice": 0,
+        "royaltiesCollected": 0,
+        "culture": "",
+        "buyDate": {
+          "_seconds": 1708185683,
+          "_nanoseconds": 765000000
+        },
+        "genre": "",
+        "investorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Investor",
+              "investor_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "purchaseOrigin": "",
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "type": "",
+        "villageID": 0
+      },
+      "network": ""
+    }
+  ],
+  "Like": [
+    {
+      "id": "like_default",
+      "likeSpeed": "2024-02-17T19:56:00.318Z",
+      "likeDate": "2024-02-17T19:56:16.205Z",
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "likeID": 0,
+      "contentID": {
+        "spaceRank": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "spaceID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Space",
+              "space_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "contentURI": "",
+        "contentID": 0,
+        "inSpace": false,
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "exclusive": false,
+        "viewCount": 0,
+        "category": "",
+        "postedDate": {
+          "_seconds": 1708199484,
+          "_nanoseconds": 348000000
+        }
+      }
+    }
+  ],
+  "Profile": [
+    {
+      "id": "profile_default",
+      "avatarURI": null,
+      "socialLinks": {
+        "youtube": "https://youtube.com/",
+        "twitter": "https://twitter.com/",
+        "tiktok": "https://tiktok.com/",
+        "instagram": "https://instagram.com/"
+      },
+      "billingDetails": {
+        "CVS": 0,
+        "bank": "",
+        "nameOnCard": "",
+        "accountNumber": 0,
+        "sortCode": 0
+      },
+      "isVerified": false,
+      "bio": "",
+      "privacySettings": {
+        "publicContent": true,
+        "publicProfile": true
+      },
+      "phone": "",
+      "profileID": 0,
+      "postingDetails": {
+        "country": "United Kingdom",
+        "address": "",
+        "city": "London",
+        "postcode": ""
+      },
+      "identificationProof": {
+        "billingProofUploaded": false,
+        "drivingLicenseUploaded": false,
+        "postingProofUploaded": false,
+        "passportUploaded": false
+      },
+      "walletAddress": "",
+      "email": "",
+      "authentication": {
+        "multiSig": true,
+        "2FA": false,
+        "coldWallet": false
+      },
+      "username": ""
+    }
+  ],
+  "Royalty": [
+    {
+      "id": "royalty_default",
+      "isEligibleForRoyalty": false,
+      "creatorRoyalty": 0,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "saleType": [
+        "pre-order",
+        "launch",
+        "second hand",
+        "expansion"
+      ],
+      "developerRoyalty": 0,
+      "communityRoyalty": 0,
+      "royaltyID": 0,
+      "tradePrice": 0,
+      "tradeID": {
+        "buyPrice": 0,
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "buyDate": {
+          "_seconds": 1708190533,
+          "_nanoseconds": 600000000
+        },
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "tradeID": 0,
+        "tradeType": [
+          "bazaar",
+          "mosaic",
+          "village"
+        ],
+        "status": [
+          "verifying",
+          "processing",
+          "confirmed"
+        ]
+      }
+    }
+  ],
+  "SIP": [
+    {
+      "id": "sip_default",
+      "duration": 0,
+      "sipID": 0,
+      "isVoteSuccess": false,
+      "sipRules": "",
+      "executionDeadline": "2024-02-17T06:00:56.496Z",
+      "initiator": "",
+      "executionDetails": "",
+      "description": "",
+      "startTime": "2024-02-17T05:36:54.935Z",
+      "sipVotes": {
+        "voter_2": {
+          "stakeDate": {
+            "_seconds": 1708150216,
+            "_nanoseconds": 892000000
+          },
+          "stakeAmount": 0,
+          "stakeID": 0,
+          "profileID": {
+            "_firestore": {
+              "projectId": "steelo-testnet"
+            },
+            "_path": {
+              "segments": [
+                "Profile",
+                "profile_default"
+              ]
+            },
+            "_converter": {}
+          },
+          "yield": [
+            3.5,
+            5,
+            7.5
+          ],
+          "steeloID": {
+            "_firestore": {
+              "projectId": "steelo-testnet"
+            },
+            "_path": {
+              "segments": [
+                "Steelo",
+                "steelo_default"
+              ]
+            },
+            "_converter": {}
+          },
+          "stakeDuration": [
+            "1 month",
+            "3 months",
+            "6 months"
+          ]
+        },
+        "voter_1": {
+          "stakeDate": {
+            "_seconds": 1708150216,
+            "_nanoseconds": 892000000
+          },
+          "stakeAmount": 0,
+          "stakeID": 0,
+          "profileID": {
+            "_firestore": {
+              "projectId": "steelo-testnet"
+            },
+            "_path": {
+              "segments": [
+                "Profile",
+                "profile_default"
+              ]
+            },
+            "_converter": {}
+          },
+          "yield": [
+            3.5,
+            5,
+            7.5
+          ],
+          "steeloID": {
+            "_firestore": {
+              "projectId": "steelo-testnet"
+            },
+            "_path": {
+              "segments": [
+                "Steelo",
+                "steelo_default"
+              ]
+            },
+            "_converter": {}
+          },
+          "stakeDuration": [
+            "1 month",
+            "3 months",
+            "6 months"
+          ]
+        }
+      },
+      "executionConfirmation": false,
+      "sipType": [
+        "creatorSIP",
+        "investorSIP",
+        "developerSIP"
+      ]
+    }
+  ],
+  "Search": [
+    {
+      "id": "search_default",
+      "result": [
+        "unsuccessful",
+        "viewed profile",
+        "consumed content",
+        "followed profile",
+        "invested in creator"
+      ],
+      "discoveryID": {
+        "result": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "discoveryDate": {
+          "_seconds": 1708181684,
+          "_nanoseconds": 992000000
+        },
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "origin": [
+          "Link/WoM",
+          "Village link",
+          "Search",
+          "Mosaic",
+          "Profile",
+          "Bazaar",
+          "Village"
+        ],
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        }
+      },
+      "searchID": 0,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "searchDate": "2024-02-17T14:52:02.045Z"
+    }
+  ],
+  "Space": [
+    {
+      "id": "space_default",
+      "spaceID": 0,
+      "contributorID": {
+        "role": "",
+        "contributorID": 0,
+        "genre": "",
+        "collectRoyalty": 0,
+        "contentID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Content",
+              "content_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "type": ""
+      },
+      "likeID": {
+        "likeSpeed": {
+          "_seconds": 1708199760,
+          "_nanoseconds": 318000000
+        },
+        "likeDate": {
+          "_seconds": 1708199776,
+          "_nanoseconds": 205000000
+        },
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "likeID": 0,
+        "contentID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Content",
+              "content_default"
+            ]
+          },
+          "_converter": {}
+        }
+      },
+      "contentID": {
+        "spaceRank": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "spaceID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Space",
+              "space_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "contentURI": "",
+        "contentID": 0,
+        "inSpace": false,
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "exclusive": false,
+        "viewCount": 0,
+        "category": "",
+        "postedDate": {
+          "_seconds": 1708199484,
+          "_nanoseconds": 348000000
+        }
+      },
+      "commentID": {
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "commentDate": {
+          "_seconds": 1708199671,
+          "_nanoseconds": 647000000
+        },
+        "contentID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Content",
+              "content_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "replyID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Comment",
+              "comment_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "commentID": 0,
+        "comment": "",
+        "isReply": false
+      },
+      "rank": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    }
+  ],
+  "Stake": [
+    {
+      "id": "stake_default",
+      "stakeDate": "2024-02-17T06:10:16.892Z",
+      "stakeAmount": 0,
+      "stakeID": 0,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "yield": [
+        3.5,
+        5,
+        7.5
+      ],
+      "steeloID": {
+        "mintAmount": 825000000,
+        "marketCap": 41250000,
+        "burnAmount": 0,
+        "isDeflationary": false,
+        "burnRate": 0,
+        "tokenSupply": 825000000,
+        "lastMint": {
+          "_seconds": 1708117780,
+          "_nanoseconds": 355000000
+        },
+        "currentPrice": 0.05,
+        "steeloID": 0,
+        "transactionCount": 0,
+        "lastBurn": {
+          "_seconds": 1708117960,
+          "_nanoseconds": 802000000
+        },
+        "mintRate": "1"
+      },
+      "stakeDuration": [
+        "1 month",
+        "3 months",
+        "6 months"
+      ]
+    }
+  ],
+  "Steelo": [
+    {
+      "id": "steelo_default",
+      "mintAmount": 825000000,
+      "marketCap": 41250000,
+      "burnAmount": 0,
+      "isDeflationary": false,
+      "burnRate": 0,
+      "tokenSupply": 825000000,
+      "lastMint": "2024-02-16T21:09:40.355Z",
+      "currentPrice": 0.05,
+      "steeloID": 0,
+      "transactionCount": 0,
+      "lastBurn": "2024-02-16T21:12:40.802Z",
+      "mintRate": "1"
+    }
+  ],
+  "SteeloHolder": [
+    {
+      "id": "steeloholder_default",
+      "depositID": {
+        "depositAmount": 0,
+        "depositDate": {
+          "_seconds": 1708144335,
+          "_nanoseconds": 477000000
+        },
+        "depositID": 0,
+        "address": "",
+        "method": [
+          "Bank Card",
+          "PayPal",
+          "Apple/Google Pay",
+          "Ethereum"
+        ],
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "fee": 0
+      },
+      "withdrawalID": {
+        "withdrawalID": 0,
+        "address": "",
+        "withdrawalDate": {
+          "_seconds": 1708145571,
+          "_nanoseconds": 290000000
+        },
+        "method": [
+          "Bank Card",
+          "PayPal",
+          "Apple/Google Pay",
+          "Ethereum"
+        ],
+        "withdrawalAmount": 0,
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "fee": 0
+      },
+      "steeloAmount": 0,
+      "steeloHolderID": 0,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "steeloID": {
+        "mintAmount": 825000000,
+        "marketCap": 41250000,
+        "burnAmount": 0,
+        "isDeflationary": false,
+        "burnRate": 0,
+        "tokenSupply": 825000000,
+        "lastMint": {
+          "_seconds": 1708117780,
+          "_nanoseconds": 355000000
+        },
+        "currentPrice": 0.05,
+        "steeloID": 0,
+        "transactionCount": 0,
+        "lastBurn": {
+          "_seconds": 1708117960,
+          "_nanoseconds": 802000000
+        },
+        "mintRate": "1"
+      }
+    }
+  ],
+  "Steez": [
+    {
+      "id": "steez_default",
+      "steezAmount": 0,
+      "royaltiesGenerated": {
+        "creator": 0,
+        "developers": 0,
+        "investors": 0
+      },
+      "hasSoldInvestment": true,
+      "preOrderPrice": 0,
+      "ownerHistory": {
+        "address_0": "2024-02-17T16:03:50.970Z",
+        "address_1": "2024-02-17T16:04:25.257Z"
+      },
+      "creatorID": {
+        "communityType": "",
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "creatorID": 0,
+        "genre": "",
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "artForm": ""
+      },
+      "steezID": 0,
+      "currentPrice": 0,
+      "sellPrice": 0,
+      "sellDate": "2024-02-17T16:12:24.500Z",
+      "transactionCount": 0
+    }
+  ],
+  "Trade": [
+    {
+      "id": "trade_default",
+      "buyPrice": 0,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "buyDate": "2024-02-17T17:22:13.600Z",
+      "steezID": {
+        "steezAmount": 0,
+        "royaltiesGenerated": {
+          "creator": 0,
+          "developers": 0,
+          "investors": 0
+        },
+        "hasSoldInvestment": true,
+        "preOrderPrice": 0,
+        "ownerHistory": {
+          "address_0": {
+            "_seconds": 1708185830,
+            "_nanoseconds": 970000000
+          },
+          "address_1": {
+            "_seconds": 1708185865,
+            "_nanoseconds": 257000000
+          }
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": 0,
+        "currentPrice": 0,
+        "sellPrice": 0,
+        "sellDate": {
+          "_seconds": 1708186344,
+          "_nanoseconds": 500000000
+        },
+        "transactionCount": 0
+      },
+      "tradeID": 0,
+      "tradeType": [
+        "bazaar",
+        "mosaic",
+        "village"
+      ],
+      "status": [
+        "verifying",
+        "processing",
+        "confirmed"
+      ]
+    }
+  ],
+  "Transaction": [
+    {
+      "id": "transaction_default",
+      "buyPrice": 0,
+      "buyAmount": 0,
+      "sellerID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "buyDate": "2024-02-17T03:55:48.594Z",
+      "steeloID": {
+        "mintAmount": 825000000,
+        "marketCap": 41250000,
+        "burnAmount": 0,
+        "isDeflationary": false,
+        "burnRate": 0,
+        "tokenSupply": 825000000,
+        "lastMint": {
+          "_seconds": 1708117780,
+          "_nanoseconds": 355000000
+        },
+        "currentPrice": 0.05,
+        "steeloID": 0,
+        "transactionCount": 0,
+        "lastBurn": {
+          "_seconds": 1708117960,
+          "_nanoseconds": 802000000
+        },
+        "mintRate": "1"
+      },
+      "type": [
+        "Steelo via Third Parties",
+        "Steez via Bazaar",
+        "Steelo via Village",
+        "Steez via Village",
+        "Collect via Bazaar",
+        "Collect via Mosaic",
+        "Subscription",
+        "P2P via Escrow",
+        "P2P via Village"
+      ],
+      "transactionID": 0,
+      "status": [
+        "verifying",
+        "processing",
+        "confirmed"
+      ],
+      "buyerID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "steezID": {
+        "steezAmount": 0,
+        "royaltiesGenerated": {
+          "creator": 0,
+          "developers": 0,
+          "investors": 0
+        },
+        "hasSoldInvestment": true,
+        "preOrderPrice": 0,
+        "ownerHistory": {
+          "address_0": {
+            "_seconds": 1708185830,
+            "_nanoseconds": 970000000
+          },
+          "address_1": {
+            "_seconds": 1708185865,
+            "_nanoseconds": 257000000
+          }
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": 0,
+        "currentPrice": 0,
+        "sellPrice": 0,
+        "sellDate": {
+          "_seconds": 1708186344,
+          "_nanoseconds": 500000000
+        },
+        "transactionCount": 0
+      }
+    }
+  ],
+  "Village": [
+    {
+      "id": "village_default",
+      "buyPrice": 0,
+      "royaltiesCollected": 0,
+      "culture": "",
+      "buyDate": "2024-02-17T16:01:23.765Z",
+      "genre": "",
+      "investorID": {
+        "profileID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Profile",
+              "profile_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "taste": "",
+        "investorID": 0,
+        "steezID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Steez",
+              "steez_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "villageID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Village",
+              "village_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "network": ""
+      },
+      "purchaseOrigin": "",
+      "steezID": {
+        "steezAmount": 0,
+        "royaltiesGenerated": {
+          "creator": 0,
+          "developers": 0,
+          "investors": 0
+        },
+        "hasSoldInvestment": true,
+        "preOrderPrice": 0,
+        "ownerHistory": {
+          "address_0": {
+            "_seconds": 1708185830,
+            "_nanoseconds": 970000000
+          },
+          "address_1": {
+            "_seconds": 1708185865,
+            "_nanoseconds": 257000000
+          }
+        },
+        "creatorID": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "Creator",
+              "creator_default"
+            ]
+          },
+          "_converter": {}
+        },
+        "steezID": 0,
+        "currentPrice": 0,
+        "sellPrice": 0,
+        "sellDate": {
+          "_seconds": 1708186344,
+          "_nanoseconds": 500000000
+        },
+        "transactionCount": 0
+      },
+      "type": "",
+      "villageID": 0
+    }
+  ],
+  "Vote": [
+    {
+      "id": "vote_default",
+      "rewardShare": 0,
+      "voteTime": "2024-02-17T06:07:25.540Z",
+      "sipID": {
+        "duration": 0,
+        "sipID": 0,
+        "isVoteSuccess": false,
+        "sipRules": "",
+        "executionDeadline": {
+          "_seconds": 1708149656,
+          "_nanoseconds": 496000000
+        },
+        "initiator": "",
+        "executionDetails": "",
+        "description": "",
+        "startTime": {
+          "_seconds": 1708148214,
+          "_nanoseconds": 935000000
+        },
+        "sipVotes": {
+          "voter_2": {
+            "_firestore": {
+              "projectId": "steelo-testnet"
+            },
+            "_path": {
+              "segments": [
+                "Stake",
+                "stake_default"
+              ]
+            },
+            "_converter": {}
+          },
+          "voter_1": {
+            "_firestore": {
+              "projectId": "steelo-testnet"
+            },
+            "_path": {
+              "segments": [
+                "Stake",
+                "stake_default"
+              ]
+            },
+            "_converter": {}
+          }
+        },
+        "executionConfirmation": false,
+        "sipType": [
+          "creatorSIP",
+          "investorSIP",
+          "developerSIP"
+        ]
+      },
+      "hasVoted": false,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "stakingID": null,
+      "rewardPool": 0,
+      "voteWeight": 0,
+      "voterType": [
+        "creator",
+        "investor",
+        "developer"
+      ],
+      "voteID": 0
+    }
+  ],
+  "Withdrawal": [
+    {
+      "id": "withdrawal_default",
+      "withdrawalID": 0,
+      "address": "",
+      "withdrawalDate": "2024-02-17T04:52:51.290Z",
+      "method": [
+        "Bank Card",
+        "PayPal",
+        "Apple/Google Pay",
+        "Ethereum"
+      ],
+      "withdrawalAmount": 0,
+      "profileID": {
+        "avatarURI": {
+          "_firestore": {
+            "projectId": "steelo-testnet"
+          },
+          "_path": {
+            "segments": [
+              "users",
+              "avatars"
+            ]
+          },
+          "_converter": {}
+        },
+        "socialLinks": {
+          "youtube": "https://youtube.com/",
+          "twitter": "https://twitter.com/",
+          "tiktok": "https://tiktok.com/",
+          "instagram": "https://instagram.com/"
+        },
+        "billingDetails": {
+          "CVS": 0,
+          "bank": "",
+          "nameOnCard": "",
+          "accountNumber": 0,
+          "sortCode": 0
+        },
+        "isVerified": false,
+        "bio": "",
+        "privacySettings": {
+          "publicContent": true,
+          "publicProfile": true
+        },
+        "phone": "",
+        "profileID": 0,
+        "postingDetails": {
+          "country": "United Kingdom",
+          "address": "",
+          "city": "London",
+          "postcode": ""
+        },
+        "identificationProof": {
+          "billingProofUploaded": false,
+          "drivingLicenseUploaded": false,
+          "postingProofUploaded": false,
+          "passportUploaded": false
+        },
+        "walletAddress": "",
+        "email": "",
+        "authentication": {
+          "multiSig": true,
+          "2FA": false,
+          "coldWallet": false
+        },
+        "username": ""
+      },
+      "fee": 0
+    }
+  ],
+  "stableCoin": [
+    {
+      "id": "88r16gpCqHS5SPW4XxcB",
+      "currencyName": "GBPT",
+      "regulatoryInfo": {
+        "KYC Status": "",
+        "AML Status": ""
+      },
+      "holderID": {
+        "profileID": {
+          "avatarURI": {
+            "_firestore": {
+              "projectId": "steelo-testnet"
+            },
+            "_path": {
+              "segments": [
+                "users",
+                "avatars"
+              ]
+            },
+            "_converter": {}
+          },
+          "socialLinks": {
+            "youtube": "https://youtube.com/",
+            "twitter": "https://twitter.com/",
+            "tiktok": "https://tiktok.com/",
+            "instagram": "https://instagram.com/"
+          },
+          "billingDetails": {
+            "CVS": 0,
+            "bank": "",
+            "nameOnCard": "",
+            "accountNumber": 0,
+            "sortCode": 0
+          },
+          "isVerified": false,
+          "bio": "",
+          "privacySettings": {
+            "publicContent": true,
+            "publicProfile": true
+          },
+          "phone": "",
+          "profileID": 0,
+          "postingDetails": {
+            "country": "United Kingdom",
+            "address": "",
+            "city": "London",
+            "postcode": ""
+          },
+          "identificationProof": {
+            "billingProofUploaded": false,
+            "drivingLicenseUploaded": false,
+            "postingProofUploaded": false,
+            "passportUploaded": false
+          },
+          "walletAddress": "",
+          "email": "",
+          "authentication": {
+            "multiSig": true,
+            "2FA": false,
+            "coldWallet": false
+          },
+          "username": ""
+        },
+        "verification": false
+      },
+      "transactionInfo": {
+        "transactionHistory": {
+          "owner1": {
+            "amount": 0,
+            "profileID": {
+              "avatarURI": {
+                "_firestore": {
+                  "projectId": "steelo-testnet"
+                },
+                "_path": {
+                  "segments": [
+                    "users",
+                    "avatars"
+                  ]
+                },
+                "_converter": {}
+              },
+              "socialLinks": {
+                "youtube": "https://youtube.com/",
+                "twitter": "https://twitter.com/",
+                "tiktok": "https://tiktok.com/",
+                "instagram": "https://instagram.com/"
+              },
+              "billingDetails": {
+                "CVS": 0,
+                "bank": "",
+                "nameOnCard": "",
+                "accountNumber": 0,
+                "sortCode": 0
+              },
+              "isVerified": false,
+              "bio": "",
+              "privacySettings": {
+                "publicContent": true,
+                "publicProfile": true
+              },
+              "phone": "",
+              "profileID": 0,
+              "postingDetails": {
+                "country": "United Kingdom",
+                "address": "",
+                "city": "London",
+                "postcode": ""
+              },
+              "identificationProof": {
+                "billingProofUploaded": false,
+                "drivingLicenseUploaded": false,
+                "postingProofUploaded": false,
+                "passportUploaded": false
+              },
+              "walletAddress": "",
+              "email": "",
+              "authentication": {
+                "multiSig": true,
+                "2FA": false,
+                "coldWallet": false
+              },
+              "username": ""
+            },
+            "transactionID": {
+              "buyPrice": 0,
+              "buyAmount": 0,
+              "sellerID": {
+                "_firestore": {
+                  "projectId": "steelo-testnet"
+                },
+                "_path": {
+                  "segments": [
+                    "Profile",
+                    "profile_default"
+                  ]
+                },
+                "_converter": {}
+              },
+              "buyDate": {
+                "_seconds": 1708142148,
+                "_nanoseconds": 594000000
+              },
+              "steeloID": {
+                "_firestore": {
+                  "projectId": "steelo-testnet"
+                },
+                "_path": {
+                  "segments": [
+                    "Steelo",
+                    "steelo_default"
+                  ]
+                },
+                "_converter": {}
+              },
+              "type": [
+                "Steelo via Third Parties",
+                "Steez via Bazaar",
+                "Steelo via Village",
+                "Steez via Village",
+                "Collect via Bazaar",
+                "Collect via Mosaic",
+                "Subscription",
+                "P2P via Escrow",
+                "P2P via Village"
+              ],
+              "transactionID": 0,
+              "status": [
+                "verifying",
+                "processing",
+                "confirmed"
+              ],
+              "buyerID": {
+                "_firestore": {
+                  "projectId": "steelo-testnet"
+                },
+                "_path": {
+                  "segments": [
+                    "Profile",
+                    "profile_default"
+                  ]
+                },
+                "_converter": {}
+              },
+              "steezID": {
+                "_firestore": {
+                  "projectId": "steelo-testnet"
+                },
+                "_path": {
+                  "segments": [
+                    "Steez",
+                    "steez_default"
+                  ]
+                },
+                "_converter": {}
+              }
+            }
+          }
+        },
+        "transactionLimits": 0
+      }
+    }
+  ]
+}

@@ -32,9 +32,11 @@ Folder: .
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 ------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+------ import "@chainlink/contracts/src/v0.8/Chainlink.sol";
 ---- State Variables:
 ------ private steezTransactionCount
 ------ private steeloCurrentPrice
+------ private fee
 ---- Functions:
 ------ initialize requires: address chainlinkTokenAddress
 ------ requestVolumeData requires: uint256 _payment, bytes32 _jobId, address _oracle
@@ -56,6 +58,12 @@ Folder: app
 ------ constant STEELO_ROLE
 ------ constant STEEZ_ROLE
 ---- Functions:
+------ grantAdminRole requires: address account
+------ grantStakerRole requires: address account
+------ grantCreatorRole requires: address account
+------ grantInvestorRole requires: address account
+------ grantSubscriberRole requires: address account
+------ grantUser requires: address account
 ------ grantUpgradeRole requires: address account
 ------ upgradeDiamond requires: IDiamondCut.FacetCut[] memory cuts
 ------ grantRoleBasedOnTokenHolding requires: address account
@@ -86,14 +94,6 @@ Folder: app
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ---- Functions:
 ------ initialize requires: 
-
--- File: OwnershipFacet.sol
----- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { IERC173 } from "../../interfaces/IERC173.sol";
----- Functions:
------- transferOwnership requires: address _newOwner
------- owner requires: 
 
 -- File: SnapshotFacet.sol
 ---- Imports:
@@ -148,7 +148,7 @@ Folder: features
 ------ marketListing requires: uint256 tokenId
 ------ bidCreatorToken requires: uint256 tokenId, uint256 amount
 ------ buyCreatorToken requires: uint256 tokenId, uint256 amount
------- _addLiquidityForToken requires: uint256 tokenId, uint256 steezAmount, uint256 gbptAmount
+------ _addLiquidityForToken requires: uint256 tokenId, int24 tickLower, int24 tickUpper, int128 liquidityDelta
 ------ _addLiquidity requires: address uniswapAddress, address tokenAddress, uint256 additionalgbptAmount, uint256 additionalsteezAmount
 ------ getSuggestions requires: 
 ------ search requires: string memory query
@@ -250,7 +250,7 @@ Folder: steelo
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { STEEZFacet } from "../steez/STEEZFacet.sol";
------- import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+------ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 ------ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -275,7 +275,7 @@ Folder: steelo
 ------ initialize requires: address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken
 ------ steeloTGE requires: uint256 _steeloCurrentPrice
 ------ calculateTotalTransactions requires: 
------- _transfer requires: address sender, address recipient, uint256 amount
+------ _beforeTokenTransfer requires: address from, address to, uint256 amount
 ------ tokenTransfer requires: address recipient, uint256 amount
 ------ steeloMint requires: 
 ------ calculateMintAmount requires: 
@@ -397,8 +397,6 @@ Folder: steez
 ------ queueRoyaltyPayment requires: uint256 _creatorId, uint256 _amount, address payable _recipient
 ------ processRoyaltyQueue requires: 
 ------ isValidParticipant requires: address participant
------- queueRoyaltyPayment requires: uint256 _creatorId, uint256 _amount, address payable _recipient
------- processRoyaltyQueue requires: 
 
 -- File: SteezGovernanceFacet.sol
 ---- Imports:
