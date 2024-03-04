@@ -16,6 +16,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
  * supporting features like collect, follow, like, comment, invest, and credits.
  */
 contract MosaicFacet is OwnableUpgradeable{
+    address mosaicFacetAddress;
     ILensHub public lens;
     ISteezFacet public steez;
 
@@ -32,15 +33,12 @@ contract MosaicFacet is OwnableUpgradeable{
     event CreditAssigned(uint256 contentId, address contributor, uint256 proportion);
     event ExclusivitySet(uint256 contentId, uint8 exclusivityLevel);
 
-    // Constructor to set initial contracts for Lens Protocol and STEEZ tokens
-    constructor(address _lens, address _steez) {
+    function initialize(address _lens, address _steez) external {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        mosaicFacetAddress = ds.mosaicFacetAddress;
+        ds.contractOwner = msg.sender;
         lens = ILensHub(_lens);
         steez = ISteezFacet(_steez);
-    }
-
-    function initialize() external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        ds.contractOwner = msg.sender;
     }
 
     /**

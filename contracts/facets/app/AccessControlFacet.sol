@@ -8,6 +8,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 contract AccessControlFacet is AccessControlUpgradeable {
+    address accessControlFacetAddress;
     bytes32 public constant UPGRADE_ROLE = keccak256("UPGRADE_ROLE");
     bytes32 public constant STEELO_ROLE = keccak256("STEELO_ROLE");
     bytes32 public constant STEEZ_ROLE = keccak256("STEEZ_ROLE");
@@ -33,7 +34,9 @@ contract AccessControlFacet is AccessControlUpgradeable {
     // Event to be emitted when an upgrade is performed
     event DiamondUpgraded(address indexed upgradedBy, IDiamondCut.FacetCut[] cuts);
     
-    constructor(address _steeloFacet, address _steezFacet) {
+    function initialize(address _steeloFacet, address _steezFacet, address _accessControlFacetAddress) external {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        accessControlFacetAddress = ds.accessControlFacetAddress;
         steeloFacet = IERC20(_steeloFacet);
         steezFacet = IERC20(_steezFacet);
 

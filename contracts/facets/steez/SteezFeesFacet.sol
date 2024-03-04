@@ -13,6 +13,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    address steezFeesFacetAddress;
     STEEZFacet.Steez public steez; // Imported Steez struct from STEEZFacet. Represents a Steez and its related properties.
     STEEZFacet.Investor public investor; // Imported Investor struct from STEEZFacet. Represents an investor in the Steez.
     STEEZFacet.Royalty public royalty; // Imported Royalty struct from STEEZFacet. Represents the royalties related to a Steez.
@@ -41,13 +42,15 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
     }
     
     function initialize(address owner) public initializer {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        steezFeesFacetAddress = ds.steezFeesFacetAddress;
         __Ownable_init();
         __ReentrancyGuard_init();
         transferOwnership(owner);
     }
 
         function updateRoyaltyInfo(uint256 creatorId, uint256 amount) internal {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(creatorId);
             AccessControlFacet accessControl = AccessControlFacet(ds.accessControlAddress);
             require(msg.sender == address(this) || accessControl.isAuthorized(msg.sender), "Unauthorized");
@@ -56,7 +59,7 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
         }
 
         function setCommunitySplit(uint256 creatorId, uint256[] memory splits) external onlyOwner {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(creatorId);
  
             // Ensure the sum of splits is 100
@@ -73,7 +76,7 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
         // Called by STEEZFacet.payRoyalties(creatorId, amount, from, creatorSteez[creatorId].investors);
         // From its function transferSteez(uint256 creatorId, uint256 creatorId, uint256 amount, address from, address to) external nonReentrant {
         function payRoyalties(uint256 creatorId, uint256 amount, address from, address to, bytes memory data) external payable nonReentrant {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(creatorId);
             require(creatorId > 0, "Royalties: Invalid token ID");
             require(amount > 0, "CreatorToken: Transfer amount must be greater than zero");
@@ -148,7 +151,7 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
         }
 
         function viewRoyalties(address user, uint256 creatorId) public view returns (uint256 userShare, uint256 userRoyalty) {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
 
             if (localSteez.totalSupply == 0 || localSteez.balance == 0) {

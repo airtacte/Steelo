@@ -5,8 +5,11 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 
 contract NotificationFacet {
+    address notificationFacetAddress;
+
     function initialize() external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        notificationFacetAddress = ds.notificationFacetAddress;
         ds.contractOwner = msg.sender;
     }
 }

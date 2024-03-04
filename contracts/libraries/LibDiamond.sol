@@ -61,6 +61,30 @@ library LibDiamond {
         address[] facetAddresses;
         address contractOwner;
 
+        // FACETS
+        address accessControlFacetAddress;
+        address gasOptimisationFacetAddress;
+        address multiSigFacetAddress;
+        address notificationFacetAddress;
+        address snapshotFacetAddress;
+        address socialNetworkFacetAddress;
+
+        address bazaarFacetAddress;
+        address galleryFacetAddress;
+        address mosaicFacetAddress;
+        address profileFacetAddress; 
+        address villageFacetAddress;
+
+        address sipFacetAddress;
+        address steeloFacetAddress;
+        address steeloGovernanceFacetAddress;
+        address steeloStakingFacetAddress;
+
+        address steezFacetAddress;
+        address steezFeesFacetAddress;
+        address steezGovernanceFacetAddress;
+        address steezManagementFacetAddress;
+
         // STEELO TOKENOMICS
         uint256 TGE_AMOUNT;
         uint256 pMin;

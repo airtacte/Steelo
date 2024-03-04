@@ -10,6 +10,8 @@ import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 
 
 contract MultiSigFacet {
+    address multiSigFacetAddress;
+
     // Placeholder addresses for the SafeProxyFactory and SafeMasterCopy. 
     // These should be replaced with the actual addresses of the deployed contracts on the respective network.
     address constant SAFE_PROXY_FACTORY = address(0); // TODO: Replace with actual SafeProxyFactory address
@@ -20,10 +22,9 @@ contract MultiSigFacet {
      * This function sets up the contract owner in the Diamond Storage and can include additional initialization logic as needed.
      */
     function initialize() external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        // Set the contract owner upon initialization.
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        multiSigFacetAddress = ds.multiSigFacetAddress;
         ds.contractOwner = msg.sender;
-        // Additional initialization logic can be added here.
     }
 
     /**
@@ -40,7 +41,7 @@ contract MultiSigFacet {
      * @param newOwner The address of the new owner.
      */
     function transferOwnership(address newOwner) internal {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         ds.contractOwner = newOwner;
     }
 

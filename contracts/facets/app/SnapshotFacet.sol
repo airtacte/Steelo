@@ -6,6 +6,7 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { STEEZFacet } from "../steez/STEEZFacet.sol";
 
 contract SnapshotFacet {
+    address snapshotFacetAddress;
     STEEZFacet steezFacet;
     
     uint256 private _snapshotCounter;
@@ -25,6 +26,9 @@ contract SnapshotFacet {
     }
 
     function initialize() public {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        snapshotFacetAddress = ds.snapshotFacetAddress;
+
         _takeSnapshot();
     }
 
@@ -53,7 +57,7 @@ contract SnapshotFacet {
 
         // Function to take a snapshot of the current token balances
         function _takeSnapshot() internal {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             snapshotCounter++;
             // Loop over all creator addresses
             for (uint256 j = 0; j < ds.creatorAddresses.length; j++) {
@@ -69,7 +73,7 @@ contract SnapshotFacet {
         }
 
         function createSnapshot(uint256 creatorId) internal {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
             uint256 blockNumber = block.number;
             uint256 totalSupply = localSteez.totalSupply;

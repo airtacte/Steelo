@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, OwnableUpgradeable {
+    address steezGovernanceFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
     // Events for tracking actions within the contract
@@ -18,9 +19,10 @@ contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, Ownable
     event ProposalExecuted(uint256 proposalId);
 
     function initialize(address steezTokenAddress) public initializer {
-        __Ownable_init();
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        steezGovernanceFacetAddress = ds.steezGovernanceFacetAddress;
         ds.steezFacet = STEEZFacet(steezTokenAddress);
+        __Ownable_init();
     }
 
     // Example: Propose a new benefit for Steez token holders
@@ -52,7 +54,7 @@ contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, Ownable
 
     // Utility function to check if an address holds any Steez tokens
     function _isSteezTokenHolder(address account) private view returns (bool) {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         uint256 tokenIdForGovernance = 1; // Example tokenId used for governance
         uint256 balance = ds.steezFacet.balanceOf(account, tokenIdForGovernance);
         

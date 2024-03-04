@@ -10,6 +10,8 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    address steeloStakingFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
     using SafeERC20 for IERC20;
 
     ISteeloFacet public steeloFacet;
@@ -29,14 +31,15 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     mapping(uint256 => bool) stakeholders;
 
     function initialize(address _steeloFacet) public initializer {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        steeloStakingFacetAddress = ds.steeloStakingFacetAddress;
+        steeloFacet = ISteeloFacet(_steeloFacet);
         __Ownable_init();
         __ReentrancyGuard_init();
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        steeloFacet = ISteeloFacet(_steeloFacet);
     }
 
     function stake(uint256 _amount) external nonReentrant {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         require(_amount > 0, "Amount must be greater than 0");
         ds.stakes[msg.sender] += _amount;
         if (!ds.isStakeholder[msg.sender]) {
@@ -48,7 +51,7 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     function unstake(uint256 _amount) external nonReentrant {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         require(_amount > 0, "Amount must be greater than 0");
         require(ds.stakes[msg.sender] >= _amount, "Not enough stake");
         ds.stakes[msg.sender] -= _amount;
@@ -68,7 +71,7 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     
     // Placeholder for actual reward calculation logic
     function calculateReward(address stakeholder) internal view returns (uint256) {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         totalStakingPool = getTotalStakingPool(); // This would sum all staked amounts
         uint256 stakeholderAmount = stakes[stakeholder];
         stakeDuration = stakeDuration[stakeholder];
@@ -96,7 +99,7 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
     
     function distributeRewards() external nonReentrant onlyOwner {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         uint256 totalStaked = getTotalStakingPool();
         require(totalStaked > 0, "No stakes to distribute rewards to");
         require(totalRewardPool > 0, "No rewards available for distribution");

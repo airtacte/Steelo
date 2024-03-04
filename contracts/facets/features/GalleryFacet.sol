@@ -9,11 +9,13 @@ import { IGalleryFacet } from "../../interfaces/IFeaturesFacet.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract GalleryFacet {
+    address galleryFacetAddress;
     using Strings for uint256;
 
     // Initialize GalleryFacet setting the contract owner
     function initialize() external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        galleryFacetAddress = ds.galleryFacetAddress;
         ds.contractOwner = msg.sender;
     }
 

@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, OwnableUpgradeable {
+    address steeloGovernanceFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
     event SIPCreated(uint256 indexed sipId, SIPType indexed sipType, address indexed proposer, string description);
@@ -37,62 +38,64 @@ contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, Ownable
     }
 
     function initialize() public initializer {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        steeloGovernanceFacetAddress = ds.steeloGovernanceFacetAddress;
         __Ownable_init();
     }
 
-    function createSIP(SIPType _sipType, string memory _description) external onlyStakeholders returns (uint256) {
-        SIP storage newSIP = sips[++sipCount];
-        newSIP.sipType = _sipType;
-        newSIP.description = _description;
-        newSIP.proposer = msg.sender;
-        
-        emit SIPCreated(sipCount, _sipType, msg.sender, _description);
-        return sipCount;
-    }
-
-    function voteOnSIP(uint256 _sipId, bool _voteFor) external onlyStakeholders {
-        SIP storage sip = sips[_sipId];
-        require(!sip.votes[msg.sender], "Already voted");
-
-        uint256 voteWeight = 1;
-        if (msg.sender == sip.proposer && sip.sipType == SIPType.Creator) {
-            voteWeight = 2;
+        function createSIP(SIPType _sipType, string memory _description) external onlyStakeholders returns (uint256) {
+            SIP storage newSIP = sips[++sipCount];
+            newSIP.sipType = _sipType;
+            newSIP.description = _description;
+            newSIP.proposer = msg.sender;
+            
+            emit SIPCreated(sipCount, _sipType, msg.sender, _description);
+            return sipCount;
         }
 
-        sip.votes[msg.sender] = true;
-        if (_voteFor) {
-            sip.voteCountFor += voteWeight;
-        } else {
-            sip.voteCountAgainst += voteWeight;
+        function voteOnSIP(uint256 _sipId, bool _voteFor) external onlyStakeholders {
+            SIP storage sip = sips[_sipId];
+            require(!sip.votes[msg.sender], "Already voted");
+
+            uint256 voteWeight = 1;
+            if (msg.sender == sip.proposer && sip.sipType == SIPType.Creator) {
+                voteWeight = 2;
+            }
+
+            sip.votes[msg.sender] = true;
+            if (_voteFor) {
+                sip.voteCountFor += voteWeight;
+            } else {
+                sip.voteCountAgainst += voteWeight;
+            }
+
+            emit SIPVoted(_sipId, msg.sender, _voteFor);
         }
 
-        emit SIPVoted(_sipId, msg.sender, _voteFor);
-    }
+        function checkForExecution(uint256 _sipId) internal {
+            SIP storage sip = sips[_sipId];
+            uint256 totalVotes = sip.voteCountFor + sip.voteCountAgainst;
+            require(totalVotes >= 4, "Insufficient votes");
 
-    function checkForExecution(uint256 _sipId) internal {
-        SIP storage sip = sips[_sipId];
-        uint256 totalVotes = sip.voteCountFor + sip.voteCountAgainst;
-        require(totalVotes >= 4, "Insufficient votes");
-
-        // Execute SIP if the majority is achieved considering the initiator's double vote
-        if (sip.voteCountFor >= 3) {
-            executeSIP(_sipId); // Assuming executeSIP function exists and handles SIP execution
+            // Execute SIP if the majority is achieved considering the initiator's double vote
+            if (sip.voteCountFor >= 3) {
+                executeSIP(_sipId); // Assuming executeSIP function exists and handles SIP execution
+            }
         }
-    }
 
-    function executeSIP(uint256 _sipId) public onlyOwner {
-        SIP storage sip = sips[_sipId];
-        require(!sip.executed, "SIP already executed");
-        
-        // Example condition for execution, this should be replaced with actual logic
-        if (sip.voteCountFor > sip.voteCountAgainst) {
-            // Execute SIP logic based on SIPType
-            sip.executed = true;
-            emit SIPExecuted(_sipId, true);
-        } else {
-            emit SIPExecuted(_sipId, false);
+        function executeSIP(uint256 _sipId) public onlyOwner {
+            SIP storage sip = sips[_sipId];
+            require(!sip.executed, "SIP already executed");
+            
+            // Example condition for execution, this should be replaced with actual logic
+            if (sip.voteCountFor > sip.voteCountAgainst) {
+                // Execute SIP logic based on SIPType
+                sip.executed = true;
+                emit SIPExecuted(_sipId, true);
+            } else {
+                emit SIPExecuted(_sipId, false);
+            }
         }
-    }
 
-    // Add more governance functions as needed...
+        // Add more governance functions as needed...
 }

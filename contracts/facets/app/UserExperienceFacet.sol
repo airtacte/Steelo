@@ -5,8 +5,10 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 
 contract UserExperienceFacet {
+    address userExperienceFacetAddress;
     function initialize() external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        userExperienceFacetAddress = ds.userExperienceFacetAddress;
         ds.contractOwner = msg.sender;
     }
 }

@@ -7,7 +7,10 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "hardhat/console.sol";
 
-contract SteeloImprovementProposalFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    address sipFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
+
     struct SIP {
         uint256 id;
         string description;
@@ -29,6 +32,8 @@ contract SteeloImprovementProposalFacet is OwnableUpgradeable, ReentrancyGuardUp
     event SIPExecuted(uint256 indexed id, bool success);
 
     function initialize() public initializer {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        sipFacetAddress = ds.sipFacetAddress;
         __Ownable_init();
         __ReentrancyGuard_init();
     }
@@ -48,14 +53,14 @@ contract SteeloImprovementProposalFacet is OwnableUpgradeable, ReentrancyGuardUp
     }
 
     function voteOnSIP(uint256 _sipId, bool _support) external nonReentrant {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         uint256 weight = ds.getVoterWeight(msg.sender);
         ds.voteOnSIP(_sipId, msg.sender, _support, weight);
         emit SIPVoted(_sipId, _support, msg.sender, weight);
     }
 
     function executeSIP(uint256 _sipId) external onlyOwner nonReentrant {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         require(ds.sips[_sipId].endTime < block.timestamp, "SIP voting period has not ended");
         require(_sipId < sips.length, "SIP does not exist");
         SIP storage sip = sips[_sipId];

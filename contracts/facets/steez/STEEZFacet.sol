@@ -18,6 +18,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
 contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
+    address steezFacetAddress;
     bytes32 public constant ROLE_OPERATOR = keccak256("ROLE_OPERATOR");
     bytes32 public constant ROLE_OWNER = keccak256("ROLE_OWNER");
     using LibDiamond for LibDiamond.DiamondStorage;
@@ -25,7 +26,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     using Strings for uint256;
 
     // EVENTS
-    event NewCreatorSteez(address indexed creatorId);
+    event Newsteez(address indexed creatorId);
     event TokenMinted(uint256 indexed creatorId, address indexed investors, uint256 amount);
     event PreOrderMinted(uint256 indexed creatorId, address indexed investors, uint256 amount);
     event auctionConcluded(uint256 creatorId, uint256 currentPrice, uint256 totalSupply);
@@ -67,7 +68,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
         Royalty royalties; // Integrated Royalty struct for managing royalties
     }
 
-    mapping(address => Steez) public creatorSteez;
+    mapping(address => Steez) public steez;
 
     uint256 oneYearInSeconds = 365 days;
     uint256 oneWeekInSeconds = 7 days;
@@ -77,19 +78,21 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     string public baseURI;
 
     modifier canCreateToken(address creator) {
-        require(!creatorSteez[creator].creatorExists, "CreatorToken: Creator has already created a token.");
+        require(!steez[creator].creatorExists, "CreatorToken: Creator has already created a token.");
         _;
     }
 
     modifier withinAuctionPeriod() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(Steez[creatorSteez].auctionStartTime != 0, "Auction has not started yet");
-        require(block.timestamp < Steez[creatorSteez].auctionStartTime + ds.AUCTION_DURATION, "Auction duration has ended");
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        require(Steez[steez].auctionStartTime != 0, "Auction has not started yet");
+        require(block.timestamp < Steez[steez].auctionStartTime + ds.AUCTION_DURATION, "Auction duration has ended");
         _;
     }
 
     // FUNCTIONS
     function initialize(string memory _baseURI) public initializer {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        steezFacetAddress = ds.steezFacetAddress;
         __ERC1155_init("https://myapi.com/api/token/{id}.json");
         __Ownable_init();
         __Pausable_init();
@@ -104,13 +107,13 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
          * Called by preOrder, launchToken, and expandToken functions
          */
         function createSteez(address to, bytes memory data) public onlyOwner nonReentrant {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             SnapshotFacet snapshot = SnapshotFacet(ds.snapshotFacetAddress);
             require(canCreateToken(msg.sender), "CreatorToken: Creator has already created a token.");
-            require(Steez[creatorSteez].creatorId != 0, "CreatorToken: Token ID cannot be 0");
-            require(Steez[creatorSteez].creatorId.current() < type(uint256).max, "CreatorToken: creator overflow");
+            require(Steez[steez].creatorId != 0, "CreatorToken: Token ID cannot be 0");
+            require(Steez[steez].creatorId.current() < type(uint256).max, "CreatorToken: creator overflow");
             require(to != address(0), "CreatorToken: Cannot mint to zero address");
-            require(!Steez[creatorSteez].creatorExists, "CreatorToken: token already exists");
+            require(!Steez[steez].creatorExists, "CreatorToken: token already exists");
 
             Investor memory newInvestor = Investor({
                 profileId: _lastProfileId++ ,// ID of the investor's user profile
@@ -145,20 +148,20 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
                 royalties: Royalty({totalRoyalties: 0, unclaimedRoyalties: 0}) // Initialize Royalty
             });
 
-            creatorSteez[msg.sender] = steez; // stores steez object in creatorSteez mapping
+            steez[msg.sender] = steez; // stores steez object in steez mapping
          
             uint256 creatorId = _lastCreatorId;
             uint256 profileId = _lastProfileId;
             uint256 steezId = _lastSteezId;
 
-            _mint(to, creatorId, creatorSteez[creatorId].steezId, data);
+            _mint(to, creatorId, steez[creatorId].steezId, data);
 
             // Update the minting state for annual token increase
-            if (creatorSteez[creatorId].lastMintTime == 0 || (creatorSteez[creatorId].lastMintTime + oneYearInSeconds) <= block.timestamp) {
-                creatorSteez[creatorId].lastMintTime = block.timestamp;
+            if (steez[creatorId].lastMintTime == 0 || (steez[creatorId].lastMintTime + oneYearInSeconds) <= block.timestamp) {
+                steez[creatorId].lastMintTime = block.timestamp;
             }
 
-            emit NewCreatorSteez(creatorId);
+            emit Newsteez(creatorId);
 
             // Take a snapshot after minting tokens
             snapshot.takeSnapshot();
@@ -166,36 +169,36 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
 
         // Pre-order function
         function preOrder(uint256 creatorId, uint256 amount) public payable {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             BazaarFacet bazaar = BazaarFacet(ds.bazaarAddress);
             require(creatorId[msg.sender], "CreatorToken: Only creators can initiate pre-orders.");
-            require(!creatorSteez[creatorId].auctionConcluded, "CreatorToken: Auction has concluded.");
-            creatorSteez[creatorId].totalSupply = ds.PRE_ORDER_SUPPLY;
+            require(!steez[creatorId].auctionConcluded, "CreatorToken: Auction has concluded.");
+            steez[creatorId].totalSupply = ds.PRE_ORDER_SUPPLY;
 
             // Initialize auction start time if this is the first call
-            if (creatorSteez[creatorId].auctionStartTime == 0) {
-                creatorSteez[creatorId].auctionStartTime = block.timestamp;
+            if (steez[creatorId].auctionStartTime == 0) {
+                steez[creatorId].auctionStartTime = block.timestamp;
             }
 
-            require(block.timestamp < creatorSteez[creatorId].auctionStartTime + ds.AUCTION_DURATION, "CreatorToken: Auction duration has ended.");
+            require(block.timestamp < steez[creatorId].auctionStartTime + ds.AUCTION_DURATION, "CreatorToken: Auction duration has ended.");
 
             // Calculate required payment based on currentPrice and amount
-            uint256 requiredPayment = creatorSteez[creatorId].currentPrice * amount;
+            uint256 requiredPayment = steez[creatorId].currentPrice * amount;
             require(msg.value >= requiredPayment, "CreatorToken: Insufficient payment.");
 
             // Update auction state
-            creatorSteez[creatorId].auctionSlotsSecured += amount;
-            if (creatorSteez[creatorId].auctionSlotsSecured >= ds.PRE_ORDER_SUPPLY) {
+            steez[creatorId].auctionSlotsSecured += amount;
+            if (steez[creatorId].auctionSlotsSecured >= ds.PRE_ORDER_SUPPLY) {
                 // Increment price for next batch and reset token count
-                creatorSteez[creatorId].currentPrice += ds.PRICE_INCREMENT;
-                creatorSteez[creatorId].auctionSlotsSecured = creatorSteez[creatorId].auctionSlotsSecured % ds.PRE_ORDER_SUPPLY; // Handle any excess tokens in this payment
+                steez[creatorId].currentPrice += ds.PRICE_INCREMENT;
+                steez[creatorId].auctionSlotsSecured = steez[creatorId].auctionSlotsSecured % ds.PRE_ORDER_SUPPLY; // Handle any excess tokens in this payment
             }
 
             // After 24 hours, conclude auction and release additional tokens at initial price
-            if (block.timestamp >= creatorSteez[creatorId].auctionStartTime + ds.AUCTION_DURATION) {
+            if (block.timestamp >= steez[creatorId].auctionStartTime + ds.AUCTION_DURATION) {
                 // Additional logic to mint and list ds.EXTRA_TOKENS_AFTER_AUCTION at INITIAL_PRICE
                 // Consider a separate function to handle this if the logic is complex
-                creatorSteez[creatorId].auctionConcluded = true;
+                steez[creatorId].auctionConcluded = true;
             }
 
             // Refund excess payment
@@ -205,8 +208,8 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             }
     
             // Mint tokens for the creator
-            _mint(msg.sender, creatorId, creatorSteez[creatorId].steezId, amount, "");
-            creatorSteez[creatorId].totalSupply += amount;
+            _mint(msg.sender, creatorId, steez[creatorId].steezId, amount, "");
+            steez[creatorId].totalSupply += amount;
 
             emit PreOrderMinted(creatorId, msg.sender, amount);
             bazaar.addLiquidityForToken(creatorId, amount, msg.value);
@@ -215,84 +218,84 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
 
         // Launch function
         function launch(uint256 creatorId, uint256 amount) internal {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             BazaarFacet bazaar = BazaarFacet(ds.bazaarAddress);
-            require(block.timestamp >= creatorSteez[creatorId].auctionStartTime + ds.AUCTION_DURATION, "Auction is still active");
-            require(!creatorSteez[creatorId].auctionConcluded, "Auction has already been concluded");
+            require(block.timestamp >= steez[creatorId].auctionStartTime + ds.AUCTION_DURATION, "Auction is still active");
+            require(!steez[creatorId].auctionConcluded, "Auction has already been concluded");
             
-            creatorSteez[creatorId].auctionConcluded = true;
+            steez[creatorId].auctionConcluded = true;
 
             // Mint EXTRA_TOKENS_AFTER_AUCTION
-            _mint(msg.sender, creatorId, creatorSteez[creatorId].steez, ds.EXTRA_TOKENS_AFTER_AUCTION, "");
+            _mint(msg.sender, creatorId, steez[creatorId].steez, ds.EXTRA_TOKENS_AFTER_AUCTION, "");
 
             // List the minted tokens at INITIAL_PRICE
-            bazaar.listCreatorToken(creatorId, creatorSteez[creatorId].currentPrice);
+            bazaar.listCreatorToken(creatorId, steez[creatorId].currentPrice);
 
-            emit auctionConcluded(creatorId, creatorSteez[creatorId].currentPrice, creatorSteez[creatorId].totalSupply);
+            emit auctionConcluded(creatorId, steez[creatorId].currentPrice, steez[creatorId].totalSupply);
 
             // Launch token
-            require(creatorSteez[creatorId].totalSupply > 0, "CreatorToken: Pre-order must be completed first.");
-            require(creatorSteez[creatorId].totalSupply + amount <= ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap exceeded.");
+            require(steez[creatorId].totalSupply > 0, "CreatorToken: Pre-order must be completed first.");
+            require(steez[creatorId].totalSupply + amount <= ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap exceeded.");
             require(amount > 0, "CreatorToken: Launch amount must be greater than zero");
 
-            creatorSteez[creatorId].totalSupply = creatorSteez[creatorId].totalSupply + ds.LAUNCH_SUPPLY;
-            _mint(msg.sender, creatorId, creatorSteez[creatorId].steezId, amount, "");
-            creatorSteez[creatorId].totalSupply[creatorId] += amount;
-            emit LaunchMinted(creatorId, msg.sender, creatorSteez[creatorId].totalSupply);
+            steez[creatorId].totalSupply = steez[creatorId].totalSupply + ds.LAUNCH_SUPPLY;
+            _mint(msg.sender, creatorId, steez[creatorId].steezId, amount, "");
+            steez[creatorId].totalSupply[creatorId] += amount;
+            emit LaunchMinted(creatorId, msg.sender, steez[creatorId].totalSupply);
         }
 
         // Anniversary Expansion function
         function anniversary(uint256 creatorId, uint256 amount) external payable onlyOwner nonReentrant {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             BazaarFacet bazaar = BazaarFacet(ds.bazaarAddress);
-            require(creatorSteez[creatorId].totalSupply > 0, "CreatorToken: Token does not exist");
-            require(creatorSteez[creatorId].totalSupply + amount <= ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap exceeded");
-            require(creatorSteez[creatorId].transactionCount >= creatorSteez[creatorId].totalSupply * 2, "CreatorToken: Expansion not eligible");
+            require(steez[creatorId].totalSupply > 0, "CreatorToken: Token does not exist");
+            require(steez[creatorId].totalSupply + amount <= ds.MAX_CREATOR_TOKENS, "CreatorToken: Maximum cap exceeded");
+            require(steez[creatorId].transactionCount >= steez[creatorId].totalSupply * 2, "CreatorToken: Expansion not eligible");
             require(creatorId == msg.sender, "CreatorToken: Only the token creator can initiate an annual token increase.");
-            require(block.timestamp >= creatorSteez[creatorId].lastMintTime + ds.ANNIVERSARY_DELAY, "CreatorToken: Annual token increase not yet available.");
+            require(block.timestamp >= steez[creatorId].lastMintTime + ds.ANNIVERSARY_DELAY, "CreatorToken: Annual token increase not yet available.");
 
-            bazaar.addLiquidity(creatorId, ds.EXPANSION_SUPPLY, creatorSteez[creatorId].currentPrice);
+            bazaar.addLiquidity(creatorId, ds.EXPANSION_SUPPLY, steez[creatorId].currentPrice);
 
-            uint256 currentSupply = creatorSteez[creatorId].totalSupply;
+            uint256 currentSupply = steez[creatorId].totalSupply;
             uint256 newSupply = currentSupply + (currentSupply * ds.ANNUAL_TOKEN_INCREASE_PERCENTAGE / 100);
-            creatorSteez[creatorId].totalSupply = newSupply;
+            steez[creatorId].totalSupply = newSupply;
 
-            creatorSteez[creatorId].lastMintTime = block.timestamp;
+            steez[creatorId].lastMintTime = block.timestamp;
             _mint(creatorId);
             emit AnniversaryMinted(creatorId);
         }
 
         // Transfer token balance and ownership to specified address
         function transferSteez(uint256 creatorId, uint256 steezId, uint256 amount, address from, address to) external nonReentrant {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             AccessControlFacet accessControl = AccessControlFacet(ds.accessControlAddress);
             SteezFeesFacet steezFees = SteezFeesFacet(ds.steezFeesAddress);
             require(to != address(0), "CreatorToken: Transfer to zero address");
             require(from == msg.sender || accessControl.hasRole(ROLE_OPERATOR, msg.sender), "CreatorToken: Transfer caller is not owner nor approved");
             require(to != creatorId, "CreatorToken: Creator cannot buy their own token");
             require(from != to, "CreatorToken: Transfer to self");
-            require(creatorSteez[creatorId].balances[from] >= amount, "CreatorToken: Transfer amount exceeds balance");
+            require(steez[creatorId].balances[from] >= amount, "CreatorToken: Transfer amount exceeds balance");
 
             address creator = creatorId;
-            bool isCreator = creator == from && !(creatorSteez[creatorId].balances[from] > 0);
+            bool isCreator = creator == from && !(steez[creatorId].balances[from] > 0);
 
             // Update balances in diamond storage
-            creatorSteez[creatorId].balances[from] -= amount;
-            creatorSteez[creatorId].balances[to] += amount;
+            steez[creatorId].balances[from] -= amount;
+            steez[creatorId].balances[to] += amount;
 
             // Transfer ownership
-            creatorSteez[creatorId].investors = to;
+            steez[creatorId].investors = to;
 
             _transfer(from, to, creatorId);
             accessControl.grantRole(ROLE_OWNER, to);
-            steezFees.payRoyalties(creatorId, amount, from, creatorSteez[creatorId].investors);
+            steezFees.payRoyalties(creatorId, amount, from, steez[creatorId].investors);
 
-            if (creatorSteez[creatorId].balances[from] == 0) {
+            if (steez[creatorId].balances[from] == 0) {
                 _removeInvestor(creatorId, from);
                 accessControl.revokeRole(ROLE_OWNER, from);
             }
 
-            if (creatorSteez[creatorId].balances[to] > 0) {
+            if (steez[creatorId].balances[to] > 0) {
                 _addInvestor(creatorId, to);
             }
 
@@ -309,19 +312,19 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
         }
 
         function _mint(address to, uint256 creatorId, uint256 steezId, uint256 amount, bytes memory data) internal {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             SteezFeesFacet steezFees = SteezFeesFacet(ds.steezFeesAddress);
             for (uint256 i = 0; i < amount; i++) {
-                _mint(to, creatorSteez[creatorId].steezId + i);
-                creatorSteez[creatorId].steezId + i = to;
-                steezFees.payRoyalties(creatorId, amount, creatorSteez[creatorId].investors);
+                _mint(to, steez[creatorId].steezId + i);
+                steez[creatorId].steezId + i = to;
+                steezFees.payRoyalties(creatorId, amount, steez[creatorId].investors);
             }
         }
 
         function _transfer(address from, address to, uint256 steezId) internal virtual {
             require(to != address(0), "ERC721: transfer to the zero address");
 
-            Steez storage steez = creatorSteez[steezId];
+            Steez storage steez = steez[steezId];
             bool isInvestor = false;
             uint i;
             for (i = 0; i < steez.investors.length; i++) {
@@ -347,9 +350,9 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
             require(investorIndex != uint256(-1), "This address does not own the token");
 
             // Remove the investor from the array
-            uint256 lastIndex = creatorSteez[creatorId].investors.length - 1;
-            creatorSteez[creatorId].investors[investorIndex] = creatorSteez[creatorId].investors[lastIndex];
-            creatorSteez[creatorId].investors.pop();
+            uint256 lastIndex = steez[creatorId].investors.length - 1;
+            steez[creatorId].investors[investorIndex] = steez[creatorId].investors[lastIndex];
+            steez[creatorId].investors.pop();
         }
 
         function _addInvestor(uint256 creatorId, address newInvestor, uint256 profileId, uint256 balance) private {
@@ -362,12 +365,12 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
                 profileId: profileId, // Use the provided profile ID
                 balance: balance // Use the provided balance
             });
-            creatorSteez[creatorId].investors.push(investor);
+            steez[creatorId].investors.push(investor);
         }
 
         function _findInvestorIndex(uint256 creatorId, address investorAddress) private view returns (uint256) {
-            for (uint256 i = 0; i < creatorSteez[creatorId].investors.length; i++) {
-                if (creatorSteez[creatorId].investors[i].investorAddress == investorAddress) {
+            for (uint256 i = 0; i < steez[creatorId].investors.length; i++) {
+                if (steez[creatorId].investors[i].investorAddress == investorAddress) {
                     return i;
                 }
             }

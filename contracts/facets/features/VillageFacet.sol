@@ -25,6 +25,7 @@ interface IESCROW {
 }
 
 contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
+    address villageFacetAddress;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     IEncryptionKeyManager encryptionKeyManager;
@@ -48,7 +49,8 @@ contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     // More events for governance, transactions, etc.
 
     function initialize() external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        villageFacetAddress = ds.villageFacetAddress;
         ds.contractOwner = msg.sender;
     }
 
