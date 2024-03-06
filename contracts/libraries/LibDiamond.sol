@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
+import { ConstDiamond } from "./ConstDiamond.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
@@ -11,57 +12,28 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
-    
-    // STEELO TOKENOMICS
-    uint256 constant TGE_AMOUNT = 825_000_000 * 10**18;
-    uint256 constant pMin = 0.5 ether;
-    uint256 constant pMax = 5 ether;
-    uint256 constant rho = 1 ether;
-    uint256 constant alpha = 10;
-    uint256 constant beta = 10;
-    uint256 constant MIN_MINT_RATE = 0.5 ether;
-    uint256 constant MAX_MINT_RATE = 5 ether;
-    uint256 constant MIN_BURN_RATE = 0 ether;
-    uint256 constant MAX_BURN_RATE = 5.5 ether;
-
-    // STEEZ TOKENOMICS
-    uint256 constant AUCTION_DURATION = 24 hours;
-    uint256 constant PRE_ORDER_SUPPLY = 250;
-    uint256 constant LAUNCH_SUPPLY = 250;
-    uint256 constant EXPANSION_SUPPLY = 500;
-    uint256 constant TRANSACTION_MULTIPLIER = 2;
-    uint256 constant INITIAL_PRICE = 30 ether; // Assuming pricing in WEI for simplicity
-    uint256 constant PRICE_INCREMENT = 10 ether; // Increment value
-    uint256 constant TOKEN_BATCH_SIZE = 250;
-    uint256 constant PRE_ORDER_CREATOR_ROYALTY = 90; // 90% of pre-order sale value to creator
-    uint256 constant PRE_ORDER_STEELO_ROYALTY = 10; // 10% of pre-order sale value to Steelo
-    uint256 constant LAUNCH_CREATOR_ROYALTY = 90; // 90% of launch + expansion sale value to creator
-    uint256 constant LAUNCH_STEELO_ROYALTY = 75; // 7.5% of launch + expansion sale value to Steelo
-    uint256 constant LAUNCH_COMMUNITY_ROYALTY = 25; // 2.5% of launch + expansion sale value to token holders
-    uint256 constant SECOND_HAND_SELLER_ROYALTY = 90; // 90% of second-hand sale value to seller
-    uint256 constant SECOND_HAND_CREATOR_ROYALTY = 50; // 5% of second-hand sale value to creator
-    uint256 constant SECOND_HAND_STEELO_ROYALTY = 25; // 2.5% of second-hand sale value to Steelo
-    uint256 constant SECOND_HAND_COMMUNITY_ROYALTY = 25; // 2.5% of second-hand sale value to token holders
-
-    // STAKEHOLDER'S ROYALTY DISTRIBUTION
-    address constant treasury = 0x07720111f3d48427e55e35CB07b5D203A4edCd08; uint256 constant trasuryTGE = 35; uint256 constant treasuryMint = 35;
-    address constant liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D; uint256 constant liquidityProvidersMint = 55;
-    address constant ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D; uint256 constant ecosystemProvidersMint = 10;
-    address constant foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49; uint256 constant foundersTGE = 20;
-    address constant earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8; uint256 constant earlyInvestorsTGE = 10;
-    address constant communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde; uint256 constant communityTGE = 35;
-    address constant steeloAddresss = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;  uint256 constant FEE_RATE = 25;
-    address constant uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984; // Uniswap default (UNI) contract address
-    address constant gbptAddress = 0x86B4dBE5D203e634a12364C0e428fa242A3FbA98; // Used for STEEZ stable liquidity pools
 
     struct DiamondStorage {
+        // Standard Diamond Storage Mappings
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
         mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
         mapping(bytes4 => bool) supportedInterfaces;
         address[] facetAddresses;
         address contractOwner;
+        Constants constants; // reference to contracts\libraries\ConstDiamond.sol
+
+        // Steelo & Steez struct references
+        mapping(address => Steez) steez; // Added mapping from creator address to Steez
+        mapping(uint256 => Creator) creators; // Added mapping from creatorId to Creator
+        mapping(address => Investor) investors; // Added mapping from investor address to Investor
+        mapping(uint256 => Royalty) royalties; // Added mapping from creatorId to QueuedRoyalty
+        mapping(uint256 => Content) content; // Added mapping from contentId to Content Firebase Document
+        mapping(uint256 => Contributor) contributors; // Added mapping from contributorId to Contributor
+        QueuedRoyalty[] royaltyQueue;
 
         // FACETS
+        address constDiamondAddress;
+
         address accessControlFacetAddress;
         address gasOptimisationFacetAddress;
         address multiSigFacetAddress;
@@ -85,6 +57,20 @@ library LibDiamond {
         address steezGovernanceFacetAddress;
         address steezManagementFacetAddress;
 
+        // STEEZFacet.sol VARIABLES
+        uint256 _lastCreatorId;
+        uint256 _lastProfileId;
+        uint256 _lastSteezId;
+        string baseURI;
+
+        // Chainlink parameters
+        address oracle;
+        bytes32 jobId;
+        uint256 fee;
+        uint256 volume;
+    }
+
+    struct Constants {
         // STEELO TOKENOMICS
         uint256 TGE_AMOUNT;
         uint256 pMin;
@@ -96,23 +82,6 @@ library LibDiamond {
         uint256 MAX_MINT_RATE;
         uint256 MIN_BURN_RATE;
         uint256 MAX_BURN_RATE;
-        address treasury;
-        uint256 trasuryTGE;
-        uint256 treasuryMint;
-        address liquidityProviders;
-        uint256 liquidityProvidersMint;
-        address ecosystemProviders;
-        uint256 ecosystemProvidersMint;
-        address foundersAddress;
-        uint256 foundersTGE;
-        address earlyInvestorsAddress;
-        uint256 earlyInvestorsTGE;
-        address communityAddress;
-        uint256 communityTGE;
-        address steeloAddresss;
-        uint256 FEE_RATE;
-        address uniswapAddress;
-        address gbptAddress;
 
         // STEEZ TOKENOMICS
         uint256 AUCTION_DURATION;
@@ -133,11 +102,95 @@ library LibDiamond {
         uint256 SECOND_HAND_STEELO_ROYALTY;
         uint256 SECOND_HAND_COMMUNITY_ROYALTY;
 
-        // Chainlink parameters
-        address oracle;
-        bytes32 jobId;
-        uint256 fee;
-        uint256 volume;
+        // STAKEHOLDER'S ROYALTY DISTRIBUTION
+        address treasury;
+        uint256 trasuryTGE;
+        uint256 treasuryMint;
+        address liquidityProviders;
+        uint256 liquidityProvidersMint;
+        address ecosystemProviders;
+        uint256 ecosystemProvidersMint;
+        address foundersAddress;
+        uint256 foundersTGE;
+        address earlyInvestorsAddress;
+        uint256 earlyInvestorsTGE;
+        address communityAddress;
+        uint256 communityTGE;
+        address steeloAddresss;
+        uint256 FEE_RATE;
+        address uniswapAddress;
+        address gbptAddress;
+
+        uint256 oneYear;
+        uint256 oneWeek;
+    }
+
+    struct Investor {
+        uint256 profileId; // ID of the investor's user profile
+        address investorAddress; // address of the investor
+        uint256 balance; // quantity of Steez owned by the investor
+    }
+
+    struct Royalty {
+        uint256 totalRoyalties; // in Steelo, equiv. to 10% of the price of Steez transacted on Bazaar
+        uint256 unclaimedRoyalties; // Total unclaimed royalties for this Steez
+        uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
+        uint256 investorRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
+        uint256 steeloRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
+        mapping(address => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
+        mapping(address => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
+    }
+    
+    struct Steez {
+        uint256 creatorId; // one creatorId holds 500+ steezIds
+        uint256 steezId; // mapping(creatorId => mapping(steezId => investors)
+        uint256 totalSupply; // starting at 500 and increasing by 500 annually
+        uint256 transactionCount; // drives anniversary requirements and $STEELO mint rate 
+        uint256 lastMintTime; // to check when to next initiate Anniversary
+        uint256 anniversaryDate; // to check when to next initiate Anniversary
+        uint256 currentPrice; // determined by pre-order auction price, then via Supply x Demand AMM model
+        uint256 auctionStartTime; // 250 out of the 500 initially minted tokens for pre-order
+        uint256 auctionSlotsSecured; // increments price by £10 every 250 token auctions at new price 
+        string baseURI; // base URI for token metadata
+        bool creatorExists; // only one steez per creator
+        bool auctionConcluded; // 24hr auction after 1 week of pre-order
+        Investor[] investors; // investors array updated to show "current holders"
+        Royalty royalties; // Integrated Royalty struct for managing royalties
+    }
+
+    struct Creator {
+        uint256 creatorId;
+        uint256 profileId;
+        address profileAddress;
+        mapping(uint256 => Content) content; // Assuming Document is a struct that represents a document stored in Firebase
+        mapping(address => Investor) investors; // Assuming Investor is a struct that represents an investor
+        mapping(uint256 => Contributor[]) credits; // Assuming Contributor is a struct that represents a contributor
+    }
+
+    struct Content {
+        uint256 contentId;
+        uint256 creatorId;
+        string contentURI;
+        string contentHash;
+        string contentType;
+        uint256 contentSize;
+        uint256 contentPrice;
+        uint256 contentTimestamp;
+        mapping(address => uint256) collections;
+    }
+
+    struct Contributor {
+        uint256 profileId;
+        uint256 creatorId;
+        uint256 contentId;
+        address profileAddress;
+        uint256 contribution;
+    }
+
+    struct QueuedRoyalty {
+        uint256 creatorId;
+        uint256 amount;
+        address payable recipient;
     }
 
     struct FacetAddressAndPosition {

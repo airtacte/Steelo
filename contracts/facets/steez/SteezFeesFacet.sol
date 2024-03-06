@@ -28,14 +28,6 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
         
     );
 
-    struct QueuedRoyalty {
-        uint256 creatorId;
-        uint256 amount;
-        address payable recipient;
-    }
-
-    QueuedRoyalty[] private royaltyQueue;
-
     modifier onlyAdmin() {
         require(AccessControlFacet.diamondStorage().isAdmin[msg.sender], "Royalties: Caller is not an admin");
         _;
@@ -54,7 +46,7 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
             STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(creatorId);
             AccessControlFacet accessControl = AccessControlFacet(ds.accessControlAddress);
             require(msg.sender == address(this) || accessControl.isAuthorized(msg.sender), "Unauthorized");
-            localSteez.royalties.totalRoyalties += amount;
+            ds.royalty.totalRoyalties += amount;
             // Additional logic here
         }
 
@@ -70,7 +62,7 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
             require(total == 100, "Total split must be 100");
 
             // Store the splits
-            localSteez.royalties.shareholderRoyalties[creatorId] = splits;
+            ds.royalty.shareholderRoyalties[creatorId] = splits;
         }
 
         // Called by STEEZFacet.payRoyalties(creatorId, amount, from, creatorSteez[creatorId].investors);
@@ -126,11 +118,11 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
                 uint256 localRoyalty = (communityFee * shareholdingPercentage) / 100;
 
                 // Update the total royalties and individual investor's royalties
-                localSteez.royalties.totalRoyalties += localRoyalty;
-                localSteez.royalties.royaltyAmounts[localInvestor.profileId] += localRoyalty;
+                ds.royalty.totalRoyalties += localRoyalty;
+                ds.royalty.royaltyAmounts[localInvestor.profileId] += localRoyalty;
 
                 // Add the royalty payment to the investor's list of payments
-                localSteez.royalties.royaltyPayments[localInvestor.profileId].push(localRoyalty);
+                ds.royalty.royaltyPayments[localInvestor.profileId].push(localRoyalty);
 
                 // Transfer the royalty to the investor immediately
                 payable(localInvestor.profileId).transfer(localRoyalty);
@@ -159,23 +151,23 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
             }
 
             // Calculate user's share of the royalty
-            userShare = (localSteez.royalties.totalRoyalties * localSteez.balance) / localSteez.totalSupply;
+            userShare = (ds.royalty.totalRoyalties * localSteez.balance) / localSteez.totalSupply;
 
             // Calculate user's total royalty
             uint256 userSharePercentage = (localSteez.balance * 10000) / localSteez.totalSupply;
-            userRoyalty = (localSteez.royalties.royaltyAmounts[user] * userSharePercentage)/10000;
+            userRoyalty = (ds.royalty.royaltyAmounts[user] * userSharePercentage)/10000;
 
             if (user == localSteez.creator) {
-                userRoyalty = userRoyalty + localSteez.royalties.creatorRoyalty;
+                userRoyalty = userRoyalty + ds.royalty.creatorRoyalty;
             } else if (user == ds.steezFacetAddress) { // Assuming ds.steezFacetAddress is the address of steelo
-                userRoyalty = userRoyalty + localSteez.royalties.steeloRoyalty;
-            } else if (localSteez.royalties.royaltyAmounts[user] > 0) { // Assuming the user is an investor if they have any royalty amounts
-                userRoyalty = userRoyalty + localSteez.royalties.investorRoyalty;
+                userRoyalty = userRoyalty + ds.royalty.steeloRoyalty;
+            } else if (ds.royalty.royaltyAmounts[user] > 0) { // Assuming the user is an investor if they have any royalty amounts
+                userRoyalty = userRoyalty + ds.royalty.investorRoyalty;
             } else {
                 userRoyalty = 0; // If the user is not related to the STEEZ, their royalty is 0
             }
 
-            userRoyalty = userRoyalty + localSteez.royalties.unclaimedRoyalties;
+            userRoyalty = userRoyalty + ds.royalty.unclaimedRoyalties;
 
             return (userShare, userRoyalty);
         }
@@ -184,15 +176,15 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
         function queueRoyaltyPayment(uint256 _creatorId, uint256 _amount, address payable _recipient) internal {
             require(_amount > 0, "Amount must be greater than zero");
             require(isValidParticipant(_recipient), "Invalid recipient");
-            royaltyQueue.push(QueuedRoyalty({creatorId: _creatorId, amount: _amount, recipient: _recipient}));
+            ds.royaltyQueue.push(QueuedRoyalty({creatorId: _creatorId, amount: _amount, recipient: _recipient}));
         }
 
         function processRoyaltyQueue() public onlyAdmin {
-            require(royaltyQueue.length > 0, "No royalties to process");
+            require(ds.royaltyQueue.length > 0, "No royalties to process");
             uint256 totalRoyaltiesProcessed = 0;
 
-            for (uint i = 0; i < royaltyQueue.length; i++) {
-                QueuedRoyalty memory queuedPayment = royaltyQueue[i];
+            for (uint i = 0; i < ds.royaltyQueue.length; i++) {
+                QueuedRoyalty memory queuedPayment = ds.royaltyQueue[i];
                 require(queuedPayment.amount > 0, "Invalid amount");
                 require(isValidParticipant(queuedPayment.recipient), "Invalid recipient");
 
@@ -202,7 +194,7 @@ contract SteezFeesFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGua
                 emit RoyaltiesDistributed(queuedPayment.from, queuedPayment.to, queuedPayment.creatorId, queuedPayment.amount, queuedPayment.creatorFee, queuedPayment.steeloFee, queuedPayment.communityFee, queuedPayment.data);
             }
 
-            delete royaltyQueue;
+            delete ds.royaltyQueue;
             // Log the total royalties processed in this batch
         }
 

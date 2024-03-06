@@ -15,11 +15,10 @@ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuard, ChainlinkClient {
     address steeloFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
-
-    // Structs
-    STEEZFacet.Steez internal steez;
-    STEEZFacet.Investor public investor;
-
+    
+    STEEZFacet.Steez public steez; // Imported Steez struct from STEEZFacet. Represents a Steez and its related properties.
+    STEEZFacet.Investor public investor; // Imported Investor struct from STEEZFacet. Represents an investor in the Steez.
+ 
     // Events
     event TokensMinted(address indexed to, uint256 amount);
     event TokensBurned(uint256 amount);
