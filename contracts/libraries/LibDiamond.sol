@@ -23,13 +23,15 @@ library LibDiamond {
         Constants constants; // reference to contracts\libraries\ConstDiamond.sol
 
         // Steelo & Steez struct references
+        mapping(uint256 => SIP) public sips; // Added mapping from SipId to SIP
         mapping(address => Steez) steez; // Added mapping from creator address to Steez
         mapping(uint256 => Creator) creators; // Added mapping from creatorId to Creator
         mapping(address => Investor) investors; // Added mapping from investor address to Investor
         mapping(uint256 => Royalty) royalties; // Added mapping from creatorId to QueuedRoyalty
         mapping(uint256 => Content) content; // Added mapping from contentId to Content Firebase Document
         mapping(uint256 => Contributor) contributors; // Added mapping from contributorId to Contributor
-        QueuedRoyalty[] royaltyQueue;
+        QueuedRoyalty[] royaltyQueue; // Array of creatorId, amount and recipients
+        mapping(uint256 => FailedPayment[]) public failedPayments;
 
         // FACETS
         address constDiamondAddress;
@@ -125,6 +127,19 @@ library LibDiamond {
         uint256 oneWeek;
     }
 
+    enum SIPType { Platform, Creator, Investor }
+
+    struct SIP {
+        SIPId sipId
+        SIPType sipType;
+        string description;
+        address proposer;
+        uint256 voteCountFor;
+        uint256 voteCountAgainst;
+        bool executed;
+        mapping(address => bool) votes;
+    }
+    
     struct Investor {
         uint256 profileId; // ID of the investor's user profile
         address investorAddress; // address of the investor
@@ -189,6 +204,11 @@ library LibDiamond {
 
     struct QueuedRoyalty {
         uint256 creatorId;
+        uint256 amount;
+        address payable recipient;
+    }
+
+    struct FailedPayment {
         uint256 amount;
         address payable recipient;
     }

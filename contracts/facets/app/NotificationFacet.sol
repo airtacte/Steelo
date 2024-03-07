@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 
 contract NotificationFacet {
     address notificationFacetAddress;

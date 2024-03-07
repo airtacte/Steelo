@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { STEEZFacet } from "../steez/STEEZFacet.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -52,8 +53,8 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
         ds.jobId = LibDiamond.stringToBytes32(_jobId);
         ds.fee = _fee;
         ds.treasury = _treasury;
-        _mint(_treasury, ds.TGE_AMOUNT);
-        emit TokensMinted(_treasury, ds.TGE_AMOUNT);
+        _mint(_treasury, ds.constants.TGE_AMOUNT);
+        emit TokensMinted(_treasury, ds.constants.TGE_AMOUNT);
         lastMintEvent = block.timestamp;
     }
 
@@ -62,33 +63,35 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         STEEZFacet steezFacet = STEEZFacet(ds.steezFacetAddress);
         STEEZFacet.Steez memory localSteez = steezFacet.steez[creatorId];
+
         require(!tgeExecuted, "steeloTGE can only be executed once");
         require(localSteez.transactionCount == 0, "steezTransactionCount must be equal to 0");
         require(steeloCurrentPrice > 0, "steeloCurrentPrice must be greater than 0");
-        require(totalSupply() == ds.TGE_AMOUNT, "steeloTGE can only be called for the Token Generation Event");
+        require(totalSupply() == ds.constants.TGE_AMOUNT, "steeloTGE can only be called for the Token Generation Event");
         
-        uint256 tgeAmount = calculateMintAmount(localSteez.steezTransactionCount, steeloCurrentPrice); // This function may also need adjustment
+        uint256 tgeAmount = ds.constants.TGE_AMOUNT;
 
         // Calculate distribution amounts using ds references for percentages
-        uint256 communityAmount = (tgeAmount * ds.communityTGE) / 100;
-        uint256 foundersAmount = (tgeAmount * ds.foundersTGE) / 100; // Assume these are now in ds
-        uint256 earlyInvestorsAmount = (tgeAmount * ds.earlyInvestorsTGE) / 100;
-        uint256 treasuryAmount = (tgeAmount * ds.trasuryTGE) / 100;
+        uint256 communityAmount = (tgeAmount * ds.constants.communityTGE) / 100;
+        uint256 foundersAmount = (tgeAmount * ds.constants.foundersTGE) / 100; // Assume these are now in ds
+        uint256 earlyInvestorsAmount = (tgeAmount * ds.constants.earlyInvestorsTGE) / 100;
+        uint256 treasuryAmount = (tgeAmount * ds.constants.trasuryTGE) / 100;
 
         // Mint tokens directly to addresses
-        _mint(ds.communityAddress, communityAmount);
-        _mint(ds.foundersAddress, foundersAmount);
-        _mint(ds.earlyInvestorsAddress, earlyInvestorsAmount);
-        _mint(ds.treasury, treasuryAmount);
+        _mint(ds.constants.communityAddress, communityAmount);
+        _mint(ds.constants.foundersAddress, foundersAmount);
+        _mint(ds.constants.earlyInvestorsAddress, earlyInvestorsAmount);
+        _mint(ds.constants.treasury, treasuryAmount);
 
         tgeExecuted = true; // Update the flag in the shared storage
-        emit TokensMinted(ds.treasury, tgeAmount);
+        emit TokensMinted(ds.constants.treasury, tgeAmount);
         emit steeloTGEExecuted(tgeAmount); // Emit an event for the TGE execution
     }
 
     function calculateTotalTransactions() public {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
+
         uint256 totalTransactions = 0;
         for (uint256 i = 0; i < localSteez.steezIds.length; i++) {
             totalTransactions += STEEZFacet(address(this)).steez(localSteez.steezIds[i]).transactionCount;
@@ -104,7 +107,6 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     // Override the _transfer function to integrate burning mechanism
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal {
         super._beforeTokenTransfer(from, to, amount);
-
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         // Calculate the burn amount based on the transaction value
@@ -123,19 +125,21 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     // Function to transfer tokens from one user to another
     function tokenTransfer(address recipient, uint256 amount) external nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         require(recipient != address(0), "Cannot transfer to the zero address");
         require(amount <= balanceOf(msg.sender), "Not enough tokens");
 
-        uint256 feeAmount = (amount * ds.FEE_RATE) / 10000;
+        uint256 feeAmount = (amount * ds.constants.FEE_RATE) / 10000;
         uint256 transferAmount = amount - feeAmount;
 
         _beforeTokenTransfer(msg.sender, recipient, transferAmount);
-        _beforeTokenTransfer(msg.sender, ds.steeloAddress, feeAmount);
+        _beforeTokenTransfer(msg.sender, ds.constants.steeloAddress, feeAmount);
     }
 
     function steeloMint() external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        require(totalSupply() > ds.TGE_AMOUNT, "steeloMint can only be called after the TGE");
+
+        require(totalSupply() > ds.constants.TGE_AMOUNT, "steeloMint can only be called after the TGE");
         require(steezTransactionCount > 0, "steezTransactionCount must be greater than 0");
         require(steeloCurrentPrice > 0, "steeloCurrentPrice must be greater than 0");
         
@@ -143,40 +147,42 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
         // Assume 1,000
 
         // Calculate distribution amounts using ds references for percentages
-        uint256 treasuryAmount = (steeloMintAmount * ds.treasuryMint) / 100;
-        uint256 liquidityProvidersAmount = (steeloMintAmount * ds.liquidityProvidersMint) / 100;
-        uint256 ecosystemProvidersAmount = (steeloMintAmount * ds.ecosystemProvidersMint) / 100;
+        uint256 treasuryAmount = (steeloMintAmount * ds.constants.treasuryMint) / 100;
+        uint256 liquidityProvidersAmount = (steeloMintAmount * ds.constants.liquidityProvidersMint) / 100;
+        uint256 ecosystemProvidersAmount = (steeloMintAmount * ds.constants.ecosystemProvidersMint) / 100;
 
         // 20% extra minting for exchanges like Uniswap and Sushiswap
 
         // Mint tokens directly to addresses
-        _mint(ds.treasury, treasuryAmount);
-        _mint(ds.liquidityProviders, liquidityProvidersAmount);
-        _mint(ds.ecosystemProviders, ecosystemProvidersAmount);
+        _mint(ds.constants.treasury, treasuryAmount);
+        _mint(ds.constants.liquidityProviders, liquidityProvidersAmount);
+        _mint(ds.constants.ecosystemProviders, ecosystemProvidersAmount);
     }
 
     // Calculates the amount to mint based on transaction count and current price
     function calculateMintAmount() public view returns (uint256) {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         uint256 adjustmentFactor = 1 ether;
-        if (steeloCurrentPrice >= ds.pMax) {
-            adjustmentFactor += (steeloCurrentPrice - ds.pMax) * ds.alpha / 100;
-        } else if (steeloCurrentPrice <= ds.pMin) {
-            adjustmentFactor -= (ds.pMin - steeloCurrentPrice) * ds.beta / 100;
+        if (steeloCurrentPrice >= ds.constants.pMax) {
+            adjustmentFactor += (steeloCurrentPrice - ds.constants.pMax) * ds.alpha / 100;
+        } else if (steeloCurrentPrice <= ds.constants.pMin) {
+            adjustmentFactor -= (ds.constants.pMin - steeloCurrentPrice) * ds.constants.beta / 100;
         } else {
             adjustmentFactor += adjustmentFactor / 100; // 1% adjustment when Pcurrent is within Pmin and Pmax
         }
-        mintAmount = ds.rho * steezTransactionCount * adjustmentFactor / 1 ether / 1 ether;
+        mintAmount = ds.constants.rho * steezTransactionCount * adjustmentFactor / 1 ether / 1 ether;
         return mintAmount;
     }
 
     // Calculate the Supply Cap to use in the minting function
     function calculateSupplyCap() public view returns (uint256) {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         uint256 currentSupply = totalSupply();
         uint256 supplyCap;
-        if (steeloCurrentPrice < ds.pMin) {
-            supplyCap = currentSupply - ds.delta * (ds.pMin - steeloCurrentPrice) * currentSupply / 1 ether;
+        if (steeloCurrentPrice < ds.constants.pMin) {
+            supplyCap = currentSupply - ds.constants.delta * (ds.constants.pMin - steeloCurrentPrice) * currentSupply / 1 ether;
         } else {
             supplyCap = currentSupply; // maintain the current supply cap if Pcurrent is within or above the target range
         }
@@ -188,7 +194,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         if(steezTransactionCount >= 0) {          
-            burnAmount = transactionValue * ds.FEE_RATE * burnRate / 1e4 / 1e4; // in basis of 1/100 of a percent
+            burnAmount = transactionValue * ds.constants.FEE_RATE * burnRate / 1e4 / 1e4; // in basis of 1/100 of a percent
             return burnAmount;
         } else {return 0;}
     }
@@ -196,24 +202,29 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     // Function to adjust the mint rate, can be called through governance decisions (SIPs)
     function adjustMintRate(uint256 _newMintRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        require(_newMintRate >= ds.MIN_MINT_RATE && _newMintRate <= ds.MAX_MINT_RATE, "Invalid mint rate");
+
+        require(_newMintRate >= ds.constants.MIN_MINT_RATE && _newMintRate <= ds.constants.MAX_MINT_RATE, "Invalid mint rate");
         mintRate = _newMintRate;
+
         emit MintRateUpdated(_newMintRate);
     }
 
     // Function to adjust the burn rate, can be called through governance decisions (SIPs)
     function adjustBurnRate(uint256 _newBurnRate) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        require(_newBurnRate >= ds.MIN_BURN_RATE && _newBurnRate <= ds.MAX_BURN_RATE, "Invalid burn rate");
+
+        require(_newBurnRate >= ds.constants.MIN_BURN_RATE && _newBurnRate <= ds.constants.MAX_BURN_RATE, "Invalid burn rate");
         burnRate = _newBurnRate;
+
         emit BurnRateUpdated(_newBurnRate);
     }
     
     // Burn tokens to implement deflationary mechanism
     function burnTokens() private {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         uint256 treasuryBalance = balanceOf(address(this)); // Assuming _balanceOf was a typo, use balanceOf
-        burnAmount = (steeloCurrentPrice * ds.FEE_RATE / 1000) * burnRate / 100;
+        burnAmount = (steeloCurrentPrice * ds.constants.FEE_RATE / 1000) * burnRate / 100;
 
         require(treasuryBalance >= burnAmount, "Not enough tokens to burn");
         require(burnAmount > 0, "Burn amount must be greater than 0");
@@ -234,9 +245,11 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     // Example function to update transaction volume and current price
     function updateParameters() external {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        require(steeloCurrentPrice >= ds.pMin && steeloCurrentPrice <= ds.pMax, "Price out of allowed range");
+
+        require(steeloCurrentPrice >= ds.constants.pMin && steeloCurrentPrice <= ds.constants.pMax, "Price out of allowed range");
         ds.steezTransactionCount = steezTransactionCount;
         ds.steeloCurrentPrice = steeloCurrentPrice;
+        
         // Logic to determine if minting or burning should occur based on updated parameters
     }
 
@@ -244,16 +257,20 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     function requestVolumeData() public returns (bytes32 requestId) {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         Chainlink.Request memory request = buildChainlinkRequest(ds.jobId, address(this), this.fulfill.selector);
+
         request.add("get", "https://us-central1-steelo.io.cloudfunctions.net/functionName");
         request.add("path", "volume");
+
         return sendChainlinkRequestTo(ds.oracle, request, ds.fee);
     }
 
     // Function to receive the response from the Chainlink oracle
     function fulfill(bytes32 _requestId) public recordChainlinkFulfillment(_requestId) {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         require(steezTransactionCount > 0, "Invalid transaction count");
         ds.steezTransactionCount = steezTransactionCount;
+
         // Additional logic for mint or burn based on the new transaction count
     }
 

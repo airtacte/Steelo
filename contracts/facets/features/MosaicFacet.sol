@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
 import { IMosaicFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";

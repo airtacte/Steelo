@@ -3,13 +3,13 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { STEEZFacet } from "./STEEZFacet.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
-import { ISteeloGovernanceFacet } from "../../interfaces/ISteeloFacet.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, OwnableUpgradeable {
+contract SteezGovernanceFacet is Initializable, OwnableUpgradeable {
     address steezGovernanceFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -55,6 +55,7 @@ contract SteeloGovernanceFacet is ISteeloGovernanceFacet, Initializable, Ownable
     // Utility function to check if an address holds any Steez tokens
     function _isSteezTokenHolder(address account) private view returns (bool) {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        
         uint256 tokenIdForGovernance = 1; // Example tokenId used for governance
         uint256 balance = ds.steezFacet.balanceOf(account, tokenIdForGovernance);
         

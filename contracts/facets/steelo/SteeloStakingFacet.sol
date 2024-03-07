@@ -3,7 +3,9 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
-import { ISteeloFacet } from "../../interfaces/ISteeloFacet.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { SteeloFacet } from "../steelo/STEELOFacet.sol";
+// import { ISteeloFacet } from "../../interfaces/ISteeloFacet.sol";
 // import { IStakingModule} from "../../../lib/lido-dao/contracts/0.8.9/interfaces/IStakingModule.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
@@ -40,6 +42,7 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     function stake(uint256 _amount) external nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         require(_amount > 0, "Amount must be greater than 0");
         ds.stakes[msg.sender] += _amount;
         if (!ds.isStakeholder[msg.sender]) {
@@ -47,11 +50,13 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             ds.isStakeholder[msg.sender] = true;
         }
         steeloFacet.safeTransferFrom(msg.sender, address(this), _amount);
+
         emit Staked(msg.sender, _amount);
     }
 
     function unstake(uint256 _amount) external nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         require(_amount > 0, "Amount must be greater than 0");
         require(ds.stakes[msg.sender] >= _amount, "Not enough stake");
         ds.stakes[msg.sender] -= _amount;
@@ -66,12 +71,14 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             }
         }
         steeloFacet.safeTransfer(msg.sender, _amount);
+
         emit Unstaked(msg.sender, _amount);
     }
     
     // Placeholder for actual reward calculation logic
     function calculateReward(address stakeholder) internal view returns (uint256) {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         totalStakingPool = getTotalStakingPool(); // This would sum all staked amounts
         uint256 stakeholderAmount = stakes[stakeholder];
         stakeDuration = stakeDuration[stakeholder];
@@ -92,14 +99,15 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         } else {
             yieldRate = 0; // No rewards for staking less than the minimum duration
         }
-
         // Calculate reward based on stakeholder's share and yield rate
         uint256 reward = (stakeholderShare * yieldRate) / 1000; // Dividing by 1000 to adjust for percentage representation
+
         return reward;
     }
     
     function distributeRewards() external nonReentrant onlyOwner {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        
         uint256 totalStaked = getTotalStakingPool();
         require(totalStaked > 0, "No stakes to distribute rewards to");
         require(totalRewardPool > 0, "No rewards available for distribution");

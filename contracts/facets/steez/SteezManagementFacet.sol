@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { STEEZFacet } from "./STEEZFacet.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -46,6 +47,7 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
         // Update the base URI for token metadata
         function setBaseURI(string memory newBaseURI) public onlyRole(MANAGER_ROLE) {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
             ds.baseURI = newBaseURI;
             emit BaseURIUpdated(newBaseURI);
         }
@@ -58,6 +60,7 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
         // Update the creator's address for a specific token
         function updateCreatorAddress(uint256 tokenId, address newCreatorAddress) external onlyRole(MANAGER_ROLE) {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
             require(newCreatorAddress != address(0), "New creator address cannot be zero address");
             require(tokenId > 0, "Token ID must be positive");
 
@@ -70,6 +73,7 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
         // Retrieve the current creator address for a specific token
         function getCreatorAddress(uint256 tokenId) public view returns (address) {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
             for (uint i = 0; i < creators.length; i++) {
                 if (STEEZFacet(creators[i]).creatorSteez(creators[i]).creatorId == tokenId) {
                     return creators[i];
@@ -80,6 +84,8 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
 
         // Update the revenue or royalty split for a specific token
         function setCreatorSplit(uint256 tokenId, uint256[] memory splits) external onlyRole(MANAGER_ROLE) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
             uint256 total = 0;
             for (uint256 i = 0; i < splits.length; i++) {
                 total += splits[i];
@@ -87,7 +93,6 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
             }
             require(total == 100, "Total split must be 100");
 
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             ds.creatorSplits[tokenId] = splits;
             emit CreatorSplitUpdated(tokenId, splits);
             emit DistributionPolicyUpdated(tokenId);
@@ -95,16 +100,18 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
 
         // Set token holders and their respective shares for a specific token
         function setTokenHolders(uint256 tokenId, address[] memory _tokenHolders, uint256[] memory shares) external onlyRole(MANAGER_ROLE) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
             require(_tokenHolders.length == shares.length, "Arrays must have the same length");
             uint256 total = 0;
             for (uint256 i = 0; i < shares.length; i++) {
                 total += shares[i];
             require(_tokenHolders[i] != address(0), "Holder address cannot be zero");
             require(shares[i] > 0, "Share must be positive");
-        }
+            }
+
             require(total == 100, "Total shares must be 100");
 
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             ds.tokenHolders[tokenId] = _tokenHolders;
             ds.communitySplits[tokenId] = shares;
             emit TokenHoldersUpdated(tokenId, _tokenHolders, shares);
@@ -135,11 +142,13 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
         function _isCreator(address profileAddress) private view returns (bool) {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(profileAddress);
+
             return localSteez.creatorExists;
         }
         // Ensure the token exists
         function _exists(uint256 tokenId) private view returns (bool) {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            
             return ds.tokenExists[tokenId];
         }
 }

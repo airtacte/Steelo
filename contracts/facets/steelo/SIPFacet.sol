@@ -3,6 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "hardhat/console.sol";
@@ -54,6 +55,7 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     function voteOnSIP(uint256 _sipId, bool _support) external nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         uint256 weight = ds.getVoterWeight(msg.sender);
         ds.voteOnSIP(_sipId, msg.sender, _support, weight);
         emit SIPVoted(_sipId, _support, msg.sender, weight);
@@ -61,9 +63,10 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     function executeSIP(uint256 _sipId) external onlyOwner nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        SIP storage sip = sips[_sipId];
+
         require(ds.sips[_sipId].endTime < block.timestamp, "SIP voting period has not ended");
         require(_sipId < sips.length, "SIP does not exist");
-        SIP storage sip = sips[_sipId];
         require(!sip.executed, "SIP already executed");
 
         (bool success, string memory reason) = ds.executeSIP(_sipId);
