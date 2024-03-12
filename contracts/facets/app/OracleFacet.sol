@@ -2,14 +2,16 @@
 // Copyright (c) 2023 Edmund Berkmann
 pragma solidity ^0.8.10;
 
-import { LibDiamond } from "../libraries/LibDiamond.sol";
+import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/Chainlink.sol";
 
-contract DiamondOracleFacet is OwnableUpgradeable, ChainlinkClient {
+contract OracleFacet is OwnableUpgradeable, ChainlinkClient {
+    address oracleFacetAddress;
     using Chainlink for Chainlink.Request;
+    using LibDiamond for LibDiamond.DiamondStorage;
 
     // State variables for tracking transaction counts and prices
     uint256 private steezTransactionCount;
@@ -26,6 +28,9 @@ contract DiamondOracleFacet is OwnableUpgradeable, ChainlinkClient {
 
     // Function to initialize the facet
     function initialize(address chainlinkTokenAddress) public initializer {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        oracleFacetAddress = ds.oracleFacetAddress;
+        
         __Ownable_init(msg.sender);
         setChainlinkToken(0x326C977E6efc84E512bB9C30f76E30c160eD06FB);
         jobId = "yourJobIdHere"; // Replace with your Job ID

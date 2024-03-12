@@ -12,6 +12,7 @@ import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 
 contract MultiSigFacet {
     address multiSigFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
 
     // Placeholder addresses for the SafeProxyFactory and SafeMasterCopy. 
     // These should be replaced with the actual addresses of the deployed contracts on the respective network.
@@ -25,7 +26,6 @@ contract MultiSigFacet {
     function initialize() external {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         multiSigFacetAddress = ds.multiSigFacetAddress;
-        ds.contractOwner = msg.sender;
     }
 
     /**

@@ -9,6 +9,8 @@ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensH
 
 contract SocialNetworkFacet {
     address socialNetworkFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
+
     ISafe private safeCore;
     ILensHub private lensHub;
     mapping(address => address) private userSafes;

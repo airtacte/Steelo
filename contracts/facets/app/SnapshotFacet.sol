@@ -4,12 +4,11 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
-import { STEEZFacet } from "../steez/STEEZFacet.sol";
 
 contract SnapshotFacet {
     address snapshotFacetAddress;
-    STEEZFacet steezFacet;
-    
+    using LibDiamond for LibDiamond.DiamondStorage;
+
     uint256 private _snapshotCounter;
     uint256 private snapshotCounter;
     uint256 private _lastSnapshotTimestamp;
@@ -64,10 +63,9 @@ contract SnapshotFacet {
             for (uint256 j = 0; j < ds.creatorAddresses.length; j++) {
                 address creatorAddress = ds.creatorAddresses[j];
                 // Get the Steez instance associated with the current creator address
-                STEEZFacet.Steez memory localSteez = STEEZFacet(address(this)).creatorSteez(creatorAddress);
                 // Loop over all investors of the current Steez instance
-                for (uint256 i = 0; i < localSteez.totalSupply; i++) {
-                    snapshotBalances[snapshotCounter][i] = localSteez.investors[i].balance;
+                for (uint256 i = 0; i < ds.steez.totalSupply; i++) {
+                    snapshotBalances[snapshotCounter][i] = ds.steez.investors[i].balance;
                 }
             }
             // Emitting an event could be considered here to log snapshot actions
@@ -75,13 +73,12 @@ contract SnapshotFacet {
 
         function createSnapshot(uint256 creatorId) internal {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-            STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
             uint256 blockNumber = block.number;
-            uint256 totalSupply = localSteez.totalSupply;
+            uint256 totalSupply = ds.steez.totalSupply;
 
             for (uint256 i = 0; i < totalSupply; i++) {
-                address holder = localSteez.ownerOf(i);
-                uint256 holderBalance = localSteez.balance;
+                address holder = ds.steez.ownerOf(i);
+                uint256 holderBalance = ds.steez.balance;
                 _holderSnapshots[creatorId][holder].push(Snapshot(blockNumber, holderBalance));
             }
         }

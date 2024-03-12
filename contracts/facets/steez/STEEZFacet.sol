@@ -6,7 +6,7 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { BazaarFacet } from "../features/BazaarFacet.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
-import { SteezFeesFacet } from "./SteezFeesFacet.sol";
+import { FeesFacet } from "./FeesFacet.sol";
 import { SnapshotFacet } from "../app/SnapshotFacet.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
@@ -18,14 +18,13 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
 contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     address steezFacetAddress;
-    bytes32 public constant ROLE_OPERATOR = keccak256("ROLE_OPERATOR");
-    bytes32 public constant ROLE_OWNER = keccak256("ROLE_OWNER");
     using LibDiamond for LibDiamond.DiamondStorage;
+
     using Address for address;
     using Strings for uint256;
 
     // EVENTS
-    event NewSteez(address indexed creatorId, bytes memory data);
+    event NewSteez(address indexed creatorId, bytes indexed data);
     event TokenMinted(uint256 indexed creatorId, address indexed investors, uint256 amount);
     event PreOrderMinted(uint256 indexed creatorId, address indexed investors, uint256 amount);
     event auctionConcluded(uint256 creatorId, uint256 currentPrice, uint256 totalSupply);
@@ -51,6 +50,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     function initialize(string memory _baseURI) public initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         steezFacetAddress = ds.steezFacetAddress;
+        
         __ERC1155_init(_baseURI);
         __Ownable_init();
         __Pausable_init();
@@ -97,6 +97,8 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
                 // Note: All structs part of Steez that are mappings are not initialized here
             });
 
+            ds.allCreatorIds.push(creatorId); // Track the new creatorId
+            
             // Update the minting state for annual token increase
             if (ds.steez[creatorId].lastMintTime == 0 || (ds.steez[creatorId].lastMintTime + ds.constants.oneYear) <= block.timestamp) {
                 ds.steez[creatorId].lastMintTime = block.timestamp;
@@ -322,7 +324,9 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
                     balance: 1
                 }));
             }
-
+            
+            ds.steez[creatorId].transactionCount += 1; // Used for Steez anniversary and Steelo minting rate
+            
             emit SteezTransfer(from, to, steezId, amount);
         }
 

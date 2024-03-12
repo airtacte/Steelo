@@ -6,18 +6,18 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import { IGalleryFacet } from "../../interfaces/IFeaturesFacet.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract GalleryFacet {
     address galleryFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
+    
     using Strings for uint256;
 
     // Initialize GalleryFacet setting the contract owner
     function initialize() external {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         galleryFacetAddress = ds.galleryFacetAddress;
-        ds.contractOwner = msg.sender;
     }
 
     // Function to display owned NFTs with metadata

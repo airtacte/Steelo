@@ -4,20 +4,16 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
-import { SteeloFacet } from "../steelo/STEELOFacet.sol";
-// import { ISteeloFacet } from "../../interfaces/ISteeloFacet.sol";
-// import { IStakingModule} from "../../../lib/lido-dao/contracts/0.8.9/interfaces/IStakingModule.sol";
+import { STEELOFacet } from "../steelo/STEELOFacet.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
-    address steeloStakingFacetAddress;
+contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    address stakingFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
+
     using SafeERC20 for IERC20;
-
-    ISteeloFacet public steeloFacet;
-
 
     // Events
     event Staked(address indexed user, uint256 amount);
@@ -34,8 +30,8 @@ contract SteeloStakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     function initialize(address _steeloFacet) public initializer {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        steeloStakingFacetAddress = ds.steeloStakingFacetAddress;
-        steeloFacet = ISteeloFacet(_steeloFacet);
+        stakingFacetAddress = ds.stakingFacetAddress;
+        
         __Ownable_init();
         __ReentrancyGuard_init();
     }

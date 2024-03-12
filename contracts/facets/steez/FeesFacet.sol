@@ -11,55 +11,27 @@ import { SnapshotFacet } from "../app/SnapshotFacet.sol"; // To setup
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
-    address steezFeesFacetAddress;
-    bytes32 public constant DEFAULT_ADMIN_ROLE = keccak256("DEFAULT_ADMIN_ROLE");
- 
+contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    address feesFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
+    
     event TransferProcessed(uint256 indexed steezId, address indexed from, address indexed to, uint256 amount, uint256 royaltyAmount);
     event ShareholderUpdated(uint256 indexed steezId, address indexed shareholder, uint256 balance);
     event RoyaltiesDistributed(address indexed from, address indexed to, uint256 indexed creatorId, uint256 amount, uint256 creatorFee, uint256 steeloFee, uint256 communityFee, bytes data);
     event FailedPaymentQueued(uint256 indexed creatorId, address indexed recipient, uint256 amount);
 
-    modifier onlyAdmin() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(AccessControlFacet(ds.accessControlFacetAddress).hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "AccessControl: Caller is not an admin");
-        _;
-    }
-
     function initialize(address owner) public initializer {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        steezFeesFacetAddress = ds.steezFeesFacetAddress;
+        feesFacetAddress = ds.feesFacetAddress;
+        
         __Ownable_init();
         __ReentrancyGuard_init();
         transferOwnership(owner);
-    }
-
-        function updateRoyaltyInfo(uint256 creatorId, uint256 amount) internal {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-            AccessControlFacet accessControl = AccessControlFacet(ds.accessControlAddress);
-
-            require(msg.sender == address(this) || AccessControlFacet(ds.accessControlFacetAddress).hasRole(ROLE_OPERATOR, msg.sender), "Royalties: Unauthorized");
-
-            ds.royalty.totalRoyalties += amount;
-            // Additional logic here
-        }
-
-        function setCommunitySplit(uint256 creatorId, uint256[] memory splits) external onlyOwner nonReentrant {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
- 
-            // Ensure the sum of splits is 100
-            uint256 total = 0;
-            for (uint256 i = 0; i < splits.length; i++) {
-                total += splits[i];
-            }
-            require(total == 100, "Royalties: Total split must be 100");
-
-            // Store the splits
-            ds.royalty.shareholderRoyalties[creatorId] = splits;
-        }
+    }    using LibDiamond for LibDiamond.DiamondStorage;
 
         // Called by STEEZFacet.payRoyalties from function transferSteez
         function payRoyalties(uint256 creatorId, uint256 amount, address from, address to, bytes memory data) external payable nonReentrant {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(ds.accessControlFacet.hasRole(ROLE_OPERATOR, msg.sender) || msg.sender == address(this), "Royalties: Unauthorized caller");
 
             uint256 creatorFee = calculateCreatorFee(creatorId, amount);
@@ -170,6 +142,7 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         }
 
         function queueFailedRoyaltyPayment(uint256 creatorId, uint256 amount, address payable recipient) internal {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Add the failed payment to the queue
             ds.failedPayments[creatorId].push(FailedPayment(amount, recipient));
 
@@ -216,6 +189,7 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
         // New Function to Add to Queue (Example)
         function queueRoyaltyPayment(uint256 _creatorId, uint256 _amount, address payable _recipient) internal {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(_amount > 0, "Royalties: Amount must be greater than zero");
             require(isValidParticipant(_recipient), "Royalties: Invalid recipient");
             ds.royaltyQueue.push(QueuedRoyalty({creatorId: _creatorId, amount: _amount, recipient: _recipient}));
@@ -242,6 +216,7 @@ contract SteezFeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
         // New helper function for validating participants
         function isValidParticipant(address participant) private view returns (bool) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Placeholder for validation logic
             return true;
         }

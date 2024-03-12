@@ -11,8 +11,10 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 
-contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
-    address steezManagementFacetAddress;
+contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
+    address managementFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
+    
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
@@ -33,7 +35,8 @@ contract SteezManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, R
 
     function initialize(address owner) public initializer {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        steezManagementFacetAddress = ds.steezManagementFacetAddress;
+        managementFacetAddress = ds.managementFacetAddress;
+
         __AccessControl_init();
         __Ownable_init();
         __ReentrancyGuard_init();

@@ -5,7 +5,6 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IVillageFacet } from "../../interfaces/IFeaturesFacet.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -27,6 +26,8 @@ interface IESCROW {
 
 contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     address villageFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
+
     using EnumerableSet for EnumerableSet.AddressSet;
 
     IEncryptionKeyManager encryptionKeyManager;
@@ -52,7 +53,6 @@ contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     function initialize() external {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         villageFacetAddress = ds.villageFacetAddress;
-        ds.contractOwner = msg.sender;
     }
 
     constructor(address _diamondCutAddress, address _encryptionKeyManagerAddress, address _escrowAddress) {

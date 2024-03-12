@@ -7,6 +7,7 @@ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 
 contract GasOptimisationFacet {
     address gasOptimisationFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
 
     // Example: Bulk processing to minimise transaction costs
 

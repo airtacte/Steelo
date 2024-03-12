@@ -12,73 +12,147 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     address sipFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    struct SIP {
-        uint256 id;
-        string description;
-        uint256 startTime;
-        uint256 endTime;
-        address proposer;
-        bool executed;
-        uint256 yesVotes;
-        uint256 noVotes;
-        ProposalType proposalType;
-    }
-
-    enum ProposalType {CreatorInitiated, InvestorInitiated, SteeloInitiated}
-
-    SIP[] public sips;
-
-    event SIPCreated(uint256 indexed id, string description, ProposalType proposalType, address indexed proposer);
+    event SIPCreated(uint256 indexed id, string description, string proposalType, address indexed proposer);
     event SIPVoted(uint256 indexed id, bool support, address indexed voter, uint256 weight);
     event SIPExecuted(uint256 indexed id, bool success);
 
     function initialize() public initializer {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         sipFacetAddress = ds.sipFacetAddress;
+
         __Ownable_init();
         __ReentrancyGuard_init();
     }
 
-    function createSIP(string memory _description, ProposalType _type, uint256 _duration) external onlyOwner {
+    function createSIP(string memory _description, string _type, uint256 _duration) external onlyStaker nonReentrant {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+
         uint256 startTime = block.timestamp;
         uint256 endTime = startTime + _duration;
-        uint256 newSipId = sips.length;
-        SIP storage newSIP = sips.push();
-        newSIP.id = newSipId;
-        newSIP.description = _description;
-        newSIP.startTime = startTime;
-        newSIP.endTime = endTime;
-        newSIP.proposer = msg.sender;
-        newSIP.proposalType = _type;
+        uint256 newSipId = ++ds.lastSipId;
+        
+        ds.sips.push(LibDiamond.SIP({
+            sipId: newSipId,
+            description: _description,
+            startTime: startTime,
+            endTime: endTime,
+            proposer: msg.sender,
+            sipType: _type,
+            voteCountFor: 0,
+            voteCountAgainst: 0,
+            executed: false
+        }));
+        
         emit SIPCreated(newSipId, _description, _type, msg.sender, startTime, endTime);
     }
 
-    function voteOnSIP(uint256 _sipId, bool _support) external nonReentrant {
+    function voteOnSIP(uint256 _sipId, bool _support) external onlyStaker nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        require(_sipId < ds.lastSipId, "SIP does not exist");
+        require(!sip.votes[msg.sender], "Already voted");
+        require(block.timestamp >= ds.sips.startTime && block.timestamp <= ds.sips.endTime, "Voting is not active");
 
-        uint256 weight = ds.getVoterWeight(msg.sender);
-        ds.voteOnSIP(_sipId, msg.sender, _support, weight);
+        uint256 weight = 1;
+        if (msg.sender == sipType) {
+            weight = 2;
+        }
+
+        if (_support) {
+            ds.sips.voteCountFor += weight;
+        } else {
+            ds.sips.voteCountAgainst += weight;
+        }
+
         emit SIPVoted(_sipId, _support, msg.sender, weight);
     }
 
-    function executeSIP(uint256 _sipId) external onlyOwner nonReentrant {
+    function checkForExecution(uint256 _sipId) internal {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        SIP storage sip = sips[_sipId];
 
+        uint256 totalVotes = ds.sips.voteCountFor + ds.sips.voteCountAgainst;
+        require(totalVotes >= 4, "Insufficient votes");
+
+        // Execute SIP if the majority is achieved considering the initiator's double vote
+        if (ds.sips.voteCountFor >= 3) {
+            executeSIP(_sipId); // Assuming executeSIP function exists and handles SIP execution
+        }
+    }
+        
+    function executeSIP(uint256 _sipId) external onlyAdmin nonReentrant {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        require(_sipId < ds.sips.length, "SIP does not exist");
         require(ds.sips[_sipId].endTime < block.timestamp, "SIP voting period has not ended");
-        require(_sipId < sips.length, "SIP does not exist");
-        require(!sip.executed, "SIP already executed");
-
-        (bool success, string memory reason) = ds.executeSIP(_sipId);
+        require(!ds.sips.executed, "SIP already executed");
 
         // Example condition for execution; replace with actual logic specific to the SIP
-        if (sip.voteCountFor > sip.voteCountAgainst) {
-            sip.executed = true;
+        if (ds.sips.voteCountFor > ds.sips.voteCountAgainst) {
+            ds.sips.executed = true;
             emit SIPExecuted(_sipId, success, reason);
         } else {
             emit SIPExecuted(_sipId, !success, reason);
         }
     }
 
-    // Additional functions for voting, managing SIPs, etc., can be added here
+        // Function to view SIP details
+        function viewSIP(uint256 _sipId) public view returns (SIP memory) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            require(_sipId < ds.sips.length, "SIP does not exist");
+            return ds.sips[_sipId];
+        }
+
+        // Function to list all SIPs
+        function listSIPs() public view returns (SIP[] memory) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.sips;
+        }
+
+        function getTotalSIPs() public view returns (uint256) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.sips.length; // ideally as "success/total sips"
+        }
+
+        function getVoteCount(uint256 _sipId) public view returns (uint256) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            require(_sipId < ds.sips.length, "SIP does not exist");
+            return ds.sips[_sipId].voteCountFor + ds.sips[_sipId].voteCountAgainst;
+        }
+
+        function isSIPActive(uint256 _sipId) public view returns (bool) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            require(_sipId < ds.sips.length, "SIP does not exist");
+            return block.timestamp >= ds.sips[_sipId].startTime && block.timestamp <= ds.sips[_sipId].endTime;
+        }
+
+        function isSIPExecuted(uint256 _sipId) public view returns (bool) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            require(_sipId < ds.sips.length, "SIP does not exist");
+            return ds.sips[_sipId].executed;
+        }
+
+        // Function to check the balance of the treasury
+        function getTreasuryBalance(address _token) public view returns (uint256) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.treasury[_token];
+        }
+
+        // Function to deposit funds into the treasury
+        function depositToTreasury(address _token, uint256 _amount) external onlyOwner nonReentrant {
+            IERC20(_token).transferFrom(msg.sender, address(this), _amount);
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            ds.treasury[_token] += _amount;
+        }
+
+        // Function to withdraw funds from the treasury
+        function withdrawFromTreasury(address _token, uint256 _amount) external onlyOwner nonReentrant {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            require(ds.treasury[_token] >= _amount, "Insufficient funds in treasury");
+            ds.treasury[_token] -= _amount;
+            IERC20(_token).transfer(msg.sender, _amount);
+        }
+
+        // Function to check the balance of the treasury
+        function getTreasuryBalance(address _token) public view returns (uint256) {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.treasury[_token];
+        }
 }

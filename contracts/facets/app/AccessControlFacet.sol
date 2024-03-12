@@ -7,19 +7,21 @@ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 /**
  * @title Steelo AccessControl Facet
  * This contract manages roles and permissions within the Steelo ecosystem,
  * structured around the Diamond Standard for modular smart contracts.
  */
-contract AccessControlFacet is AccessControlUpgradeable {
+contract AccessControlFacet is AccessControlUpgradeable, ReentrancyGuardUpgradeable {
     address accessControlFacetAddress;
+    using LibDiamond for LibDiamond.DiamondStorage;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     // Define internal roles with unique bytes32 identifiers
     bytes32 public constant EXECUTIVE_ROLE = keccak256("EXECUTIVE_ROLE");
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE")
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant EMPLOYEE_ROLE = keccak256("EMPLOYEE_ROLE");
     bytes32 public constant TESTER_ROLE = keccak256("TESTER_ROLE");
 
@@ -34,23 +36,72 @@ contract AccessControlFacet is AccessControlUpgradeable {
     bytes32 public constant COLLABORATOR_ROLE = keccak256("COLLABORATOR_ROLE");
     bytes32 public constant INVESTOR_ROLE = keccak256("INVESTOR_ROLE");
     bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
+    bytes32 public constant SUBSCRIBER_ROLE = keccak256("SUBSCRIBER_ROLE");
 
-    /*
-    modifier onlyAdmin() {require(admins[msg.sender], "Only Admin can call this function"); _;}
-    modifier onlyCreator() {require(creators[msg.sender] && !admins[msg.sender], "CreatorToken: Only Creators can call this function"); _;}
-    modifier onlyOwner() {require(!creators[msg.sender] && !admins[msg.sender] && investors[msg.sender], "CreatorToken: Only investors can call this function"); _;}
-    modifier onlyUser() {require(users[msg.sender], "Only User can call this function"); _;}
-    modifier onlyCreatorOrOwner() {require(investors[msg.sender] || creators[msg.sender], "CreatorToken: Only Creators or investors can call this function"); _;}
-    */
+    modifier onlyExecutive() {
+        require(hasRole(EXECUTIVE_ROLE, msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
 
-    // System Roles allow users to upgrade to either (or both) STEELO_ROLE or STEEZ_ROLE
-    /* Tier 5 */ mapping (address => bool) private admins; // SYSTEM_ROLE
-    /* Tier 4 */ mapping (address => bool) private stakers; // STEELO_ROLE
-    /* Tier 3 */ mapping (address => bool) private creators; // STEEZ_ROLE
-    /* Tier 2 */ mapping (address => bool) private investors; // STEEZ_ROLE
-    /* Tier 1 */ mapping (address => bool) private subscribers; // STEEZ_ROLE
-    /* Tier 0 */ mapping (address => bool) private users; // USER_ROLE
-    /* Tier -1 */ mapping (address => bool) private unverifiedUser; // DEFAULT_ROLE, pre-KYC
+    modifier onlyAdmin() {
+        require(hasRole(ADMIN_ROLE, msg.sender), "AccessControl: caller is not an admin");
+        _;
+    }
+
+    modifier onlyEmployee() {
+        require(hasRole(EMPLOYEE_ROLE, msg.sender), "AccessControl: caller is not an employee");
+        _;
+    }
+
+    modifier onlyTester() {
+        require(hasRole(TESTER_ROLE, msg.sender), "AccessControl: caller is not a tester");
+        _;
+    }
+
+    modifier onlyStaker() {
+        require(hasRole(STAKER_ROLE, msg.sender), "AccessControl: caller is not a staker");
+        _;
+    }
+
+    modifier onlyUser() {
+        require(hasRole(USER_ROLE, msg.sender), "AccessControl: caller is not a user");
+        _;
+    }
+
+    modifier onlyVisitor() {
+        require(hasRole(VISITOR_ROLE, msg.sender), "AccessControl: caller is not a visitor");
+        _;
+    }
+
+    modifier onlyCreator() {
+        require(hasRole(CREATOR_ROLE, msg.sender), "AccessControl: caller is not a creator");
+        _;
+    }
+
+    modifier onlyTeam() {
+        require(hasRole(TEAM_ROLE, msg.sender), "AccessControl: caller is not a team member");
+        _;
+    }
+
+    modifier onlyCollaborator() {
+        require(hasRole(COLLABORATOR_ROLE, msg.sender), "AccessControl: caller is not a collaborator");
+        _;
+    }
+
+    modifier onlyInvestor() {
+        require(hasRole(INVESTOR_ROLE, msg.sender), "AccessControl: caller is not an investor");
+        _;
+    }
+
+    modifier onlyModerator() {
+        require(hasRole(MODERATOR_ROLE, msg.sender), "AccessControl: caller is not a moderator");
+        _;
+    }
+
+    modifier onlySubscriber() {
+        require(hasRole(SUBSCRIBER_ROLE, msg.sender), "AccessControl: caller is not a subscriber");
+        _;
+    }
 
     // Event to be emitted when an upgrade is performed
     event DiamondUpgraded(address indexed upgradedBy, IDiamondCut.FacetCut[] cuts);
@@ -71,72 +122,102 @@ contract AccessControlFacet is AccessControlUpgradeable {
         // Similarly, set up the role hierarchy for Steez lifecycles
         _setRoleAdmin(CREATOR_ROLE, ADMIN_ROLE);
         _setRoleAdmin(TEAM_ROLE, CREATOR_ROLE);
+        _setRoleAdmin(MODERATOR_ROLE, CREATOR_ROLE);
         _setRoleAdmin(COLLABORATOR_ROLE, CREATOR_ROLE);
-        _setRoleAdmin(INVESTOR_ROLE, EMPLOYEE_ROLE);
-        _setRoleAdmin(SUPPORTER_ROLE, EMPLOYEE_ROLE);
+        _setRoleAdmin(INVESTOR_ROLE, CREATOR_ROLE);
+        _setRoleAdmin(SUBSCRIBER_ROLE, CREATOR_ROLE);
 
         // Initial role assignments
         _grantRole(EXECUTIVE_ROLE, msg.sender); // Assign the deployer the EXECUTIVE role
     }
 
-    // System Roles include: Admin, Staker => Voter, Creator => Company, Investor, Subscriber, User
-    function grantAdminRole(address account) external {
-        grantRole(DEFAULT_ADMIN_ROLE, account);
-        admins[account] = true;
-    }
+        function grantRole(bytes32 role, address account) external onlyRole(getRoleAdmin(role)) nonReentrant {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
-    function grantStakerRole(address account) external {
-        grantRole(DEFAULT_ADMIN_ROLE, account);
-        stakers[account] = true;
-    }
+            require(!hasRole(role, account), "AccessControl: account already has role");
+            require(account != address(0), "AccessControl: account is zero address");
 
-    function grantCreatorRole(address account) external {
-        grantRole(STEELO_ROLE, account);
-        creators[account] = true;
-    }
-
-    function grantInvestorRole(address account) external {
-        grantRole(STEEZ_ROLE, account);
-        investors[account] = true;
-    }
-
-    function grantSubscriberRole(address account) external {
-        grantRole(STEEZ_ROLE, account);
-        subscribers[account] = true;
-    }
-
-    function grantUser(address account) external {
-        users[account] = true;
-    }
-
-    function grantUpgradeRole(address account) external {
-        grantRole(UPGRADE_ROLE, account);
-    }
-
-    function upgradeDiamond(IDiamondCut.FacetCut[] memory cuts) external {
-        // Check that the caller has the upgrade role
-        require(hasRole(UPGRADE_ROLE, msg.sender), "Must have upgrade role to upgrade");
-
-        // Check that the cuts array is not empty
-        require(cuts.length > 0, "Must provide at least one cut to upgrade");
-
-        // Perform the upgrade
-        LibDiamond.diamondCut(cuts, address(0), new bytes(0));
-
-        // Emit the DiamondUpgraded event
-        emit DiamondUpgraded(msg.sender, cuts);
-    }
-
-    function grantRoleBasedOnTokenHolding(address account) external {
-        uint256 steeloBalance = steeloFacet.balanceOf(account);
-        uint256 steezBalance = steezFacet.balanceOf(account);
-
-        if (steeloBalance > 0) {
-            grantRole(STEELO_ROLE, account);
+            ds.roles[role].members[account] = true;
+            emit RoleGranted(role, account, msg.sender);
         }
 
-        if (steezBalance > 0) {
-            grantRole(STEEZ_ROLE, account);
+        function grantExecutiveRole(address account) external onlyRole(EXECUTIVE_ROLE) {
+            grantRole(EXECUTIVE_ROLE, account);
         }
-    }
+
+        function grantAdminRole(address account) external onlyRole(ADMIN_ROLE) {
+            grantRole(ADMIN_ROLE, account);
+        }
+
+        function grantEmployeeRole(address account) external onlyRole(EMPLOYEE_ROLE) {
+            grantRole(EMPLOYEE_ROLE, account);
+        }
+
+        function grantTesterRole(address account) external onlyRole(TESTER_ROLE) {
+            grantRole(TESTER_ROLE, account);
+        }
+
+        function grantStakerRole(address account) external onlyRole(STAKER_ROLE) {
+            grantRole(STAKER_ROLE, account);
+        }
+
+        function grantUserRole(address account) external onlyRole(USER_ROLE) {
+            grantRole(USER_ROLE, account);
+        }
+
+        function grantVisitorRole(address account) external onlyRole(VISITOR_ROLE) {
+            grantRole(VISITOR_ROLE, account);
+        }
+
+        function grantCreatorRole(address account) external onlyRole(CREATOR_ROLE) {
+            grantRole(CREATOR_ROLE, account);
+        }
+
+        function grantTeamRole(address account) external onlyRole(TEAM_ROLE) {
+            grantRole(TEAM_ROLE, account);
+        }
+
+        function grantModeratorRole(address account) external onlyRole(MODERATOR_ROLE) {
+            grantRole(MODERATOR_ROLE, account);
+        }
+
+        function grantCollaboratorRole(address account) external onlyRole(COLLABORATOR_ROLE) {
+            grantRole(COLLABORATOR_ROLE, account);
+        }
+
+        function grantInvestorRole(address account) external onlyRole(INVESTOR_ROLE) {
+            grantRole(INVESTOR_ROLE, account);
+        }
+
+        function grantSubscriberRole(address account) external onlyRole(SUBSCRIBER_ROLE) {
+            grantRole(SUBSCRIBER_ROLE, account);
+        }
+
+        function upgradeDiamond(IDiamondCut.FacetCut[] memory cuts) external {
+            // Check that the caller has the upgrade role
+            require(hasRole(ADMIN_ROLE, msg.sender), "Must have upgrade role to upgrade");
+
+            // Check that the cuts array is not empty
+            require(cuts.length > 0, "Must provide at least one cut to upgrade");
+
+            // Perform the upgrade
+            LibDiamond.diamondCut(cuts, address(0), new bytes(0));
+
+            // Emit the DiamondUpgraded event
+            emit DiamondUpgraded(msg.sender, cuts);
+        }
+
+        function grantRoleBasedOnTokenHolding(address account) external {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            uint256 steeloBalance = ds.balanceOf(account);
+            uint256 steezBalance = ds.balanceOf(account);
+
+            if (steeloBalance > 0) {
+                grantRole(STAKER_ROLE, account);
+            }
+
+            if (steezBalance > 0) {
+                grantRole(INVESTOR_ROLE, account);
+            }
+        }
 }

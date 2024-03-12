@@ -4,9 +4,7 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
-import { IProfileFacet } from "../../interfaces/IFeaturesFacet.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
-import { STEEZFacet } from "../steez/STEEZFacet.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
@@ -15,71 +13,15 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract ProfileFacet is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     address profileFacetAddress;
-    STEEZFacet steezFacet;
+    using LibDiamond for LibDiamond.DiamondStorage;
 
-    struct ProfileList {
-        string username;
-        string bio;
-        string avatarURI;
-        address walletAddress;
-    }
-
-    struct ContentList {
-        uint256 contentId;
-        address creator;
-        bool isPublic;
-    }
-
-    struct CreatorList {
-        uint256 creatorId;
-        address creator;
-        uint256 totalEarnings;
-        uint256 totalInvestments;
-        uint256 totalFollowers;
-    }
-    
-    struct InvestorList {
-        address creator;
-        address[] investors;
-    }
-
-    struct OwnedSteez {
-        uint256 tokenId;
-        address creator;
-    }
-
-    struct PortfolioList {
-        OwnedSteez[] ownedSteez;
-    }
-
-    struct ContributorList {
-        uint256 contentId;
-        address contributor;
-        uint256 earnings;
-    }
-
-    struct SpaceData {
-        uint256 spaceId;
-        address creator;
-        uint256[] contentIds;
-    }
-
-    event ProfileUpdated(address indexed user);
-    event ContentPosted(address indexed user, uint256 contentId);
+    event ProfileUpdated(address indexed profileId);
+    event ContentPosted(address indexed profileId, uint256 contentId);
     event InvestorAdded(address indexed creator, address indexed investor);
-    event PortfolioUpdated(address indexed user, uint256 indexed tokenId, uint256 amount);
-    event SpaceCreated(address indexed user, uint256 spaceId);
-
-    mapping(string => bool) usernameExists;
-    mapping(address => ProfileList) profiles;
-    mapping(uint256 => CreatorList) analytics;
-    mapping(uint256 => ContentList) contents;
-    mapping(address => InvestorList) investors;
-    mapping(address => PortfolioList) portfolios;
-    mapping(uint256 => ContributorList) contributors;
-    mapping(uint256 => SpaceData) spaces;
+    event PortfolioUpdated(address indexed profileId, uint256 indexed tokenId, uint256 amount);
+    event SpaceCreated(address indexed profileId, uint256 spaceId);
 
     ILensHub lens;
     ISafe safe;
@@ -87,7 +29,6 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
     function initialize() external {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         profileFacetAddress = ds.profileFacetAddress;
-        ds.contractOwner = msg.sender;
     }
 
     function initialize(address _lensAddress, address _safeAddress) external initializer {
@@ -100,31 +41,32 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
     }
 
         // Function to set up or update a user profile
-        function setProfile(address user, string memory username, string memory bio, string memory avatarURI) external nonReentrant {
-            LibDiamond.enforceIsContractOwner();
+        function setProfile(address profileId, string memory profileIdname, string memory bio, string memory avatarURI, string username) external nonReentrant {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             require(!usernameTaken(username), "Username already taken");
-            profiles[user] = ProfileList(username, bio, avatarURI, user);
-            usernameExists[username] = true;
-            emit ProfileUpdated(user);
+            //ds.profiles[profileId] = ProfileList(username, bio, avatarURI, user);
+            // check ifExists ds.profiles[username] = true;
+            emit ProfileUpdated(profileId);
         }
 
         function verifyCreator(uint256 creatorId) public {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-        STEEZFacet.Steez memory localSteez = STEEZFacet(ds.steezFacetAddress).steez(creatorId);
             // Verification logic here
 
-            localSteez.creatorId++; // Increment the creatorId
-            localSteez.steez[creatorId]; // new Creator
+            ds.steez.creatorId++; // Increment the creatorId
+            ds.steez.steez[creatorId]; // new Creator
         }
 
         // Function to check if a username already exists
         function usernameTaken(string memory username) internal view returns (bool) {
-            return usernameExists[username];
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            // return usernameExists[username]; // Check if username exists
         }
 
         // Function to retrieve a user's profile
-        function getProfile(address user) internal view returns (ProfileList memory) {
-            return profiles[user];
+        function getProfile(address profileId) internal view {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.profiles[profileId];
         }
 
         // Function to post content, with privacy settings
@@ -140,7 +82,7 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
             emit InvestorAdded(msg.sender, investor);
         }
 
-        // Function to update the portfolio of STEEZ tokens a user owns
+        // Function to update the portfolio of STEEZ tokens a profileId owns
         function updatePortfolio(uint256 tokenId, uint256 amount) external nonReentrant {
             _updatePortfolio(msg.sender, tokenId, amount);
             emit PortfolioUpdated(msg.sender, tokenId, amount);
@@ -148,40 +90,46 @@ contract ProfileFacet is IProfileFacet, ERC1155Upgradeable, OwnableUpgradeable, 
 
         // Function to create a Playlist Space
         function createSpace(uint256[] calldata contentIds) external nonReentrant {
-            uint256 spaceId = _createSpace(msg.sender, contentIds);
-            emit SpaceCreated(msg.sender, spaceId);
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            ds.spaceId = _createSpace(msg.sender, ds.contentIds);
+            emit SpaceCreated(msg.sender, ds.spaceId);
         }
 
-        // Function to view a user's profile
-        function viewProfile(address user) external view returns (ProfileList memory) {
-            return profiles[user];
+        // Function to view a profileId's profile
+        function viewProfile(address profileId) external view{
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.profiles[profileId];
         }
 
         // Function to view content by ID
-        function viewContent(uint256 contentId) external view returns (ContentList memory) {
-            return contents[contentId];
+        function viewContent(uint256 contentId) external view {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.content[contentId];
         }
 
         // Function to get a list of investors for a creator
         function viewInvestors(address creator) external view returns (address[] memory) {
-            return STEEZFacet.investors[creator];
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.steez.investors[creator];
         }
 
-        // Function to view the portfolio of STEEZ tokens a user owns
-        function viewPortfolio(address user) external view returns (PortfolioList[] memory) {
-            return portfolios[user];
+        // Function to view the portfolio of STEEZ tokens a profileId owns
+        function viewPortfolio(address profileId) external view {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.portfolios[profileId];
         }
 
-        // Function to view a Space and its contents
-        function viewSpace(uint256 spaceId) external view returns (SpaceData memory) {
-            return spaces[spaceId];
+        // Function to view a Space and its content
+        function viewSpace(uint256 spaceId) external view {
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.spaces[spaceId];
         }
 
         function _addInvestor(address creator, address investor) internal {
             // implementation here
         }
 
-        function _updatePortfolio(address user, uint256 tokenId, uint256 amount) internal {
+        function _updatePortfolio(address profileId, uint256 tokenId, uint256 amount) internal {
             // implementation here
         }
 

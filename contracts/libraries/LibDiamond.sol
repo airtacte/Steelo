@@ -13,124 +13,22 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
 
-    struct DiamondStorage {
-        // Standard Diamond Storage Mappings
-        mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
-        mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
-        mapping(bytes4 => bool) supportedInterfaces;
-        address[] facetAddresses;
-        address contractOwner;
-        Constants constants; // reference to contracts\libraries\ConstDiamond.sol
-
-        // Steelo & Steez struct references
-        mapping(uint256 => SIP) public sips; // Added mapping from SipId to SIP
-        mapping(address => Steez) steez; // Added mapping from creator address to Steez
-        mapping(uint256 => Creator) creators; // Added mapping from creatorId to Creator
-        mapping(address => Investor) investors; // Added mapping from investor address to Investor
-        mapping(uint256 => Royalty) royalties; // Added mapping from creatorId to QueuedRoyalty
-        mapping(uint256 => Content) content; // Added mapping from contentId to Content Firebase Document
-        mapping(uint256 => Contributor) contributors; // Added mapping from contributorId to Contributor
-        QueuedRoyalty[] royaltyQueue; // Array of creatorId, amount and recipients
-        mapping(uint256 => FailedPayment[]) public failedPayments;
-
-        // FACETS
-        address constDiamondAddress;
-
-        address accessControlFacetAddress;
-        address gasOptimisationFacetAddress;
-        address multiSigFacetAddress;
-        address notificationFacetAddress;
-        address snapshotFacetAddress;
-        address socialNetworkFacetAddress;
-
-        address bazaarFacetAddress;
-        address galleryFacetAddress;
-        address mosaicFacetAddress;
-        address profileFacetAddress; 
-        address villageFacetAddress;
-
-        address sipFacetAddress;
-        address steeloFacetAddress;
-        address steeloGovernanceFacetAddress;
-        address steeloStakingFacetAddress;
-
-        address steezFacetAddress;
-        address steezFeesFacetAddress;
-        address steezGovernanceFacetAddress;
-        address steezManagementFacetAddress;
-
-        // STEEZFacet.sol VARIABLES
-        uint256 _lastCreatorId;
-        uint256 _lastProfileId;
-        uint256 _lastSteezId;
-        string baseURI;
-
-        // Chainlink parameters
-        address oracle;
-        bytes32 jobId;
-        uint256 fee;
-        uint256 volume;
+    struct RoleData {
+        mapping(address => bool) members;
+        bytes32 adminRole;
     }
 
-    struct Constants {
-        // STEELO TOKENOMICS
-        uint256 TGE_AMOUNT;
-        uint256 pMin;
-        uint256 pMax;
-        uint256 rho;
-        uint256 alpha;
-        uint256 beta;
-        uint256 MIN_MINT_RATE;
-        uint256 MAX_MINT_RATE;
-        uint256 MIN_BURN_RATE;
-        uint256 MAX_BURN_RATE;
-
-        // STEEZ TOKENOMICS
-        uint256 AUCTION_DURATION;
-        uint256 PRE_ORDER_SUPPLY;
-        uint256 LAUNCH_SUPPLY;
-        uint256 EXPANSION_SUPPLY;
-        uint256 TRANSACTION_MULTIPLIER;
-        uint256 INITIAL_PRICE;
-        uint256 PRICE_INCREMENT;
-        uint256 TOKEN_BATCH_SIZE;
-        uint256 PRE_ORDER_CREATOR_ROYALTY;
-        uint256 PRE_ORDER_STEELO_ROYALTY;
-        uint256 LAUNCH_CREATOR_ROYALTY;
-        uint256 LAUNCH_STEELO_ROYALTY;
-        uint256 LAUNCH_COMMUNITY_ROYALTY;
-        uint256 SECOND_HAND_SELLER_ROYALTY;
-        uint256 SECOND_HAND_CREATOR_ROYALTY;
-        uint256 SECOND_HAND_STEELO_ROYALTY;
-        uint256 SECOND_HAND_COMMUNITY_ROYALTY;
-
-        // STAKEHOLDER'S ROYALTY DISTRIBUTION
-        address treasury;
-        uint256 trasuryTGE;
-        uint256 treasuryMint;
-        address liquidityProviders;
-        uint256 liquidityProvidersMint;
-        address ecosystemProviders;
-        uint256 ecosystemProvidersMint;
-        address foundersAddress;
-        uint256 foundersTGE;
-        address earlyInvestorsAddress;
-        uint256 earlyInvestorsTGE;
-        address communityAddress;
-        uint256 communityTGE;
-        address steeloAddresss;
-        uint256 FEE_RATE;
-        address uniswapAddress;
-        address gbptAddress;
-
-        uint256 oneYear;
-        uint256 oneWeek;
+    struct Proposal {
+        string benefitDescription;
+        bytes callData;
+        string metadataURI;
+        // Add other necessary fields
     }
 
     enum SIPType { Platform, Creator, Investor }
 
     struct SIP {
-        SIPId sipId
+        uint256 sipId;
         SIPType sipType;
         string description;
         address proposer;
@@ -140,10 +38,22 @@ library LibDiamond {
         mapping(address => bool) votes;
     }
     
+    struct Profile {
+        uint256 profileId;
+        string username;
+        string walletAddress;
+        string verificationKey;
+        string profileBio;
+        string avatarURI;
+        string profileLocation;
+        string profilePrfoession;
+        mapping(uint256 => Content) collection;
+        mapping(uint256 => Profile) followers;
+    }
+
     struct Investor {
-        uint256 profileId; // ID of the investor's user profile
-        address investorAddress; // address of the investor
-        uint256 balance; // quantity of Steez owned by the investor
+        uint256 profileId; // ID of investor profiles
+        mapping(uint256 => Steez) portfolio; // range and quantity of Steez owned investors
     }
 
     struct Royalty {
@@ -152,8 +62,8 @@ library LibDiamond {
         uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
         uint256 investorRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
         uint256 steeloRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
-        mapping(address => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
-        mapping(address => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
+        mapping(Profile => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
+        mapping(Profile => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
     }
     
     struct Steez {
@@ -202,6 +112,12 @@ library LibDiamond {
         uint256 contribution;
     }
 
+    struct SpaceData {
+        uint256 spaceId;
+        address creator;
+        uint256[] contentIds;
+    }
+
     struct QueuedRoyalty {
         uint256 creatorId;
         uint256 amount;
@@ -211,6 +127,12 @@ library LibDiamond {
     struct FailedPayment {
         uint256 amount;
         address payable recipient;
+    }
+
+    struct Listing {
+        address seller;
+        uint256 price;
+        // Additional listing details
     }
 
     struct FacetAddressAndPosition {
@@ -223,8 +145,106 @@ library LibDiamond {
         uint256 facetAddressPosition;
     }
 
-    event FacetOperation(address indexed facetAddress, string operationType);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    struct DiamondStorage {
+        // Standard Diamond Storage Mappings
+        mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
+        mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
+        mapping(bytes4 => bool) supportedInterfaces;
+        address[] facetAddresses;
+        address contractOwner;
+        ConstDiamond constants; // reference to contracts\libraries\ConstDiamond.sol
+
+        // FACETS
+        address constDiamondAddress;
+            // app
+        address accessControlFacetAddress;
+        address gasOptimisationFacetAddress;
+        address multiSigFacetAddress;
+        address notificationFacetAddress;
+        address oracleFacetAddress;
+        address snapshotFacetAddress;
+        address socialNetworkFacetAddress;
+            // features
+        address bazaarFacetAddress;
+        address galleryFacetAddress;
+        address mosaicFacetAddress;
+        address profileFacetAddress; 
+        address villageFacetAddress;
+            // steelo
+        address sipFacetAddress;
+        address stakingFacetAddress;
+        address steeloFacetAddress;
+            // steez
+        address contentFacetAddress;
+        address feesFacetAddress;
+        address governanceFacetAddress;
+        address managementFacetAddress;
+        address steezFacetAddress;
+
+        // STRUCT REFERENCES
+        mapping(uint256 => SIP) sips; // From SipId to SIP
+        mapping(uint256 => Profile) profiles; // From profileId to Profile
+        mapping(uint256 => Creator) creators; // From creatorId to Creator
+        mapping(address => Investor) investors; // From investor address to Investor
+        mapping(uint256 => Contributor) contributors; // From contributorId to Contributor
+        mapping(uint256 => Steez) steez; // From creatorId to Steez (list of investors)
+        mapping(uint256 => Steez) portfolios; // From profileId to Steez (list of investments)
+        mapping(uint256 => Royalty) royalties; // From creatorId to QueuedRoyalty
+        mapping(uint256 => Content) content; // From contentId to Content Firebase Document
+        mapping(uint256 => SpaceData) spaces; // content playlist for Profile
+        mapping(uint256 => FailedPayment[]) failedPayments; // fail queue for Bazaar
+        mapping(uint256 => Listing) listings; // creatorId for Bazaar
+        mapping(uint256 => Proposal) proposals; // proposals for SIP
+        mapping(uint256 => Creator) analytics; // creatorId analytics for Profile 
+        uint256[] allCreatorIds; // Tracks all verified, launched Steez via their creatorIds
+        QueuedRoyalty[] royaltyQueue; // Array of creatorId, amount and recipients
+
+        // ACCESS CONTROL
+        mapping(bytes32 => RoleData) roles;
+        mapping(address => bool) executiveMembers;
+        mapping(address => bool) adminMembers;
+        mapping(address => bool) employeeMembers;
+        mapping(address => bool) testerMembers;
+        mapping(address => bool) stakerMembers;
+        mapping(address => bool) userMembers;
+        mapping(address => bool) visitorMembers;
+        mapping(address => bool) creatorMembers;
+        mapping(address => bool) teamMembers;
+        mapping(address => bool) collaboratorMembers;
+        mapping(address => bool) investorMembers;
+        mapping(address => bool) moderatorMembers;
+        mapping(address => bool) subscriberMembers;
+
+        // STEELOFACET VARIABLES
+        uint256 totalMinted; 
+        uint256 totalBurned;
+        uint256 lastMintEvent; 
+        uint256 lastBurnEvent;
+        uint256 mintAmount;
+        uint256 burnAmount;
+        uint256 burnRate;
+        uint256 mintRate;
+        uint256 totalTransactionCount;
+        bool tgeExecuted;
+        bool isDeflationary;
+
+        // STEEZFACET VARIABLES
+        uint256 _lastCreatorId;
+        uint256 _lastProfileId;
+        uint256 _lastSteezId;
+        string baseURI;
+
+        // Chainlink parameters
+        address oracle;
+        bytes32 jobId;
+        uint256 fee;
+        uint256 volume;
+    }
+
+// // COMPULSORY DIAMOND STORAGE FUNCTIONS // //
+
+    // KEY STORAGE FUNCTION //
+
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
 
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
@@ -233,6 +253,11 @@ library LibDiamond {
             ds.slot := position
         }
     }
+
+    // KEY OWNERSHIP FUNCTIONS //
+
+    event FacetOperation(address indexed facetAddress, string operationType);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     function setContractOwner(address _owner) internal {
         DiamondStorage storage ds = diamondStorage();
@@ -254,6 +279,8 @@ library LibDiamond {
         owner_ = ds.contractOwner;
     }
     
+    // KEY FACET FUNCTIONS //
+
     function diamondCut(
         IDiamondCut.FacetCut[] memory _diamondCut,
         address _init,
