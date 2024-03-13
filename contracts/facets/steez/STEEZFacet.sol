@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2023 Edmund Berkmann
+// Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -22,6 +22,11 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
 
     using Address for address;
     using Strings for uint256;
+
+    // Chainlink Setup
+    address oracleAddress = ds.oracleAddresses[someJobId];
+    uint256 fee = ds.constants.CHAINLINK_FEE;
+    address chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
 
     // EVENTS
     event NewSteez(address indexed creatorId, bytes indexed data);

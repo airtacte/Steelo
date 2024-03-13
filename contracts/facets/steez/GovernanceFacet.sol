@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2023 Edmund Berkmann
+// Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -21,6 +21,24 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
 
     mapping(address => address) public voteDelegations;
 
+    modifier onlyCreator() {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(ds.contractOwner.hasRole(ds.constants.CREATOR_ROLE, msg.sender), "SIPFacet: caller is not a creator.");
+        _;
+    }
+
+    modifier onlyTeam() {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(ds.contractOwner.hasRole(ds.constants.TEAM_ROLE, msg.sender), "SIPFacet: caller is not an team.");
+        _;
+    }
+    
+    modifier onlyInvestor() {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(ds.contractOwner.hasRole(ds.constants.INVESTOR_ROLE, msg.sender), "SIPFacet: caller is not an investor.");
+        _;
+    }
+    
     function initialize(address steezTokenAddress) public initializer {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         governanceFacetAddress = ds.governanceFacetAddress;
@@ -63,7 +81,7 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
         }
 
         // Voting on proposals
-        function voteOnProposal(uint256 proposalId, bool support) public {
+        function voteOnProposal(uint256 proposalId, bool support) public onlyInvestor {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             // Voting logic here
             if(support) {
@@ -88,8 +106,8 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
             return totalVotes >= (totalVotingPower * quorumPercentage / 100);
         }
 
-        function delegateVote(address delegatee) public {
-            require(delegatee != address(0), "Cannot delegate to zero address");
+        function delegateVote(address delegatee) public onlyInvestor {
+            require(delegatee != address(0), "Cannot delegate to zero address.");
             voteDelegations[msg.sender] = delegatee;
         }
 
@@ -99,13 +117,13 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
         }
 
         // Execute approved proposals
-        function executeProposal(uint256 proposalId) public {
-            require(hasMetQuorum(proposalId), "Quorum not met");
+        function executeProposal(uint256 proposalId) public onlyCreator onlyTeam {
+            require(hasMetQuorum(proposalId), "Quorum not met.");
             SIP storage sip = ds.sips[proposalId];
-            require(!sip.executed, "Proposal already executed");
+            require(!sip.executed, "Proposal already executed.");
             
             (bool success, ) = address(this).delegatecall(sip.callData); // Ensure security around delegatecall usage
-            require(success, "Proposal execution failed");
+            require(success, "Proposal execution failed.");
             
             sip.executed = true;
             emit ProposalExecuted(proposalId);

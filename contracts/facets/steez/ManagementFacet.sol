@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2023 Edmund Berkmann
+// Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -15,9 +15,6 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
     address managementFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     
-    bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-
     event BaseURIUpdated(string baseURI);
     event MaxCreatorTokensUpdated(uint256 maxTokens);
     event CreatorAddressUpdated(uint256 indexed tokenId, address indexed newCreatorAddress);
@@ -27,7 +24,6 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
     event Paused();
     event Unpaused();
 
-    mapping(uint256 => uint256[]) public creatorSplits;
     mapping (address => bool) private admins;
     mapping (address => bool) private creators;
     mapping (address => bool) private owners; // to rename to investors
@@ -41,14 +37,10 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
         __Ownable_init();
         __ReentrancyGuard_init();
         __Pausable_init();
-
-        super._setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        super._setupRole(MANAGER_ROLE, msg.sender);
-        super._setupRole(PAUSER_ROLE, msg.sender);
     }
 
         // Update the base URI for token metadata
-        function setBaseURI(string memory newBaseURI) public onlyRole(MANAGER_ROLE) {
+        function setBaseURI(string memory newBaseURI) public onlyCreator {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
             ds.baseURI = newBaseURI;
@@ -57,36 +49,39 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
 
         // Retrieve the current base URI
         function baseURI() public view returns (string memory) {
-            return LibDiamond.diamondStorage().baseURI;
+            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            return ds.baseURI;
         }
 
         // Update the creator's address for a specific token
-        function updateCreatorAddress(uint256 tokenId, address newCreatorAddress) external onlyRole(MANAGER_ROLE) {
+        function updateCreatorAddress(uint256 tokenId, address newCreatorAddress) external onlyCreator {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
             require(newCreatorAddress != address(0), "New creator address cannot be zero address");
             require(tokenId > 0, "Token ID must be positive");
 
-            STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(newCreatorAddress);
-            localSteez.creatorId = tokenId;
+            ds.steez.creatorId = tokenId;
 
             emit CreatorAddressUpdated(tokenId, newCreatorAddress);
         }
 
         // Retrieve the current creator address for a specific token
         function getCreatorAddress(uint256 tokenId) public view returns (address) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
-            for (uint i = 0; i < creators.length; i++) {
-                if (STEEZFacet(creators[i]).creatorSteez(creators[i]).creatorId == tokenId) {
-                    return creators[i];
+            // Loop through all creatorIds in the allCreatorIds array
+            for (uint i = 0; i < ds.allCreatorIds.length; i++) {
+                // If the creatorId of the Steez at the current index matches the tokenId
+                if (ds.steez[ds.allCreatorIds[i]].creatorId == tokenId) {
+                    // Return the address of the creator
+                    return ds.creators[ds.allCreatorIds[i]].profileAddress;
                 }
             }
             return address(0); // return zero address if no creator found for the given tokenId
         }
 
         // Update the revenue or royalty split for a specific token
-        function setCreatorSplit(uint256 tokenId, uint256[] memory splits) external onlyRole(MANAGER_ROLE) {
+        function setCreatorSplit(uint256 tokenId, uint256[] memory splits) external onlyCreator {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
             uint256 total = 0;
@@ -102,7 +97,7 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
         }
 
         // Set token holders and their respective shares for a specific token
-        function setTokenHolders(uint256 tokenId, address[] memory _tokenHolders, uint256[] memory shares) external onlyRole(MANAGER_ROLE) {
+        function setTokenHolders(uint256 tokenId, address[] memory _tokenHolders, uint256[] memory shares) external onlyCreator {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
             require(_tokenHolders.length == shares.length, "Arrays must have the same length");
@@ -120,20 +115,20 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
             emit TokenHoldersUpdated(tokenId, _tokenHolders, shares);
         }
 
-        // Check if the given token exists and returns an array of unique addresses that hold the token
-        function getHolders(uint256 tokenId) public view returns (address[] memory) {
-            require(_exists(tokenId), "CreatorToken: Token does not exist");
-            return LibDiamond.diamondStorage().tokenHolders[tokenId];
+        // Check if the given profile is an investor in the steez and returns an array of unique addresses that hold the steez
+        function getHolders(uint256 profileId, uint256 steezId) public view returns (address[] memory) {
+            require(_isInvestorInSteez(profileId, steezId), "Profile is not an investor in the steez");
+            return LibDiamond.diamondStorage().tokenHolders[steezId];
         }
 
         // Pause function
-        function pause() public onlyRole(PAUSER_ROLE) {
+        function pause() public onlyAdmin {
             _pause();
             emit Paused();
         }
 
         // Unpause function
-        function unpause() public onlyRole(PAUSER_ROLE) {
+        function unpause() public onlyAdmin {
             _unpause();
             emit Unpaused();
         }
@@ -141,17 +136,14 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
         // Fallback function
         receive() external payable {}
 
-        // Helper function to check if an address is already a creator
-        function _isCreator(address profileAddress) private view returns (bool) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-            STEEZFacet.Steez storage localSteez = STEEZFacet(address(this)).creatorSteez(profileAddress);
+        // Ensure the profile is an investor in the steez
+        function _isInvestorInSteez(uint256 profileId, uint256 steezId) private view returns (bool) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
-            return localSteez.creatorExists;
-        }
-        // Ensure the token exists
-        function _exists(uint256 tokenId) private view returns (bool) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-            
-            return ds.tokenExists[tokenId];
+            // Get the investor struct for the profile
+            LibDiamond.Investor storage investor = ds.investors[ds.profiles[profileId].walletAddress];
+
+            // Check if the investor owns the steez
+            return investor.portfolio[steezId].isInvestor;
         }
 }

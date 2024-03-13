@@ -26,79 +26,96 @@ Folder: .
 ------ facetAddress requires: bytes4 _functionSelector
 ------ supportsInterface requires: bytes4 _interfaceId
 
--- File: DiamondOracleFacet.sol
----- Imports:
------- import { LibDiamond } from "../libraries/LibDiamond.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
------- import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
------- import "@chainlink/contracts/src/v0.8/Chainlink.sol";
----- State Variables:
------- private steezTransactionCount
------- private steeloCurrentPrice
------- private fee
----- Functions:
------- initialize requires: address chainlinkTokenAddress
------- requestVolumeData requires: uint256 _payment, bytes32 _jobId, address _oracle
------- fulfill requires: bytes32 _requestId, uint256 _volume
------- getLatestPrice requires: address _priceFeed
------- getSteezTransactionCount requires: 
------- getSteeloCurrentPrice requires: 
-
 Folder: app
 
 -- File: AccessControlFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
------- import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
----- State Variables:
------- constant UPGRADE_ROLE
------- constant STEELO_ROLE
------- constant STEEZ_ROLE
+------ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ---- Functions:
+------ initialize requires: address _steeloFacet, address _steezFacet, address _accessControlFacetAddress
+------ _grantRole requires: ds.constants.bytes32 role, address account
+------ _revokeRole requires: bytes32 role, address account
+------ updateRoleBasedOnConditions requires: address account
+------ grantExecutiveRole requires: address account
 ------ grantAdminRole requires: address account
+------ grantEmployeeRole requires: address account
+------ grantTesterRole requires: address account
 ------ grantStakerRole requires: address account
+------ grantUserRole requires: address account
+------ grantVisitorRole requires: address account
 ------ grantCreatorRole requires: address account
+------ grantTeamRole requires: address account
+------ grantModeratorRole requires: address account
+------ grantCollaboratorRole requires: address account
 ------ grantInvestorRole requires: address account
 ------ grantSubscriberRole requires: address account
------- grantUser requires: address account
------- grantUpgradeRole requires: address account
 ------ upgradeDiamond requires: IDiamondCut.FacetCut[] memory cuts
 ------ grantRoleBasedOnTokenHolding requires: address account
 
 -- File: GasOptimisationFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ---- Functions:
+------ initialize requires: 
 ------ bulkProcessData requires: uint256[] calldata data
 
 -- File: MultiSigFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 ------ import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
 ------ import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
----- State Variables:
------- constant SAFE_PROXY_FACTORY
------- constant SAFE_MASTER_COPY
+------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+------ import "@chainlink/contracts/src/v0.8/Chainlink.sol";
 ---- Functions:
 ------ initialize requires: 
+------ createSafeWithOwners requires: address[] memory _owners, uint256 _threshold
+------ verifyIdentity requires: address user
+------ fulfillVerification requires: bytes32 _requestId, bool _isVerified
+------ initiateTransaction requires: address from, address to, uint amount
+------ signActivity requires: address safeAddress, bytes memory activityHash, bytes memory signature
+------ verifyVote requires: uint256 proposalId, bytes memory signature, bytes memory voter
+------ recoverSigner requires: bytes memory hash, bytes memory signature
 ------ exampleMultisigFunctionality requires: 
 ------ transferOwnership requires: address newOwner
 
 -- File: NotificationFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ---- Functions:
 ------ initialize requires: 
+
+-- File: OracleFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+------ import "@chainlink/contracts/src/v0.8/Chainlink.sol";
+---- Functions:
+------ initialize requires: address chainlinkTokenAddress
+------ requestVolumeData requires: uint256 _payment, bytes32 _jobId, address _oracle
+------ fulfill requires: bytes32 _requestId, uint256 _volume
+------ getLatestPrice requires: address _priceFeed, uint256 creatorId
+------ getSteezTransactionCount requires: 
+------ getSteeloCurrentPrice requires: 
 
 -- File: SnapshotFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { STEEZFacet } from "../steez/STEEZFacet.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ---- State Variables:
 ------ private _snapshotCounter
 ------ private snapshotCounter
@@ -115,9 +132,11 @@ Folder: app
 -- File: SocialNetworkFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 ------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 ---- Functions:
+------ initialize requires: 
 ------ ensureOrCreateUserProfile requires: 
 ------ linkSafeToProfile requires: address safeAddress
 ------ postContent requires: uint256 profileId, string calldata contentUri
@@ -129,6 +148,7 @@ Folder: app
 -- File: UserExperienceFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ---- Functions:
 ------ initialize requires: 
 
@@ -137,19 +157,18 @@ Folder: features
 -- File: BazaarFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
------- import { IBazaarFacet } from "../../interfaces/IFeaturesFacet.sol";
 ------ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 ------ import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 ---- Functions:
 ------ initialize requires: 
------- listCreatorToken requires: uint256 tokenId, uint256 initialPrice, uint256 supply, bool isAuction
------- marketListing requires: uint256 tokenId
------- bidCreatorToken requires: uint256 tokenId, uint256 amount
------- buyCreatorToken requires: uint256 tokenId, uint256 amount
------- _addLiquidityForToken requires: uint256 tokenId, int24 tickLower, int24 tickUpper, int128 liquidityDelta
------- _addLiquidity requires: address uniswapAddress, address tokenAddress, uint256 additionalgbptAmount, uint256 additionalsteezAmount
+------ listCreatorToken requires: uint256 creatorId, uint256 initialPrice, uint256 supply, bool isAuction
+------ marketListing requires: uint256 creatorId
+------ bidCreatorToken requires: uint256 creatorId, uint256 amount
+------ buyCreatorToken requires: uint256 creatorId, uint256 amount
+------ _addLiquidityForToken requires: uint256 creatorId, int24 tickLower, int24 tickUpper, int128 liquidityDelta
+------ _addLiquidity requires: address uniswapAddress, address steezId, uint256 additionalgbptAmount, uint256 additionalsteezAmount
 ------ getSuggestions requires: 
 ------ search requires: string memory query
 ------ viewAnalytics requires: 
@@ -158,9 +177,9 @@ Folder: features
 -- File: GalleryFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 ------ import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
------- import { IGalleryFacet } from "../../interfaces/IFeaturesFacet.sol";
 ------ import "@openzeppelin/contracts/utils/Strings.sol";
 ---- Functions:
 ------ initialize requires: 
@@ -173,14 +192,13 @@ Folder: features
 -- File: MosaicFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ISteezFacet } from "../../interfaces/ISteezFacet.sol";
------- import { IMosaicFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 ------ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 ------ import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ---- Functions:
------- initialize requires: 
+------ initialize requires: address _lens, address _steez
 ------ collectContent requires: uint256 contentId
 ------ follow requires: address userToFollow
 ------ like requires: uint256 contentId
@@ -193,9 +211,8 @@ Folder: features
 -- File: ProfileFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { IProfileFacet } from "../../interfaces/IFeaturesFacet.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
------- import { STEEZFacet } from "../steez/STEEZFacet.sol";
 ------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 ------ import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 ------ import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
@@ -206,28 +223,28 @@ Folder: features
 ---- Functions:
 ------ initialize requires: 
 ------ initialize requires: address _lensAddress, address _safeAddress
------- setProfile requires: address user, string memory username, string memory bio, string memory avatarURI
+------ setProfile requires: address profileId, string memory profileIdname, string memory bio, string memory avatarURI, string username
 ------ verifyCreator requires: uint256 creatorId
 ------ usernameTaken requires: string memory username
------- getProfile requires: address user
+------ getProfile requires: address profileId
 ------ postContent requires: uint256 contentId, bool isPublic
 ------ addInvestor requires: address investor
 ------ updatePortfolio requires: uint256 tokenId, uint256 amount
 ------ createSpace requires: uint256[] calldata contentIds
------- viewProfile requires: address user
+------ viewProfile requires: address profileId
 ------ viewContent requires: uint256 contentId
 ------ viewInvestors requires: address creator
------- viewPortfolio requires: address user
+------ viewPortfolio requires: address profileId
 ------ viewSpace requires: uint256 spaceId
 ------ _addInvestor requires: address creator, address investor
------- _updatePortfolio requires: address user, uint256 tokenId, uint256 amount
+------ _updatePortfolio requires: address profileId, uint256 tokenId, uint256 amount
 ------ _createSpace requires: address creator, uint256[] calldata contentIds
 
 -- File: VillageFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
------- import { IVillageFacet } from "../../interfaces/IFeaturesFacet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 ------ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -246,9 +263,51 @@ Folder: features
 
 Folder: steelo
 
+-- File: SIPFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "hardhat/console.sol";
+---- Functions:
+------ initialize requires: 
+------ createSIP requires: string memory _description, string _type, uint256 _duration
+------ voteOnSIP requires: uint256 _sipId, bool _support
+------ checkForExecution requires: uint256 _sipId
+------ executeSIP requires: uint256 _sipId
+------ viewSIP requires: uint256 _sipId
+------ listSIPs requires: 
+------ getTotalSIPs requires: 
+------ getVoteCount requires: uint256 _sipId
+------ isSIPActive requires: uint256 _sipId
+------ isSIPExecuted requires: uint256 _sipId
+------ getTreasuryBalance requires: address _token
+------ depositToTreasury requires: address _token, uint256 _amount
+------ withdrawFromTreasury requires: address _token, uint256 _amount
+
+-- File: StakingFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+------ import { STEELOFacet } from "../steelo/STEELOFacet.sol";
+------ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+---- Functions:
+------ initialize requires: address _steeloFacet
+------ stake requires: uint256 _amount
+------ unstake requires: uint256 _amount
+------ calculateReward requires: address stakeholder
+------ distributeRewards requires: 
+------ getTotalStakingPool requires: 
+------ stakeholderStatus requires: address _user
+------ stakeAmount requires: address _user
+
 -- File: STEELOFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { STEEZFacet } from "../steez/STEEZFacet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -257,24 +316,10 @@ Folder: steelo
 ------ import "@openzeppelin/contracts/utils/Strings.sol";
 ------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 ------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
----- State Variables:
------- public steezTransactionCount
------- public steeloCurrentPrice
------- public totalMinted
------- public totalBurned
------- public lastMintEvent
------- public lastBurnEvent
------- public mintAmount
------- public burnAmount
------- private burnRate
------- private mintRate
------- public tgeExecuted
------- public isDeflationary
------- public creatorId
 ---- Functions:
 ------ initialize requires: address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken
 ------ steeloTGE requires: uint256 _steeloCurrentPrice
------- calculateTotalTransactions requires: 
+------ getTotalTransactionCount requires: 
 ------ _beforeTokenTransfer requires: address from, address to, uint256 amount
 ------ tokenTransfer requires: address recipient, uint256 amount
 ------ steeloMint requires: 
@@ -290,144 +335,76 @@ Folder: steelo
 ------ fulfill requires: bytes32 _requestId
 ------ stringToBytes32 requires: string memory source
 
--- File: SteeloGovernanceFacet.sol
----- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { IAppFacet } from  "../../interfaces/IAppFacet.sol";
------- import { ISteeloGovernanceFacet } from "../../interfaces/ISteeloFacet.sol";
------- import { SteeloStakingFacet } from "./SteeloStakingFacet.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
----- State Variables:
------- public sipCount
----- Functions:
------- initialize requires: 
------- createSIP requires: SIPType _sipType, string memory _description
------- voteOnSIP requires: uint256 _sipId, bool _voteFor
------- checkForExecution requires: uint256 _sipId
------- executeSIP requires: uint256 _sipId
-
--- File: SteeloImprovementProposalFacet.sol
----- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
------- import "hardhat/console.sol";
----- Functions:
------- initialize requires: 
------- createSIP requires: string memory _description, ProposalType _type, uint256 _duration
------- voteOnSIP requires: uint256 _sipId, bool _support
------- executeSIP requires: uint256 _sipId
-
--- File: SteeloStakingFacet.sol
----- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ISteeloFacet } from "../../interfaces/ISteeloFacet.sol";
------- import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
----- Functions:
------- initialize requires: address _steeloFacet
------- stake requires: uint256 _amount
------- unstake requires: uint256 _amount
------- calculateReward requires: address stakeholder
------- distributeRewards requires: 
------- getTotalStakingPool requires: 
------- stakeholderStatus requires: address _user
------- stakeAmount requires: address _user
-
 Folder: steez
 
--- File: STEEZFacet.sol
+-- File: ContentFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
------- import { BazaarFacet } from "../features/BazaarFacet.sol";
------- import { AccessControlFacet } from "../app/AccessControlFacet.sol";
------- import { SteezFeesFacet } from "./SteezFeesFacet.sol";
------- import { SnapshotFacet } from "../app/SnapshotFacet.sol";
------- import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
------- import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
------- import "@openzeppelin/contracts/utils/Address.sol";
------- import "@openzeppelin/contracts/utils/Strings.sol";
----- State Variables:
------- constant ROLE_OPERATOR
------- constant ROLE_OWNER
------- private _lastCreatorId
------- private _lastProfileId
------- private _lastSteezId
------- public baseURI
------- uint256 creatorId
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ---- Functions:
------- initialize requires: string memory _baseURI
------- createSteez requires: address to, bytes memory data
------- preOrder requires: uint256 creatorId, uint256 amount
------- launch requires: uint256 creatorId, uint256 amount
------- anniversary requires: uint256 creatorId, uint256 amount
------- transferSteez requires: uint256 creatorId, uint256 steezId, uint256 amount, address from, address to
------- safeBatchTransfer requires: address[] memory to, uint256[] memory creatorIds, uint256[] memory amounts, bytes memory data
------- _mint requires: address to, uint256 creatorId, uint256 steezId, uint256 amount, bytes memory data
------- _transfer requires: address from, address to, uint256 steezId
------- _removeInvestor requires: uint256 creatorId, address currentInvestor
------- _addInvestor requires: uint256 creatorId, address newInvestor, uint256 profileId, uint256 balance
------- _findInvestorIndex requires: uint256 creatorId, address investorAddress
+------ initialize requires: 
+------ createContentItem requires: string calldata _title, string calldata _description, string calldata _contentURI
 
--- File: SteezFeesFacet.sol
+-- File: FeesFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { STEEZFacet } from "./STEEZFacet.sol";
 ------ import { STEELOFacet } from "../steelo/STEELOFacet.sol";
 ------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
------- import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
------- import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ---- State Variables:
------- payable recipient
+------ payable investorAddress
 ---- Functions:
 ------ initialize requires: address owner
------- updateRoyaltyInfo requires: uint256 creatorId, uint256 amount
------- setCommunitySplit requires: uint256 creatorId, uint256[] memory splits
------- transferSteez requires: uint256 creatorId, uint256 creatorId, uint256 amount, address from, address to
 ------ payRoyalties requires: uint256 creatorId, uint256 amount, address from, address to, bytes memory data
+------ calculateCreatorFee requires: uint256 creatorId, uint256 amount
+------ calculateSteeloFee requires: uint256 creatorId, uint256 amount
+------ calculateCommunityFee requires: uint256 creatorId, uint256 amount
+------ distributeRoyalties requires: uint256 creatorId, uint256 amount, address from, address to
+------ distributeCommunityFee requires: uint256 creatorId, uint256 communityFee
+------ queueFailedRoyaltyPayment requires: uint256 creatorId, uint256 amount, address payable recipient
+------ refundExcessPayment requires: uint256 paymentAmount
 ------ viewRoyalties requires: address user, uint256 creatorId
 ------ queueRoyaltyPayment requires: uint256 _creatorId, uint256 _amount, address payable _recipient
 ------ processRoyaltyQueue requires: 
 ------ isValidParticipant requires: address participant
 
--- File: SteezGovernanceFacet.sol
+-- File: GovernanceFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { STEEZFacet } from "./STEEZFacet.sol";
 ------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
------- import { ISteeloGovernanceFacet } from "../../interfaces/ISteeloFacet.sol";
+------ import { BazaarFacet } from "../features/BazaarFacet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 ---- Functions:
 ------ initialize requires: address steezTokenAddress
------- proposeBenefitChange requires: string memory benefitDescription, bytes memory callData
 ------ voteOnProposal requires: uint256 proposalId, bool support
+------ checkProposalQuorum requires: uint256 proposalId
+------ hasMetQuorum requires: uint256 proposalId
+------ delegateVote requires: address delegatee
+------ getVoterFor requires: address voter
 ------ executeProposal requires: uint256 proposalId
------- _isSteezTokenHolder requires: address account
+------ getProposalHistory requires: uint256 proposalId
 ------ propose requires: bytes memory callData, string memory benefitDescription
+------ cancelProposal requires: uint256 proposalId
+------ amendProposal requires: uint256 proposalId, string memory newDescription, bytes memory newCallData
 ------ castVote requires: uint256 proposalId, uint8 vote
 ------ execute requires: uint256 proposalId
 
--- File: SteezManagementFacet.sol
+-- File: ManagementFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 ------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 ------ import { STEEZFacet } from "./STEEZFacet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
----- State Variables:
------- constant MANAGER_ROLE
------- constant PAUSER_ROLE
 ---- Functions:
 ------ initialize requires: address owner
 ------ setBaseURI requires: string memory newBaseURI
@@ -436,9 +413,36 @@ Folder: steez
 ------ getCreatorAddress requires: uint256 tokenId
 ------ setCreatorSplit requires: uint256 tokenId, uint256[] memory splits
 ------ setTokenHolders requires: uint256 tokenId, address[] memory _tokenHolders, uint256[] memory shares
------- getHolders requires: uint256 tokenId
+------ getHolders requires: uint256 profileId, uint256 steezId
 ------ pause requires: 
 ------ unpause requires: 
 ------ receive requires: 
------- _isCreator requires: address profileAddress
------- _exists requires: uint256 tokenId
+------ _isInvestorInSteez requires: uint256 profileId, uint256 steezId
+
+-- File: STEEZFacet.sol
+---- Imports:
+------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
+------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+------ import { BazaarFacet } from "../features/BazaarFacet.sol";
+------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
+------ import { FeesFacet } from "./FeesFacet.sol";
+------ import { SnapshotFacet } from "../app/SnapshotFacet.sol";
+------ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+------ import "@openzeppelin/contracts/utils/Address.sol";
+------ import "@openzeppelin/contracts/utils/Strings.sol";
+---- Functions:
+------ initialize requires: string memory _baseURI
+------ createSteez requires: bytes memory data
+------ preOrder requires: uint256 creatorId, uint256 amount
+------ launch requires: uint256 creatorId, uint256 amount
+------ anniversary requires: uint256 creatorId, uint256 amount
+------ transferSteez requires: uint256 creatorId, uint256 steezId, uint256 amount, address from, address to
+------ safeBatchTransfer requires: address[] memory to, uint256[] memory creatorIds, uint256[] memory amounts, bytes memory data
+------ _mint requires: address to, uint256 creatorId, uint256 amount, bytes memory data
+------ _transfer requires: address from, address to, uint256 steezId
+------ _removeInvestor requires: uint256 creatorId, address currentInvestor
+------ _addInvestor requires: uint256 creatorId, address investorAddress, uint256 amount
+------ _findInvestorIndex requires: uint256 creatorId, address investorAddress

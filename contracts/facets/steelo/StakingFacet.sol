@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2023 Edmund Berkmann
+// Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -12,8 +12,13 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     address stakingFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
-
     using SafeERC20 for IERC20;
+
+    modifier onlyStaker() {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(ds.contractOwner.hasRole(ds.constants.STAKER_ROLE, msg.sender), "SIPFacet: caller is not a staker");
+        _;
+    }
 
     // Events
     event Staked(address indexed user, uint256 amount);
@@ -21,7 +26,6 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     event RewardPaid(address indexed user, uint256 rewardAmount);
 
     // Storage
-    mapping(address => uint256) public stakes;
     mapping(address => bool) public isStakeholder;
     mapping(address => uint256) public stakeDuration;
     mapping(address => uint256) public totalRewardPool;
@@ -50,7 +54,7 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         emit Staked(msg.sender, _amount);
     }
 
-    function unstake(uint256 _amount) external nonReentrant {
+    function unstake(uint256 _amount) external onlyStaker nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         require(_amount > 0, "Amount must be greater than 0");
@@ -72,11 +76,11 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
     
     // Placeholder for actual reward calculation logic
-    function calculateReward(address stakeholder) internal view returns (uint256) {
+    function calculateReward(address stakeholder) internal view onlyStaker returns (uint256) {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         totalStakingPool = getTotalStakingPool(); // This would sum all staked amounts
-        uint256 stakeholderAmount = stakes[stakeholder];
+        uint256 stakeholderAmount = ds.stakes[stakeholder];
         stakeDuration = stakeDuration[stakeholder];
 
         if(totalStakingPool == 0) return 0; // Prevent division by zero
@@ -101,7 +105,7 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         return reward;
     }
     
-    function distributeRewards() external nonReentrant onlyOwner {
+    function distributeRewards() external onlyStaker nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         
         uint256 totalStaked = getTotalStakingPool();
@@ -123,17 +127,20 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     // Helper function to get total staked amount
     function getTotalStakingPool() internal view returns (uint256 totalStaked) {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         for (uint i = 0; i < stakeholders.length; i++) {
-            totalStaked += stakes[stakeholders[i]];
+            totalStaked += ds.stakes[stakeholders[i]];
         }
         return totalStaked;
     }
 
-    function stakeholderStatus(address _user) public view returns (bool) {
-        return isStakeholder[_user];
+    function stakeholderStatus(address _user) public view onlyStaker returns (bool) {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        return ds.isStakeholder[_user];
     }
 
-    function stakeAmount(address _user) external view returns (uint256) {
-        return stakes[_user];
+    function stakeAmount(address _user) external view onlyStaker returns (uint256) {
+        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        return ds.stakes[_user];
     }
 }

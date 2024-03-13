@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2023 Edmund Berkmann
+// Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -17,6 +17,17 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     address steeloFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
      
+    // Chainlink Setup
+    address oracleAddress = ds.oracleAddresses[someJobId];
+    uint256 fee = ds.constants.CHAINLINK_FEE;
+    address chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
+
+    modifier onlyAdmin() {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(ds.contractOwner.hasRole(ds.constants.ADMIN_ROLE, msg.sender), "SIPFacet: caller is not an admin");
+        _;
+    }
+
     // Events
     event TokensMinted(address indexed to, uint256 amount);
     event TokensBurned(uint256 amount);
@@ -46,7 +57,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     }
 
     // Function to mint tokens dynamically based on $Steez transactions and current price
-    function steeloTGE(uint256 _steeloCurrentPrice) external onlyOwner nonReentrant {
+    function steeloTGE(uint256 _steeloCurrentPrice) external onlyAdmin nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         require(!ds.tgeExecuted, "steeloTGE can only be executed once");
@@ -121,7 +132,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
         _beforeTokenTransfer(msg.sender, ds.constants.steeloAddress, feeAmount);
     }
 
-    function steeloMint() external onlyOwner nonReentrant {
+    function steeloMint() external onlyAdmin nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         require(totalSupply() > ds.constants.TGE_AMOUNT, "steeloMint can only be called after the TGE");
@@ -190,7 +201,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     }
     
     // Function to adjust the mint rate, can be called through governance decisions (SIPs)
-    function adjustMintRate(uint256 _newMintRate) external onlyOwner nonReentrant {
+    function adjustMintRate(uint256 _newMintRate) external onlyAdmin nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         require(_newMintRate >= ds.constants.MIN_MINT_RATE && _newMintRate <= ds.constants.MAX_MINT_RATE, "Invalid mint rate");
@@ -200,7 +211,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     }
 
     // Function to adjust the burn rate, can be called through governance decisions (SIPs)
-    function adjustBurnRate(uint256 _newBurnRate) external onlyOwner nonReentrant {
+    function adjustBurnRate(uint256 _newBurnRate) external onlyAdmin nonReentrant {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
 
         require(_newBurnRate >= ds.constants.MIN_BURN_RATE && _newBurnRate <= ds.constants.MAX_BURN_RATE, "Invalid burn rate");

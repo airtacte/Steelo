@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2023 Edmund Berkmann
+// Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
@@ -7,6 +7,15 @@ import { ConstDiamond } from "./ConstDiamond.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
+
+/*
+If you have a mapping of structs and you want to get a specific struct instance, 
+    use LibDiamond.[StructName] storage [variableName] = ds.[mappingName][key];.
+If you want to access a property of a struct that's not in a mapping, 
+    use ds.[structName].propertyName.
+If you want to get a struct that's not in a mapping, 
+    use LibDiamond.[StructName] storage [variableName] = ds.[structName];.
+*/
 
 error InitializationFunctionReverted(address _initializationContractAddress, bytes _calldata);
 
@@ -37,35 +46,7 @@ library LibDiamond {
         bool executed;
         mapping(address => bool) votes;
     }
-    
-    struct Profile {
-        uint256 profileId;
-        string username;
-        string walletAddress;
-        string verificationKey;
-        string profileBio;
-        string avatarURI;
-        string profileLocation;
-        string profilePrfoession;
-        mapping(uint256 => Content) collection;
-        mapping(uint256 => Profile) followers;
-    }
 
-    struct Investor {
-        uint256 profileId; // ID of investor profiles
-        mapping(uint256 => Steez) portfolio; // range and quantity of Steez owned investors
-    }
-
-    struct Royalty {
-        uint256 totalRoyalties; // in Steelo, equiv. to 10% of the price of Steez transacted on Bazaar
-        uint256 unclaimedRoyalties; // Total unclaimed royalties for this Steez
-        uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
-        uint256 investorRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
-        uint256 steeloRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
-        mapping(Profile => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
-        mapping(Profile => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
-    }
-    
     struct Steez {
         uint256 creatorId; // one creatorId holds 500+ steezIds
         uint256 steezId; // mapping(creatorId => mapping(steezId => investors)
@@ -81,6 +62,35 @@ library LibDiamond {
         bool auctionConcluded; // 24hr auction after 1 week of pre-order
         Investor[] investors; // investors array updated to show "current holders"
         Royalty royalties; // Integrated Royalty struct for managing royalties
+    }
+
+    struct Royalty {
+        uint256 totalRoyalties; // in Steelo, equiv. to 10% of the price of Steez transacted on Bazaar
+        uint256 unclaimedRoyalties; // Total unclaimed royalties for this Steez
+        uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
+        uint256 investorRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
+        uint256 steeloRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
+        mapping(Profile => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
+        mapping(Profile => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
+    }
+    
+    struct Profile {
+        uint256 profileId;
+        bool verified;
+        string username;
+        string walletAddress;
+        string profileBio;
+        string avatarURI;
+        string profileLocation;
+        string profilePrfoession;
+        mapping(uint256 => Content) collection;
+        mapping(uint256 => Profile) followers;
+    }
+
+    struct Investor {
+        uint256 profileId; // ID of investor profiles
+        bool isInvestor;
+        mapping(uint256 => Steez) portfolio; // range and quantity of Steez owned investors
     }
 
     struct Creator {
@@ -216,6 +226,7 @@ library LibDiamond {
         mapping(address => bool) subscriberMembers;
 
         // STEELOFACET VARIABLES
+        uint256 steeloCurrentPrice;
         uint256 totalMinted; 
         uint256 totalBurned;
         uint256 lastMintEvent; 
@@ -224,9 +235,15 @@ library LibDiamond {
         uint256 burnAmount;
         uint256 burnRate;
         uint256 mintRate;
-        uint256 totalTransactionCount;
+        uint256 totalTransactionCount; // sum of all steez.transactionCount
         bool tgeExecuted;
         bool isDeflationary;
+        mapping(address => uint256) stakes;
+        mapping(address => bool) isStakeholder;
+        mapping(address => uint256) stakeDuration;
+        mapping(address => uint256) totalRewardPool;
+        mapping(address => uint256) totalStakingPool;
+        mapping(uint256 => bool) stakeholders;
 
         // STEEZFACET VARIABLES
         uint256 _lastCreatorId;
@@ -235,10 +252,11 @@ library LibDiamond {
         string baseURI;
 
         // Chainlink parameters
-        address oracle;
-        bytes32 jobId;
-        uint256 fee;
-        uint256 volume;
+        mapping(bytes32 => address) oracleAddresses; // JobID to Oracle Address mapping
+        mapping(bytes32 => bytes32) jobIds; // Functionality to JobID mapping
+    
+        // Safe
+        mapping(bytes32 => address) verificationRequests
     }
 
 // // COMPULSORY DIAMOND STORAGE FUNCTIONS // //

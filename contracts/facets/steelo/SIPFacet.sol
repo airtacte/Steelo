@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2023 Edmund Berkmann
+// Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
@@ -15,6 +15,18 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     event SIPCreated(uint256 indexed id, string description, string proposalType, address indexed proposer);
     event SIPVoted(uint256 indexed id, bool support, address indexed voter, uint256 weight);
     event SIPExecuted(uint256 indexed id, bool success);
+
+    modifier onlyStaker() {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(ds.contractOwner.hasRole(ds.constants.STAKER_ROLE, msg.sender), "SIPFacet: caller is not a staker");
+        _;
+    }
+
+    modifier onlyAdmin() {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        require(ds.contractOwner.hasRole(ds.constants.ADMIN_ROLE, msg.sender), "SIPFacet: caller is not an admin");
+        _;
+    }
 
     function initialize() public initializer {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
@@ -136,23 +148,17 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         }
 
         // Function to deposit funds into the treasury
-        function depositToTreasury(address _token, uint256 _amount) external onlyOwner nonReentrant {
+        function depositToTreasury(address _token, uint256 _amount) external onlyAdmin nonReentrant {
             IERC20(_token).transferFrom(msg.sender, address(this), _amount);
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             ds.treasury[_token] += _amount;
         }
 
         // Function to withdraw funds from the treasury
-        function withdrawFromTreasury(address _token, uint256 _amount) external onlyOwner nonReentrant {
+        function withdrawFromTreasury(address _token, uint256 _amount) external onlyAdmin nonReentrant {
             LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
             require(ds.treasury[_token] >= _amount, "Insufficient funds in treasury");
             ds.treasury[_token] -= _amount;
             IERC20(_token).transfer(msg.sender, _amount);
-        }
-
-        // Function to check the balance of the treasury
-        function getTreasuryBalance(address _token) public view returns (uint256) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
-            return ds.treasury[_token];
         }
 }
