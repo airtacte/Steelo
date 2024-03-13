@@ -8,26 +8,33 @@ import { STEEZFacet } from "./STEEZFacet.sol";
 import { STEELOFacet } from "../steelo/STEELOFacet.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { SnapshotFacet } from "../app/SnapshotFacet.sol"; // To setup 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializable {
     address feesFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
+
     event TransferProcessed(uint256 indexed steezId, address indexed from, address indexed to, uint256 amount, uint256 royaltyAmount);
     event ShareholderUpdated(uint256 indexed steezId, address indexed shareholder, uint256 balance);
     event RoyaltiesDistributed(address indexed from, address indexed to, uint256 indexed creatorId, uint256 amount, uint256 creatorFee, uint256 steeloFee, uint256 communityFee, bytes data);
     event FailedPaymentQueued(uint256 indexed creatorId, address indexed recipient, uint256 amount);
 
-    function initialize(address owner) public initializer {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
+    function initialize(address owner) public onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         feesFacetAddress = ds.feesFacetAddress;
         
-        __Ownable_init();
         __ReentrancyGuard_init();
         transferOwnership(owner);
-    }    using LibDiamond for LibDiamond.DiamondStorage;
+    }
 
         // Called by STEEZFacet.payRoyalties from function transferSteez
         function payRoyalties(uint256 creatorId, uint256 amount, address from, address to, bytes memory data) external payable nonReentrant {
@@ -159,7 +166,7 @@ contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         }
 
         function viewRoyalties(address user, uint256 creatorId) public view returns (uint256 userShare, uint256 userRoyalty) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             if (ds.steez[creatorId].totalSupply == 0 || ds.steez[creatorId].balance == 0) {
                 return (0, 0);

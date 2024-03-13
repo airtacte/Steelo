@@ -4,15 +4,23 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "./AccessControlFacet.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract GasOptimisationFacet {
+contract GasOptimisationFacet is Initializable {
     address gasOptimisationFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    // Example: Bulk processing to minimise transaction costs
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
-    function initialize() external {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
+    function initialize() external onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         gasOptimisationFacetAddress = ds.gasOptimisationFacetAddress;
     }
 

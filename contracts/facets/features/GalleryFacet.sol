@@ -4,19 +4,27 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract GalleryFacet {
+contract GalleryFacet is Initializable {
     address galleryFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
-    
     using Strings for uint256;
 
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
+
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
     // Initialize GalleryFacet setting the contract owner
-    function initialize() external {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize() external onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         galleryFacetAddress = ds.galleryFacetAddress;
     }
 

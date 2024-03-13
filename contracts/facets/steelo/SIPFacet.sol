@@ -4,40 +4,46 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "hardhat/console.sol";
 
-contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializable {
     address sipFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     event SIPCreated(uint256 indexed id, string description, string proposalType, address indexed proposer);
     event SIPVoted(uint256 indexed id, bool support, address indexed voter, uint256 weight);
     event SIPExecuted(uint256 indexed id, bool success);
 
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
     modifier onlyStaker() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(ds.contractOwner.hasRole(ds.constants.STAKER_ROLE, msg.sender), "SIPFacet: caller is not a staker");
+        require(accessControl.hasRole(accessControl.STAKER_ROLE(), msg.sender), "SIPFacet: caller is not a staker");
         _;
     }
 
     modifier onlyAdmin() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(ds.contractOwner.hasRole(ds.constants.ADMIN_ROLE, msg.sender), "SIPFacet: caller is not an admin");
+        require(accessControl.hasRole(accessControl.ADMIN_ROLE(), msg.sender), "SIPFacet: caller is not an admin");
         _;
     }
 
-    function initialize() public initializer {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize() public onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         sipFacetAddress = ds.sipFacetAddress;
 
-        __Ownable_init();
         __ReentrancyGuard_init();
     }
 
     function createSIP(string memory _description, string _type, uint256 _duration) external onlyStaker nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         uint256 startTime = block.timestamp;
         uint256 endTime = startTime + _duration;
@@ -59,7 +65,7 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     function voteOnSIP(uint256 _sipId, bool _support) external onlyStaker nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         require(_sipId < ds.lastSipId, "SIP does not exist");
         require(!sip.votes[msg.sender], "Already voted");
         require(block.timestamp >= ds.sips.startTime && block.timestamp <= ds.sips.endTime, "Voting is not active");
@@ -79,7 +85,7 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     function checkForExecution(uint256 _sipId) internal {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         uint256 totalVotes = ds.sips.voteCountFor + ds.sips.voteCountAgainst;
         require(totalVotes >= 4, "Insufficient votes");
@@ -91,7 +97,7 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
         
     function executeSIP(uint256 _sipId) external onlyAdmin nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         require(_sipId < ds.sips.length, "SIP does not exist");
         require(ds.sips[_sipId].endTime < block.timestamp, "SIP voting period has not ended");
         require(!ds.sips.executed, "SIP already executed");
@@ -107,56 +113,56 @@ contract SIPFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
         // Function to view SIP details
         function viewSIP(uint256 _sipId) public view returns (SIP memory) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(_sipId < ds.sips.length, "SIP does not exist");
             return ds.sips[_sipId];
         }
 
         // Function to list all SIPs
         function listSIPs() public view returns (SIP[] memory) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             return ds.sips;
         }
 
         function getTotalSIPs() public view returns (uint256) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             return ds.sips.length; // ideally as "success/total sips"
         }
 
         function getVoteCount(uint256 _sipId) public view returns (uint256) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(_sipId < ds.sips.length, "SIP does not exist");
             return ds.sips[_sipId].voteCountFor + ds.sips[_sipId].voteCountAgainst;
         }
 
         function isSIPActive(uint256 _sipId) public view returns (bool) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(_sipId < ds.sips.length, "SIP does not exist");
             return block.timestamp >= ds.sips[_sipId].startTime && block.timestamp <= ds.sips[_sipId].endTime;
         }
 
         function isSIPExecuted(uint256 _sipId) public view returns (bool) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(_sipId < ds.sips.length, "SIP does not exist");
             return ds.sips[_sipId].executed;
         }
 
         // Function to check the balance of the treasury
         function getTreasuryBalance(address _token) public view returns (uint256) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             return ds.treasury[_token];
         }
 
         // Function to deposit funds into the treasury
         function depositToTreasury(address _token, uint256 _amount) external onlyAdmin nonReentrant {
             IERC20(_token).transferFrom(msg.sender, address(this), _amount);
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             ds.treasury[_token] += _amount;
         }
 
         // Function to withdraw funds from the treasury
         function withdrawFromTreasury(address _token, uint256 _amount) external onlyAdmin nonReentrant {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(ds.treasury[_token] >= _amount, "Insufficient funds in treasury");
             ds.treasury[_token] -= _amount;
             IERC20(_token).transfer(msg.sender, _amount);

@@ -5,26 +5,34 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { STEEZFacet } from "../steez/STEEZFacet.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuard, ChainlinkClient {
+contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuard, ChainlinkClient, Initializable {
     address steeloFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
      
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
+
     // Chainlink Setup
-    address oracleAddress = ds.oracleAddresses[someJobId];
-    uint256 fee = ds.constants.CHAINLINK_FEE;
-    address chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
+    address oracleAddress;
+    uint256 fee;
+    address chainlinkTokenAddress;
+
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
 
     modifier onlyAdmin() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(ds.contractOwner.hasRole(ds.constants.ADMIN_ROLE, msg.sender), "SIPFacet: caller is not an admin");
+        require(accessControl.hasRole(accessControl.ADMIN_ROLE(), msg.sender), "SIPFacet: caller is not an admin");
         _;
     }
 
@@ -36,10 +44,14 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     event steeloTGEExecuted(uint256 tgeAmount);
     event DeflationaryTokenomicsActivated();
 
-    function initialize(address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken) public initializer {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize(address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken) public onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         steeloFacetAddress = ds.steeloFacetAddress;
         
+        oracleAddress = ds.oracleAddresses[someJobId];
+        fee = ds.constants.CHAINLINK_FEE;
+        chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
+
         require(_treasury != address(0), "Treasury cannot be the zero address");
         __ERC20_init("Steelo", "STLO");
 
@@ -57,8 +69,8 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     }
 
     // Function to mint tokens dynamically based on $Steez transactions and current price
-    function steeloTGE(uint256 _steeloCurrentPrice) external onlyAdmin nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function steeloTGE(uint256 _steeloCurrentPrice) external onlyExecutive nonReentrant {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         require(!ds.tgeExecuted, "steeloTGE can only be executed once");
         require(ds.totalTransactionCount == 0, "TransactionCount must be equal to 0");
@@ -103,7 +115,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     // Override the _transfer function to integrate burning mechanism
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal {
         super._beforeTokenTransfer(from, to, amount);
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         // Calculate the burn amount based on the transaction value
         ds.burnAmount = calculateBurnAmount(amount);
@@ -120,7 +132,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Function to transfer tokens from one user to another
     function tokenTransfer(address recipient, uint256 amount) external nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         require(recipient != address(0), "Cannot transfer to the zero address");
         require(amount <= balanceOf(msg.sender), "Not enough tokens");
@@ -133,7 +145,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     }
 
     function steeloMint() external onlyAdmin nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         require(totalSupply() > ds.constants.TGE_AMOUNT, "steeloMint can only be called after the TGE");
         require(ds.totalTransactionCount > 0, "ds.totalTransactionCount must be greater than 0");
@@ -162,7 +174,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Calculates the amount to mint based on transaction count and current price
     function calculateMintAmount() public view returns (uint256) {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         uint256 adjustmentFactor = 1 ether;
         if (ds.steeloCurrentPrice >= ds.constants.pMax) {
@@ -178,7 +190,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Calculate the Supply Cap to use in the minting function
     function calculateSupplyCap() public view returns (uint256) {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         uint256 currentSupply = totalSupply();
         uint256 supplyCap;
@@ -192,7 +204,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Function to calculate the amount to burn based on the burn rate
     function calculateBurnAmount(uint256 transactionValue) private view returns (uint256) {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         if(ds.totalTransactionCount >= 0) {          
             ds.burnAmount = transactionValue * ds.constants.FEE_RATE * ds.burnRate / 1e4 / 1e4; // in basis of 1/100 of a percent
@@ -202,7 +214,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     
     // Function to adjust the mint rate, can be called through governance decisions (SIPs)
     function adjustMintRate(uint256 _newMintRate) external onlyAdmin nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         require(_newMintRate >= ds.constants.MIN_MINT_RATE && _newMintRate <= ds.constants.MAX_MINT_RATE, "Invalid mint rate");
         ds.mintRate = _newMintRate;
@@ -212,7 +224,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Function to adjust the burn rate, can be called through governance decisions (SIPs)
     function adjustBurnRate(uint256 _newBurnRate) external onlyAdmin nonReentrant {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         require(_newBurnRate >= ds.constants.MIN_BURN_RATE && _newBurnRate <= ds.constants.MAX_BURN_RATE, "Invalid burn rate");
         ds.burnRate = _newBurnRate;
@@ -222,7 +234,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
     
     // Burn tokens to implement deflationary mechanism
     function burnTokens() private {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         uint256 treasuryBalance = balanceOf(address(this)); // Assuming _balanceOf was a typo, use balanceOf
         ds.burnAmount = (ds.steeloCurrentPrice * ds.constants.FEE_RATE / 1000) * ds.burnRate / 100;
@@ -245,7 +257,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Example function to update transaction volume and current price
     function updateParameters() external {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         require(ds.steeloCurrentPrice >= ds.constants.pMin && ds.steeloCurrentPrice <= ds.constants.pMax, "Price out of allowed range");
         
@@ -254,7 +266,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Function to make a GET request to the Chainlink oracle
     function requestVolumeData() public returns (bytes32 requestId) {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         Chainlink.Request memory request = buildChainlinkRequest(ds.jobId, address(this), this.fulfill.selector);
 
         request.add("get", "https://us-central1-steelo.io.cloudfunctions.net/functionName");
@@ -265,7 +277,7 @@ contract STEELOFacet is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
 
     // Function to receive the response from the Chainlink oracle
     function fulfill(bytes32 _requestId) public recordChainlinkFulfillment(_requestId) {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         require(ds.totalTransactionCount > 0, "Invalid transaction count");
 

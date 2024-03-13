@@ -6,10 +6,15 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
+import { AccessControlFacet } from "./AccessControlFacet.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract SocialNetworkFacet {
+contract SocialNetworkFacet is Initializable {
     address socialNetworkFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     ISafe private safeCore;
     ILensHub private lensHub;
@@ -20,13 +25,13 @@ contract SocialNetworkFacet {
     event LensProfileCreated(address indexed userAddress, uint256 profileId);
     event SafeLinkedToProfile(address indexed userAddress, address safeAddress);
 
-    constructor(address _safeCoreAddress, address _lensHubAddress) {
-        safeCore = ISafe(_safeCoreAddress);
-        lensHub = ILensHub(_lensHubAddress);
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
     }
 
-    function initialize() external {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize() external onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         socialNetworkFacetAddress = ds.socialNetworkFacetAddress;
     }
 

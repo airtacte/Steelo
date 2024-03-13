@@ -4,19 +4,23 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
  * @title MosaicFacet
  * A contract to manage content interactions on the Steelo platform,
  * supporting features like collect, follow, like, comment, invest, and credits.
  */
-contract MosaicFacet is OwnableUpgradeable{
+contract MosaicFacet is OwnableUpgradeable, Initializable {
     address mosaicFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     ILensHub public lens;
 
@@ -33,8 +37,13 @@ contract MosaicFacet is OwnableUpgradeable{
     event CreditAssigned(uint256 contentId, address contributor, uint256 proportion);
     event ExclusivitySet(uint256 contentId, uint8 exclusivityLevel);
 
-    function initialize(address _lens, address _steez) external {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
+    function initialize(address _lens, address _steez) external onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         mosaicFacetAddress = ds.mosaicFacetAddress;
         
         lens = ILensHub(_lens);

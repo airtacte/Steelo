@@ -4,14 +4,14 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-
 // Simplified interface for handling chat encryption keys securely
-interface IEncryptionKeyManager {
+interface IEncryptionKeyManager is Initializable {
     function getKeyPair(address user) external view returns (bytes memory publicKey, bytes memory privateKey);
     // Other necessary functions would be defined here
 }
@@ -27,8 +27,10 @@ interface IESCROW {
 contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     address villageFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
-
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     IEncryptionKeyManager encryptionKeyManager;
     IESCROW escrow;
@@ -50,8 +52,13 @@ contract VillageFacet is OwnableUpgradeable, PausableUpgradeable {
     event MessageSent(uint256 indexed chatId, address indexed sender, string message);
     // More events for governance, transactions, etc.
 
-    function initialize() external {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
+    function initialize() external onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         villageFacetAddress = ds.villageFacetAddress;
     }
 

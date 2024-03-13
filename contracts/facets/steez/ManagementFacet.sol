@@ -7,14 +7,17 @@ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { STEEZFacet } from "./STEEZFacet.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
+contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable , Initializable {
     address managementFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
+
     event BaseURIUpdated(string baseURI);
     event MaxCreatorTokensUpdated(uint256 maxTokens);
     event CreatorAddressUpdated(uint256 indexed tokenId, address indexed newCreatorAddress);
@@ -29,19 +32,23 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
     mapping (address => bool) private owners; // to rename to investors
     mapping (address => bool) private users;
 
-    function initialize(address owner) public initializer {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
+    function initialize(address owner) public onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         managementFacetAddress = ds.managementFacetAddress;
 
         __AccessControl_init();
-        __Ownable_init();
         __ReentrancyGuard_init();
         __Pausable_init();
     }
 
         // Update the base URI for token metadata
         function setBaseURI(string memory newBaseURI) public onlyCreator {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             ds.baseURI = newBaseURI;
             emit BaseURIUpdated(newBaseURI);
@@ -49,13 +56,13 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
 
         // Retrieve the current base URI
         function baseURI() public view returns (string memory) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             return ds.baseURI;
         }
 
         // Update the creator's address for a specific token
         function updateCreatorAddress(uint256 tokenId, address newCreatorAddress) external onlyCreator {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             require(newCreatorAddress != address(0), "New creator address cannot be zero address");
             require(tokenId > 0, "Token ID must be positive");
@@ -82,7 +89,7 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
 
         // Update the revenue or royalty split for a specific token
         function setCreatorSplit(uint256 tokenId, uint256[] memory splits) external onlyCreator {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             uint256 total = 0;
             for (uint256 i = 0; i < splits.length; i++) {
@@ -98,7 +105,7 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
 
         // Set token holders and their respective shares for a specific token
         function setTokenHolders(uint256 tokenId, address[] memory _tokenHolders, uint256[] memory shares) external onlyCreator {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             require(_tokenHolders.length == shares.length, "Arrays must have the same length");
             uint256 total = 0;

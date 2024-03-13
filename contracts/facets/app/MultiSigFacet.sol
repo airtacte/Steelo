@@ -4,42 +4,62 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "./AccessControlFacet.sol";
 import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
 import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/Chainlink.sol";
 
-contract MultiSigFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, ChainlinkClient {
+contract MultiSigFacet is ReentrancyGuardUpgradeable, ChainlinkClient {
     address multiSigFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     using Chainlink for Chainlink.Request;
 
-    ds.constants.SAFE_PROXY_FACTORY = address(0);
-    ds.constants.SAFE_MASTER_COPY = address(0);
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     // Chainlink Setup
-    address oracleAddress = ds.oracleAddresses[someJobId];
-    uint256 fee = ds.constants.CHAINLINK_FEE;
-    address chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
+    address oracleAddress;
+    uint256 fee;
+    address chainlinkTokenAddress;
 
     event IdentityVerification(address indexed user, bool isVerified);
     event ActivitySigned(address indexed safeAddress, address signer, bytes activityHash);
     event VoteVerified(uint256 proposalId, address signer, bool verified);
+    event KYCVerificationCompleted(uint256 userId, bool isVerified);
+
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
+    modifier onlyAdmin() {
+        require(accessControl.hasRole(accessControl.ADMIN_ROLE(), msg.sender), "AccessControl: caller is not an admin");
+        _;
+    }
+
+    modifier onlyStaker() {
+        require(accessControl.hasRole(accessControl.STAKER_ROLE(), msg.sender), "AccessControl: caller is not a staker");
+        _;
+    }
 
     /**
      * Initialize the MultiSigFacet.
      * This function sets up the contract owner in the Diamond Storage and can include additional initialization logic as needed.
      */
-    function initialize() external {
+    function initialize() external onlyExecutive initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         multiSigFacetAddress = ds.multiSigFacetAddress;
 
-        __Ownable_init();
+        oracleAddress = ds.oracleAddresses[someJobId];
+        fee = ds.constants.CHAINLINK_FEE;
+        chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
+
         __ReentrancyGuard_init();
 
         SafeProxyFactory safeProxyFactory = SafeProxyFactory(ds.safeProxyFactoryAddress());
@@ -89,7 +109,7 @@ contract MultiSigFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Chainl
         requestId = sendChainlinkRequestTo(ds.oracleAddresses["Trulioo"], req, ds.chainlinkFee);
         
         // Map the request ID to the user address for tracking
-        verificationRequests[requestId] = user;
+        ds.verificationRequests[requestId] = user;
     }
 
     // Callback function for Chainlink oracle responses
@@ -122,7 +142,7 @@ contract MultiSigFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Chainl
         return true;
     }
 
-    function verifyVote(uint256 proposalId, bytes memory signature, bytes memory voter) public returns (bool) {
+    function verifyVote(uint256 proposalId, bytes memory signature, bytes memory voter) public onlyStaker returns (bool) {
         SIPFacet sip = SIPFacet(ds.sipFacetAddress);
 
         // Assuming each proposal has a unique hash that voters sign
@@ -131,7 +151,6 @@ contract MultiSigFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Chainl
         
         // Ensure the signer is an eligible voter for the proposal. This might involve checking if the signer is part of a multi-sig wallet that's allowed to vote
         require(signer != address(0), "Invalid signature");
-        require(/* condition = is staker */, "Voter not eligible");
 
         emit VoteVerified(proposalId, signer, true); // Log the successful verification
 
@@ -182,8 +201,8 @@ contract MultiSigFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Chainl
      * Transfer ownership of the contract within the Diamond Storage.
      * @param newOwner The address of the new owner.
      */
-    function transferOwnership(address newOwner) public override onlyOwner {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function transferOwnership(address newOwner) public override onlyAdmin {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.contractOwner = newOwner;
         emit OwnershipTransferred(owner(), newOwner);
         __Ownable_init(); // Re-initialize to set the new owner correctly in OwnableUpgradeable

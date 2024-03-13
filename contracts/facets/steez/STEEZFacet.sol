@@ -10,23 +10,25 @@ import { FeesFacet } from "./FeesFacet.sol";
 import { SnapshotFacet } from "../app/SnapshotFacet.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 // CreatorToken.sol is a facet contract that implements the creator token logic and data for the SteeloToken contract
-contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
+contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable, Initializable {
     address steezFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
-
     using Address for address;
     using Strings for uint256;
 
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
+
     // Chainlink Setup
-    address oracleAddress = ds.oracleAddresses[someJobId];
-    uint256 fee = ds.constants.CHAINLINK_FEE;
-    address chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
+    address oracleAddress;
+    uint256 fee;
+    address chainlinkTokenAddress;
 
     // EVENTS
     event NewSteez(address indexed creatorId, bytes indexed data);
@@ -38,9 +40,13 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     event AnniversaryMinted(uint256 indexed creatorId, uint256 totalSupply, uint256 currentPrice, address indexed investors, uint256 amount);
     event SteezTransfer(address indexed from, address indexed to, uint256 indexed steezId, uint256 amount, uint256 royaltyAmount);
 
-    modifier canCreateToken(address creator) {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(!ds.steez[creator].creatorExists, "STEEZFacet: Creator already exists.");
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+    
+    modifier onlyUser() {
+        require(accessControl.hasRole(accessControl.USER_ROLE(), msg.sender), "AccessControl: caller is not a user");
         _;
     }
 
@@ -52,12 +58,15 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
     }
 
     // FUNCTIONS
-    function initialize(string memory _baseURI) public initializer {
+    function initialize(string memory _baseURI) public onlyExecutive initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         steezFacetAddress = ds.steezFacetAddress;
         
+        oracleAddress = ds.oracleAddresses[someJobId];
+        fee = ds.constants.CHAINLINK_FEE;
+        chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
+
         __ERC1155_init(_baseURI);
-        __Ownable_init();
         __Pausable_init();
         __ReentrancyGuard_init();
         }
@@ -66,7 +75,7 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
          * @dev Create STEEZ token for specific creator, mint handled seperately after pre-order.
          * @param data Additional data with no specified format.
          */
-        function createSteez(bytes memory data) public onlyOwner nonReentrant canCreateToken(msg.sender) {
+        function createSteez(bytes memory data) public onlyUser nonReentrant (msg.sender) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             SnapshotFacet snapshot = SnapshotFacet(ds.snapshotFacetAddress);
 
@@ -221,13 +230,11 @@ contract STEEZFacet is ERC1155Upgradeable, OwnableUpgradeable, PausableUpgradeab
         }
 
         // Transfer token balance and ownership to specified address
-        function transferSteez(uint256 creatorId, uint256 steezId, uint256 amount, address from, address to) external nonReentrant {
+        function transferSteez(uint256 creatorId, uint256 steezId, uint256 amount, address from, address to) external onlyInvestor nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            AccessControlFacet accessControl = AccessControlFacet(ds.accessControlFacetAddress);
             SteezFeesFacet steezFees = SteezFeesFacet(ds.steezFeesFacetAddress);
 
             require(to != address(0), "STEEZFacet: Transfer to zero address");
-            require(from == msg.sender || accessControl.hasRole(ROLE_OPERATOR, msg.sender), "STEEZFacet: Transfer caller is not owner nor approved");
             require(to != creatorId, "STEEZFacet: Creator cannot buy their own token");
             require(from != to, "STEEZFacet: Transfer to self");
 

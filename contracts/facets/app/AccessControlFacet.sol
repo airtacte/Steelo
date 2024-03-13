@@ -6,7 +6,6 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 /**
@@ -14,86 +13,86 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
  * This contract manages roles and permissions within the Steelo ecosystem,
  * structured around the Diamond Standard for modular smart contracts.
  */
-contract AccessControlFacet is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable  {
+contract AccessControlFacet is AccessControlUpgradeable, ReentrancyGuardUpgradeable  {
     address accessControlFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
-    using EnumerableSet for EnumerableSet.AddressSet;
+
+    bytes32 public constant EXECUTIVE_ROLE = keccak256("EXECUTIVE_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    bytes32 public constant EMPLOYEE_ROLE = keccak256("EMPLOYEE_ROLE");
+    bytes32 public constant TESTER_ROLE = keccak256("TESTER_ROLE");
+    bytes32 public constant STAKER_ROLE = keccak256("STAKER_ROLE");
+    bytes32 public constant USER_ROLE = keccak256("USER_ROLE");
+    bytes32 public constant VISITOR_ROLE = keccak256("VISITOR_ROLE");
+    bytes32 public constant CREATOR_ROLE = keccak256("CREATOR_ROLE");
+    bytes32 public constant TEAM_ROLE = keccak256("TEAM_ROLE");
+    bytes32 public constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE");
+    bytes32 public constant COLLABORATOR_ROLE = keccak256("COLLABORATOR_ROLE");
+    bytes32 public constant INVESTOR_ROLE = keccak256("INVESTOR_ROLE");
+    bytes32 public constant SUBSCRIBER_ROLE = keccak256("SUBSCRIBER_ROLE");
 
     modifier onlyExecutive() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.EXECUTIVE_ROLE, msg.sender), "AccessControl: caller is not an executive");
+        require(hasRole(EXECUTIVE_ROLE, msg.sender), "AccessControl: caller is not an executive");
         _;
     }
 
     modifier onlyAdmin() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.ADMIN_ROLE, msg.sender), "AccessControl: caller is not an admin");
+        require(hasRole(ADMIN_ROLE, msg.sender), "AccessControl: caller is not an admin");
         _;
     }
 
     modifier onlyEmployee() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.EMPLOYEE_ROLE, msg.sender), "AccessControl: caller is not an employee");
+        require(hasRole(EMPLOYEE_ROLE, msg.sender), "AccessControl: caller is not an employee");
         _;
     }
 
     modifier onlyTester() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.TESTER_ROLE, msg.sender), "AccessControl: caller is not a tester");
+        require(hasRole(TESTER_ROLE, msg.sender), "AccessControl: caller is not a tester");
         _;
     }
 
     modifier onlyStaker() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.STAKER_ROLE, msg.sender), "AccessControl: caller is not a staker");
+        require(hasRole(STAKER_ROLE, msg.sender), "AccessControl: caller is not a staker");
         _;
     }
 
     modifier onlyUser() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.USER_ROLE, msg.sender), "AccessControl: caller is not a user");
+        require(hasRole(USER_ROLE, msg.sender), "AccessControl: caller is not a user");
         _;
     }
 
     modifier onlyVisitor() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.VISITOR_ROLE, msg.sender), "AccessControl: caller is not a visitor");
+        require(hasRole(VISITOR_ROLE, msg.sender), "AccessControl: caller is not a visitor");
         _;
     }
 
     modifier onlyCreator() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.CREATOR_ROLE, msg.sender), "AccessControl: caller is not a creator");
+        require(hasRole(CREATOR_ROLE, msg.sender), "AccessControl: caller is not a creator");
         _;
     }
 
     modifier onlyTeam() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.TEAM_ROLE, msg.sender), "AccessControl: caller is not a team member");
+        require(hasRole(TEAM_ROLE, msg.sender), "AccessControl: caller is not a team member");
         _;
     }
 
     modifier onlyCollaborator() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.COLLABORATOR_ROLE, msg.sender), "AccessControl: caller is not a collaborator");
+        require(hasRole(COLLABORATOR_ROLE, msg.sender), "AccessControl: caller is not a collaborator");
         _;
     }
 
     modifier onlyInvestor() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.INVESTOR_ROLE, msg.sender), "AccessControl: caller is not an investor");
+        require(hasRole(INVESTOR_ROLE, msg.sender), "AccessControl: caller is not an investor");
         _;
     }
 
     modifier onlyModerator() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.MODERATOR_ROLE, msg.sender), "AccessControl: caller is not a moderator");
+        require(hasRole(MODERATOR_ROLE, msg.sender), "AccessControl: caller is not a moderator");
         _;
     }
 
     modifier onlySubscriber() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.SUBSCRIBER_ROLE, msg.sender), "AccessControl: caller is not a subscriber");
+        require(hasRole(SUBSCRIBER_ROLE, msg.sender), "AccessControl: caller is not a subscriber");
         _;
     }
 
@@ -101,40 +100,39 @@ contract AccessControlFacet is AccessControlEnumerableUpgradeable, ReentrancyGua
     event DiamondUpgraded(address indexed upgradedBy, IDiamondCut.FacetCut[] cuts);
     event RoleUpdated(bytes32 indexed role, address indexed account, bool isGranted);
 
-    function initialize(address _steeloFacet, address _steezFacet, address _accessControlFacetAddress) external {
+    function initialize(address _steeloFacet, address _steezFacet, address _accessControlFacetAddress) external onlyExecutive initializer {
         LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
         accessControlFacetAddress = ds.accessControlFacetAddress;
 
-        __AccessControlEnumerable_init();
         __ReentrancyGuard_init();
 
-        _setRoleAdmin(ds.constants.ADMIN_ROLE, ds.constants.EXECUTIVE_ROLE);
-        _setRoleAdmin(ds.constants.EMPLOYEE_ROLE, ds.constants.ADMIN_ROLE);
-        _setRoleAdmin(ds.constants.TESTER_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(ADMIN_ROLE, EXECUTIVE_ROLE);
+        _setRoleAdmin(EMPLOYEE_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(TESTER_ROLE, ADMIN_ROLE);
 
-        // Similarly, set up the role hierarchy for Steelo lifecycles
-        _setRoleAdmin(ds.constants.STAKER_ROLE, ds.constants.ADMIN_ROLE);
-        _setRoleAdmin(ds.constants.USER_ROLE, ds.constants.EMPLOYEE_ROLE);
-        _setRoleAdmin(ds.constants.VISITOR_ROLE, ""); // assigned automatically to users with verified wallet
+        // Steelo lifecycles
+        _setRoleAdmin(STAKER_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(USER_ROLE, EMPLOYEE_ROLE);
+        _setRoleAdmin(VISITOR_ROLE, ""); // assigned automatically to users with verified wallet
 
-        // Similarly, set up the role hierarchy for Steez lifecycles
-        _setRoleAdmin(ds.constants.CREATOR_ROLE, ds.constants.ADMIN_ROLE);
-        _setRoleAdmin(ds.constants.TEAM_ROLE, ds.constants.CREATOR_ROLE);
-        _setRoleAdmin(ds.constants.MODERATOR_ROLE, ds.constants.CREATOR_ROLE);
-        _setRoleAdmin(ds.constants.COLLABORATOR_ROLE, ds.constants.CREATOR_ROLE);
-        _setRoleAdmin(ds.constants.INVESTOR_ROLE, ds.constants.CREATOR_ROLE);
-        _setRoleAdmin(ds.constants.SUBSCRIBER_ROLE, ds.constants.CREATOR_ROLE);
+        // Steez lifecycles
+        _setRoleAdmin(CREATOR_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(TEAM_ROLE, CREATOR_ROLE);
+        _setRoleAdmin(MODERATOR_ROLE, CREATOR_ROLE);
+        _setRoleAdmin(COLLABORATOR_ROLE, CREATOR_ROLE);
+        _setRoleAdmin(INVESTOR_ROLE, CREATOR_ROLE);
+        _setRoleAdmin(SUBSCRIBER_ROLE, CREATOR_ROLE);
 
         // Initial role assignments
-        _grantRole(ds.constants.ds.constants.EXECUTIVE_ROLE, msg.sender); // Assign the deployer the EXECUTIVE role
+        _grantRole(EXECUTIVE_ROLE, msg.sender); // Assign the deployer the EXECUTIVE role
     }
 
     // Override _grantRole and _revokeRole to integrate custom logic or restrictions
-    function _grantRole(ds.constants.bytes32 role, address account) internal override {
-        super._grantRole(ds.constants.role, account);
+    function _grantRole(bytes32 role, address account) internal override {
+        super._grantRole(role, account);
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
-        require(!hasRole(ds.constants.role, account), "AccessControl: account already has role");
+        require(!hasRole(role, account), "AccessControl: account already has role");
         require(account != address(0), "AccessControl: account is zero address");
 
         ds.roles[role].members[account] = true;
@@ -149,19 +147,19 @@ contract AccessControlFacet is AccessControlEnumerableUpgradeable, ReentrancyGua
     // Function to update the role dynamically based on token holdings or other conditions
     function updateRoleBasedOnConditions(address account) internal {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.EXECUTIVE_ROLE, msg.sender), "AccessControlFacet: Must have executive role to update roles");
+        require(hasRole(EXECUTIVE_ROLE, msg.sender), "AccessControlFacet: Must have executive role to update roles");
 
         // Check if user is a staker
         if (ds.stakes[account] > 0) {
-            grantRole(ds.constants.STAKER_ROLE, account);
-            emit RoleUpdated(ds.constants.STAKER_ROLE, account, true);
+            grantRole(STAKER_ROLE, account);
+            emit RoleUpdated(STAKER_ROLE, account, true);
         } else {
-            revokeRole(ds.constants.STAKER_ROLE, account);
-            emit RoleUpdated(ds.constants.STAKER_ROLE, account, false);
+            revokeRole(STAKER_ROLE, account);
+            emit RoleUpdated(STAKER_ROLE, account, false);
         }
 
         // Check if user is an investor in any creator
-        ds.isInvestor = false;
+        ds.investors.isInvestor = false;
         for (uint i = 0; i < ds.investor.portfolio[account].length; i++) {
             if (ds.investor.portfolio[account][i].steez > 0) {
                 ds.isInvestor = true;
@@ -169,70 +167,69 @@ contract AccessControlFacet is AccessControlEnumerableUpgradeable, ReentrancyGua
             }
         }
 
-        if (ds.isInvestor) {
-            grantRole(ds.constants.INVESTOR_ROLE, account);
-            emit RoleUpdated(ds.constants.INVESTOR_ROLE, account, true);
+        if (ds.investors.isInvestor) {
+            grantRole(INVESTOR_ROLE, account);
+            emit RoleUpdated(INVESTOR_ROLE, account, true);
         } else {
-            revokeRole(ds.constants.INVESTOR_ROLE, account);
-            emit RoleUpdated(ds.constants.INVESTOR_ROLE, account, false);
+            revokeRole(INVESTOR_ROLE, account);
+            emit RoleUpdated(INVESTOR_ROLE, account, false);
         }
     }
 
     function grantExecutiveRole(address account) external onlyRole(EXECUTIVE_ROLE) {
-        grantRole(ds.constants.EXECUTIVE_ROLE, account);
+        grantRole(EXECUTIVE_ROLE, account);
     }
 
     function grantAdminRole(address account) external onlyRole(ADMIN_ROLE) {
-        grantRole(ds.constants.ADMIN_ROLE, account);
+        grantRole(ADMIN_ROLE, account);
     }
 
     function grantEmployeeRole(address account) external onlyRole(EMPLOYEE_ROLE) {
-        grantRole(ds.constants.EMPLOYEE_ROLE, account);
+        grantRole(EMPLOYEE_ROLE, account);
     }
 
     function grantTesterRole(address account) external onlyRole(TESTER_ROLE) {
-        grantRole(ds.constants.TESTER_ROLE, account);
+        grantRole(TESTER_ROLE, account);
     }
 
     function grantStakerRole(address account) external onlyRole(STAKER_ROLE) {
-        grantRole(ds.constants.STAKER_ROLE, account);
+        grantRole(STAKER_ROLE, account);
     }
 
     function grantUserRole(address account) external onlyRole(USER_ROLE) {
-        grantRole(ds.constants.USER_ROLE, account);
+        grantRole(USER_ROLE, account);
     }
 
     function grantVisitorRole(address account) external onlyRole(VISITOR_ROLE) {
-        grantRole(ds.constants.VISITOR_ROLE, account);
+        grantRole(VISITOR_ROLE, account);
     }
 
     function grantCreatorRole(address account) external onlyRole(CREATOR_ROLE) {
-        grantRole(ds.constants.CREATOR_ROLE, account);
+        grantRole(CREATOR_ROLE, account);
     }
 
     function grantTeamRole(address account) external onlyRole(TEAM_ROLE) {
-        grantRole(ds.constants.TEAM_ROLE, account);
+        grantRole(TEAM_ROLE, account);
     }
 
     function grantModeratorRole(address account) external onlyRole(MODERATOR_ROLE) {
-        grantRole(ds.constants.MODERATOR_ROLE, account);
+        grantRole(MODERATOR_ROLE, account);
     }
 
     function grantCollaboratorRole(address account) external onlyRole(COLLABORATOR_ROLE) {
-        grantRole(ds.constants.COLLABORATOR_ROLE, account);
+        grantRole(COLLABORATOR_ROLE, account);
     }
 
     function grantInvestorRole(address account) external onlyRole(INVESTOR_ROLE) {
-        grantRole(ds.constants.INVESTOR_ROLE, account);
+        grantRole(INVESTOR_ROLE, account);
     }
 
     function grantSubscriberRole(address account) external onlyRole(SUBSCRIBER_ROLE) {
-        grantRole(ds.constants.SUBSCRIBER_ROLE, account);
+        grantRole(SUBSCRIBER_ROLE, account);
     }
 
     function upgradeDiamond(IDiamondCut.FacetCut[] memory cuts) external {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(ds.constants.ADMIN_ROLE, msg.sender), "Must have upgrade role to upgrade");
+        require(hasRole(ADMIN_ROLE, msg.sender), "Must have upgrade role to upgrade");
         require(cuts.length > 0, "Must provide at least one cut to upgrade");
 
         // Perform the upgrade
@@ -248,11 +245,11 @@ contract AccessControlFacet is AccessControlEnumerableUpgradeable, ReentrancyGua
         uint256 steezBalance = ds.balanceOf(account);
 
         if (steeloBalance > 0) {
-            grantRole(ds.constants.STAKER_ROLE, account);
+            grantRole(STAKER_ROLE, account);
         }
 
         if (steezBalance > 0) {
-            grantRole(ds.constants.INVESTOR_ROLE, account);
+            grantRole(INVESTOR_ROLE, account);
         }
     }
 }

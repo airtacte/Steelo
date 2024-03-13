@@ -3,15 +3,20 @@
 pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "./AccessControlFacet.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/Chainlink.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract OracleFacet is OwnableUpgradeable, ChainlinkClient {
+contract OracleFacet is OwnableUpgradeable, ChainlinkClient, Initializable {
     address oracleFacetAddress;
     using Chainlink for Chainlink.Request;
     using LibDiamond for LibDiamond.DiamondStorage;
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     // State variables we aim to track via the oracle
     // steezTransactionCount;
@@ -23,13 +28,16 @@ contract OracleFacet is OwnableUpgradeable, ChainlinkClient {
     event VolumeDataUpdated(uint256 volume);
     event PriceUpdated(address priceFeed, int256 price);
 
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
     // Function to initialize the facet
-    function initialize(address chainlinkTokenAddress) public initializer {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize(address chainlinkTokenAddress) public onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         oracleFacetAddress = ds.oracleFacetAddress;
         
-        __Ownable_init(msg.sender);
-
         setChainlinkToken(ds.constants.CHAINLINK_TOKEN_ADDRESS); // Assuming constants are accessible this way
     }
     

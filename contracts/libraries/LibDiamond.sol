@@ -27,6 +27,13 @@ library LibDiamond {
         bytes32 adminRole;
     }
 
+    struct Snapshot {
+        uint256 id;
+        uint256 timestamp;
+        uint256 value;
+        mapping(address => uint256) balances;
+    }
+
     struct Proposal {
         string benefitDescription;
         bytes callData;
@@ -79,10 +86,7 @@ library LibDiamond {
         bool verified;
         string username;
         string walletAddress;
-        string profileBio;
         string avatarURI;
-        string profileLocation;
-        string profilePrfoession;
         mapping(uint256 => Content) collection;
         mapping(uint256 => Profile) followers;
     }
@@ -169,6 +173,7 @@ library LibDiamond {
             // app
         address accessControlFacetAddress;
         address gasOptimisationFacetAddress;
+        address kycFacetAddress;
         address multiSigFacetAddress;
         address notificationFacetAddress;
         address oracleFacetAddress;
@@ -180,11 +185,11 @@ library LibDiamond {
         address mosaicFacetAddress;
         address profileFacetAddress; 
         address villageFacetAddress;
-            // steelo
+            // steelo -- platform token: staking, governance, tx, minting, burning
         address sipFacetAddress;
         address stakingFacetAddress;
         address steeloFacetAddress;
-            // steez
+            // steez -- creator token: auction, investor benefits, royalties, content collections
         address contentFacetAddress;
         address feesFacetAddress;
         address governanceFacetAddress;
@@ -193,6 +198,7 @@ library LibDiamond {
 
         // STRUCT REFERENCES
         mapping(uint256 => SIP) sips; // From SipId to SIP
+        mapping(uint256 => Snapshot) snapshots; // for snapshotFacet
         mapping(uint256 => Profile) profiles; // From profileId to Profile
         mapping(uint256 => Creator) creators; // From creatorId to Creator
         mapping(address => Investor) investors; // From investor address to Investor
@@ -256,7 +262,7 @@ library LibDiamond {
         mapping(bytes32 => bytes32) jobIds; // Functionality to JobID mapping
     
         // Safe
-        mapping(bytes32 => address) verificationRequests
+        mapping(bytes32 => address) verificationRequests;
     }
 
 // // COMPULSORY DIAMOND STORAGE FUNCTIONS // //

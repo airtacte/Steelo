@@ -7,12 +7,14 @@ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { STEEZFacet } from "./STEEZFacet.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { BazaarFacet } from "../features/BazaarFacet.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract GovernanceFacet is Initializable, OwnableUpgradeable {
+contract GovernanceFacet is Initializable, OwnableUpgradeable, Initializable {
     address governanceFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     // Events for tracking actions within the contract
     event ProposalCreated(uint256 indexed proposalId, string description);
@@ -21,29 +23,30 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
 
     mapping(address => address) public voteDelegations;
 
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
     modifier onlyCreator() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(ds.contractOwner.hasRole(ds.constants.CREATOR_ROLE, msg.sender), "SIPFacet: caller is not a creator.");
+        require(accessControl.hasRole(accessControl.CREATOR_ROLE(), msg.sender), "SIPFacet: caller is not a creator.");
         _;
     }
 
     modifier onlyTeam() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(ds.contractOwner.hasRole(ds.constants.TEAM_ROLE, msg.sender), "SIPFacet: caller is not an team.");
+        require(accessControl.hasRole(accessControl.TEAM_ROLE(), msg.sender), "SIPFacet: caller is not an team.");
         _;
     }
     
     modifier onlyInvestor() {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(ds.contractOwner.hasRole(ds.constants.INVESTOR_ROLE, msg.sender), "SIPFacet: caller is not an investor.");
+        require(accessControl.hasRole(accessControl.INVESTOR_ROLE(), msg.sender), "SIPFacet: caller is not an investor.");
         _;
     }
     
-    function initialize(address steezTokenAddress) public initializer {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize(address steezTokenAddress) public onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         governanceFacetAddress = ds.governanceFacetAddress;
         
-        OwnableUpgradeable.__Ownable_init();
         ReentrancyGuardUpgradeable.__ReentrancyGuard_init();
     }
 
@@ -82,7 +85,7 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
 
         // Voting on proposals
         function voteOnProposal(uint256 proposalId, bool support) public onlyInvestor {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Voting logic here
             if(support) {
                 castVote(proposalId, 1); // 1 for support
@@ -93,7 +96,7 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
         }
 
         function checkProposalQuorum(uint256 proposalId) public view returns (bool) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Check if the proposal has met the required quorum
             return hasMetQuorum(proposalId);
         }
@@ -136,7 +139,7 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
 
         // Propose a new proposal
         function propose(bytes memory callData, string memory benefitDescription) public returns (uint256) {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Proposal logic here
             // ...
         }
@@ -155,14 +158,14 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable {
 
         // Cast a vote on a proposal
         function castVote(uint256 proposalId, uint8 vote) public {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Voting logic here
             // ...
         }
 
         // Execute a proposal
         function execute(uint256 proposalId) public {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Execution logic here
             // ...
         }

@@ -4,15 +4,19 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol"; // For GBPToken
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"; // For GBPToken
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-contract BazaarFacet {
+contract BazaarFacet is Initializable {
     address bazaarFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     // State variables for Uniswap interfaces, adjust types and names as per actual interface definitions
     IPoolManager uniswap;
@@ -25,9 +29,14 @@ contract BazaarFacet {
     event CreatorTokenBid(uint256 indexed creatorId, uint256 amount, address bidder);
     event LiquidityAdded(uint256 indexed creatorId, uint256 amountSteez, uint256 amountGBPT, uint256 liquidity);
 
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+
     // Initialize BazaarFacet setting the contract owner
-    function initialize() external {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize() external onlyExecutive initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         bazaarFacetAddress = ds.bazaarFacetAddress;
 
         uniswap = IPoolManager(ds.uniswapAddress);
@@ -37,7 +46,7 @@ contract BazaarFacet {
         // Function to list a new CreatorToken (Steez) for sale or auction
         // Note: Details to integrate with Uniswap X and SteezFacet.sol for pre-order auctions
         function listCreatorToken(uint256 creatorId, uint256 initialPrice, uint256 supply, bool isAuction) external {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Example implementation details, assuming Uniswap and UniswapV4 interfaces support these operations
             if (isAuction) {
                 // find equivalent of "uniswap.createAuction(creatorId, initialPrice, supply, msg.sender);"
@@ -51,7 +60,7 @@ contract BazaarFacet {
         }
 
         function marketListing(uint256 creatorId) external view {
-            LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             return ds.listings[creatorId];
         }
 

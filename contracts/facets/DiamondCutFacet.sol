@@ -4,6 +4,7 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../libraries/LibDiamond.sol";
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
+import { AccessControlFacet } from "./app/AccessControlFacet.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
@@ -13,8 +14,15 @@ contract DiamondCutFacet is IDiamondCut, OwnableUpgradeable {
     uint256 public constant facetVersion = 1;
     event FacetAdded(address indexed facetAddress, bytes4[] functionSelectors);
 
-    function initialize() public initializer {
-        __Ownable_init(msg.sender);
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
+
+    modifier onlyExecutive() {
+        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
+        _;
+    }
+    
+    function initialize() public onlyExecutive initializer {
     }
 
     /// @notice Add/replace/remove any number of functions and optionally execute
