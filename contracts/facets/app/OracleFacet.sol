@@ -8,9 +8,8 @@ import { AccessControlFacet } from "./AccessControlFacet.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/Chainlink.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract OracleFacet is OwnableUpgradeable, ChainlinkClient, Initializable {
+contract OracleFacet is ChainlinkClient, AccessControlFacet {
     address oracleFacetAddress;
     using Chainlink for Chainlink.Request;
     using LibDiamond for LibDiamond.DiamondStorage;
@@ -28,13 +27,9 @@ contract OracleFacet is OwnableUpgradeable, ChainlinkClient, Initializable {
     event VolumeDataUpdated(uint256 volume);
     event PriceUpdated(address priceFeed, int256 price);
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
 
     // Function to initialize the facet
-    function initialize(address chainlinkTokenAddress) public onlyExecutive initializer {
+    function initialize(address chainlinkTokenAddress) public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         oracleFacetAddress = ds.oracleFacetAddress;
         
@@ -42,7 +37,7 @@ contract OracleFacet is OwnableUpgradeable, ChainlinkClient, Initializable {
     }
     
     // Function to request volume data from an external API using Chainlink
-    function requestVolumeData(uint256 _payment, bytes32 _jobId, address _oracle) public onlyOwner {
+    function requestVolumeData(uint256 _payment, bytes32 _jobId, address _oracle) public onlyRole(accessControl.ADMIN_ROLE()) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         Chainlink.Request memory req = buildChainlinkRequest(_jobId, address(this), this.fulfill.selector);
         req.add("get", "https://us-central1-steelo-47.cloudfunctions.net/functionName"); // Corrected method

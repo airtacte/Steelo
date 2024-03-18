@@ -4,12 +4,11 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "./AccessControlFacet.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
-import { AccessControlFacet } from "./AccessControlFacet.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract SocialNetworkFacet is Initializable {
+contract SocialNetworkFacet is AccessControlFacet {
     address socialNetworkFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -25,12 +24,7 @@ contract SocialNetworkFacet is Initializable {
     event LensProfileCreated(address indexed userAddress, uint256 profileId);
     event SafeLinkedToProfile(address indexed userAddress, address safeAddress);
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
-
-    function initialize() external onlyExecutive initializer {
+    function initialize() external onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         socialNetworkFacetAddress = ds.socialNetworkFacetAddress;
     }
@@ -91,7 +85,7 @@ contract SocialNetworkFacet is Initializable {
         }
         
         // Function to post content to a user's Lens profile
-        function postContent(uint256 profileId, string calldata contentUri) public {
+        function postContent(uint256 profileId, string calldata contentUri) public onlyRole(accessControl.CREATOR_ROLE()) {
             // Ensure the caller owns the profile
             require(userProfileIds[msg.sender] == profileId, "Caller does not own the profile");
             // Call the LensHub contract to post content

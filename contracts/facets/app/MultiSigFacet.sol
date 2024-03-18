@@ -5,17 +5,16 @@ pragma solidity ^0.8.10;
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { AccessControlFacet } from "./AccessControlFacet.sol";
+import { SIPFacet } from "../steelo/SIPFacet.sol";
 import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
 import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/Chainlink.sol";
 
-contract MultiSigFacet is ReentrancyGuardUpgradeable, ChainlinkClient {
+contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
     address multiSigFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     using Chainlink for Chainlink.Request;
@@ -26,41 +25,26 @@ contract MultiSigFacet is ReentrancyGuardUpgradeable, ChainlinkClient {
     // Chainlink Setup
     address oracleAddress;
     uint256 fee;
-    address chainlinkTokenAddress;
 
     event IdentityVerification(address indexed user, bool isVerified);
     event ActivitySigned(address indexed safeAddress, address signer, bytes activityHash);
     event VoteVerified(uint256 proposalId, address signer, bool verified);
     event KYCVerificationCompleted(uint256 userId, bool isVerified);
-
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
-
-    modifier onlyAdmin() {
-        require(accessControl.hasRole(accessControl.ADMIN_ROLE(), msg.sender), "AccessControl: caller is not an admin");
-        _;
-    }
-
-    modifier onlyStaker() {
-        require(accessControl.hasRole(accessControl.STAKER_ROLE(), msg.sender), "AccessControl: caller is not a staker");
-        _;
-    }
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    
 
     /**
      * Initialize the MultiSigFacet.
      * This function sets up the contract owner in the Diamond Storage and can include additional initialization logic as needed.
      */
-    function initialize() external onlyExecutive initializer {
+    function initialize(bytes32 functionality) external onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         multiSigFacetAddress = ds.multiSigFacetAddress;
 
-        oracleAddress = ds.oracleAddresses[someJobId];
+        bytes32 jobId = ds.jobIds[functionality];
+        oracleAddress = ds.oracleAddresses[jobId];
         fee = ds.constants.CHAINLINK_FEE;
         chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
-
-        __ReentrancyGuard_init();
 
         SafeProxyFactory safeProxyFactory = SafeProxyFactory(ds.safeProxyFactoryAddress());
         address safeTemplate = ds.safeTemplateAddress(); // Ensure this is added to LibDiamond and ConstDiamond
@@ -124,13 +108,12 @@ contract MultiSigFacet is ReentrancyGuardUpgradeable, ChainlinkClient {
         }
     }
 
-    function initiateTransaction(address from, address to, uint amount) public {
-        // Check that all parties involved have passed KYC
+    function initiateTransaction(address from, address to, uint amount) public onlyRole(accessControl.USER_ROLE()) {
         // Use Safe-global SDK functions for multisig transaction initiation
     }
     
     function signActivity(address safeAddress, bytes memory activityHash, bytes memory signature) public returns (bool) {
-        Safe safe = Safe(safeAddress); // Assuming Safe is a contract interface for a multi-signature wallet
+        SafeL2 safe = SafeL2(safeAddress); // Assuming Safe is a contract interface for a multi-signature wallet
 
         // Recover the signer from the signature and activityHash
         address signer = recoverSigner(activityHash, signature);
@@ -142,7 +125,8 @@ contract MultiSigFacet is ReentrancyGuardUpgradeable, ChainlinkClient {
         return true;
     }
 
-    function verifyVote(uint256 proposalId, bytes memory signature, bytes memory voter) public onlyStaker returns (bool) {
+    function verifyVote(uint256 proposalId, bytes memory signature, bytes memory voter) public onlyRole(accessControl.STAKER_ROLE()) returns (bool) {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         SIPFacet sip = SIPFacet(ds.sipFacetAddress);
 
         // Assuming each proposal has a unique hash that voters sign
@@ -201,11 +185,18 @@ contract MultiSigFacet is ReentrancyGuardUpgradeable, ChainlinkClient {
      * Transfer ownership of the contract within the Diamond Storage.
      * @param newOwner The address of the new owner.
      */
-    function transferOwnership(address newOwner) public override onlyAdmin {
+    function transferOwnership(address newOwner) public onlyRole(accessControl.EXECUTIVE_ROLE()) {
+        require(newOwner != address(0), "New owner cannot be the zero address");
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        
+        // Revoke the EXECUTIVE_ROLE from the current owner
+        accessControl.revokeRole(accessControl.EXECUTIVE_ROLE(), ds.contractOwner);
+
+        // Grant the EXECUTIVE_ROLE to the new owner
+        accessControl.grantRole(accessControl.EXECUTIVE_ROLE(), newOwner);
+
         ds.contractOwner = newOwner;
-        emit OwnershipTransferred(owner(), newOwner);
-        __Ownable_init(); // Re-initialize to set the new owner correctly in OwnableUpgradeable
+        emit OwnershipTransferred(ds.contractOwner, newOwner);
     }
 
     // Additional functions and logic for interacting with Gnosis Safe functionality can be added here.

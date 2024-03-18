@@ -7,10 +7,8 @@ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { STEELOFacet } from "../steelo/STEELOFacet.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializable {
+contract StakingFacet is AccessControlFacet {
     address stakingFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     using SafeERC20 for IERC20;
@@ -18,30 +16,20 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initial
     AccessControlFacet accessControl; // Instance of the AccessControlFacet
     constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
-
-    modifier onlyStaker() {
-        require(accessControl.hasRole(accessControl.STAKER_ROLE(), msg.sender), "SIPFacet: caller is not a staker");
-        _;
-    }
 
     // Events
     event Staked(address indexed user, uint256 amount);
     event Unstaked(address indexed user, uint256 amount);
     event RewardPaid(address indexed user, uint256 rewardAmount);
 
-    function initialize(address _steeloFacet) public onlyExecutive initializer {
+    function initialize(address _steeloFacet) public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         stakingFacetAddress = ds.stakingFacetAddress;
-        
-        __ReentrancyGuard_init();
     }
 
-    function stake(uint256 _amount) external nonReentrant {
+    function stake(uint256 _amount) external onlyRole(accessControl.USER_ROLE()) nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        STEELOFacet steeloFacet = STEELOFacet(ds.steeloFacetAddress);
 
         require(_amount > 0, "Amount must be greater than 0");
         ds.stakes[msg.sender] += _amount;
@@ -54,8 +42,9 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initial
         emit Staked(msg.sender, _amount);
     }
 
-    function unstake(uint256 _amount) external onlyStaker nonReentrant {
+    function unstake(uint256 _amount) external onlyRole(accessControl.STAKER_ROLE()) nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        STEELOFacet steeloFacet = STEELOFacet(ds.steeloFacetAddress);
 
         require(_amount > 0, "Amount must be greater than 0");
         require(ds.stakes[msg.sender] >= _amount, "Not enough stake");
@@ -76,7 +65,7 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initial
     }
     
     // Placeholder for actual reward calculation logic
-    function calculateReward(address stakeholder) internal view onlyStaker returns (uint256) {
+    function calculateReward(address stakeholder) internal view onlyRole(accessControl.STAKER_ROLE()) returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         ds.totalStakingPool = getTotalStakingPool(); // This would sum all staked amounts
@@ -105,15 +94,16 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initial
         return reward;
     }
     
-    function distributeRewards() external onlyStaker nonReentrant {
+    function distributeRewards() external onlyRole(accessControl.STAKER_ROLE()) nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        
+        STEELOFacet steeloFacet = STEELOFacet(ds.steeloFacetAddress);
+
         uint256 totalStaked = getTotalStakingPool();
         require(totalStaked > 0, "No stakes to distribute rewards to");
         require(ds.totalRewardPool > 0, "No rewards available for distribution");
 
         for (uint i = 0; i < ds.stakeholders.length; i++) {
-            address stakeholder = stakeholders[i];
+            address stakeholder = ds.stakeholders[i];
             uint256 rewardAmount = calculateReward(stakeholder);
             if(rewardAmount > 0) {
                 // Transfer reward to stakeholder from the facet contract
@@ -128,18 +118,18 @@ contract StakingFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initial
     // Helper function to get total staked amount
     function getTotalStakingPool() internal view returns (uint256 totalStaked) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        for (uint i = 0; i < stakeholders.length; i++) {
-            totalStaked += ds.stakes[stakeholders[i]];
+        for (uint i = 0; i < ds.stakeholders.length; i++) {
+            totalStaked += ds.stakes[ds.stakeholders[i]];
         }
         return totalStaked;
     }
 
-    function stakeholderStatus(address _user) public view onlyStaker returns (bool) {
+    function stakeholderStatus(address _user) public view onlyRole(accessControl.STAKER_ROLE()) returns (bool) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.isStakeholder[_user];
     }
 
-    function stakeAmount(address _user) external view onlyStaker returns (uint256) {
+    function stakeAmount(address _user) external view onlyRole(accessControl.STAKER_ROLE()) returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.stakes[_user];
     }

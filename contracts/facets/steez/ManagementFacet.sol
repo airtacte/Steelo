@@ -6,12 +6,8 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { STEEZFacet } from "./STEEZFacet.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable , Initializable {
+contract ManagementFacet is AccessControlFacet {
     address managementFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     
@@ -32,22 +28,13 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
     mapping (address => bool) private owners; // to rename to investors
     mapping (address => bool) private users;
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
-
-    function initialize(address owner) public onlyExecutive initializer {
+    function initialize(address owner) public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         managementFacetAddress = ds.managementFacetAddress;
-
-        __AccessControl_init();
-        __ReentrancyGuard_init();
-        __Pausable_init();
     }
 
         // Update the base URI for token metadata
-        function setBaseURI(string memory newBaseURI) public onlyCreator {
+        function setBaseURI(string memory newBaseURI) public onlyRole(accessControl.CREATOR_ROLE()) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             ds.baseURI = newBaseURI;
@@ -61,7 +48,7 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
         }
 
         // Update the creator's address for a specific token
-        function updateCreatorAddress(uint256 tokenId, address newCreatorAddress) external onlyCreator {
+        function updateCreatorAddress(uint256 tokenId, address newCreatorAddress) external onlyRole(accessControl.CREATOR_ROLE()) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             require(newCreatorAddress != address(0), "New creator address cannot be zero address");
@@ -88,7 +75,7 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
         }
 
         // Update the revenue or royalty split for a specific token
-        function setCreatorSplit(uint256 tokenId, uint256[] memory splits) external onlyCreator {
+        function setCreatorSplit(uint256 tokenId, uint256[] memory splits) external onlyRole(accessControl.CREATOR_ROLE()) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             uint256 total = 0;
@@ -104,7 +91,7 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
         }
 
         // Set token holders and their respective shares for a specific token
-        function setTokenHolders(uint256 tokenId, address[] memory _tokenHolders, uint256[] memory shares) external onlyCreator {
+        function setTokenHolders(uint256 tokenId, address[] memory _tokenHolders, uint256[] memory shares) external onlyRole(accessControl.CREATOR_ROLE()) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
             require(_tokenHolders.length == shares.length, "Arrays must have the same length");
@@ -129,13 +116,13 @@ contract ManagementFacet is AccessControlUpgradeable, OwnableUpgradeable, Reentr
         }
 
         // Pause function
-        function pause() public onlyAdmin {
+        function pause() public onlyRole(accessControl.ADMIN_ROLE()) {
             _pause();
             emit Paused();
         }
 
         // Unpause function
-        function unpause() public onlyAdmin {
+        function unpause() public onlyRole(accessControl.ADMIN_ROLE()) {
             _unpause();
             emit Unpaused();
         }

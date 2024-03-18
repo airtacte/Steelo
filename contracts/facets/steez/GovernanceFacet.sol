@@ -4,12 +4,11 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
-import { STEEZFacet } from "./STEEZFacet.sol";
 import { AccessControlFacet } from "../app/AccessControlFacet.sol";
+import { STEEZFacet } from "./STEEZFacet.sol";
 import { BazaarFacet } from "../features/BazaarFacet.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract GovernanceFacet is Initializable, OwnableUpgradeable, Initializable {
+contract GovernanceFacet is AccessControlFacet {
     address governanceFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -17,61 +16,43 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable, Initializable {
     constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
     // Events for tracking actions within the contract
-    event ProposalCreated(uint256 indexed proposalId, string description);
+    event ProposalCreated(uint256 id, address proposer, string description, bytes callData);
     event VoteCast(address indexed voter, uint256 indexed proposalId, bool support);
     event ProposalExecuted(uint256 indexed proposalId);
+    event ProposalCancelled(uint256 indexed proposalId);
+    event ProposalAmended(uint256 indexed proposalId, string newDescription);
 
     mapping(address => address) public voteDelegations;
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
-
-    modifier onlyCreator() {
-        require(accessControl.hasRole(accessControl.CREATOR_ROLE(), msg.sender), "SIPFacet: caller is not a creator.");
-        _;
-    }
-
-    modifier onlyTeam() {
-        require(accessControl.hasRole(accessControl.TEAM_ROLE(), msg.sender), "SIPFacet: caller is not an team.");
-        _;
-    }
     
-    modifier onlyInvestor() {
-        require(accessControl.hasRole(accessControl.INVESTOR_ROLE(), msg.sender), "SIPFacet: caller is not an investor.");
-        _;
-    }
-    
-    function initialize(address steezTokenAddress) public onlyExecutive initializer {
+    function initialize(address steezTokenAddress) public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         governanceFacetAddress = ds.governanceFacetAddress;
-        
-        ReentrancyGuardUpgradeable.__ReentrancyGuard_init();
     }
 
-        function proposeBenefitChangeWithMetadata(
-            string memory benefitDescription, 
+        function proposeBenefitChange(
+            string memory benefits, 
             bytes memory callData, 
             string memory metadataURI
         ) public {
-            uint256 proposalId = _propose(callData, benefitDescription);
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            uint256 proposalId = _propose(callData, benefits);
 
-            ds.proposal.benefitDescription = benefitDescription;
+            ds.proposal.benefits = benefits;
             ds.proposal.callData = callData;
             ds.proposal.metadataURI = metadataURI;
 
-            emit ProposalCreated(proposalId, benefitDescription);
+            emit ProposalCreated(proposalId, benefits);
         }
 
         function createTimelockedProposal(
             bytes memory callData,
-            string memory benefitDescription,
+            string memory benefits,
             uint256 unlockTime
         ) public {
-            uint256 proposalId = _propose(callData, benefitDescription);
+            uint256 proposalId = _propose(callData, benefits);
             // Time-locked proposal creation logic here involving unlockTime
-            emit ProposalCreated(proposalId, benefitDescription);
+            emit ProposalCreated(proposalId, benefits);
         }
 
         function proposeCategoryChange(
@@ -84,7 +65,7 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable, Initializable {
         }
 
         // Voting on proposals
-        function voteOnProposal(uint256 proposalId, bool support) public onlyInvestor {
+        function voteOnProposal(uint256 proposalId, bool support) public onlyRole(accessControl.INVESTOR_ROLE()) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Voting logic here
             if(support) {
@@ -109,7 +90,12 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable, Initializable {
             return totalVotes >= (totalVotingPower * quorumPercentage / 100);
         }
 
-        function delegateVote(address delegatee) public onlyInvestor {
+        function getTotalVotingPower(uint256 profileId) public view returns (uint256) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+            return ds.profiles[profileId].stakingBalance;
+        }
+
+        function delegateVote(address delegatee) public onlyRole(accessControl.INVESTOR_ROLE()) {
             require(delegatee != address(0), "Cannot delegate to zero address.");
             voteDelegations[msg.sender] = delegatee;
         }
@@ -120,47 +106,102 @@ contract GovernanceFacet is Initializable, OwnableUpgradeable, Initializable {
         }
 
         // Execute approved proposals
-        function executeProposal(uint256 proposalId) public onlyCreator onlyTeam {
+        function executeProposal(uint256 proposalId) public onlyRole(accessControl.CREATOR_ROLE()) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(hasMetQuorum(proposalId), "Quorum not met.");
-            SIP storage sip = ds.sips[proposalId];
-            require(!sip.executed, "Proposal already executed.");
+            require(!ds.sips.executed, "Proposal already executed.");
             
-            (bool success, ) = address(this).delegatecall(sip.callData); // Ensure security around delegatecall usage
+            (bool success, ) = address(this).delegatecall(ds.proposals.callData); // Ensure security around delegatecall usage
             require(success, "Proposal execution failed.");
             
-            sip.executed = true;
+            ds.sips.executed = true;
             emit ProposalExecuted(proposalId);
         }
 
-        function getProposalHistory(uint256 proposalId) public view returns (Proposal memory) {
-            // Fetch and return the history of a proposal
-            return proposalHistory[proposalId];
-        }
-
-        // Propose a new proposal
-        function propose(bytes memory callData, string memory benefitDescription) public returns (uint256) {
+        function getProposalHistory(uint256 proposalId) public view returns (
+            address proposer,
+            uint256 startBlock,
+            uint256 endBlock,
+            string memory benefits,
+            bytes memory callData,
+            string memory metadataURI,
+            bool executed,
+            uint256 forVotes,
+            uint256 againstVotes
+        ) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            // Proposal logic here
-            // ...
+            LibDiamond.Proposal memory proposal = ds.proposalHistory[proposalId];
+
+            return (
+                proposal.proposalId,
+                proposal.proposer,
+                proposal.startBlock,
+                proposal.endBlock,
+                proposal.benefits,
+                proposal.callData,
+                proposal.metadataURI,
+                proposal.executed,
+                proposal.forVotes,
+                proposal.againstVotes
+            );
         }
 
-        function cancelProposal(uint256 proposalId) public {
+        function _propose(bytes memory callData, string memory benefits, string memory metadataURI) public onlyRole(accessControl.INVESTOR_ROLE()) returns (uint256) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+
+            // Increment the proposal count to get a new proposal ID
+            ds.proposalCount++;
+
+            // Create a new proposal
+            LibDiamond.Proposal memory newProposal;
+            newProposal.proposalId = ds.proposalCount;
+            newProposal.proposer = msg.sender;
+            newProposal.startBlock = block.number;
+            newProposal.endBlock = block.number + ds.votingPeriod;
+            newProposal.benefits = benefits;
+            newProposal.callData = callData;
+            newProposal.metadataURI = metadataURI;
+            newProposal.executed = false;
+            newProposal.forVotes = 0;
+            newProposal.againstVotes = 0;
+
+            // Add the new proposal to the proposal history
+            ds.proposalHistory[ds.proposalCount] = newProposal;
+
+            // Emit a ProposalCreated event
+            emit ProposalCreated(ds.proposalCount, msg.sender, benefits, callData, metadataURI);
+
+            return ds.proposalCount;
+        }
+
+        function cancelProposal(uint256 proposalId) public onlyRole(accessControl.MODERATOR_ROLE()) {
             // Proposal cancellation logic here
-            cancel(proposalId);
             emit ProposalCancelled(proposalId);
         }
 
-        function amendProposal(uint256 proposalId, string memory newDescription, bytes memory newCallData) public {
+        function amendProposal(uint256 proposalId, string memory newDescription, bytes memory newCallData) public onlyRole(accessControl.MODERATOR_ROLE()) {
             // Proposal amendment logic here
-            amend(proposalId, newDescription, newCallData);
             emit ProposalAmended(proposalId, newDescription);
         }
 
         // Cast a vote on a proposal
-        function castVote(uint256 proposalId, uint8 vote) public {
+        function castVote(uint256 proposalId, uint8 vote) public onlyRole(accessControl.INVESTOR_ROLE()) {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            // Voting logic here
-            // ...
+            LibDiamond.Proposal storage proposal = ds.proposalHistory[proposalId];
+
+            require(proposal.proposer != address(0), "Proposal does not exist");
+            require(proposal.executed == false, "Proposal already executed");
+            require(vote == 0 || vote == 1, "Invalid vote value");
+
+            uint256 votingPower = getTotalVotingPower(msg.sender);
+
+            if (vote == 1) {
+                proposal.forVotes += votingPower;
+            } else {
+                proposal.againstVotes += votingPower;
+            }
+
+            emit VoteCast(msg.sender, proposalId, vote == 1);
         }
 
         // Execute a proposal

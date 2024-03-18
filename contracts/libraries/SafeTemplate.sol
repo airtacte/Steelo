@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 contract SafeTemplate is OwnableUpgradeable {
     address[] public owners;
     uint256 public threshold;
-
     function setup(
         address[] memory _owners,
         uint256 _threshold,

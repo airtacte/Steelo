@@ -8,10 +8,9 @@ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-contract BazaarFacet is Initializable {
+contract BazaarFacet is AccessControlFacet {
     address bazaarFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -29,13 +28,9 @@ contract BazaarFacet is Initializable {
     event CreatorTokenBid(uint256 indexed creatorId, uint256 amount, address bidder);
     event LiquidityAdded(uint256 indexed creatorId, uint256 amountSteez, uint256 amountGBPT, uint256 liquidity);
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
 
     // Initialize BazaarFacet setting the contract owner
-    function initialize() external onlyExecutive initializer {
+    function initialize() external onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         bazaarFacetAddress = ds.bazaarFacetAddress;
 
@@ -59,83 +54,83 @@ contract BazaarFacet is Initializable {
             // use marketListing function to store listing details
         }
 
-        function marketListing(uint256 creatorId) external view {
-            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            return ds.listings[creatorId];
-        }
+    function marketListing(uint256 creatorId) external view {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        return ds.listings[creatorId];
+    }
 
-        // Function to bid on CreatorTokens (Steez)
-        // Note: Integrate with Uniswap for auctions
-        function bidCreatorToken(uint256 creatorId, uint256 amount) external payable {
-            // Find equivalent of "uniswap.bid(creatorId, amount);"
-            emit CreatorTokenBid(creatorId, amount, msg.sender);
-        }
+    // Function to bid on CreatorTokens (Steez)
+    // Note: Integrate with Uniswap for auctions
+    function bidCreatorToken(uint256 creatorId, uint256 amount) external payable {
+        // Find equivalent of "uniswap.bid(creatorId, amount);"
+        emit CreatorTokenBid(creatorId, amount, msg.sender);
+    }
 
-        // Function to buy CreatorTokens (Steez)
-        // Note: Integrate with Uniswap v4 and GPBToken for trading and token pools
-        function buyCreatorToken(uint256 creatorId, uint256 amount) external payable {
-            // Find equivalent of "uniswap.swap(creatorId, amount);"
-            emit CreatorTokenPurchased(creatorId, amount, msg.sender);
-        }
+    // Function to buy CreatorTokens (Steez)
+    // Note: Integrate with Uniswap v4 and GPBToken for trading and token pools
+    function buyCreatorToken(uint256 creatorId, uint256 amount) external payable {
+        // Find equivalent of "uniswap.swap(creatorId, amount);"
+        emit CreatorTokenPurchased(creatorId, amount, msg.sender);
+    }
 
-        function _addLiquidityForToken(uint256 creatorId, int24 tickLower, int24 tickUpper, int128 liquidityDelta) internal {
-            /*
-            IPoolManager.PoolKey memory key = IPoolManager.PoolKey({
-                token0: steezId,
-                token1: gbpt,
-                fee: feeAmount
-            });
+    function _addLiquidityForToken(uint256 creatorId, int24 tickLower, int24 tickUpper, int128 liquidityDelta) internal {
+        /*
+        IPoolManager.PoolKey memory key = IPoolManager.PoolKey({
+            token0: steezId,
+            token1: gbpt,
+            fee: feeAmount
+        });
 
-            IPoolManager.ModifyLiquidityParams memory params = IPoolManager.ModifyLiquidityParams({
-                tickLower: tickLower,
-                tickUpper: tickUpper,
-                liquidityDelta: liquidityDelta
-            });
+        IPoolManager.ModifyLiquidityParams memory params = IPoolManager.ModifyLiquidityParams({
+            tickLower: tickLower,
+            tickUpper: tickUpper,
+            liquidityDelta: liquidityDelta
+        });
 
-            bytes calldata hookData = ""; // replace with actual hook data if needed
+        bytes calldata hookData = ""; // replace with actual hook data if needed
 
-            IPoolManager.BalanceDelta memory delta = uniswap.modifyLiquidity(key, params, hookData);
+        IPoolManager.BalanceDelta memory delta = uniswap.modifyLiquidity(key, params, hookData);
 
-            emit LiquidityAdded(creatorId, delta.amount0, delta.amount1, delta.liquidity);
-            */
-        }
+        emit LiquidityAdded(creatorId, delta.amount0, delta.amount1, delta.liquidity);
+        */
+    }
 
-        // Implementation example (adjust according to your logic)
-        // After the last line of the contract
-        function _addLiquidity(address uniswapAddress, address steezId, uint256 additionalgbptAmount, uint256 additionalsteezAmount) internal {
-            // Your logic here
-        }
+    // Implementation example (adjust according to your logic)
+    // After the last line of the contract
+    function _addLiquidity(address uniswapAddress, address steezId, uint256 additionalgbptAmount, uint256 additionalsteezAmount) internal {
+        // Your logic here
+    }
 
-        // Function to provide network/taste-based suggestions
-        // Note: To be developed based on user activity and preferences
-        function getSuggestions() external view returns (uint256[] memory) {
-            // Placeholder for suggestions logic
-            // Utilize off-chain data analysis for recommendations, return a list of suggested creatorId's
-        }
+    // Function to provide network/taste-based suggestions
+    // Note: To be developed based on user activity and preferences
+    function getSuggestions() external view returns (uint256[] memory) {
+        // Placeholder for suggestions logic
+        // Utilize off-chain data analysis for recommendations, return a list of suggested creatorId's
+    }
 
-        // Function to search/query CreatorTokens, content, or creators
-        // Note: Utilize off-chain search engine or on-chain metadata for queries
-        function search(string memory query) external view returns (uint256[] memory) {
-            // Placeholder for search logic
-            // Return a list of relevant creatorId's or content IDs based on the query
-        }
+    // Function to search/query CreatorTokens, content, or creators
+    // Note: Utilize off-chain search engine or on-chain metadata for queries
+    function search(string memory query) external view returns (uint256[] memory) {
+        // Placeholder for search logic
+        // Return a list of relevant creatorId's or content IDs based on the query
+    }
 
-        // Function to view platform-wide analytics
-        // Note: Aggregate data from Uniswap v4 pools and on-chain activity
-        function viewAnalytics() external view {
-            // Placeholder for analytics logic
-            // Display insights into market trends, top creators, and token performance
-        }
+    // Function to view platform-wide analytics
+    // Note: Aggregate data from Uniswap v4 pools and on-chain activity
+    function viewAnalytics() external view {
+        // Placeholder for analytics logic
+        // Display insights into market trends, top creators, and token performance
+    }
 
-        // Function for creators to pay for blog placements
-        // Note: Implement a system for transaction-based revenue sharing with readers
-        function payForBlogPlacement(uint256 amount, string memory content) external payable {
-            require(msg.value >= amount, "Insufficient payment");
-            uint256 platformShare = msg.value / 2; // Steelo takes a 50% cut
-            // Assuming a mechanism to distribute the remaining to users engaging with the content
-            // Platform share handling logic here (e.g., transfer to Steelo treasury)
-            emit BlogPlacementPaid(content, amount, msg.sender);
-        }
+    // Function for creators to pay for blog placements
+    // Note: Implement a system for transaction-based revenue sharing with readers
+    function payForBlogPlacement(uint256 amount, string memory content) external payable {
+        require(msg.value >= amount, "Insufficient payment");
+        uint256 platformShare = msg.value / 2; // Steelo takes a 50% cut
+        // Assuming a mechanism to distribute the remaining to users engaging with the content
+        // Platform share handling logic here (e.g., transfer to Steelo treasury)
+        emit BlogPlacementPaid(content, amount, msg.sender);
+    }
 
-        // Additional core functions and utilities as necessary
+    // Additional core functions and utilities as necessary
 }

@@ -3,7 +3,7 @@
 pragma solidity ^0.8.10;
 
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
-import { ConstDiamond } from "./ConstDiamond.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
@@ -21,35 +21,114 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
+    bytes32 constant EXECUTIVE_ROLE = keccak256("EXECUTIVE_ROLE");
 
+// // STRUCTS DEFINED WITHIN DIAMOND STORAGE STRUCT // //
     struct RoleData {
         mapping(address => bool) members;
         bytes32 adminRole;
     }
 
     struct Snapshot {
-        uint256 id;
+        uint256 snapshotId;
         uint256 timestamp;
         uint256 value;
-        mapping(address => uint256) balances;
+        mapping(address => mapping(uint256 =>uint256)) balances;
+    }
+
+    struct Constants {
+        // Tokenomics for STEELO
+        uint256 TGE_AMOUNT;
+        uint256 pMin;
+        uint256 pMax;
+        uint256 rho;
+        uint256 alpha;
+        uint256 beta;
+        uint256 delta;
+        uint256 MIN_MINT_RATE;
+        uint256 MAX_MINT_RATE;
+        uint256 MIN_BURN_RATE;
+        uint256 MAX_BURN_RATE;
+
+        // Tokenomics for STEEZ
+        uint256 AUCTION_DURATION;
+        uint256 PRE_ORDER_SUPPLY;
+        uint256 LAUNCH_SUPPLY;
+        uint256 EXPANSION_SUPPLY;
+        uint256 TRANSACTION_MULTIPLIER;
+        uint256 INITIAL_PRICE;
+        uint256 PRICE_INCREMENT;
+        uint256 TOKEN_BATCH_SIZE;
+        uint256 PRE_ORDER_CREATOR_ROYALTY;
+        uint256 PRE_ORDER_STEELO_ROYALTY;
+        uint256 LAUNCH_CREATOR_ROYALTY;
+        uint256 LAUNCH_STEELO_ROYALTY;
+        uint256 LAUNCH_COMMUNITY_ROYALTY;
+        uint256 SECOND_HAND_SELLER_ROYALTY;
+        uint256 SECOND_HAND_CREATOR_ROYALTY;
+        uint256 SECOND_HAND_STEELO_ROYALTY;
+        uint256 SECOND_HAND_COMMUNITY_ROYALTY;
+
+        // Stakeholder's royalty distribution
+        address treasury;
+        uint256 trasuryTGE;
+        uint256 treasuryMint;
+        address liquidityProviders;
+        uint256 liquidityProvidersMint;
+        address ecosystemProviders;
+        uint256 ecosystemProvidersMint;
+        address foundersAddress;
+        uint256 foundersTGE;
+        address earlyInvestorsAddress;
+        uint256 earlyInvestorsTGE;
+        address communityAddress;
+        uint256 communityTGE;
+        address steeloAddress;
+        uint256 FEE_RATE;
+        address uniswapAddress;
+        address gbptAddress;
+
+        // Safe Global - Addresses to be replaced
+        address SAFE_PROXY_FACTORY_ADDRESS;
+        address SAFE_MASTER_COPY;
+
+        // Chainlink
+        address CHAINLINK_TOKEN_ADDRESS;
+        uint256 CHAINLINK_FEE;
+
+        // Utility Constants
+        uint256 oneYear;
+        uint256 oneWeek;
     }
 
     struct Proposal {
-        string benefitDescription;
+        uint256 proposalId;
+        address proposer;
+        uint256 startBlock;
+        uint256 endBlock;
+        string benefits;
         bytes callData;
         string metadataURI;
-        // Add other necessary fields
+        bool executed;
+        uint256 forVotes;
+        uint256 againstVotes;
     }
-
-    enum SIPType { Platform, Creator, Investor }
 
     struct SIP {
         uint256 sipId;
-        SIPType sipType;
+        string sipType;
+        string title;
         string description;
         address proposer;
-        uint256 voteCountFor;
-        uint256 voteCountAgainst;
+        string proposerRole;
+        uint256 voteCountForSteelo;
+        uint256 voteCountAgainstSteelo;
+        uint256 voteCountForCreator;
+        uint256 voteCountAgainstCreator;
+        uint256 voteCountForCommunity;
+        uint256 voteCountAgainstCommunity;
+        uint256 startTime;
+        uint256 endTime;
         bool executed;
         mapping(address => bool) votes;
     }
@@ -71,28 +150,22 @@ library LibDiamond {
         Royalty royalties; // Integrated Royalty struct for managing royalties
     }
 
-    struct Royalty {
-        uint256 totalRoyalties; // in Steelo, equiv. to 10% of the price of Steez transacted on Bazaar
-        uint256 unclaimedRoyalties; // Total unclaimed royalties for this Steez
-        uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
-        uint256 investorRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
-        uint256 steeloRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
-        mapping(Profile => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
-        mapping(Profile => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
-    }
-    
     struct Profile {
         uint256 profileId;
         bool verified;
         string username;
         string walletAddress;
         string avatarURI;
+        uint256 steeloBalance;
+        uint256 stakingBalance;
         mapping(uint256 => Content) collection;
         mapping(uint256 => Profile) followers;
     }
 
     struct Investor {
+        uint256 investorId;
         uint256 profileId; // ID of investor profiles
+        address walletAddress; // address of investor
         bool isInvestor;
         mapping(uint256 => Steez) portfolio; // range and quantity of Steez owned investors
     }
@@ -106,6 +179,16 @@ library LibDiamond {
         mapping(uint256 => Contributor[]) credits; // Assuming Contributor is a struct that represents a contributor
     }
 
+    struct Royalty {
+        uint256 totalRoyalties; // in Steelo, equiv. to 10% of the price of Steez transacted on Bazaar
+        uint256 unclaimedRoyalties; // Total unclaimed royalties for this Steez
+        uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
+        uint256 investorRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
+        uint256 steeloRoyalties; // in Steelo, equiv. to 2.5% of the price of Steez transacted on Bazaar
+        mapping(uint256 => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
+        mapping(uint256 => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
+    }
+    
     struct Content {
         uint256 contentId;
         uint256 creatorId;
@@ -159,6 +242,7 @@ library LibDiamond {
         uint256 facetAddressPosition;
     }
 
+// // DIAMOND STORAGE STRUCT CALLED BY ALL FACETS // //
     struct DiamondStorage {
         // Standard Diamond Storage Mappings
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
@@ -166,7 +250,8 @@ library LibDiamond {
         mapping(bytes4 => bool) supportedInterfaces;
         address[] facetAddresses;
         address contractOwner;
-        ConstDiamond constants; // reference to contracts\libraries\ConstDiamond.sol
+        Constants constants; // reference to contracts\libraries\ConstDiamond.sol
+        mapping(address => uint256) treasury;
 
         // FACETS
         address constDiamondAddress;
@@ -197,24 +282,25 @@ library LibDiamond {
         address steezFacetAddress;
 
         // STRUCT REFERENCES
-        mapping(uint256 => SIP) sips; // From SipId to SIP
-        mapping(uint256 => Snapshot) snapshots; // for snapshotFacet
+        IERC20 steelo; 
+        mapping(uint256 => Steez) steez; // From creatorId to Steez (list of investors)
+        mapping(uint256 => Steez) portfolios; // From profileId to Steez (list of investments)
         mapping(uint256 => Profile) profiles; // From profileId to Profile
         mapping(uint256 => Creator) creators; // From creatorId to Creator
         mapping(address => Investor) investors; // From investor address to Investor
         mapping(uint256 => Contributor) contributors; // From contributorId to Contributor
-        mapping(uint256 => Steez) steez; // From creatorId to Steez (list of investors)
-        mapping(uint256 => Steez) portfolios; // From profileId to Steez (list of investments)
+        mapping(uint256 => SIP) sips; // From SipId to SIP
+        mapping(uint256 => Snapshot) snapshots; // for snapshotFacet
         mapping(uint256 => Royalty) royalties; // From creatorId to QueuedRoyalty
         mapping(uint256 => Content) content; // From contentId to Content Firebase Document
         mapping(uint256 => SpaceData) spaces; // content playlist for Profile
         mapping(uint256 => FailedPayment[]) failedPayments; // fail queue for Bazaar
+        QueuedRoyalty[] royaltyQueue; // Array of creatorId, amount and recipients
         mapping(uint256 => Listing) listings; // creatorId for Bazaar
         mapping(uint256 => Proposal) proposals; // proposals for SIP
         mapping(uint256 => Creator) analytics; // creatorId analytics for Profile 
         uint256[] allCreatorIds; // Tracks all verified, launched Steez via their creatorIds
-        QueuedRoyalty[] royaltyQueue; // Array of creatorId, amount and recipients
-
+        
         // ACCESS CONTROL
         mapping(bytes32 => RoleData) roles;
         mapping(address => bool) executiveMembers;
@@ -231,6 +317,10 @@ library LibDiamond {
         mapping(address => bool) moderatorMembers;
         mapping(address => bool) subscriberMembers;
 
+        // SNAPSHOTS
+        uint256 snapshotCounter;
+        uint256 lastSnapshotTimestamp;
+
         // STEELOFACET VARIABLES
         uint256 steeloCurrentPrice;
         uint256 totalMinted; 
@@ -244,6 +334,8 @@ library LibDiamond {
         uint256 totalTransactionCount; // sum of all steez.transactionCount
         bool tgeExecuted;
         bool isDeflationary;
+        uint256[] sipIds; // Array to keep track of all sipIds
+        uint256 lastSipId; // Last SIP ID
         mapping(address => uint256) stakes;
         mapping(address => bool) isStakeholder;
         mapping(address => uint256) stakeDuration;
@@ -260,7 +352,8 @@ library LibDiamond {
         // Chainlink parameters
         mapping(bytes32 => address) oracleAddresses; // JobID to Oracle Address mapping
         mapping(bytes32 => bytes32) jobIds; // Functionality to JobID mapping
-    
+        mapping(bytes32 => uint256) fees; // JobID to Payment mapping
+
         // Safe
         mapping(bytes32 => address) verificationRequests;
     }
@@ -270,7 +363,6 @@ library LibDiamond {
     // KEY STORAGE FUNCTION //
 
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
-
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
         assembly {
@@ -303,8 +395,12 @@ library LibDiamond {
         owner_ = ds.contractOwner;
     }
     
+    function checkRole(bytes32 role, address account) internal view returns (bool) {
+        DiamondStorage storage ds = diamondStorage();
+        return ds.roles[role].members[account];
+    }
+    
     // KEY FACET FUNCTIONS //
-
     function diamondCut(
         IDiamondCut.FacetCut[] memory _diamondCut,
         address _init,
@@ -382,7 +478,6 @@ library LibDiamond {
         ds.facetFunctionSelectors[_facetAddress].facetAddressPosition = ds.facetAddresses.length;
         ds.facetAddresses.push(_facetAddress);
     }    
-
     function addFunction(DiamondStorage storage ds, bytes4 _selector, uint96 _selectorPosition, address _facetAddress) internal {
         ds.selectorToFacetAndPosition[_selector].functionSelectorPosition = _selectorPosition;
         ds.facetFunctionSelectors[_facetAddress].functionSelectors.push(_selector);

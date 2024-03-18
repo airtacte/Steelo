@@ -8,14 +8,13 @@ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
  * @title MosaicFacet
  * A contract to manage content interactions on the Steelo platform,
  * supporting features like collect, follow, like, comment, invest, and credits.
  */
-contract MosaicFacet is OwnableUpgradeable, Initializable {
+contract MosaicFacet is AccessControlFacet {
     address mosaicFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -37,12 +36,7 @@ contract MosaicFacet is OwnableUpgradeable, Initializable {
     event CreditAssigned(uint256 contentId, address contributor, uint256 proportion);
     event ExclusivitySet(uint256 contentId, uint8 exclusivityLevel);
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
-
-    function initialize(address _lens, address _steez) external onlyExecutive initializer {
+    function initialize(address _lens, address _steez) external onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         mosaicFacetAddress = ds.mosaicFacetAddress;
         
@@ -54,7 +48,7 @@ contract MosaicFacet is OwnableUpgradeable, Initializable {
      * This is a simplified representation. The actual function would
      * need to interact with an ERC721 or ERC1155 contract.
      */
-    function collectContent(uint256 contentId) public {
+    function collectContent(uint256 contentId) public onlyRole(accessControl.INVESTOR_ROLE()) {
         require(checkExclusivity(contentId, msg.sender), "Not eligible to collect this content");
         // Mint NFT or call an external contract to handle NFT creation
         // Placeholder for actual NFT minting logic
@@ -65,28 +59,33 @@ contract MosaicFacet is OwnableUpgradeable, Initializable {
     /**
      * @dev Integrates with the Lens Protocol to follow a user.
      */
-    function follow(address userToFollow) public {
+    function follow(address userToFollow) public onlyRole(accessControl.USER_ROLE()) {
         // Placeholder for actual follow logic using Lens Protocol
         lens.follow(userToFollow);
         emit Followed(msg.sender, userToFollow);
     }
 
-    function like(uint256 contentId) external {
+    function like(uint256 contentId) external onlyRole(accessControl.USER_ROLE()) {
         // Placeholder: Actual like logic
         emit Liked(msg.sender, contentId);
     }
 
-    function commentOnContent(uint256 contentId, string calldata comment) external {
+    function commentOnPublicContent(uint256 contentId, string calldata comment) external onlyRole(accessControl.USER_ROLE()) {
         // Placeholder: Actual comment logic
         emit Commented(msg.sender, contentId, comment);
     }
 
-    function invest(address creator, uint256 amount) external {
+    function commentOnExclusiveContent(uint256 contentId, string calldata comment) external onlyRole(accessControl.INVESTOR_ROLE()) {
+        // Placeholder: Actual comment logic
+        emit Commented(msg.sender, contentId, comment);
+    }
+
+    function invest(address creator, uint256 amount) external onlyRole(accessControl.USER_ROLE()) {
         // Placeholder: Actual invest logic, possibly involving STEEZ purchase
         emit Invested(msg.sender, creator, amount);
     }
 
-    function assignCredit(uint256 contentId, address contributor, uint256 proportion) external onlyOwner {
+    function assignCredit(uint256 contentId, address contributor, uint256 proportion) external onlyRole(accessControl.CREATOR_ROLE()) {
         // Placeholder: Actual credit assignment logic
         emit CreditAssigned(contentId, contributor, proportion);
     }
@@ -95,7 +94,7 @@ contract MosaicFacet is OwnableUpgradeable, Initializable {
      * @dev Sets the exclusivity level for a piece of content.
      * Can only be called by the content creator or an authorized user.
      */
-    function setExclusivity(uint256 contentId, uint8 exclusivityLevel) public onlyOwner {
+    function setExclusivity(uint256 contentId, uint8 exclusivityLevel) public onlyRole(accessControl.CREATOR_ROLE()) {
         contentExclusivity[contentId] = exclusivityLevel;
     }
 

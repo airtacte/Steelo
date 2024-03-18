@@ -379,7 +379,7 @@ Folder: steez
 ------ import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 ------ import { BazaarFacet } from "../features/BazaarFacet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ---- Functions:
 ------ initialize requires: address steezTokenAddress
 ------ voteOnProposal requires: uint256 proposalId, bool support

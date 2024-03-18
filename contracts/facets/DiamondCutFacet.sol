@@ -10,19 +10,15 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
 
-contract DiamondCutFacet is IDiamondCut, OwnableUpgradeable {
+contract DiamondCutFacet is IDiamondCut, AccessControlFacet, OwnableUpgradeable {
     uint256 public constant facetVersion = 1;
     event FacetAdded(address indexed facetAddress, bytes4[] functionSelectors);
 
     AccessControlFacet accessControl; // Instance of the AccessControlFacet
     constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
     
-    function initialize() public onlyExecutive initializer {
+    function initialize() public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
     }
 
     /// @notice Add/replace/remove any number of functions and optionally execute
@@ -35,7 +31,7 @@ contract DiamondCutFacet is IDiamondCut, OwnableUpgradeable {
         FacetCut[] calldata _diamondCut,
         address _init,
         bytes calldata _calldata
-    ) external override onlyOwner {
+    ) external override onlyRole(accessControl.EXECUTIVE_ROLE()) {
         // Validation should be part of the loop processing _diamondCut
         for (uint256 i = 0; i < _diamondCut.length; i++) {
             require(_diamondCut[i].facetAddress != address(0), "Invalid address");

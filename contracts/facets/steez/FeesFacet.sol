@@ -4,14 +4,12 @@ pragma solidity ^0.8.10;
 
 import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { STEEZFacet } from "./STEEZFacet.sol";
 import { STEELOFacet } from "../steelo/STEELOFacet.sol";
-import { AccessControlFacet } from "../app/AccessControlFacet.sol";
 import { SnapshotFacet } from "../app/SnapshotFacet.sol"; // To setup 
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializable {
+contract FeesFacet is AccessControlFacet {
     address feesFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
     
@@ -23,23 +21,14 @@ contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializa
     event RoyaltiesDistributed(address indexed from, address indexed to, uint256 indexed creatorId, uint256 amount, uint256 creatorFee, uint256 steeloFee, uint256 communityFee, bytes data);
     event FailedPaymentQueued(uint256 indexed creatorId, address indexed recipient, uint256 amount);
 
-    modifier onlyExecutive() {
-        require(accessControl.hasRole(accessControl.EXECUTIVE_ROLE(), msg.sender), "AccessControl: caller is not an executive");
-        _;
-    }
-
-    function initialize(address owner) public onlyExecutive initializer {
+    function initialize(address owner) public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         feesFacetAddress = ds.feesFacetAddress;
-        
-        __ReentrancyGuard_init();
-        transferOwnership(owner);
     }
 
         // Called by STEEZFacet.payRoyalties from function transferSteez
-        function payRoyalties(uint256 creatorId, uint256 amount, address from, address to, bytes memory data) external payable nonReentrant {
+        function payRoyalties(uint256 creatorId, uint256 amount, address from, address to, bytes memory data) external payable onlyRole(accessControl.ADMIN_ROLE())  nonReentrant {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-            require(ds.accessControlFacet.hasRole(ROLE_OPERATOR, msg.sender) || msg.sender == address(this), "Royalties: Unauthorized caller");
 
             uint256 creatorFee = calculateCreatorFee(creatorId, amount);
             uint256 steeloFee = calculateSteeloFee(creatorId, amount);
@@ -119,7 +108,7 @@ contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializa
             require(success, "Royalties: Creator fee transfer failed");
 
             // Pay the platform its royalty
-            (success, ) = payable(ds.constants.steeloAddresss).call{value: steeloFee}("");
+            (success, ) = payable(ds.constants.steeloAddress).call{value: steeloFee}("");
             require(success, "Royalties: Steelo fee transfer failed");
 
             // Distribute the community fee
@@ -151,7 +140,7 @@ contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializa
         function queueFailedRoyaltyPayment(uint256 creatorId, uint256 amount, address payable recipient) internal {
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             // Add the failed payment to the queue
-            ds.failedPayments[creatorId].push(FailedPayment(amount, recipient));
+            ds.failedPayments[creatorId].push(ds.FailedPayment(amount, recipient));
 
             // Emit an event for transparency
             emit FailedPaymentQueued(creatorId, recipient, amount);
@@ -199,15 +188,16 @@ contract FeesFacet is OwnableUpgradeable, ReentrancyGuardUpgradeable, Initializa
             LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(_amount > 0, "Royalties: Amount must be greater than zero");
             require(isValidParticipant(_recipient), "Royalties: Invalid recipient");
-            ds.royaltyQueue.push(QueuedRoyalty({creatorId: _creatorId, amount: _amount, recipient: _recipient}));
+            ds.royaltyQueue.push(ds.QueuedRoyalty({creatorId: _creatorId, amount: _amount, recipient: _recipient}));
         }
 
-        function processRoyaltyQueue() public onlyAdmin {
+        function processRoyaltyQueue() public onlyRole(accessControl.ADMIN_ROLE()) {
+            LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
             require(ds.royaltyQueue.length > 0, "Royalties: No royalties to process");
             uint256 totalRoyaltiesProcessed = 0;
 
             for (uint i = 0; i < ds.royaltyQueue.length; i++) {
-                QueuedRoyalty memory queuedPayment = ds.royaltyQueue[i];
+                LibDiamond.QueuedRoyalty memory queuedPayment = ds.royaltyQueue[i];
                 require(queuedPayment.amount > 0, "Royalties: Invalid amount");
                 require(isValidParticipant(queuedPayment.recipient), "Royalties: Invalid recipient");
 

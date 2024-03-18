@@ -47,16 +47,20 @@ service cloud.firestore {
     function isAdmin(userId) {
       return get(/databases/$(database)/documents/Admins/$(userId)).exists;
     }
+
     function isSteeloOwner(userId, steeloId) {
       return get(/databases/$(database)/documents/Steelo/$(steeloId)).data.ownerId == userId;
     }
+
     function isSteezOwner(userId, steezId) {
       return get(/databases/$(database)/documents/Creator/{creatorId}/Steez/$(steezId)).data.ownerId == userId;
     }
+
     function isTransactionParticipant(userId, transactionId) {
       let transaction = get(/databases/$(database)/documents/{path}/Transactions/$(transactionId));
       return transaction.data.sellerId == userId || transaction.data.buyerId == userId;
     }
+
     function isSIPParticipant(userId, sipId) {
       let sip = get(/databases/$(database)/documents/SIP/$(sipId));
       return sip.data.initiator == userId || sip.data.votes.hasAny([userId]);
