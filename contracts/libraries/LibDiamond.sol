@@ -91,6 +91,7 @@ library LibDiamond {
         // Safe Global - Addresses to be replaced
         address SAFE_PROXY_FACTORY_ADDRESS;
         address SAFE_MASTER_COPY;
+        uint256 saltNonce;
 
         // Chainlink
         address CHAINLINK_TOKEN_ADDRESS;
@@ -112,6 +113,7 @@ library LibDiamond {
         bool executed;
         uint256 forVotes;
         uint256 againstVotes;
+        mapping(uint256 => bytes) proposalHashes;
     }
 
     struct SIP {
@@ -167,7 +169,7 @@ library LibDiamond {
         uint256 profileId; // ID of investor profiles
         address walletAddress; // address of investor
         bool isInvestor;
-        mapping(uint256 => Steez) portfolio; // range and quantity of Steez owned investors
+        mapping(uint256 => uint256) portfolio; // range and quantity of Steez owned investors
     }
 
     struct Creator {
@@ -180,6 +182,7 @@ library LibDiamond {
     }
 
     struct Royalty {
+        uint256 creatorId; // ID of creator
         uint256 totalRoyalties; // in Steelo, equiv. to 10% of the price of Steez transacted on Bazaar
         uint256 unclaimedRoyalties; // Total unclaimed royalties for this Steez
         uint256 creatorRoyalties; // in Steelo, equiv. to 5% of the price of Steez transacted on Bazaar
@@ -280,6 +283,8 @@ library LibDiamond {
         address governanceFacetAddress;
         address managementFacetAddress;
         address steezFacetAddress;
+            // safe
+        address safeTemplateAddress;
 
         // STRUCT REFERENCES
         IERC20 steelo; 

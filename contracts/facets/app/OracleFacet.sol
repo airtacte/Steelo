@@ -60,16 +60,16 @@ contract OracleFacet is ChainlinkClient, AccessControlFacet {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(_priceFeed);
         (, price, , , ) = priceFeed.latestRoundData();
         emit PriceUpdated(_priceFeed, price);
-        ds.steez.currentPrice[creatorId] = uint256(price);
+        ds.steez[creatorId].currentPrice = uint256(price);
     }
 
     // Getter functions for state variables
-    function getSteezTransactionCount() external view returns (uint256) {
+    function getSteezTransactionCount(uint256 creatorId) external view returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        return ds.steezTransactionCount;
+        return ds.steez[creatorId].transactionCount;
     }
 
-    function getSteeloCurrentPrice() external view returns (uint256) {
+    function getSteeloCurrentPrice(uint256 creatorId) external view returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.steeloCurrentPrice;
     }

@@ -31,23 +31,31 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
     event VoteVerified(uint256 proposalId, address signer, bool verified);
     event KYCVerificationCompleted(uint256 userId, bool isVerified);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    
 
     /**
      * Initialize the MultiSigFacet.
      * This function sets up the contract owner in the Diamond Storage and can include additional initialization logic as needed.
      */
-    function initialize(bytes32 functionality) external onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
+    function initialize(
+        address _treasury,
+        address _oracle,
+        string memory _jobId,
+        uint256 _fee,
+        bytes32 _jobIdKey
+    ) public
+        onlyRole(accessControl.EXECUTIVE_ROLE()) initializer
+    {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         multiSigFacetAddress = ds.multiSigFacetAddress;
 
-        bytes32 jobId = ds.jobIds[functionality];
-        oracleAddress = ds.oracleAddresses[jobId];
-        fee = ds.constants.CHAINLINK_FEE;
-        chainlinkTokenAddress = ds.constants.CHAINLINK_TOKEN_ADDRESS;
-
-        SafeProxyFactory safeProxyFactory = SafeProxyFactory(ds.safeProxyFactoryAddress());
-        address safeTemplate = ds.safeTemplateAddress(); // Ensure this is added to LibDiamond and ConstDiamond
+        // Set Chainlink parameters
+        setChainlinkOracle(_oracle);
+        ds.oracleAddresses[_jobIdKey] = _oracle;
+        ds.jobIds[_jobIdKey] = LibDiamond.stringToBytes32(_jobId);
+        ds.fees[_jobIdKey] = _fee;
+        
+        SafeProxyFactory safeProxyFactory = SafeProxyFactory(0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67);
+        address safeTemplate = ds.safeTemplateAddress;
         
         // Example: Deploy a new Safe instance using the SafeProxyFactory
         // You would also include additional logic to configure the newly created Safe according to your requirements
@@ -58,7 +66,7 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
         bytes memory data = abi.encodeWithSelector(ISafe.setup.selector, owners, threshold, address(0), "", address(0), address(0), 0, address(0));
 
         // Parameters for Safe creation could include more complex setup as required by your application
-        address newSafeAddress = safeProxyFactory.createProxy(safeTemplate, data);
+        address newSafeAddress = address(safeProxyFactory.createProxyWithNonce(safeTemplate, data, ds.constants.saltNonce));
         
         // Post-deployment configuration of the Safe, such as setting owners, threshold, etc., goes here
     }
@@ -68,12 +76,12 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         require(_owners.length >= _threshold, "Threshold cannot be higher than the number of owners");
 
-        SafeProxyFactory safeProxyFactory = SafeProxyFactory(ds.safeProxyFactoryAddress());
-        address safeTemplate = ds.safeTemplateAddress();
+        SafeProxyFactory safeProxyFactory = SafeProxyFactory(0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67);
+        address safeTemplate = ds.safeTemplateAddress;
 
         bytes memory data = abi.encodeWithSelector(ISafe.setup.selector, _owners, _threshold, address(0), "", address(0), address(0), 0, address(0));
         
-        SafeProxy proxy = safeProxyFactory.createProxy(safeTemplate, data);
+        SafeProxy proxy = safeProxyFactory.createProxyWithNonce(safeTemplate, data, ds.constants.saltNonce);
         assert(address(proxy) != address(0));
 
         // Additional setup like adding modules or setting up policies can be done here
@@ -90,7 +98,7 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
         req.add("userAddress", string(abi.encodePacked(user)));
         
         // Send the request to the Chainlink oracle
-        requestId = sendChainlinkRequestTo(ds.oracleAddresses["Trulioo"], req, ds.chainlinkFee);
+        requestId = sendChainlinkRequestTo(ds.oracleAddresses["Trulioo"], req, ds.constants.CHAINLINK_FEE);
         
         // Map the request ID to the user address for tracking
         ds.verificationRequests[requestId] = user;
@@ -99,12 +107,18 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
     // Callback function for Chainlink oracle responses
     function fulfillVerification(bytes32 _requestId, bool _isVerified) public recordChainlinkFulfillment(_requestId) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        uint256 userId = ds.verificationRequests[_requestId];
-        emit KYCVerificationCompleted(userId, _isVerified);
+        address profileAddress = ds.verificationRequests[_requestId];
+        // Assuming profileId can be directly mapped from the address
+        // This part might need adjustment based on how your profiles are keyed
+        uint256 profileId = uint256(uint160(profileAddress)); // Example conversion if profileId is indeed intended to be derived from the address
+
+        // Emitting event with converted profileId if necessary
+        emit KYCVerificationCompleted(profileId, _isVerified);
 
         // Update the contract state based on the verification result
+        // Adjust the access to the profile using the correct key
         if (_isVerified) {
-            ds.profiles[userId].verified = true;
+            ds.profiles[profileId].verified = true;
         }
     }
 
@@ -113,8 +127,9 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
     }
     
     function signActivity(address safeAddress, bytes memory activityHash, bytes memory signature) public returns (bool) {
-        SafeL2 safe = SafeL2(safeAddress); // Assuming Safe is a contract interface for a multi-signature wallet
-
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        SafeL2 safe = SafeL2(payable(0x29fcB43b46531BcA003ddC8FCB67FFE91900C762));
+        
         // Recover the signer from the signature and activityHash
         address signer = recoverSigner(activityHash, signature);
         require(signer != address(0), "Invalid signature");

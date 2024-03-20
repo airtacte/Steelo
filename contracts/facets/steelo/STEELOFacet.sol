@@ -35,7 +35,6 @@ contract STEELOFacet is ERC20Upgradeable, ChainlinkClient, AccessControlFacet {
         address _oracle,
         string memory _jobId,
         uint256 _fee,
-        address _linkToken,
         bytes32 _jobIdKey
     ) public
         onlyRole(accessControl.EXECUTIVE_ROLE()) initializer
@@ -133,6 +132,7 @@ contract STEELOFacet is ERC20Upgradeable, ChainlinkClient, AccessControlFacet {
         _beforeTokenTransfer(msg.sender, ds.constants.steeloAddress, feeAmount);
     }
 
+    // Initiated every 1,000 Steez Transactions (TBBuilt)
     function steeloMint() external onlyRole(accessControl.ADMIN_ROLE()) nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
@@ -141,7 +141,6 @@ contract STEELOFacet is ERC20Upgradeable, ChainlinkClient, AccessControlFacet {
         require(ds.steeloCurrentPrice > 0, "STEELOFacet: steeloCurrentPrice must be greater than 0");
         
         ds.mintAmount = calculateMintAmount(ds.totalTransactionCount, ds.steeloCurrentPrice);
-        // Assume 1,000
 
         // Calculate distribution amounts using ds references for percentages
         uint256 treasuryAmount = (ds.mintAmount * ds.constants.treasuryMint) / 100;

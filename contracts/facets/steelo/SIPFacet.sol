@@ -39,6 +39,11 @@ contract SIPFacet is AccessControlFacet {
         return "unknown";
     }
 
+    function getProposalHash(uint256 proposalId) public view returns (bytes memory) {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        return ds.proposals[proposalId].proposalHashes[proposalId];
+    }
+
     // When creating the SIP, store the role of the proposer
     function createSIP(string memory _title, string memory _description, uint256 _startTime, uint256 _endTime, address _proposer) external onlyRole(accessControl.ADMIN_ROLE()) nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();

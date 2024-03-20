@@ -89,6 +89,8 @@ contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, Re
         return true;
     }
 
+    // Function to update role from visitor to user after KYC approval
+
     // Function to update the staker role dynamically based on token holdings or other conditions
     function updateStakerRole(address walletAddress) external onlyRole(ADMIN_ROLE) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();

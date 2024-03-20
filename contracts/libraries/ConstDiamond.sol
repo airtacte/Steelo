@@ -92,7 +92,8 @@ contract ConstDiamond is Initializable {
         // SAFE GLOBAL - ADDRESSES TO BE REPLACED - CURRENTLY USING TREADY ADDRESS
         ds.constants.SAFE_PROXY_FACTORY_ADDRESS = address(0x07720111f3d48427e55e35CB07b5D203A4edCd08);
         ds.constants.SAFE_MASTER_COPY = address(0x07720111f3d48427e55e35CB07b5D203A4edCd08);
-
+        ds.constants.saltNonce = block.timestamp;
+        
         // CHAINLINK
         ds.constants.CHAINLINK_TOKEN_ADDRESS = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;
         ds.constants.CHAINLINK_FEE = 0.1 ether; // Represented in LINK tokens

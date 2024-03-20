@@ -13,12 +13,12 @@ contract SnapshotFacet is AccessControlFacet {
     AccessControlFacet accessControl; // Instance of the AccessControlFacet
     constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
 
-    modifier dailySnapshot() {
+    modifier dailySnapshot(uint256 creatorId) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         if (block.timestamp >= ds.lastSnapshotTimestamp + 1 days) {
-            takeSnapshot(); 
+            takeSnapshot(creatorId);
             ds.lastSnapshotTimestamp = block.timestamp;
-        } 
+        }
         _;
     }
 
@@ -34,19 +34,22 @@ contract SnapshotFacet is AccessControlFacet {
     }
 
     // Record the balance for an address at the current snapshot
-    function takeSnapshot() public {
+    function takeSnapshot(uint256 creatorId) public dailySnapshot(creatorId) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        uint256 currentId = _incrementSnapshot();
-        ds.snapshots[currentId].timestamp = block.timestamp;
-        ds.snapshots[currentId].value = ds.steez.totalSupply;
 
-        for (uint256 i = 0; i < ds.steez.totalSupply; i++) {
-            address holder = ds.steez.investors[i].walletAddress;
-            for (uint256 j = 0; j < ds.steez.creatorId; j++) {
-                uint256 steezId = ds.steez.steezId;
-                uint256 holderBalance = ds.steez.balanceOf(holder, steezId);
-                ds.snapshots[currentId].balances[holder][steezId] = holderBalance;
-            }
+        uint256 currentId = ds.snapshotCounter++;
+        LibDiamond.Snapshot storage snapshot = ds.snapshots[currentId];
+        snapshot.timestamp = block.timestamp;
+        snapshot.value = ds.steez[creatorId].totalSupply;
+
+        for (uint256 i = 0; i < ds.steez[creatorId].investors.length; i++) {
+            address holder = ds.steez[creatorId].investors[i].walletAddress;
+            uint256 steezId = ds.steez[creatorId].steezId; // Ensure steezId is correctly defined and accessible
+
+            LibDiamond.Investor storage investor = ds.steez[creatorId].investors[i];
+            uint256 holderBalance = investor.portfolio[steezId];
+
+            snapshot.balances[holder][steezId] = holderBalance;
         }
     }
 

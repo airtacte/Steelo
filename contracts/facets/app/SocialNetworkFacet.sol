@@ -12,13 +12,18 @@ contract SocialNetworkFacet is AccessControlFacet {
     address socialNetworkFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
-    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
-
     ISafe private safeCore;
     ILensHub private lensHub;
+
     mapping(address => address) private userSafes;
     mapping(address => uint256) private userProfileIds; // Mapping user address to Lens profile ID
+
+    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    constructor(address _accessControlFacetAddress, address _safeCoreAddress, address _lensHubAddress) {
+        AccessControlFacet accessControl = AccessControlFacet(_accessControlFacetAddress);
+        safeCore = ISafe(_safeCoreAddress);
+        lensHub = ILensHub(_lensHubAddress);
+    }
 
     event SafeCreated(address indexed userAddress, address safeAddress);
     event LensProfileCreated(address indexed userAddress, uint256 profileId);
