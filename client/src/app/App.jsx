@@ -5,8 +5,8 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import Routes from "./Routes";
 import rootReducer from "./reducers";
-import styles from "./-styles";
-import { ThemeProvider } from "./-themeContext";
+import styles from "./styles";
+import { ThemeProvider } from "./themeContext";
 
 const store = configureStore({
   reducer: rootReducer,
