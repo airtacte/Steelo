@@ -10,10 +10,6 @@ serviceAccountKey.json
 # Testing
 /coverage
 
-# Next.js
-/.next
-/out
-
 # Production
 /build
 
@@ -27,9 +23,19 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Vercel
-.vercel
-
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision

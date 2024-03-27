@@ -3,23 +3,30 @@
   "version": "0.0.1",
   "description": "Demo for the Steelo Tokenomic Ecosystem and Steelo's server-side application for handling backend logic, APIs, and blockchain interactions for the Steelo dApp.",
   "main": "Hardhat.config.js",
+  "functions:main": "functions/index.js",
+  "steelo:main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "dev": "nodemon index.js",
     "build": "next build",
-    "start:client": "expo start",
-    "start:server": "node index.js",
-    "lint": "next lint",
+    "steelo:start": "expo start",
+    "steelo:android": "expo start --android",
+    "steelo:ios": "expo start --ios",
+    "server:start": "node index.js",
+    "lint": "eslint .",
     "deploy": "hardhat run scripts/deploy.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "functions:lint": "eslint .",
     "functions:serve": "firebase emulators:start --only functions",
     "functions:shell": "firebase functions:shell",
     "functions:start": "npm run shell",
     "functions:deploy": "firebase deploy --only functions",
     "functions:logs": "firebase functions:log"
   },
+  "engines": {
+    "node": "18"
+  },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/airtacte/Steelo.git"
@@ -45,31 +52,6 @@
     "url": "https://github.com/airtacte/Steelo/issues"
   },
   "homepage": "https://github.com/airtacte/Steelo#readme",
-  "devDependencies": {
-    "@ensdomains/ens-contracts": "1.1.4",
-    "@nomiclabs/hardhat-ethers": "^2.2.3",
-    "@nomiclabs/hardhat-waffle": "^2.0.5",
-    "@react-native-async-storage/async-storage": "1.23.1",
-    "@testing-library/react-native": "^12.3.2",
-    "@types/node": "18.19.14",
-    "@types/react": "18.2.52",
-    "@types/react-dom": "18.2.18",
-    "chai": "^5.1.0",
-    "chai-http": "^4.4.0",
-    "eslint": "8.56.0",
-    "eslint-config-next": "13.5.6",
-    "eslint-config-google": "^0.14.0",
-    "ethereum-waffle": "^4.0.10",
-    "firebase-admin-mock": "^0.0.10",
-    "firebase-functions-test": "^3.1.0",
-    "ganache": "7.9.2",
-    "hardhat": "^2.19.5",
-    "hardhat-deploy": "^0.12.2",
-    "jest": "^27.4.5",
-    "nodemon": "^3.1.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.3"
-  },
   "dependencies": {
     "@apollo/client": "^3.9.4",
     "@chainlink/contracts": "^0.8.0",
@@ -97,6 +79,7 @@
     "dotenv": "^16.4.2",
     "ethers": "^6.11.0",
     "expo": "^50.0.8",
+    "expo-status-bar": "~1.6.0",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "firebase-admin": "^12.0.0",
@@ -125,5 +108,32 @@
     "web3": "^4.5.0",
     "yargs-parser": "^21.1.1",
     "mongodb": "^6.4.0"
-  }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@ensdomains/ens-contracts": "1.1.4",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.5",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@testing-library/react-native": "^12.3.2",
+    "@types/node": "18.19.14",
+    "@types/react": "18.2.52",
+    "@types/react-dom": "18.2.18",
+    "chai": "^5.1.0",
+    "chai-http": "^4.4.0",
+    "eslint": "8.56.0",
+    "eslint-config-next": "13.5.6",
+    "eslint-config-google": "^0.14.0",
+    "ethereum-waffle": "^4.0.10",
+    "firebase-admin-mock": "^0.0.10",
+    "firebase-functions-test": "^3.1.0",
+    "ganache": "7.9.2",
+    "hardhat": "^2.19.5",
+    "hardhat-deploy": "^0.12.2",
+    "jest": "^27.4.5",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.3"
+  },
+  "private": true
 }
