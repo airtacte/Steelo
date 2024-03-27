@@ -7,6 +7,7 @@ import { ContractNetworksConfig } from '@safe-global/protocol-kit'
 import { SafeAccountConfig } from '@safe-global/protocol-kit'
 import { SafeTransactionOptionalProps } from '@safe-global/protocol-kit'
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types'
+import { getNonceForUser } from './utils';
 
 const safeService = new SafeApiKit({ chainId })
 const safeSdk = await Safe.create({ ethAdapter, safeAddress })
@@ -88,13 +89,15 @@ const transactions: MetaTransactionData[] = [
   // ...
 ]
 
+const nonce = getNonceForUser();
+
 const options: SafeTransactionOptionalProps = {
   safeTxGas, // Optional
   baseGas, // Optional
   gasPrice, // Optional
   gasToken, // Optional
   refundReceiver, // Optional
-  nonce // Optional
+  nonce
 }
 
 const safeTransaction = await safeSdk.createTransaction({ transactions, options })

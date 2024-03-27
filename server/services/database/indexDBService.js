@@ -1,94 +1,57 @@
-// IndexDBService.js - For client-side use in a web context
+// Import Firebase and MongoDB libraries
+const firebase = require('firebase');
+const MongoClient = require('mongodb').MongoClient;
 
-class IndexDBService {
-  constructor(dbName, storeName) {
-    this.dbName = dbName;
-    this.storeName = storeName;
-    this.db = null;
-  }
-
-  // Initialize the database
-  async init() {
-    if (!window.indexedDB) {
-      console.error("IndexedDB is not supported by this browser.");
-      return;
+class DatabaseService {
+  constructor(firebaseConfig, mongoDbUrl, dbName, collectionName) {
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
     }
-    return new Promise((resolve, reject) => {
-      const request = window.indexedDB.open(this.dbName, 1);
+    this.firestore = firebase.firestore();
 
-      request.onerror = (event) => {
-        console.error("IndexedDB error:", event.target.errorCode);
-        reject(event.target.errorCode);
-      };
-
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        db.createObjectStore(this.storeName, { keyPath: "id" });
-      };
-
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
-        console.log("IndexedDB initialized successfully");
-        resolve();
-      };
-    });
+    // Initialize MongoDB
+    this.mongoClient = new MongoClient(mongoDbUrl, { useUnifiedTopology: true });
+    this.mongoDbName = dbName;
+    this.collectionName = collectionName;
   }
 
-  // Add or update data in the store
+  // Add or update data in Firestore and MongoDB
   async putData(data) {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], "readwrite");
-      const store = transaction.objectStore(this.storeName);
-      const request = store.put(data);
+    // Firestore
+    await this.firestore.collection(this.collectionName).doc(data.id).set(data);
 
-      request.onsuccess = () => resolve();
-      request.onerror = (event) => {
-        console.error(
-          "Error writing data to IndexedDB:",
-          event.target.errorCode
-        );
-        reject(event.target.errorCode);
-      };
-    });
+    // MongoDB
+    const client = await this.mongoClient.connect();
+    const collection = client.db(this.mongoDbName).collection(this.collectionName);
+    await collection.updateOne({ id: data.id }, { $set: data }, { upsert: true });
+    client.close();
   }
 
-  // Retrieve data by ID
+  // Retrieve data by ID from Firestore
   async getData(id) {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName]);
-      const store = transaction.objectStore(this.storeName);
-      const request = store.get(id);
-
-      request.onsuccess = (event) => resolve(event.target.result);
-      request.onerror = (event) => {
-        console.error(
-          "Error reading data from IndexedDB:",
-          event.target.errorCode
-        );
-        reject(event.target.errorCode);
-      };
-    });
+    // Firestore
+    const doc = await this.firestore.collection(this.collectionName).doc(id).get();
+    return doc.exists ? doc.data() : null;
   }
 
-  // Delete data by ID
+  // Delete data by ID from Firestore and MongoDB
   async deleteData(id) {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction([this.storeName], "readwrite");
-      const store = transaction.objectStore(this.storeName);
-      const request = store.delete(id);
+    // Firestore
+    await this.firestore.collection(this.collectionName).doc(id).delete();
 
-      request.onsuccess = () => resolve();
-      request.onerror = (event) => {
-        console.error(
-          "Error deleting data from IndexedDB:",
-          event.target.errorCode
-        );
-        reject(event.target.errorCode);
-      };
-    });
+    // MongoDB
+    const client = await this.mongoClient.connect();
+    const collection = client.db(this.mongoDbName).collection(this.collectionName);
+    await collection.deleteOne({ id: id });
+    client.close();
   }
 }
 
 // Example usage
-// const indexDBService = new IndexDBService('SteeloDB', 'users');
-// await indexDBService.init();
+// const firebaseConfig = { /* your Firebase config */ };
+// const mongoDbUrl = 'mongodb://localhost:27017';
+// const dbName = 'SteeloDB';
+// const collectionName = 'users';
+// const databaseService = new DatabaseService(firebaseConfig, mongoDbUrl, dbName, collectionName);
+// await databaseService.putData({ id: '123', name: 'John Doe' });

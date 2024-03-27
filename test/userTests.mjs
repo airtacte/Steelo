@@ -1,16 +1,17 @@
 import * as chai from 'chai';
 import chaiHttp from 'chai-http';
-import sinon from 'sinon';
+import chaiSpies from 'chai-spies';
 import admin from 'firebase-admin';
 import firebaseAdminMock from 'firebase-admin-mock';
 import app from '../server/server.js'; // Adjust the path as per your server.js location
 
 chai.use(chaiHttp);
+chai.use(chaiSpies);
 const expect = chai.expect;
 
 // Mock Firebase Admin
-sinon.stub(admin, 'initializeApp');
-sinon.stub(admin, 'auth').get(() => firebaseAdminMock.auth());
+chai.spy.on(admin, 'initializeApp');
+chai.spy.on(admin, 'auth', () => firebaseAdminMock.auth());
 
 describe('User API Endpoints', () => {
   beforeEach(() => {
