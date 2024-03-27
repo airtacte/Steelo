@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = {
@@ -10,7 +10,8 @@ module.exports = {
   // Blockchain network settings
   blockchain: {
     polygonZkEvmTestnetRpcUrl: process.env.POLYGON_ZKEVM_TESTNET_RPC_URL,
-    polygonZkEvmTestnetChainId: process.env.POLYGON_ZKEVM_TESTNET_CHAIN_ID || '80001', // Polygon Mumbai Testnet as default
+    polygonZkEvmTestnetChainId:
+      process.env.POLYGON_ZKEVM_TESTNET_CHAIN_ID || "80001", // Polygon Mumbai Testnet as default
     mnemonic: process.env.MNEMONIC,
   },
 
@@ -33,9 +34,9 @@ module.exports = {
 
   // IPFS settings for decentralized storage
   ipfs: {
-    host: process.env.IPFS_HOST || 'ipfs.infura.io',
+    host: process.env.IPFS_HOST || "ipfs.infura.io",
     port: process.env.IPFS_PORT || 5001,
-    protocol: process.env.IPFS_PROTOCOL || 'https',
+    protocol: process.env.IPFS_PROTOCOL || "https",
   },
 
   // API keys for external services

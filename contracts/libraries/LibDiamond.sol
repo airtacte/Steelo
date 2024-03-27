@@ -2,7 +2,7 @@
 // Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
-import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
+import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
@@ -17,13 +17,17 @@ If you want to get a struct that's not in a mapping,
     use LibDiamond.[StructName] storage [variableName] = ds.[structName];.
 */
 
-error InitializationFunctionReverted(address _initializationContractAddress, bytes _calldata);
+error InitializationFunctionReverted(
+    address _initializationContractAddress,
+    bytes _calldata
+);
 
 library LibDiamond {
-    bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
+    bytes32 constant DIAMOND_STORAGE_POSITION =
+        keccak256("diamond.standard.diamond.storage");
     bytes32 constant EXECUTIVE_ROLE = keccak256("EXECUTIVE_ROLE");
 
-// // STRUCTS DEFINED WITHIN DIAMOND STORAGE STRUCT // //
+    // // STRUCTS DEFINED WITHIN DIAMOND STORAGE STRUCT // //
     struct RoleData {
         mapping(address => bool) members;
         bytes32 adminRole;
@@ -33,7 +37,7 @@ library LibDiamond {
         uint256 snapshotId;
         uint256 timestamp;
         uint256 value;
-        mapping(address => mapping(uint256 =>uint256)) balances;
+        mapping(address => mapping(uint256 => uint256)) balances;
     }
 
     struct Constants {
@@ -49,7 +53,6 @@ library LibDiamond {
         uint256 MAX_MINT_RATE;
         uint256 MIN_BURN_RATE;
         uint256 MAX_BURN_RATE;
-
         // Tokenomics for STEEZ
         uint256 AUCTION_DURATION;
         uint256 PRE_ORDER_SUPPLY;
@@ -68,7 +71,6 @@ library LibDiamond {
         uint256 SECOND_HAND_CREATOR_ROYALTY;
         uint256 SECOND_HAND_STEELO_ROYALTY;
         uint256 SECOND_HAND_COMMUNITY_ROYALTY;
-
         // Stakeholder's royalty distribution
         address treasury;
         uint256 trasuryTGE;
@@ -87,16 +89,13 @@ library LibDiamond {
         uint256 FEE_RATE;
         address uniswapAddress;
         address gbptAddress;
-
         // Safe Global - Addresses to be replaced
         address SAFE_PROXY_FACTORY_ADDRESS;
         address SAFE_MASTER_COPY;
         uint256 saltNonce;
-
         // Chainlink
         address CHAINLINK_TOKEN_ADDRESS;
         uint256 CHAINLINK_FEE;
-
         // Utility Constants
         uint256 oneYear;
         uint256 oneWeek;
@@ -139,12 +138,12 @@ library LibDiamond {
         uint256 creatorId; // one creatorId holds 500+ steezIds
         uint256 steezId; // mapping(creatorId => mapping(steezId => investors)
         uint256 totalSupply; // starting at 500 and increasing by 500 annually
-        uint256 transactionCount; // drives anniversary requirements and $STEELO mint rate 
+        uint256 transactionCount; // drives anniversary requirements and $STEELO mint rate
         uint256 lastMintTime; // to check when to next initiate Anniversary
         uint256 anniversaryDate; // to check when to next initiate Anniversary
         uint256 currentPrice; // determined by pre-order auction price, then via Supply x Demand AMM model
         uint256 auctionStartTime; // 250 out of the 500 initially minted tokens for pre-order
-        uint256 auctionSlotsSecured; // increments price by £10 every 250 token auctions at new price 
+        uint256 auctionSlotsSecured; // increments price by £10 every 250 token auctions at new price
         string baseURI; // base URI for token metadata
         bool creatorExists; // only one steez per creator
         bool auctionConcluded; // 24hr auction after 1 week of pre-order
@@ -191,7 +190,7 @@ library LibDiamond {
         mapping(uint256 => uint256) royaltyAmounts; // Mapping from investor address to the total amount of royalties received
         mapping(uint256 => uint256[]) royaltyPayments; // Mapping from investor address to array of individual royalty payments received
     }
-    
+
     struct Content {
         uint256 contentId;
         uint256 creatorId;
@@ -245,7 +244,7 @@ library LibDiamond {
         uint256 facetAddressPosition;
     }
 
-// // DIAMOND STORAGE STRUCT CALLED BY ALL FACETS // //
+    // // DIAMOND STORAGE STRUCT CALLED BY ALL FACETS // //
     struct DiamondStorage {
         // Standard Diamond Storage Mappings
         mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
@@ -255,10 +254,9 @@ library LibDiamond {
         address contractOwner;
         Constants constants; // reference to contracts\libraries\ConstDiamond.sol
         mapping(address => uint256) treasury;
-
         // FACETS
         address constDiamondAddress;
-            // app
+        // app
         address accessControlFacetAddress;
         address gasOptimisationFacetAddress;
         address kycFacetAddress;
@@ -267,27 +265,26 @@ library LibDiamond {
         address oracleFacetAddress;
         address snapshotFacetAddress;
         address socialNetworkFacetAddress;
-            // features
+        // features
         address bazaarFacetAddress;
         address galleryFacetAddress;
         address mosaicFacetAddress;
-        address profileFacetAddress; 
+        address profileFacetAddress;
         address villageFacetAddress;
-            // steelo -- platform token: staking, governance, tx, minting, burning
+        // steelo -- platform token: staking, governance, tx, minting, burning
         address sipFacetAddress;
         address stakingFacetAddress;
         address steeloFacetAddress;
-            // steez -- creator token: auction, investor benefits, royalties, content collections
+        // steez -- creator token: auction, investor benefits, royalties, content collections
         address contentFacetAddress;
         address feesFacetAddress;
         address governanceFacetAddress;
         address managementFacetAddress;
         address steezFacetAddress;
-            // safe
+        // safe
         address safeTemplateAddress;
-
         // STRUCT REFERENCES
-        IERC20 steelo; 
+        IERC20 steelo;
         mapping(uint256 => Steez) steez; // From creatorId to Steez (list of investors)
         mapping(uint256 => Steez) portfolios; // From profileId to Steez (list of investments)
         mapping(uint256 => Profile) profiles; // From profileId to Profile
@@ -303,9 +300,8 @@ library LibDiamond {
         QueuedRoyalty[] royaltyQueue; // Array of creatorId, amount and recipients
         mapping(uint256 => Listing) listings; // creatorId for Bazaar
         mapping(uint256 => Proposal) proposals; // proposals for SIP
-        mapping(uint256 => Creator) analytics; // creatorId analytics for Profile 
+        mapping(uint256 => Creator) analytics; // creatorId analytics for Profile
         uint256[] allCreatorIds; // Tracks all verified, launched Steez via their creatorIds
-        
         // ACCESS CONTROL
         mapping(bytes32 => RoleData) roles;
         mapping(address => bool) executiveMembers;
@@ -321,16 +317,14 @@ library LibDiamond {
         mapping(address => bool) investorMembers;
         mapping(address => bool) moderatorMembers;
         mapping(address => bool) subscriberMembers;
-
         // SNAPSHOTS
         uint256 snapshotCounter;
         uint256 lastSnapshotTimestamp;
-
         // STEELOFACET VARIABLES
         uint256 steeloCurrentPrice;
-        uint256 totalMinted; 
+        uint256 totalMinted;
         uint256 totalBurned;
-        uint256 lastMintEvent; 
+        uint256 lastMintEvent;
         uint256 lastBurnEvent;
         uint256 mintAmount;
         uint256 burnAmount;
@@ -347,28 +341,34 @@ library LibDiamond {
         mapping(address => uint256) totalRewardPool;
         mapping(address => uint256) totalStakingPool;
         mapping(uint256 => bool) stakeholders;
-
         // STEEZFACET VARIABLES
         uint256 _lastCreatorId;
         uint256 _lastProfileId;
         uint256 _lastSteezId;
         string baseURI;
-
         // Chainlink parameters
         mapping(bytes32 => address) oracleAddresses; // JobID to Oracle Address mapping
         mapping(bytes32 => bytes32) jobIds; // Functionality to JobID mapping
         mapping(bytes32 => uint256) fees; // JobID to Payment mapping
-
         // Safe
         mapping(bytes32 => address) verificationRequests;
     }
 
-// // COMPULSORY DIAMOND STORAGE FUNCTIONS // //
+    // // COMPULSORY DIAMOND STORAGE FUNCTIONS // //
 
     // KEY STORAGE FUNCTION //
 
-    event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
-    function diamondStorage() internal pure returns (DiamondStorage storage ds) {
+    event DiamondCut(
+        IDiamondCut.FacetCut[] _diamondCut,
+        address _init,
+        bytes _calldata
+    );
+
+    function diamondStorage()
+        internal
+        pure
+        returns (DiamondStorage storage ds)
+    {
         bytes32 position = DIAMOND_STORAGE_POSITION;
         assembly {
             ds.slot := position
@@ -378,7 +378,10 @@ library LibDiamond {
     // KEY OWNERSHIP FUNCTIONS //
 
     event FacetOperation(address indexed facetAddress, string operationType);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     function setContractOwner(address _owner) internal {
         DiamondStorage storage ds = diamondStorage();
@@ -399,108 +402,221 @@ library LibDiamond {
         DiamondStorage storage ds = diamondStorage();
         owner_ = ds.contractOwner;
     }
-    
-    function checkRole(bytes32 role, address account) internal view returns (bool) {
+
+    function checkRole(
+        bytes32 role,
+        address account
+    ) internal view returns (bool) {
         DiamondStorage storage ds = diamondStorage();
         return ds.roles[role].members[account];
     }
-    
+
     // KEY FACET FUNCTIONS //
     function diamondCut(
         IDiamondCut.FacetCut[] memory _diamondCut,
         address _init,
         bytes memory _calldata
     ) internal {
-        for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
+        for (
+            uint256 facetIndex;
+            facetIndex < _diamondCut.length;
+            facetIndex++
+        ) {
             IDiamondCut.FacetCutAction action = _diamondCut[facetIndex].action;
             if (action == IDiamondCut.FacetCutAction.Add) {
-                addFunctions(_diamondCut[facetIndex].facetAddress, _diamondCut[facetIndex].functionSelectors);
+                addFunctions(
+                    _diamondCut[facetIndex].facetAddress,
+                    _diamondCut[facetIndex].functionSelectors
+                );
             } else if (action == IDiamondCut.FacetCutAction.Replace) {
-                replaceFunctions(_diamondCut[facetIndex].facetAddress, _diamondCut[facetIndex].functionSelectors);
+                replaceFunctions(
+                    _diamondCut[facetIndex].facetAddress,
+                    _diamondCut[facetIndex].functionSelectors
+                );
             } else if (action == IDiamondCut.FacetCutAction.Remove) {
-                removeFunctions(_diamondCut[facetIndex].facetAddress, _diamondCut[facetIndex].functionSelectors);
+                removeFunctions(
+                    _diamondCut[facetIndex].facetAddress,
+                    _diamondCut[facetIndex].functionSelectors
+                );
             } else {
                 revert("LibDiamondCut: Incorrect FacetCutAction");
             }
             // Emit the FacetOperation event
-            emit FacetOperation(_diamondCut[facetIndex].facetAddress, "Operation Performed");
+            emit FacetOperation(
+                _diamondCut[facetIndex].facetAddress,
+                "Operation Performed"
+            );
         }
         emit DiamondCut(_diamondCut, _init, _calldata);
         initializeDiamondCut(_init, _calldata);
     }
 
-    function addFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
-        require(_functionSelectors.length > 0, "LibDiamondCut: No selectors in facet to cut");
-        DiamondStorage storage ds = diamondStorage();        
-        require(_facetAddress != address(0), "LibDiamondCut: Add facet can't be address(0)");
-        uint96 selectorPosition = uint96(ds.facetFunctionSelectors[_facetAddress].functionSelectors.length);
-        // add new facet address if it does not exist
-        if (selectorPosition == 0) {
-            addFacet(ds, _facetAddress);            
-        }
-        for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
-            bytes4 selector = _functionSelectors[selectorIndex];
-            address oldFacetAddress = ds.selectorToFacetAndPosition[selector].facetAddress;
-            require(oldFacetAddress == address(0), "LibDiamondCut: Can't add function that already exists");
-            addFunction(ds, selector, selectorPosition, _facetAddress);
-            selectorPosition++;
-        }
-    }
-
-    function replaceFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
-        require(_functionSelectors.length > 0, "LibDiamondCut: No selectors in facet to cut");
+    function addFunctions(
+        address _facetAddress,
+        bytes4[] memory _functionSelectors
+    ) internal {
+        require(
+            _functionSelectors.length > 0,
+            "LibDiamondCut: No selectors in facet to cut"
+        );
         DiamondStorage storage ds = diamondStorage();
-        require(_facetAddress != address(0), "LibDiamondCut: Add facet can't be address(0)");
-        uint96 selectorPosition = uint96(ds.facetFunctionSelectors[_facetAddress].functionSelectors.length);
+        require(
+            _facetAddress != address(0),
+            "LibDiamondCut: Add facet can't be address(0)"
+        );
+        uint96 selectorPosition = uint96(
+            ds.facetFunctionSelectors[_facetAddress].functionSelectors.length
+        );
         // add new facet address if it does not exist
         if (selectorPosition == 0) {
             addFacet(ds, _facetAddress);
         }
-        for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
+        for (
+            uint256 selectorIndex;
+            selectorIndex < _functionSelectors.length;
+            selectorIndex++
+        ) {
             bytes4 selector = _functionSelectors[selectorIndex];
-            address oldFacetAddress = ds.selectorToFacetAndPosition[selector].facetAddress;
-            require(oldFacetAddress != _facetAddress, "LibDiamondCut: Can't replace function with same function");
+            address oldFacetAddress = ds
+                .selectorToFacetAndPosition[selector]
+                .facetAddress;
+            require(
+                oldFacetAddress == address(0),
+                "LibDiamondCut: Can't add function that already exists"
+            );
+            addFunction(ds, selector, selectorPosition, _facetAddress);
+            selectorPosition++;
+        }
+    }
+
+    function replaceFunctions(
+        address _facetAddress,
+        bytes4[] memory _functionSelectors
+    ) internal {
+        require(
+            _functionSelectors.length > 0,
+            "LibDiamondCut: No selectors in facet to cut"
+        );
+        DiamondStorage storage ds = diamondStorage();
+        require(
+            _facetAddress != address(0),
+            "LibDiamondCut: Add facet can't be address(0)"
+        );
+        uint96 selectorPosition = uint96(
+            ds.facetFunctionSelectors[_facetAddress].functionSelectors.length
+        );
+        // add new facet address if it does not exist
+        if (selectorPosition == 0) {
+            addFacet(ds, _facetAddress);
+        }
+        for (
+            uint256 selectorIndex;
+            selectorIndex < _functionSelectors.length;
+            selectorIndex++
+        ) {
+            bytes4 selector = _functionSelectors[selectorIndex];
+            address oldFacetAddress = ds
+                .selectorToFacetAndPosition[selector]
+                .facetAddress;
+            require(
+                oldFacetAddress != _facetAddress,
+                "LibDiamondCut: Can't replace function with same function"
+            );
             removeFunction(ds, oldFacetAddress, selector);
             addFunction(ds, selector, selectorPosition, _facetAddress);
             selectorPosition++;
         }
     }
 
-    function removeFunctions(address _facetAddress, bytes4[] memory _functionSelectors) internal {
-        require(_functionSelectors.length > 0, "LibDiamondCut: No selectors in facet to cut");
+    function removeFunctions(
+        address _facetAddress,
+        bytes4[] memory _functionSelectors
+    ) internal {
+        require(
+            _functionSelectors.length > 0,
+            "LibDiamondCut: No selectors in facet to cut"
+        );
         DiamondStorage storage ds = diamondStorage();
         // if function does not exist then do nothing and return
-        require(_facetAddress == address(0), "LibDiamondCut: Remove facet address must be address(0)");
-        for (uint256 selectorIndex; selectorIndex < _functionSelectors.length; selectorIndex++) {
+        require(
+            _facetAddress == address(0),
+            "LibDiamondCut: Remove facet address must be address(0)"
+        );
+        for (
+            uint256 selectorIndex;
+            selectorIndex < _functionSelectors.length;
+            selectorIndex++
+        ) {
             bytes4 selector = _functionSelectors[selectorIndex];
-            address oldFacetAddress = ds.selectorToFacetAndPosition[selector].facetAddress;
+            address oldFacetAddress = ds
+                .selectorToFacetAndPosition[selector]
+                .facetAddress;
             removeFunction(ds, oldFacetAddress, selector);
         }
     }
 
-    function addFacet(DiamondStorage storage ds, address _facetAddress) internal {
-        enforceHasContractCode(_facetAddress, "LibDiamondCut: New facet has no code");
-        ds.facetFunctionSelectors[_facetAddress].facetAddressPosition = ds.facetAddresses.length;
+    function addFacet(
+        DiamondStorage storage ds,
+        address _facetAddress
+    ) internal {
+        enforceHasContractCode(
+            _facetAddress,
+            "LibDiamondCut: New facet has no code"
+        );
+        ds.facetFunctionSelectors[_facetAddress].facetAddressPosition = ds
+            .facetAddresses
+            .length;
         ds.facetAddresses.push(_facetAddress);
-    }    
-    function addFunction(DiamondStorage storage ds, bytes4 _selector, uint96 _selectorPosition, address _facetAddress) internal {
-        ds.selectorToFacetAndPosition[_selector].functionSelectorPosition = _selectorPosition;
-        ds.facetFunctionSelectors[_facetAddress].functionSelectors.push(_selector);
+    }
+
+    function addFunction(
+        DiamondStorage storage ds,
+        bytes4 _selector,
+        uint96 _selectorPosition,
+        address _facetAddress
+    ) internal {
+        ds
+            .selectorToFacetAndPosition[_selector]
+            .functionSelectorPosition = _selectorPosition;
+        ds.facetFunctionSelectors[_facetAddress].functionSelectors.push(
+            _selector
+        );
         ds.selectorToFacetAndPosition[_selector].facetAddress = _facetAddress;
     }
 
-    function removeFunction(DiamondStorage storage ds, address _facetAddress, bytes4 _selector) internal {        
-        require(_facetAddress != address(0), "LibDiamondCut: Can't remove function that doesn't exist");
+    function removeFunction(
+        DiamondStorage storage ds,
+        address _facetAddress,
+        bytes4 _selector
+    ) internal {
+        require(
+            _facetAddress != address(0),
+            "LibDiamondCut: Can't remove function that doesn't exist"
+        );
         // an immutable function is a function defined directly in a diamond
-        require(_facetAddress != address(this), "LibDiamondCut: Can't remove immutable function");
+        require(
+            _facetAddress != address(this),
+            "LibDiamondCut: Can't remove immutable function"
+        );
         // replace selector with last selector, then delete last selector
-        uint256 selectorPosition = ds.selectorToFacetAndPosition[_selector].functionSelectorPosition;
-        uint256 lastSelectorPosition = ds.facetFunctionSelectors[_facetAddress].functionSelectors.length - 1;
+        uint256 selectorPosition = ds
+            .selectorToFacetAndPosition[_selector]
+            .functionSelectorPosition;
+        uint256 lastSelectorPosition = ds
+            .facetFunctionSelectors[_facetAddress]
+            .functionSelectors
+            .length - 1;
         // if not the same then replace _selector with lastSelector
         if (selectorPosition != lastSelectorPosition) {
-            bytes4 lastSelector = ds.facetFunctionSelectors[_facetAddress].functionSelectors[lastSelectorPosition];
-            ds.facetFunctionSelectors[_facetAddress].functionSelectors[selectorPosition] = lastSelector;
-            ds.selectorToFacetAndPosition[lastSelector].functionSelectorPosition = uint96(selectorPosition);
+            bytes4 lastSelector = ds
+                .facetFunctionSelectors[_facetAddress]
+                .functionSelectors[lastSelectorPosition];
+            ds.facetFunctionSelectors[_facetAddress].functionSelectors[
+                    selectorPosition
+                ] = lastSelector;
+            ds
+                .selectorToFacetAndPosition[lastSelector]
+                .functionSelectorPosition = uint96(selectorPosition);
         }
         // delete the last selector
         ds.facetFunctionSelectors[_facetAddress].functionSelectors.pop();
@@ -510,22 +626,36 @@ library LibDiamond {
         if (lastSelectorPosition == 0) {
             // replace facet address with last facet address and delete last facet address
             uint256 lastFacetAddressPosition = ds.facetAddresses.length - 1;
-            uint256 facetAddressPosition = ds.facetFunctionSelectors[_facetAddress].facetAddressPosition;
+            uint256 facetAddressPosition = ds
+                .facetFunctionSelectors[_facetAddress]
+                .facetAddressPosition;
             if (facetAddressPosition != lastFacetAddressPosition) {
-                address lastFacetAddress = ds.facetAddresses[lastFacetAddressPosition];
+                address lastFacetAddress = ds.facetAddresses[
+                    lastFacetAddressPosition
+                ];
                 ds.facetAddresses[facetAddressPosition] = lastFacetAddress;
-                ds.facetFunctionSelectors[lastFacetAddress].facetAddressPosition = facetAddressPosition;
+                ds
+                    .facetFunctionSelectors[lastFacetAddress]
+                    .facetAddressPosition = facetAddressPosition;
             }
             ds.facetAddresses.pop();
-            delete ds.facetFunctionSelectors[_facetAddress].facetAddressPosition;
+            delete ds
+                .facetFunctionSelectors[_facetAddress]
+                .facetAddressPosition;
         }
     }
 
-    function initializeDiamondCut(address _init, bytes memory _calldata) internal {
+    function initializeDiamondCut(
+        address _init,
+        bytes memory _calldata
+    ) internal {
         if (_init == address(0)) {
             return;
         }
-        enforceHasContractCode(_init, "LibDiamondCut: _init address has no code");        
+        enforceHasContractCode(
+            _init,
+            "LibDiamondCut: _init address has no code"
+        );
         (bool success, bytes memory error) = _init.delegatecall(_calldata);
         if (!success) {
             if (error.length > 0) {
@@ -542,7 +672,10 @@ library LibDiamond {
     }
 
     // Ensure the initialization function checks for code size to prevent contracts without implementation
-    function enforceHasContractCode(address _contract, string memory _errorMessage) internal view {
+    function enforceHasContractCode(
+        address _contract,
+        string memory _errorMessage
+    ) internal view {
         uint256 contractSize;
         assembly {
             contractSize := extcodesize(_contract)
@@ -550,7 +683,9 @@ library LibDiamond {
         require(contractSize > 0, _errorMessage);
     }
 
-    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+    function stringToBytes32(
+        string memory source
+    ) public pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
             return 0x0;

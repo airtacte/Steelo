@@ -14,10 +14,16 @@ contract Diamond {
         address owner;
     }
 
-    constructor(IDiamondCut.FacetCut[] memory _diamondCut, DiamondArgs memory _args, address _diamondLoupeFacet) payable {
+    constructor(
+        IDiamondCut.FacetCut[] memory _diamondCut,
+        DiamondArgs memory _args,
+        address _diamondLoupeFacet
+    ) payable {
         // Prepare the DiamondLoupeFacet cut (assuming you have the address and function selectors)
         // This is a simplified example. You would dynamically prepare this based on the actual facets and selectors.
-        IDiamondCut.FacetCut[] memory initialCut = new IDiamondCut.FacetCut[](_diamondCut.length + 1);
+        IDiamondCut.FacetCut[] memory initialCut = new IDiamondCut.FacetCut[](
+            _diamondCut.length + 1
+        );
         for (uint256 i = 0; i < _diamondCut.length; i++) {
             initialCut[i] = _diamondCut[i];
         }
@@ -27,7 +33,9 @@ contract Diamond {
         address diamondLoupeFacet = _diamondLoupeFacet;
         bytes4[] memory diamondLoupeSelectors = new bytes4[](4); // Example: populate with actual function selectors
         diamondLoupeSelectors[0] = IDiamondLoupe.facets.selector;
-        diamondLoupeSelectors[1] = IDiamondLoupe.facetFunctionSelectors.selector;
+        diamondLoupeSelectors[1] = IDiamondLoupe
+            .facetFunctionSelectors
+            .selector;
         diamondLoupeSelectors[2] = IDiamondLoupe.facetAddresses.selector;
         diamondLoupeSelectors[3] = IDiamondLoupe.facetAddress.selector;
 
@@ -64,18 +72,21 @@ contract Diamond {
             ds.slot := position
         }
         address facet = ds.selectorToFacetAndPosition[msg.sig].facetAddress;
-        require(facet != address(0), "Diamond: Function does not exist - check facet assignment");
+        require(
+            facet != address(0),
+            "Diamond: Function does not exist - check facet assignment"
+        );
         assembly {
             calldatacopy(0, 0, calldatasize())
             let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
             returndatacopy(0, 0, returndatasize())
             switch result
-                case 0 {
-                    revert(0, returndatasize())
-                }
-                default {
-                    return(0, returndatasize())
-                }
+            case 0 {
+                revert(0, returndatasize())
+            }
+            default {
+                return(0, returndatasize())
+            }
         }
     }
 

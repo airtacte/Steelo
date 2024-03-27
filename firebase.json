@@ -7,9 +7,7 @@
       "firebase-debug.log",
       "firebase-debug.*.log"
     ],
-    "predeploy": [
-      "yarn --cwd \"functions\" run lint"
-    ]
+    "predeploy": ["yarn --cwd \"functions\" run lint"]
   },
   "firestore": {
     "rules": "firestore.rules"

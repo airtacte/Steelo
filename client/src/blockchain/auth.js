@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
 // Connect to the user's wallet
 export async function connectWallet() {

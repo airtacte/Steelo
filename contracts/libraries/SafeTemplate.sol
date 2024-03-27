@@ -2,7 +2,7 @@
 // Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
-import { LibDiamond } from "./LibDiamond.sol";
+import {LibDiamond} from "./LibDiamond.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract SafeTemplate is OwnableUpgradeable {
@@ -24,7 +24,10 @@ contract SafeTemplate is OwnableUpgradeable {
     ) public {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         safeTemplateAddress = ds.safeTemplateAddress;
-        require(_owners.length >= _threshold, "Threshold cannot be higher than the number of owners");
+        require(
+            _owners.length >= _threshold,
+            "Threshold cannot be higher than the number of owners"
+        );
         owners = _owners;
         threshold = _threshold;
     }

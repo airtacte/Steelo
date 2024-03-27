@@ -1,10 +1,10 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import OnboardingScreen from './components/OnboardingScreen';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import OnboardingScreen from "./components/OnboardingScreen";
 
 // Import your screen components here
-import HomeScreen from './Features/Home';
+import HomeScreen from "./Features/Home";
 
 const Stack = createStackNavigator();
 

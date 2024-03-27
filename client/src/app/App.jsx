@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import React, { Component } from "react";
+import { StyleSheet, View } from "react-native";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 
-import Routes from './Routes';
-import rootReducer from './reducers';
-import styles from './Styles';
-import { ThemeProvider } from './ThemeContext';
+import Routes from "./Routes";
+import rootReducer from "./reducers";
+import styles from "./-styles";
+import { ThemeProvider } from "./-themeContext";
 
 const store = configureStore({
   reducer: rootReducer,
@@ -26,10 +26,14 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       // You can render any custom fallback UI
-      return <View><Text>Something went wrong.</Text></View>;
+      return (
+        <View>
+          <Text>Something went wrong.</Text>
+        </View>
+      );
     }
 
-    return this.props.children; 
+    return this.props.children;
   }
 }
 
@@ -50,6 +54,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
 });

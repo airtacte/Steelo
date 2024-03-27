@@ -1,7 +1,35 @@
-# Ignore external dependencies and resources
-node_modules/
-lib/
+# External dependencies and resources
+/node_modules
+/lib
 
-# Ignore environment variables file
+# Environment variables files
 .env
+.env*.local
 serviceAccountKey.json
+
+# Testing
+/coverage
+
+# Next.js
+/.next
+/out
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

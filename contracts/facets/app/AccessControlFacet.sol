@@ -2,9 +2,9 @@
 // Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
-import { LibDiamond } from "../../libraries/LibDiamond.sol";
-import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
-import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
+import {LibDiamond} from "../../libraries/LibDiamond.sol";
+import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+import {IDiamondCut} from "../../interfaces/IDiamondCut.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
@@ -14,7 +14,11 @@ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
  * This contract manages roles and permissions within the Steelo ecosystem,
  * structured around the Diamond Standard for modular smart contracts.
  */
-contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
+contract AccessControlFacet is
+    AccessControlUpgradeable,
+    PausableUpgradeable,
+    ReentrancyGuardUpgradeable
+{
     address accessControlFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
@@ -33,11 +37,22 @@ contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, Re
     bytes32 public constant SUBSCRIBER_ROLE = keccak256("SUBSCRIBER_ROLE");
 
     // Event to be emitted when an upgrade is performed
-    event DiamondUpgraded(address indexed upgradedBy, IDiamondCut.FacetCut[] cuts);
-    event RoleUpdated(bytes32 indexed role, address indexed profileId, bool isGranted);
+    event DiamondUpgraded(
+        address indexed upgradedBy,
+        IDiamondCut.FacetCut[] cuts
+    );
+    event RoleUpdated(
+        bytes32 indexed role,
+        address indexed profileId,
+        bool isGranted
+    );
 
-    function initialize(address _steeloFacet, address _steezFacet, address _accessControlFacetAddress) external onlyRole(EXECUTIVE_ROLE) initializer {
-        LibDiamond.DiamondStorage storage ds =  LibDiamond.diamondStorage();
+    function initialize(
+        address _steeloFacet,
+        address _steezFacet,
+        address _accessControlFacetAddress
+    ) external onlyRole(EXECUTIVE_ROLE) initializer {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         accessControlFacetAddress = ds.accessControlFacetAddress;
 
         ReentrancyGuardUpgradeable.__ReentrancyGuard_init();
@@ -61,7 +76,7 @@ contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, Re
         _setRoleAdmin(CREATOR_ROLE, ADMIN_ROLE);
         _setRoleAdmin(TEAM_ROLE, CREATOR_ROLE);
         _setRoleAdmin(COLLABORATOR_ROLE, TEAM_ROLE);
-        
+
         _setRoleAdmin(MODERATOR_ROLE, ADMIN_ROLE);
         _setRoleAdmin(INVESTOR_ROLE, MODERATOR_ROLE);
         _setRoleAdmin(SUBSCRIBER_ROLE, INVESTOR_ROLE);
@@ -70,20 +85,35 @@ contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, Re
     function assignVisitorRole() external {
         _grantRole(VISITOR_ROLE, msg.sender);
     }
-    
-    function _grantRole(bytes32 role, address walletAddress) internal override onlyRole(role) returns (bool) {
+
+    function _grantRole(
+        bytes32 role,
+        address walletAddress
+    ) internal override onlyRole(role) returns (bool) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(walletAddress != address(0), "AccessControl: walletAddress is zero address");
-        require(!hasRole(role, walletAddress), "AccessControl: walletAddress already has role");
+        require(
+            walletAddress != address(0),
+            "AccessControl: walletAddress is zero address"
+        );
+        require(
+            !hasRole(role, walletAddress),
+            "AccessControl: walletAddress already has role"
+        );
         super._grantRole(role, walletAddress);
         ds.roles[role].members[walletAddress] = true;
         emit RoleGranted(role, walletAddress, msg.sender);
         return true;
     }
 
-    function _revokeRole(bytes32 role, address walletAddress) internal override onlyRole(role) returns (bool) {
+    function _revokeRole(
+        bytes32 role,
+        address walletAddress
+    ) internal override onlyRole(role) returns (bool) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(role, walletAddress), "AccessControl: walletAddress does not have role");
+        require(
+            hasRole(role, walletAddress),
+            "AccessControl: walletAddress does not have role"
+        );
         super._revokeRole(role, walletAddress);
         // Custom logic after revoking role
         return true;
@@ -92,9 +122,14 @@ contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, Re
     // Function to update role from visitor to user after KYC approval
 
     // Function to update the staker role dynamically based on token holdings or other conditions
-    function updateStakerRole(address walletAddress) external onlyRole(ADMIN_ROLE) {
+    function updateStakerRole(
+        address walletAddress
+    ) external onlyRole(ADMIN_ROLE) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(EXECUTIVE_ROLE, msg.sender), "AccessControlFacet: Must have executive role to update roles");
+        require(
+            hasRole(EXECUTIVE_ROLE, msg.sender),
+            "AccessControlFacet: Must have executive role to update roles"
+        );
 
         // Check if user is a staker
         uint256 steeloBalance = ds.steelo.balanceOf(walletAddress);
@@ -108,9 +143,15 @@ contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, Re
     }
 
     // Function to update the investor role dynamically based on token holdings or other conditions
-    function updateInvestorRole(address walletAddress, uint256 steezId) external onlyRole(ADMIN_ROLE) {
+    function updateInvestorRole(
+        address walletAddress,
+        uint256 steezId
+    ) external onlyRole(ADMIN_ROLE) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        require(hasRole(EXECUTIVE_ROLE, msg.sender), "AccessControlFacet: Must have executive role to update roles");
+        require(
+            hasRole(EXECUTIVE_ROLE, msg.sender),
+            "AccessControlFacet: Must have executive role to update roles"
+        );
 
         // Check if user is an investor in any creator or has steez token
         bool isInvestor = false;
@@ -130,8 +171,13 @@ contract AccessControlFacet is AccessControlUpgradeable, PausableUpgradeable, Re
         }
     }
 
-    function upgradeDiamond(IDiamondCut.FacetCut[] memory cuts) external onlyRole(ADMIN_ROLE) {
-        require(hasRole(ADMIN_ROLE, msg.sender), "Must have upgrade role to upgrade");
+    function upgradeDiamond(
+        IDiamondCut.FacetCut[] memory cuts
+    ) external onlyRole(ADMIN_ROLE) {
+        require(
+            hasRole(ADMIN_ROLE, msg.sender),
+            "Must have upgrade role to upgrade"
+        );
         require(cuts.length > 0, "Must provide at least one cut to upgrade");
 
         // Perform the upgrade

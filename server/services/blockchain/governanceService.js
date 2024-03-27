@@ -1,5 +1,5 @@
-const ethers = require('ethers');
-const { contractInstance } = require('./blockchainUtils');
+const ethers = require("ethers");
+const { contractInstance } = require("./blockchainUtils");
 
 async function createProposal(description) {
   // Create a new governance proposal
@@ -22,12 +22,12 @@ async function fetchProposal(proposalId) {
     description: proposal.description,
     yesVotes: proposal.yesVotes,
     noVotes: proposal.noVotes,
-    executed: proposal.executed
+    executed: proposal.executed,
   };
 }
 
 module.exports = {
   createProposal,
   castVote,
-  fetchProposal
+  fetchProposal,
 };

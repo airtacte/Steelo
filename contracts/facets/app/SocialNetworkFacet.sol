@@ -6,22 +6,24 @@ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
 import { AccessControlFacet } from "./AccessControlFacet.sol";
 import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+import { SafeFactory } from ""
 import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 
 contract SocialNetworkFacet is AccessControlFacet {
     address socialNetworkFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    ISafe private safeCore;
+    ISafe private safe;
     ILensHub private lensHub;
 
     mapping(address => address) private userSafes;
     mapping(address => uint256) private userProfileIds; // Mapping user address to Lens profile ID
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
-    constructor(address _accessControlFacetAddress, address _safeCoreAddress, address _lensHubAddress) {
-        AccessControlFacet accessControl = AccessControlFacet(_accessControlFacetAddress);
-        safeCore = ISafe(_safeCoreAddress);
+    AccessControlFacet public accessControl;
+
+    constructor(address _accessControlFacetAddress, address _safeAddress, address _lensHubAddress) {
+        accessControl = AccessControlFacet(_accessControlFacetAddress);
+        safe = ISafe(_safeAddress);
         lensHub = ILensHub(_lensHubAddress);
     }
 
@@ -39,7 +41,11 @@ contract SocialNetworkFacet is AccessControlFacet {
             address userAddress = msg.sender;
             // Check and create Safe if necessary
             if (userSafes[userAddress] == address(0)) {
-                address safeAddress = safeCore.createSafe(userAddress);
+                // Adjusted to call the createSafeWithOwners function from MultiSigFacet
+                address[] memory owners = new address[](1);
+                owners[0] = userAddress; // User is the sole owner of their Safe
+                uint256 threshold = 1; // For simplicity, setting threshold to 1
+                address safeAddress = multiSigFacet.createSafeWithOwners(owners, threshold);
                 userSafes[userAddress] = safeAddress;
                 emit SafeCreated(userAddress, safeAddress);
             }
@@ -65,19 +71,12 @@ contract SocialNetworkFacet is AccessControlFacet {
             address refundReceiver,
             bytes calldata signatures
         ) public payable returns (bool) {
-            // Ensure only the Safe owner or authorized users can execute this
-            return safeCore.executeTransaction(
-                safeAddress,
-                to,
-                value,
-                data,
-                operation,
-                safeTxGas,
-                baseGas,
-                gasPrice,
-                gasToken,
-                refundReceiver,
-                signatures
+            // This function needs to construct the transaction and execute it through the user's Safe
+            // Assuming SafeL2 or a similar contract is used that supports execTransaction
+            SafeL2 safe = SafeL2(safeAddress);
+            return safe.execTransaction(
+                to, value, data, Enum.Operation(operation), safeTxGas, baseGas,
+                gasPrice, gasToken, payable(refundReceiver), signatures
             );
         }
 

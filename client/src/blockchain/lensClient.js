@@ -1,14 +1,16 @@
-import { ethers } from 'ethers';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { HttpLink } from 'apollo-link-http';
-require('dotenv').config();
+import { ethers } from "ethers";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { HttpLink } from "apollo-link-http";
+require("dotenv").config();
 
 // Initialize ethers with a provider
-const provider = new ethers.providers.JsonRpcProvider(process.env.POLYGON_ZKEVM_TESTNET_RPC_URL);
+const provider = new ethers.providers.JsonRpcProvider(
+  process.env.POLYGON_ZKEVM_TESTNET_RPC_URL
+);
 
 // Set up Apollo client for GraphQL interaction
 const httpLink = new HttpLink({
-  uri: 'https://api.lens.dev',
+  uri: "https://api.lens.dev",
 });
 
 const client = new ApolloClient({

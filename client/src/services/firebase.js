@@ -1,19 +1,19 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import firebase from '@react-native-firebase/app';
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import firebase from "@react-native-firebase/app";
 import {
   REACT_APP_FIREBASE_API_KEY,
   REACT_APP_FIREBASE_AUTH_DOMAIN,
   REACT_APP_FIREBASE_PROJECT_ID,
   REACT_APP_FIREBASE_STORAGE_BUCKET,
   REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  REACT_APP_FIREBASE_APP_ID
-} from 'react-native-dotenv';
+  REACT_APP_FIREBASE_APP_ID,
+} from "react-native-dotenv";
 
-import Routes from './Routes';
-import rootReducer from './reducers';
+import Routes from "./Routes";
+import rootReducer from "./reducers";
 
 // Use the environment variables with the REACT_APP_ prefix
 const firebaseConfig = {
@@ -46,6 +46,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
 });

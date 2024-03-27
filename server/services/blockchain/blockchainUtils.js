@@ -1,6 +1,6 @@
-const ethers = require('ethers');
-const firebase = require('firebase/app');
-require('firebase/firestore');
+const ethers = require("ethers");
+const firebase = require("firebase/app");
+require("firebase/firestore");
 
 // Firebase configuration extracted from Steelo's Tech Stack document
 const firebaseConfig = {
@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
@@ -30,11 +30,11 @@ function toChecksumAddress(address) {
 // Fetch creator profile from Firestore
 async function fetchCreatorProfile(creatorId) {
   try {
-    const doc = await db.collection('creators').doc(creatorId).get();
+    const doc = await db.collection("creators").doc(creatorId).get();
     if (doc.exists) {
       return doc.data();
     } else {
-      console.error('No such document!');
+      console.error("No such document!");
       return null;
     }
   } catch (error) {
@@ -50,5 +50,5 @@ function handleError(error) {
 module.exports = {
   toChecksumAddress,
   fetchCreatorProfile,
-  handleError
+  handleError,
 };

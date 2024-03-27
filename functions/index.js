@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
-const {Web3} = require("web3");
+const { Web3 } = require("web3");
 
 // Initialize Firebase Admin SDK
 admin.initializeApp();
@@ -23,16 +23,19 @@ if (!web3) {
   console.error("Web3 initialization failed. Check RPC URL configuration.");
 } else {
   // Example to verify the Web3 connection
-  web3.eth.getBlockNumber().then((blockNumber) => {
-    console.log("Current Block Number:", blockNumber);
-  }).catch((error) => {
-    console.error("Error fetching current block number:", error);
-  });
+  web3.eth
+    .getBlockNumber()
+    .then((blockNumber) => {
+      console.log("Current Block Number:", blockNumber);
+    })
+    .catch((error) => {
+      console.error("Error fetching current block number:", error);
+    });
 }
 
 // Initialize Express App
 const app = express();
-app.use(cors({origin: true})); // Enable CORS for all origins
+app.use(cors({ origin: true })); // Enable CORS for all origins
 
 // Example Middleware for authentication or logging
 const myMiddleware = (req, res, next) => {
@@ -59,7 +62,7 @@ exports.getVolumeData = functions.https.onRequest(async (request, response) => {
 
 // Cloud Function: Simple Hello World endpoint
 exports.helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", {structuredData: true});
+  functions.logger.info("Hello logs!", { structuredData: true });
   response.send("Hello from Firebase!");
 });
 
@@ -73,14 +76,15 @@ exports.widgets = functions.https.onRequest(app);
 
 // Example Web3 Usage: Fetch current block number
 exports.getCurrentBlockNumber = functions.https.onRequest(
-    async (request, response) => {
-      try {
-        const currentBlockNumber = await web3.eth.getBlockNumber();
-        const messagePart1 = `Current Block Number on Polygon zkEVM Testnet: `;
-        const fullMessage = messagePart1 + `${currentBlockNumber}`;
-        response.send(fullMessage);
-      } catch (error) {
-        console.error("Failed to fetch current block number:", error);
-        response.status(500).send("Internal Server Error");
-      }
-    });
+  async (request, response) => {
+    try {
+      const currentBlockNumber = await web3.eth.getBlockNumber();
+      const messagePart1 = `Current Block Number on Polygon zkEVM Testnet: `;
+      const fullMessage = messagePart1 + `${currentBlockNumber}`;
+      response.send(fullMessage);
+    } catch (error) {
+      console.error("Failed to fetch current block number:", error);
+      response.status(500).send("Internal Server Error");
+    }
+  }
+);

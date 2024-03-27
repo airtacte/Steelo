@@ -2,16 +2,19 @@
 // Copyright (c) 2023 Steelo Labs Ltd
 pragma solidity ^0.8.10;
 
-import { LibDiamond } from "../../libraries/LibDiamond.sol";
-import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
-import { AccessControlFacet } from "./AccessControlFacet.sol";
+import {LibDiamond} from "../../libraries/LibDiamond.sol";
+import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+import {AccessControlFacet} from "./AccessControlFacet.sol";
 
 contract SnapshotFacet is AccessControlFacet {
     address snapshotFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
     AccessControlFacet accessControl; // Instance of the AccessControlFacet
-    constructor(address _accessControlFacetAddress) {accessControl = AccessControlFacet(_accessControlFacetAddress);}
+
+    constructor(address _accessControlFacetAddress) {
+        accessControl = AccessControlFacet(_accessControlFacetAddress);
+    }
 
     modifier dailySnapshot(uint256 creatorId) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
@@ -22,7 +25,11 @@ contract SnapshotFacet is AccessControlFacet {
         _;
     }
 
-    function initialize() public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
+    function initialize()
+        public
+        onlyRole(accessControl.EXECUTIVE_ROLE())
+        initializer
+    {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         snapshotFacetAddress = ds.snapshotFacetAddress;
     }
@@ -46,7 +53,9 @@ contract SnapshotFacet is AccessControlFacet {
             address holder = ds.steez[creatorId].investors[i].walletAddress;
             uint256 steezId = ds.steez[creatorId].steezId; // Ensure steezId is correctly defined and accessible
 
-            LibDiamond.Investor storage investor = ds.steez[creatorId].investors[i];
+            LibDiamond.Investor storage investor = ds
+                .steez[creatorId]
+                .investors[i];
             uint256 holderBalance = investor.portfolio[steezId];
 
             snapshot.balances[holder][steezId] = holderBalance;
@@ -54,13 +63,21 @@ contract SnapshotFacet is AccessControlFacet {
     }
 
     // View the balance for an address at a given snapshot
-    function findSteezSnapshotBalance(uint256 snapshotId, address walletAddress, uint256 steezId) external view returns (uint256) {
+    function findSteezSnapshotBalance(
+        uint256 snapshotId,
+        address walletAddress,
+        uint256 steezId
+    ) external view returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.snapshots[snapshotId].balances[walletAddress][steezId];
     }
 
     // View the balance for an address and a specific token at a given snapshot
-    function findUserSnapshotBalance(uint256 snapshotId, address walletAddress, uint256 steezId) external view returns (uint256) {
+    function findUserSnapshotBalance(
+        uint256 snapshotId,
+        address walletAddress,
+        uint256 steezId
+    ) external view returns (uint256) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.snapshots[snapshotId].balances[walletAddress][steezId];
     }

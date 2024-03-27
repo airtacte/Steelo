@@ -5,8 +5,8 @@
 // As the SDK and specific functionalities are not fully detailed in the Steelo documents,
 // below is a high-level placeholder for such interactions.
 
-const PolygonSDK = require('polygon-sdk');
-const { contractInstance } = require('./blockchainUtils');
+const PolygonSDK = require("polygon-sdk");
+const { contractInstance } = require("./blockchainUtils");
 
 // Placeholder function for bridging assets from Ethereum to Polygon
 async function bridgeAssetsToPolygon(userAddress, amount) {
@@ -20,5 +20,5 @@ async function interactWithDeFiOnPolygon(deFiPlatformAddress, action, params) {
 
 module.exports = {
   bridgeAssetsToPolygon,
-  interactWithDeFiOnPolygon
+  interactWithDeFiOnPolygon,
 };

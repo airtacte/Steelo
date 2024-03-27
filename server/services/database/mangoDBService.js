@@ -1,9 +1,12 @@
-const { MongoClient } = require('mongodb');
-require('dotenv').config();
+const { MongoClient } = require("mongodb");
+require("dotenv").config();
 
 class MongoDBService {
   constructor() {
-    this.client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    this.client = new MongoClient(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     this.database = this.client.db(process.env.MONGODB_DB_NAME);
   }
 
@@ -33,7 +36,7 @@ class MongoDBService {
     const document = await collection.findOne({ _id: documentId });
     await this.disconnect();
     if (!document) {
-      console.log('Document not found!');
+      console.log("Document not found!");
       return null;
     }
     return document;
@@ -43,9 +46,14 @@ class MongoDBService {
   async updateDocument(collectionName, documentId, documentData) {
     await this.connect();
     const collection = this.database.collection(collectionName);
-    const result = await collection.updateOne({ _id: documentId }, { $set: documentData });
+    const result = await collection.updateOne(
+      { _id: documentId },
+      { $set: documentData }
+    );
     await this.disconnect();
-    return result.modifiedCount === 1 ? { id: documentId, ...documentData } : null;
+    return result.modifiedCount === 1
+      ? { id: documentId, ...documentData }
+      : null;
   }
 
   // Delete a document
