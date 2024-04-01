@@ -10,7 +10,7 @@ contract ContentFacet is AccessControlFacet {
     address contentFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);
@@ -27,8 +27,12 @@ contract ContentFacet is AccessControlFacet {
 
     // Example: Function to create a new content item
     function createContentItem(
-        string calldata _title,
-        string calldata _description,
+        string calldata title,
         string calldata _contentURI
-    ) external {}
+    ) external {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        
+    }
+
+
 }

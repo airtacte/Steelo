@@ -4,107 +4,71 @@ Folder: features
 
 -- File: BazaarFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { IPoolManager } from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
------- import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
------- import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+------ import {IPoolManager} from "../../../lib/Uniswap-v4/src/interfaces/IPoolManager.sol";
+------ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+------ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+------ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 ---- Functions:
 ------ initialize requires: 
------- listCreatorToken requires: uint256 creatorId, uint256 initialPrice, uint256 supply, bool isAuction
 ------ marketListing requires: uint256 creatorId
------- bidCreatorToken requires: uint256 creatorId, uint256 amount
------- buyCreatorToken requires: uint256 creatorId, uint256 amount
------- _addLiquidityForToken requires: uint256 creatorId, int24 tickLower, int24 tickUpper, int128 liquidityDelta
------- _addLiquidity requires: address uniswapAddress, address steezId, uint256 additionalgbptAmount, uint256 additionalsteezAmount
 ------ getSuggestions requires: 
------- search requires: string memory query
 ------ viewAnalytics requires: 
------- payForBlogPlacement requires: uint256 amount, string memory content
 
 -- File: GalleryFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
------- import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+------ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+------ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 ------ import "@openzeppelin/contracts/utils/Strings.sol";
 ---- Functions:
 ------ initialize requires: 
------- displayNFTs requires: address nftContract, uint256 tokenId
------- manageSteez requires: address tokenContract, uint256 tokenId, uint256 amount, string memory action
 ------ viewPortfolioAnalytics requires: 
------- transferNFT requires: address nftContract, uint256 tokenId, address to
------- transferSteez requires: address tokenContract, uint256 tokenId, uint256 amount, address to
 
 -- File: MosaicFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
------- import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
------- import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
----- Functions:
------- initialize requires: address _lens, address _steez
------- collectContent requires: uint256 contentId
------- follow requires: address userToFollow
------- like requires: uint256 contentId
------- commentOnContent requires: uint256 contentId, string calldata comment
------- invest requires: address creator, uint256 amount
------- assignCredit requires: uint256 contentId, address contributor, uint256 proportion
------- setExclusivity requires: uint256 contentId, uint8 exclusivityLevel
------- checkExclusivity requires: uint256 contentId, address user
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+------ import {ILensHub} from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
+------ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+------ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 -- File: ProfileFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
------- import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
------- import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
------- import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
------- import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+------ import {ILensHub} from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
+------ import {ISafe} from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
+------ import {SafeProxyFactory} from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+------ import {SafeL2} from "../../../lib/safe-contracts/contracts/SafeL2.sol";
+------ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+------ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 ------ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 ---- Functions:
------- initialize requires: 
------- initialize requires: address _lensAddress, address _safeAddress
------- setProfile requires: address profileId, string memory profileIdname, string memory bio, string memory avatarURI, string username
 ------ verifyCreator requires: uint256 creatorId
------- usernameTaken requires: string memory username
 ------ getProfile requires: address profileId
------- postContent requires: uint256 contentId, bool isPublic
------- addInvestor requires: address investor
------- updatePortfolio requires: uint256 tokenId, uint256 amount
------- createSpace requires: uint256[] calldata contentIds
 ------ viewProfile requires: address profileId
 ------ viewContent requires: uint256 contentId
------- viewInvestors requires: address creator
 ------ viewPortfolio requires: address profileId
------- viewSpace requires: uint256 spaceId
 ------ _addInvestor requires: address creator, address investor
------- _updatePortfolio requires: address profileId, uint256 tokenId, uint256 amount
------- _createSpace requires: address creator, uint256[] calldata contentIds
 
 -- File: VillageFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+------ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 ------ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 ---- State Variables:
 ------ public nextChatId
 ---- Functions:
------- getKeyPair requires: address user
------- initiateTransaction requires: address sender, address receiver, uint amount, address token
 ------ releaseFunds requires: uint transactionId
 ------ refund requires: uint transactionId
 ------ initialize requires: 
------- createChat requires: address[] calldata participants, bool isGroup
------- sendMessage requires: uint256 chatId, string calldata message
------- groupChatGovernance requires: uint256 chatId, uint256 proposalId, bool vote
------- initiateP2PTransaction requires: address receiver, uint amount, address token

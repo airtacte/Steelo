@@ -14,7 +14,7 @@ contract BazaarFacet is AccessControlFacet {
     address bazaarFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);
@@ -58,8 +58,8 @@ contract BazaarFacet is AccessControlFacet {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         bazaarFacetAddress = ds.bazaarFacetAddress;
 
-        uniswap = IPoolManager(ds.uniswapAddress);
-        gbpt = IERC20(ds.gbptAddress);
+        uniswap = IPoolManager(ds.constants.uniswapAddress);
+        gbpt = IERC20(ds.constants.gbptAddress);
     }
 
     // Function to list a new CreatorToken (Steez) for sale or auction

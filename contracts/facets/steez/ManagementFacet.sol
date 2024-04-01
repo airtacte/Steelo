@@ -11,7 +11,7 @@ contract ManagementFacet is AccessControlFacet {
     address managementFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);

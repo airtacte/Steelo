@@ -194,6 +194,7 @@ library LibDiamond {
     struct Content {
         uint256 contentId;
         uint256 creatorId;
+        string title;
         string contentURI;
         string contentHash;
         string contentType;
@@ -201,6 +202,20 @@ library LibDiamond {
         uint256 contentPrice;
         uint256 contentTimestamp;
         mapping(address => uint256) collections;
+    }
+
+    struct Messages {
+        uint256 chatId;
+        address sender;
+        address recipient;
+        string text;
+        address attachment;
+    } 
+
+    struct Village {
+        uint256 creatorId;
+        mapping(address => Investor) investors; // Assuming Investor is a struct that represents an investor
+
     }
 
     struct Contributor {
@@ -254,6 +269,7 @@ library LibDiamond {
         address contractOwner;
         Constants constants; // reference to contracts\libraries\ConstDiamond.sol
         mapping(address => uint256) treasury;
+
         // FACETS
         address constDiamondAddress;
         // app
@@ -264,7 +280,7 @@ library LibDiamond {
         address notificationFacetAddress;
         address oracleFacetAddress;
         address snapshotFacetAddress;
-        address socialNetworkFacetAddress;
+        address userExperienceFacetAddress;
         // features
         address bazaarFacetAddress;
         address galleryFacetAddress;
@@ -283,6 +299,7 @@ library LibDiamond {
         address steezFacetAddress;
         // safe
         address safeTemplateAddress;
+
         // STRUCT REFERENCES
         IERC20 steelo;
         mapping(uint256 => Steez) steez; // From creatorId to Steez (list of investors)
@@ -301,7 +318,10 @@ library LibDiamond {
         mapping(uint256 => Listing) listings; // creatorId for Bazaar
         mapping(uint256 => Proposal) proposals; // proposals for SIP
         mapping(uint256 => Creator) analytics; // creatorId analytics for Profile
+        mapping(uint256 => Messages) messages;
+        mapping(uint256 => Village) villages;
         uint256[] allCreatorIds; // Tracks all verified, launched Steez via their creatorIds
+
         // ACCESS CONTROL
         mapping(bytes32 => RoleData) roles;
         mapping(address => bool) executiveMembers;
@@ -317,9 +337,11 @@ library LibDiamond {
         mapping(address => bool) investorMembers;
         mapping(address => bool) moderatorMembers;
         mapping(address => bool) subscriberMembers;
+
         // SNAPSHOTS
         uint256 snapshotCounter;
         uint256 lastSnapshotTimestamp;
+
         // STEELOFACET VARIABLES
         uint256 steeloCurrentPrice;
         uint256 totalMinted;
@@ -341,6 +363,7 @@ library LibDiamond {
         mapping(address => uint256) totalRewardPool;
         mapping(address => uint256) totalStakingPool;
         mapping(uint256 => bool) stakeholders;
+
         // STEEZFACET VARIABLES
         uint256 _lastCreatorId;
         uint256 _lastProfileId;

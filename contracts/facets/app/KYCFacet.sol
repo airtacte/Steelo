@@ -6,17 +6,15 @@ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
 import {AccessControlFacet} from "./AccessControlFacet.sol";
 import "../../interfaces/IKYC.sol";
 
-contract KYCFacet is IKYC, AccessControlFacet {
+abstract contract KYCFacet is IKYC, AccessControlFacet {
     address kycFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);
     }
-
-    mapping(address => bool) private verifiedUsers;
 
     function initialize()
         external
@@ -29,13 +27,16 @@ contract KYCFacet is IKYC, AccessControlFacet {
 
     // Simulated KYC check - in a real scenario, this would involve off-chain processes
     function verifyUser(
-        address user
-    ) external override onlyRole(accessControl.EMPLOYEE_ROLE()) returns (bool) {
-        verifiedUsers[user] = true; // Simplified for demonstration
+        uint256 profileId
+    ) external onlyRole(accessControl.EMPLOYEE_ROLE()) returns (bool) {
+        // Trulioo KYC API Calls TBC
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        ds.profiles[profileId].verified = true;
         return true;
     }
 
-    function getUserStatus(address user) external view override returns (bool) {
-        return verifiedUsers[user];
+    function getUserStatus(uint256 profileId) external view returns (bool) {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        return ds.profiles[profileId].verified;
     }
 }

@@ -18,7 +18,7 @@ contract MosaicFacet is AccessControlFacet {
     address mosaicFacetAddress;
     using LibDiamond for LibDiamond.DiamondStorage;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);
@@ -79,11 +79,11 @@ contract MosaicFacet is AccessControlFacet {
      * @dev Integrates with the Lens Protocol to follow a user.
      */
     function follow(
-        address userToFollow
+        address profileId
     ) public onlyRole(accessControl.USER_ROLE()) {
         // Placeholder for actual follow logic using Lens Protocol
-        lens.follow(userToFollow);
-        emit Followed(msg.sender, userToFollow);
+        lens.follow(msg.sender, profileId);
+        emit Followed(msg.sender, profileId);
     }
 
     function like(

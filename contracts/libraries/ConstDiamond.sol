@@ -37,7 +37,7 @@ contract ConstDiamond is Initializable {
         address newValue
     );
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);
@@ -85,46 +85,28 @@ contract ConstDiamond is Initializable {
         ds.constants.treasury = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
         ds.constants.trasuryTGE = 35;
         ds.constants.treasuryMint = 35;
-        ds
-            .constants
-            .liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D;
+        ds.constants.liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D;
         ds.constants.liquidityProvidersMint = 55;
-        ds
-            .constants
-            .ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D;
+        ds.constants.ecosystemProviders = 0x5dBfD5E645FF0714dc71c3cbcADAAdf163d5971D;
         ds.constants.ecosystemProvidersMint = 10;
-        ds
-            .constants
-            .foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49;
+        ds.constants.foundersAddress = 0x0620F316431EE739a1c1EeD54980aF5EAF5B8E49;
         ds.constants.foundersTGE = 20;
-        ds
-            .constants
-            .earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8;
+        ds.constants.earlyInvestorsAddress = 0x6Eaa165659fbd96C10DBad3C3A89396225aEEde8;
         ds.constants.earlyInvestorsTGE = 10;
-        ds
-            .constants
-            .communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde;
+        ds.constants.communityAddress = 0xB6912a7F733287BE95Aca28E1C563FA3Ed0BeFde;
         ds.constants.communityTGE = 35;
         ds.constants.steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
         ds.constants.FEE_RATE = 25;
-        ds
-            .constants
-            .uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
+        ds.constants.uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
         ds.constants.gbptAddress = 0x86B4dBE5D203e634a12364C0e428fa242A3FbA98;
 
         // SAFE GLOBAL - ADDRESSES TO BE REPLACED - CURRENTLY USING TREADY ADDRESS
-        ds.constants.SAFE_PROXY_FACTORY_ADDRESS = address(
-            0x07720111f3d48427e55e35CB07b5D203A4edCd08
-        );
-        ds.constants.SAFE_MASTER_COPY = address(
-            0x07720111f3d48427e55e35CB07b5D203A4edCd08
-        );
+        ds.constants.SAFE_PROXY_FACTORY_ADDRESS = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
+        ds.constants.SAFE_MASTER_COPY = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
         ds.constants.saltNonce = block.timestamp;
 
         // CHAINLINK
-        ds
-            .constants
-            .CHAINLINK_TOKEN_ADDRESS = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;
+        ds.constants.CHAINLINK_TOKEN_ADDRESS = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;
         ds.constants.CHAINLINK_FEE = 0.1 ether; // Represented in LINK tokens
 
         // UTILITY CONSTANTS

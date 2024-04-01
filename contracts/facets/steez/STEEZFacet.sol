@@ -20,7 +20,7 @@ contract STEEZFacet is ERC1155Upgradeable, AccessControlFacet {
     using Address for address;
     using Strings for uint256;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);

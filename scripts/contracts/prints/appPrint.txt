@@ -4,109 +4,96 @@ Folder: app
 
 -- File: AccessControlFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { IDiamondCut } from "../../interfaces/IDiamondCut.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {IDiamondCut} from "../../interfaces/IDiamondCut.sol";
 ------ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
------- import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 ------ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+---- State Variables:
+------ constant EXECUTIVE_ROLE
+------ constant ADMIN_ROLE
+------ constant EMPLOYEE_ROLE
+------ constant TESTER_ROLE
+------ constant STAKER_ROLE
+------ constant USER_ROLE
+------ constant VISITOR_ROLE
+------ constant CREATOR_ROLE
+------ constant TEAM_ROLE
+------ constant MODERATOR_ROLE
+------ constant COLLABORATOR_ROLE
+------ constant INVESTOR_ROLE
+------ constant SUBSCRIBER_ROLE
 ---- Functions:
------- initialize requires: address _steeloFacet, address _steezFacet, address _accessControlFacetAddress
------- _grantRole requires: ds.constants.bytes32 role, address account
------- _revokeRole requires: bytes32 role, address account
------- updateRoleBasedOnConditions requires: address account
------- grantExecutiveRole requires: address account
------- grantAdminRole requires: address account
------- grantEmployeeRole requires: address account
------- grantTesterRole requires: address account
------- grantStakerRole requires: address account
------- grantUserRole requires: address account
------- grantVisitorRole requires: address account
------- grantCreatorRole requires: address account
------- grantTeamRole requires: address account
------- grantModeratorRole requires: address account
------- grantCollaboratorRole requires: address account
------- grantInvestorRole requires: address account
------- grantSubscriberRole requires: address account
------- upgradeDiamond requires: IDiamondCut.FacetCut[] memory cuts
------- grantRoleBasedOnTokenHolding requires: address account
+------ assignVisitorRole requires: 
 
 -- File: GasOptimisationFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "./AccessControlFacet.sol";
 ---- Functions:
 ------ initialize requires: 
------- bulkProcessData requires: uint256[] calldata data
+
+-- File: KYCFacet.sol
+---- Imports:
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "./AccessControlFacet.sol";
+------ import "../../interfaces/IKYC.sol";
+---- Functions:
+------ initialize requires: 
+------ getUserStatus requires: address user
 
 -- File: MultiSigFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { SafeProxyFactory } from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
------- import { SafeProxy } from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
------- import { SafeL2 } from "../../../lib/safe-contracts/contracts/SafeL2.sol";
------- import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "./AccessControlFacet.sol";
+------ import {SIPFacet} from "../steelo/SIPFacet.sol";
+------ import {SafeProxyFactory} from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
+------ import {SafeProxy} from "../../../lib/safe-contracts/contracts/proxies/SafeProxy.sol";
+------ import {SafeL2} from "../../../lib/safe-contracts/contracts/SafeL2.sol";
+------ import {ISafe} from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 ------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 ------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 ------ import "@chainlink/contracts/src/v0.8/Chainlink.sol";
 ---- Functions:
------- initialize requires: 
------- createSafeWithOwners requires: address[] memory _owners, uint256 _threshold
 ------ verifyIdentity requires: address user
------- fulfillVerification requires: bytes32 _requestId, bool _isVerified
------- initiateTransaction requires: address from, address to, uint amount
------- signActivity requires: address safeAddress, bytes memory activityHash, bytes memory signature
------- verifyVote requires: uint256 proposalId, bytes memory signature, bytes memory voter
------- recoverSigner requires: bytes memory hash, bytes memory signature
 ------ exampleMultisigFunctionality requires: 
------- transferOwnership requires: address newOwner
 
 -- File: NotificationFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "./AccessControlFacet.sol";
 ---- Functions:
 ------ initialize requires: 
 
 -- File: OracleFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "./AccessControlFacet.sol";
 ------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 ------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 ------ import "@chainlink/contracts/src/v0.8/Chainlink.sol";
----- Functions:
------- initialize requires: address chainlinkTokenAddress
------- requestVolumeData requires: uint256 _payment, bytes32 _jobId, address _oracle
------- fulfill requires: bytes32 _requestId, uint256 _volume
------- getLatestPrice requires: address _priceFeed, uint256 creatorId
------- getSteezTransactionCount requires: 
------- getSteeloCurrentPrice requires: 
 
 -- File: SnapshotFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
----- State Variables:
------- private _snapshotCounter
------- private snapshotCounter
------- private _lastSnapshotTimestamp
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "./AccessControlFacet.sol";
 ---- Functions:
 ------ initialize requires: 
 ------ _incrementSnapshot requires: 
------- snapshotBalances requires: address account, uint256 balance
------- takeSnapshot requires: 
------- _takeSnapshot requires: 
------- createSnapshot requires: uint256 creatorId
------- _findSnapshotIndex requires: uint256 creatorId, address account
+------ takeSnapshot requires: uint256 creatorId
 
 -- File: SocialNetworkFacet.sol
 ---- Imports:
 ------ import { LibDiamond } from "../../libraries/LibDiamond.sol";
 ------ import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+------ import { AccessControlFacet } from "./AccessControlFacet.sol";
 ------ import { ISafe } from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 ------ import { ILensHub } from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 ---- Functions:
@@ -121,7 +108,8 @@ Folder: app
 
 -- File: UserExperienceFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "./AccessControlFacet.sol";
 ---- Functions:
 ------ initialize requires: 

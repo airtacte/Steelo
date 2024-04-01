@@ -14,7 +14,7 @@ contract GalleryFacet is AccessControlFacet {
     using LibDiamond for LibDiamond.DiamondStorage;
     using Strings for uint256;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);

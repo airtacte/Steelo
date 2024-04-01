@@ -48,8 +48,6 @@ contract AccessControlFacet is
     );
 
     function initialize(
-        address _steeloFacet,
-        address _steezFacet,
         address _accessControlFacetAddress
     ) external onlyRole(EXECUTIVE_ROLE) initializer {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();

@@ -4,72 +4,48 @@ Folder: steelo
 
 -- File: SIPFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+------ import {STEELOFacet} from "./STEELOFacet.sol";
 ------ import "hardhat/console.sol";
+---- State Variables:
+------ memory reason
 ---- Functions:
------- initialize requires: 
------- createSIP requires: string memory _description, string _type, uint256 _duration
------- voteOnSIP requires: uint256 _sipId, bool _support
------- checkForExecution requires: uint256 _sipId
------- executeSIP requires: uint256 _sipId
------- viewSIP requires: uint256 _sipId
 ------ listSIPs requires: 
+------ listSuccessfulSIPs requires: 
 ------ getTotalSIPs requires: 
+------ getTotalSuccessfulSIPs requires: 
 ------ getVoteCount requires: uint256 _sipId
 ------ isSIPActive requires: uint256 _sipId
 ------ isSIPExecuted requires: uint256 _sipId
 ------ getTreasuryBalance requires: address _token
------- depositToTreasury requires: address _token, uint256 _amount
------- withdrawFromTreasury requires: address _token, uint256 _amount
 
 -- File: StakingFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { STEELOFacet } from "../steelo/STEELOFacet.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+------ import {STEELOFacet} from "../steelo/STEELOFacet.sol";
 ------ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 ---- Functions:
------- initialize requires: address _steeloFacet
------- stake requires: uint256 _amount
------- unstake requires: uint256 _amount
------- calculateReward requires: address stakeholder
 ------ distributeRewards requires: 
 ------ getTotalStakingPool requires: 
------- stakeholderStatus requires: address _user
------- stakeAmount requires: address _user
 
 -- File: STEELOFacet.sol
 ---- Imports:
------- import { LibDiamond } from "../../libraries/LibDiamond.sol";
------- import { ConstDiamond } from "../../libraries/ConstDiamond.sol";
------- import { STEEZFacet } from "../steez/STEEZFacet.sol";
------- import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
------- import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
------- import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
------- import "@openzeppelin/contracts/utils/Strings.sol";
+------ import {LibDiamond} from "../../libraries/LibDiamond.sol";
+------ import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
+------ import {AccessControlFacet} from "../app/AccessControlFacet.sol";
 ------ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+------ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 ------ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+------ import "@openzeppelin/contracts/utils/Strings.sol";
 ---- Functions:
------- initialize requires: address _treasury, address _oracle, string memory _jobId, uint256 _fee, address _linkToken
------- steeloTGE requires: uint256 _steeloCurrentPrice
 ------ getTotalTransactionCount requires: 
------- _beforeTokenTransfer requires: address from, address to, uint256 amount
------- tokenTransfer requires: address recipient, uint256 amount
 ------ steeloMint requires: 
------- calculateMintAmount requires: 
 ------ calculateSupplyCap requires: 
------- calculateBurnAmount requires: uint256 transactionValue
------- adjustMintRate requires: uint256 _newMintRate
------- adjustBurnRate requires: uint256 _newBurnRate
 ------ burnTokens requires: 
------- getOwner requires: 
+------ verifyTransaction requires: uint256 _sipId
 ------ updateParameters requires: 
 ------ requestVolumeData requires: 
------- fulfill requires: bytes32 _requestId
------- stringToBytes32 requires: string memory source

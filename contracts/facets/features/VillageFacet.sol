@@ -37,7 +37,7 @@ contract VillageFacet is AccessControlFacet {
     using LibDiamond for LibDiamond.DiamondStorage;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(
         address _accessControlFacetAddress,

@@ -18,7 +18,7 @@ contract DiamondCutFacet is
     uint256 public constant facetVersion = 1;
     event FacetAdded(address indexed facetAddress, bytes4[] functionSelectors);
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);

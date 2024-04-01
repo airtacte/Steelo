@@ -13,7 +13,7 @@ contract StakingFacet is AccessControlFacet {
     using LibDiamond for LibDiamond.DiamondStorage;
     using SafeERC20 for IERC20;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);

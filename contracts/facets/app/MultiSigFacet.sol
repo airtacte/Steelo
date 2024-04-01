@@ -19,7 +19,7 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
     using LibDiamond for LibDiamond.DiamondStorage;
     using Chainlink for Chainlink.Request;
 
-    AccessControlFacet accessControl; // Instance of the AccessControlFacet
+    AccessControlFacet accessControl;
 
     constructor(address _accessControlFacetAddress) {
         accessControl = AccessControlFacet(_accessControlFacetAddress);
