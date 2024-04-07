@@ -181,12 +181,35 @@ contract MultiSigFacet is ChainlinkClient, AccessControlFacet {
         }
     }
 
-    function initiateTransaction(
-        address from,
+    // Function to execute a transaction from a user's Safe
+    function executeUserTransaction(
+        address safeAddress,
         address to,
-        uint amount
-    ) public onlyRole(accessControl.USER_ROLE()) {
-        // Use Safe-global SDK functions for multisig transaction initiation
+        uint256 value,
+        bytes calldata data,
+        Enum.Operation operation,
+        uint256 safeTxGas,
+        uint256 baseGas,
+        uint256 gasPrice,
+        address gasToken,
+        address refundReceiver,
+        bytes calldata signatures
+    ) public payable returns (bool) {
+        // Casting safeAddress to payable as required by SafeL2
+        SafeL2 safeInstance = SafeL2(payable(safeAddress)); // Corrected type casting
+        return
+            safeInstance.execTransaction(
+                to,
+                value,
+                data,
+                operation, // Directly using the Enum type
+                safeTxGas,
+                baseGas,
+                gasPrice,
+                gasToken,
+                payable(refundReceiver),
+                signatures
+            );
     }
 
     function signActivity(

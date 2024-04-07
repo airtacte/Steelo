@@ -375,6 +375,10 @@ library LibDiamond {
         mapping(bytes32 => uint256) fees; // JobID to Payment mapping
         // Safe
         mapping(bytes32 => address) verificationRequests;
+
+        // APP VARIABLES
+        uint256 lastProfileId;
+        uint256 lastCreatorId;
     }
 
     // // COMPULSORY DIAMOND STORAGE FUNCTIONS // //

@@ -5,12 +5,14 @@ pragma solidity ^0.8.10;
 import {LibDiamond} from "../../libraries/LibDiamond.sol";
 import {ConstDiamond} from "../../libraries/ConstDiamond.sol";
 import {AccessControlFacet} from "../app/AccessControlFacet.sol";
+import {MultiSigFacet} from "../app/MultiSigFacet.sol";
 import {ILensHub} from "../../../lib/lens-protocol/contracts/interfaces/ILensHub.sol";
 import {ISafe} from "../../../lib/safe-contracts/contracts/interfaces/ISafe.sol";
 import {SafeProxyFactory} from "../../../lib/safe-contracts/contracts/proxies/SafeProxyFactory.sol";
 import {SafeL2} from "../../../lib/safe-contracts/contracts/SafeL2.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import {Enum} from "../../../lib/safe-contracts/contracts/libraries/Enum.sol";
 
 contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
     address profileFacetAddress;
@@ -36,9 +38,12 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
     event ContentPosted(address indexed profileId, uint256 contentId);
     event InvestorAdded(address indexed creator, address indexed investor);
     event SpaceCreated(address indexed profileId, uint256 spaceId);
-    event SafeCreated(address indexed userAddress, address safeAddress);
-    event LensProfileCreated(address indexed userAddress, uint256 profileId);
-    event SafeLinkedToProfile(address indexed userAddress, address safeAddress);
+    event SafeCreated(address indexed walletAddress, address safeAddress);
+    event LensProfileCreated(address indexed walletAddress, uint256 profileId);
+    event SafeLinkedToProfile(
+        address indexed walletAddress,
+        address safeAddress
+    );
     event PortfolioUpdated(
         address indexed profileId,
         uint256 indexed tokenId,
@@ -54,44 +59,41 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
 
         __ERC1155_init("https://myapi.com/api/token/{id}.json");
 
-        lens = ILensHub(_lensAddress);
+        lensHub = ILensHub(_lensAddress);
         safe = ISafe(_safeAddress);
     }
 
     function supportsInterface(
         bytes4 interfaceId
-    )
-        public
-        view
-        override(ERC1155Upgradeable)
-        returns (bool)
-    {
+    ) public view override(ERC1155Upgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
     // Function to ensure a user has a Safe and Lens profile, and creates them if not
     function createUserProfile() public {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        address userAddress = msg.sender;
+        MultiSigFacet multiSig = MultiSigFacet(ds.multiSigFacetAddress);
+        LensFacet lensFacet = LensFacet(ds.lensFacetAddress);
+        address walletAddress = msg.sender;
         // Check and create Safe if necessary
-        if (userSafes[userAddress] == address(0)) {
+        if (userSafes[walletAddress] == address(0)) {
             // Adjusted to call the createSafeWithOwners function from MultiSigFacet
             address[] memory owners = new address[](1);
-            owners[0] = userAddress; // User is the sole owner of their Safe
+            owners[0] = walletAddress; // User is the sole owner of their Safe
             uint256 threshold = 1; // For simplicity, setting threshold to 1
-            address safeAddress = multiSigFacet.createSafeWithOwners(
+            address safeAddress = multiSig.createSafeWithOwners(
                 owners,
                 threshold
             );
-            userSafes[userAddress] = safeAddress;
-            emit SafeCreated(userAddress, safeAddress);
+            userSafes[walletAddress] = safeAddress;
+            emit SafeCreated(walletAddress, safeAddress);
         }
-        // Check and create Lens profile if necessary
-        if (ds.profiles[profileId] == 0) {
-            uint256 profileId = lensHub.createProfile(userAddress);
-            ds.profiles[profileId] = profileId;
-            emit LensProfileCreated(userAddress, profileId);
+        if (userLens[walletAddress] == address(0)) {
+            // Check and create Lens profile if necessary via LensFacet
+            lensFacet.createProfile(walletAddress);
         }
+        // Check and create Lens profile if necessary via LensFacet
+            emit LensProfileCreated(walletAddress, profileId);
     }
 
     // Function to set up or update a user profile
@@ -111,9 +113,9 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
 
     // Function to link an existing Safe with the user's Lens profile
     function linkSafeToProfile(address safeAddress) public {
-        address userAddress = msg.sender;
-        require(userSafes[userAddress] == address(0), "Safe already linked");
-        userSafes[userAddress] = safeAddress;
+        address walletAddress = msg.sender;
+        require(userSafes[walletAddress] == address(0), "Safe already linked");
+        userSafes[walletAddress] = safeAddress;
         // You can add logic to verify ownership of the Safe if necessary
     }
 
@@ -121,8 +123,7 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         // Verification logic here
 
-        ds.steez.creatorId++; // Increment the creatorId
-        ds.steez.steez[creatorId]; // new Creator
+        ds.creators[creatorId].creatorId++;
     }
 
     // Function to check if a username already exists
@@ -134,46 +135,14 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
     }
 
     // Getter function to retrieve a user's Safe address
-    function getUserSafe(address userAddress) public view returns (address) {
-        return userSafes[userAddress];
+    function getUserSafe(address walletAddress) public view returns (address) {
+        return userSafes[walletAddress];
     }
 
     // Function to retrieve a user's profile
     function getProfile(address profileId) internal view {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         return ds.profiles[profileId];
-    }
-
-    // Function to execute a transaction from a user's Safe
-    function executeUserTransaction(
-        address safeAddress,
-        address to,
-        uint256 value,
-        bytes calldata data,
-        uint8 operation,
-        uint256 safeTxGas,
-        uint256 baseGas,
-        uint256 gasPrice,
-        address gasToken,
-        address refundReceiver,
-        bytes calldata signatures
-    ) public payable returns (bool) {
-        // This function needs to construct the transaction and execute it through the user's Safe
-        // Assuming SafeL2 or a similar contract is used that supports execTransaction
-        SafeL2 safe = SafeL2(safeAddress);
-        return
-            safe.execTransaction(
-                to,
-                value,
-                data,
-                Enum.Operation(operation),
-                safeTxGas,
-                baseGas,
-                gasPrice,
-                gasToken,
-                payable(refundReceiver),
-                signatures
-            );
     }
 
     // Function to add an investor to a creator's profile
@@ -242,9 +211,10 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
         uint256 profileId,
         string calldata contentUri
     ) public onlyRole(accessControl.CREATOR_ROLE()) {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         // Ensure the caller owns the profile
         require(
-            userProfileIds[msg.sender] == profileId,
+            ds.profileIds[msg.sender] == ds.profileId,
             "Caller does not own the profile"
         );
         // Call the LensHub contract to post content
@@ -253,7 +223,8 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
 
     // Function to follow another user's Lens profile
     function followProfile(uint256 profileIdToFollow) public {
-        uint256 followerProfileId = userProfileIds[msg.sender];
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        uint256 followerProfileId = ds.profileIds[msg.sender];
         // Ensure the caller has a Lens profile
         require(followerProfileId != 0, "Caller does not have a Lens profile");
         // Call the LensHub contract to follow the profile
@@ -262,9 +233,10 @@ contract ProfileFacet is ERC1155Upgradeable, AccessControlFacet {
 
     // Function to like a post on the Lens Protocol
     function likePost(uint256 postId) public {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         // Ensure the caller has a Lens profile
         require(
-            userProfileIds[msg.sender] != 0,
+            ds.profileIds[msg.sender] != 0,
             "Caller does not have a Lens profile"
         );
         // Call the LensHub contract to like the post
