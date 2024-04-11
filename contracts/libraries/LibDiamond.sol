@@ -194,13 +194,12 @@ library LibDiamond {
     struct Content {
         uint256 contentId;
         uint256 creatorId;
+        bool exclusivity;
         string title;
         string contentURI;
-        string contentHash;
-        string contentType;
-        uint256 contentSize;
-        uint256 contentPrice;
-        uint256 contentTimestamp;
+        uint256 collectionPrice;
+        uint256 collectionScarcity;
+        uint256 uploadTimestamp;
         mapping(address => uint256) collections;
     }
 
@@ -311,7 +310,7 @@ library LibDiamond {
         mapping(uint256 => SIP) sips; // From SipId to SIP
         mapping(uint256 => Snapshot) snapshots; // for snapshotFacet
         mapping(uint256 => Royalty) royalties; // From creatorId to QueuedRoyalty
-        mapping(uint256 => Content) content; // From contentId to Content Firebase Document
+        mapping(uint256 => Content) contents; // From contentId to Content Firebase Document
         mapping(uint256 => SpaceData) spaces; // content playlist for Profile
         mapping(uint256 => FailedPayment[]) failedPayments; // fail queue for Bazaar
         QueuedRoyalty[] royaltyQueue; // Array of creatorId, amount and recipients
@@ -352,7 +351,7 @@ library LibDiamond {
         uint256 burnAmount;
         uint256 burnRate;
         uint256 mintRate;
-        uint256 totalTransactionCount; // sum of all steez.transactionCount
+        int256 totalTransactionCount; // sum of all steez.transactionCount
         bool tgeExecuted;
         bool isDeflationary;
         uint256[] sipIds; // Array to keep track of all sipIds
@@ -420,7 +419,7 @@ library LibDiamond {
         setContractOwner(_newOwner);
     }
 
-    function enforceIsContractOwner() internal {
+    function enforceIsContractOwner() internal view {
         DiamondStorage storage ds = diamondStorage();
         require(msg.sender == ds.contractOwner, "Must be contract owner");
     }

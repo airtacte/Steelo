@@ -106,6 +106,12 @@ contract BazaarFacet is AccessControlFacet {
     ) external payable {
         // Find equivalent of "uniswap.swap(creatorId, amount);"
         emit CreatorTokenPurchased(creatorId, amount, msg.sender);
+
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+        // STEEZFacet
+        // steezFacet.transferSteez(seller, buyer, price)
+        // lensFacet.followCreator(follower,followee, timestamp)
+        // other interactions
     }
 
     function _addLiquidityForToken(

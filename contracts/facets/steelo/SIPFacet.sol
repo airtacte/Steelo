@@ -36,13 +36,11 @@ contract SIPFacet is AccessControlFacet {
     );
     event SIPExecuted(uint256 indexed id, bool success);
 
-    function initialize(
-        address _treasury,
-        address _oracle,
-        string memory _jobId,
-        uint256 _fee,
-        address _linkToken
-    ) public onlyRole(accessControl.EXECUTIVE_ROLE()) initializer {
+    function initialize()
+        public
+        onlyRole(accessControl.EXECUTIVE_ROLE())
+        initializer
+    {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         sipFacetAddress = ds.sipFacetAddress;
 
