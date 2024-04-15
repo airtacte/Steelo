@@ -152,6 +152,8 @@ contract BazaarFacet is AccessControlFacet {
         // Your logic here
     }
 
+    // function buyCollection -- calls ContentFacet.sol
+
     // Function to provide network/taste-based suggestions
     // Note: To be developed based on user activity and preferences
     function getSuggestions() external view returns (uint256[] memory) {

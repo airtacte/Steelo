@@ -67,13 +67,13 @@ contract ContentFacet is AccessControlFacet {
             "ContentFacet: Selected Content Price cannot be set"
         };
         require{
-            _collectionScarcity > 0 &&
+            _collectionScarcity > 0 && 
                 ds.contents[exclusivity] == true,
             "ContentFacet: Selected Content Scarcity cannot be set"
         };
 
-        ds.contents[contentId].collectionPrice = _collectionPrice;
-        ds.contents[contentId].collectionScarcity = _collectionScarcity;
+        ds.contents[contentId].collectionPrice = _collectionPrice; // could be free/0
+        ds.contents[contentId].collectionScarcity = _collectionScarcity; // could be infinite
 
         emit CollectionSetup(ds.contents[creatorId])
     }
@@ -84,7 +84,7 @@ contract ContentFacet is AccessControlFacet {
         uint256 creatorId,
         address buyer,
     ) external {
-               require{
+        require{
             collectionBalance(seller) != 0,
             "ContentFacet: seller doesn't own any collected content"
         };
@@ -93,6 +93,11 @@ contract ContentFacet is AccessControlFacet {
                 collectionBalance(buyer) > 0,
             "ContentFacet: buyer cannot purchase the collected content"
         }; 
+        require{
+            ds.contents[contentId].exclusivity == true,
+            "ContentFacet: Content is not exclusive"
+        };
+        // require that scarcitity is > the quantity of content collected by other users before function is executed 
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
         

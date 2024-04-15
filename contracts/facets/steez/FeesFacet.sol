@@ -264,48 +264,6 @@ contract FeesFacet is AccessControlFacet {
         }
     }
 
-    function viewRoyalties(
-        address user,
-        uint256 creatorId
-    ) public view returns (uint256 userShare, uint256 userRoyalty) {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-
-        if (
-            ds.steez[creatorId].totalSupply == 0 ||
-            ds.steez[creatorId].balance == 0
-        ) {
-            return (0, 0);
-        }
-
-        // Calculate user's share of the royalty
-        userShare =
-            (ds.royalty.totalRoyalties * ds.steez[creatorId].balance) /
-            ds.steez[creatorId].totalSupply;
-
-        // Calculate user's total royalty
-        uint256 userSharePercentage = (ds.steez[creatorId].balance * 10000) /
-            ds.steez[creatorId].totalSupply;
-        userRoyalty =
-            (ds.royalty.royaltyAmounts[user] * userSharePercentage) /
-            10000;
-
-        if (user == ds.steez[creatorId].creator) {
-            userRoyalty = userRoyalty + ds.royalty.creatorRoyalty;
-        } else if (user == ds.steezFacetAddress) {
-            // Assuming ds.steezFacetAddress is the address of steelo
-            userRoyalty = userRoyalty + ds.royalty.steeloRoyalty;
-        } else if (ds.royalty.royaltyAmounts[user] > 0) {
-            // Assuming the user is an investor if they have any royalty amounts
-            userRoyalty = userRoyalty + ds.royalty.investorRoyalty;
-        } else {
-            userRoyalty = 0; // If the user is not related to the STEEZ, their royalty is 0
-        }
-
-        userRoyalty = userRoyalty + ds.royalty.unclaimedRoyalties;
-
-        return (userShare, userRoyalty);
-    }
-
     // New Function to Add to Queue (Example)
     function queueRoyaltyPayment(
         uint256 _creatorId,
@@ -358,6 +316,49 @@ contract FeesFacet is AccessControlFacet {
         delete ds.royaltyQueue;
         // Log the total royalties processed in this batch
     }
+    
+    function viewRoyalties(
+        address user,
+        uint256 creatorId
+    ) public view returns (uint256 userShare, uint256 userRoyalty) {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+
+        if (
+            ds.steez[creatorId].totalSupply == 0 ||
+            ds.steez[creatorId].balance == 0
+        ) {
+            return (0, 0);
+        }
+
+        // Calculate user's share of the royalty
+        userShare =
+            (ds.royalty.totalRoyalties * ds.steez[creatorId].balance) /
+            ds.steez[creatorId].totalSupply;
+
+        // Calculate user's total royalty
+        uint256 userSharePercentage = (ds.steez[creatorId].balance * 10000) /
+            ds.steez[creatorId].totalSupply;
+        userRoyalty =
+            (ds.royalty.royaltyAmounts[user] * userSharePercentage) /
+            10000;
+
+        if (user == ds.steez[creatorId].creator) {
+            userRoyalty = userRoyalty + ds.royalty.creatorRoyalty;
+        } else if (user == ds.steezFacetAddress) {
+            // Assuming ds.steezFacetAddress is the address of steelo
+            userRoyalty = userRoyalty + ds.royalty.steeloRoyalty;
+        } else if (ds.royalty.royaltyAmounts[user] > 0) {
+            // Assuming the user is an investor if they have any royalty amounts
+            userRoyalty = userRoyalty + ds.royalty.investorRoyalty;
+        } else {
+            userRoyalty = 0; // If the user is not related to the STEEZ, their royalty is 0
+        }
+
+        userRoyalty = userRoyalty + ds.royalty.unclaimedRoyalties;
+
+        return (userShare, userRoyalty);
+    }
+
 
     // New helper function for validating participants
     function isValidParticipant(

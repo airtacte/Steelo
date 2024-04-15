@@ -68,8 +68,8 @@ contract ConstDiamond is Initializable {
         ds.constants.LAUNCH_SUPPLY = 250;
         ds.constants.EXPANSION_SUPPLY = 500;
         ds.constants.TRANSACTION_MULTIPLIER = 2;
-        ds.constants.INITIAL_PRICE = 30 ether;
-        ds.constants.PRICE_INCREMENT = 10 ether;
+        ds.constants.INITIAL_PRICE = 30 ether; // £30
+        ds.constants.PRICE_INCREMENT = 10 ether; // £10
         ds.constants.TOKEN_BATCH_SIZE = 250;
         ds.constants.PRE_ORDER_CREATOR_ROYALTY = 90;
         ds.constants.PRE_ORDER_STEELO_ROYALTY = 10;
