@@ -37,13 +37,15 @@ contract StakingFacet is AccessControlFacet {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         STEELOFacet steeloFacet = STEELOFacet(ds.steeloFacetAddress);
 
-        require(_amount > 0, "Amount must be greater than 0");
+        require(_amount > 0, "Amount must be greater than 0"); // change to minimum of £100 or something
         ds.stakes[msg.sender] += _amount;
         if (!ds.isStakeholder[msg.sender]) {
             ds.stakeholders.push(msg.sender);
             ds.isStakeholder[msg.sender] = true;
         }
         steeloFacet.safeTransferFrom(msg.sender, address(this), _amount);
+
+        // returns Staked_STEELO liquid token (or something)
 
         emit Staked(msg.sender, _amount);
     }
@@ -53,6 +55,8 @@ contract StakingFacet is AccessControlFacet {
     ) external onlyRole(accessControl.STAKER_ROLE()) nonReentrant {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         STEELOFacet steeloFacet = STEELOFacet(ds.steeloFacetAddress);
+
+        // spend the Staked_STEELO liquid token to unlock the staked STEELO
 
         require(_amount > 0, "Amount must be greater than 0");
         require(ds.stakes[msg.sender] >= _amount, "Not enough stake");
@@ -90,7 +94,7 @@ contract StakingFacet is AccessControlFacet {
         uint256 stakeholderShare = (stakeholderAmount * ds.totalRewardPool) /
             ds.totalStakingPool;
 
-        // Define yield rates based on staking duration as specified
+        // Define yield rates based on staking duration as specified - paid in $STEELO from Minted tokens
         uint256 yieldRate;
         if (ds.stakeDuration >= 180 days) {
             // 6-Month Duration

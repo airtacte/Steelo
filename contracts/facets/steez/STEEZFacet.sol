@@ -122,6 +122,7 @@ contract STEEZFacet is ERC1155Upgradeable, AccessControlFacet {
      */
     function createSteez(
         bytes memory data
+        // string memory _baseURI (or other setup data)
     ) public onlyRole(accessControl.USER_ROLE()) nonReentrant(msg.sender) {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         SnapshotFacet snapshot = SnapshotFacet(ds.snapshotFacetAddress);
@@ -179,6 +180,8 @@ contract STEEZFacet is ERC1155Upgradeable, AccessControlFacet {
         snapshot.takeSnapshot();
     }
 
+    // promotion of the pre-order off-chain (doesn't require smart-contract)
+
     // Pre-order function
     function preOrder(
         uint256 creatorId,
@@ -214,7 +217,7 @@ contract STEEZFacet is ERC1155Upgradeable, AccessControlFacet {
         );
 
         // Calculate required payment based on currentPrice and amount
-        uint256 requiredPayment = ds.steez[creatorId].currentPrice * amount;
+        uint256 requiredPayment = ds.steez[creatorId].currentPrice * amount // assumed more than 1 token per person;
         require(
             msg.value >= requiredPayment,
             "STEEZFacet: Insufficient payment."
@@ -247,6 +250,10 @@ contract STEEZFacet is ERC1155Upgradeable, AccessControlFacet {
             (bool sent, ) = msg.sender.call{value: excessPayment}("");
             require(sent, "STEEZFacet: Failed to refund excess payment.");
         }
+
+        // Prompt for increased bid for secured lower price bids
+        // TO DO
+        // PROVIDING OPTION TO FAILED BIDS IF "secured lower price bids" REFUSE INCREASE
 
         // Mint tokens for the creator
         mintSteez(msg.sender, creatorId, amount, "");
@@ -284,7 +291,7 @@ contract STEEZFacet is ERC1155Upgradeable, AccessControlFacet {
         ds.steez[creatorId].auctionConcluded = true;
 
         // Mint EXTRA_TOKENS_AFTER_AUCTION
-        mintSteez(creatorId, ds.constants.EXTRA_TOKENS_AFTER_AUCTION);
+        mintSteez(creatorId, ds.constants.LAUNCH_SUPPLY);
         fees.payRoyalties(creatorId, amount);
 
         // List the minted tokens at INITIAL_PRICE

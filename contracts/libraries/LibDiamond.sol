@@ -194,7 +194,7 @@ library LibDiamond {
     struct Content {
         uint256 contentId;
         uint256 creatorId;
-        bool exclusivity;
+        bool exclusivity; // if yes = only investors can view/collect
         string title;
         string contentURI;
         uint256 collectionPrice;
@@ -214,7 +214,6 @@ library LibDiamond {
     struct Village {
         uint256 creatorId;
         mapping(address => Investor) investors; // Assuming Investor is a struct that represents an investor
-
     }
 
     struct Contributor {

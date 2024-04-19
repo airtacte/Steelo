@@ -163,7 +163,7 @@ contract STEELOFacet is ERC20Upgradeable, ChainlinkClient, AccessControlFacet {
         _beforeTokenTransfer(msg.sender, feeAmount);
     }
 
-    // Initiated every 1,000 Steez Transactions (TBBuilt)
+    // Initiated every 1,000 Steez Transactions (To be built out further)
     function steeloMint()
         external
         onlyRole(accessControl.ADMIN_ROLE())
@@ -393,6 +393,8 @@ contract STEELOFacet is ERC20Upgradeable, ChainlinkClient, AccessControlFacet {
             "https://us-central1-steelo.io.cloudfunctions.net/functionName"
         );
         Chainlink.add(request, "path", "volume");
+
+        // Update ds.totalTransactionCount by summing up all ds.steez[creatorId].transactionCount
 
         return sendChainlinkRequestTo(oracle, request, ds.fees[key]);
     }
