@@ -99,6 +99,7 @@ contract ConstDiamond is Initializable {
         ds.constants.FEE_RATE = 25;
         ds.constants.uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
         ds.constants.gbptAddress = 0x86B4dBE5D203e634a12364C0e428fa242A3FbA98;
+        // Account for 825 Mill being sold (so 35% for treasury + 20% for founders excluded from number)
 
         // SAFE GLOBAL - ADDRESSES TO BE REPLACED - CURRENTLY USING TREADY ADDRESS
         ds.constants.SAFE_PROXY_FACTORY_ADDRESS = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;

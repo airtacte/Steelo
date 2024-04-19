@@ -78,7 +78,7 @@ contract STEELOFacet is ERC20Upgradeable, ChainlinkClient, AccessControlFacet {
             "STEELOFacet: steeloCurrentPrice must be greater than 0"
         );
         require(
-            totalSupply() == ds.constants.TGE_AMOUNT,
+            totalSupply() == ds.constants.TGE_AMOUNT, // 850mill tokens excl. treasury + founders - to be updated
             "STEELOFacet: steeloTGE can only be called for the Token Generation Event"
         );
 
