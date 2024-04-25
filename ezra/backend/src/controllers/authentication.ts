@@ -9,6 +9,7 @@ const { hashPassword, isPassMatched } = require("../../utils/helpers");
 const generateToken = require("../../utils/generateToken"); 
 
 import isLogin from '../middlewares/isLogin'; 
+import isCreator from '../middlewares/isCreator'; 
 
 
 
@@ -25,7 +26,7 @@ const creatorRef = collection(db, "creator");
 
 
 
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register/creator', async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
         const creatorQuery = query(creatorRef, where("email", "==", email));
@@ -35,7 +36,7 @@ router.post('/register', async (req: Request, res: Response) => {
             return res.status(400).send('Creator already exists.');
         }
 
-        const creator = { email: req.body.email, password: await hashPassword(req.body.password)  }
+        const creator = { email: req.body.email, password: await hashPassword(req.body.password), role: "creator"  }
         const docRef = await addDoc(creatorRef, creator);
         console.log("Document written with ID: ", docRef.id);
         return res.send('New creator added to DB.')
@@ -70,7 +71,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
 
 
-router.get('/', isLogin, async (req: Request, res: Response) => {
+router.get('/', isLogin, isCreator, async (req: Request, res: Response) => {
     try {
         const querySnapshot = await getDocs(employeesRef);
         const records = [];

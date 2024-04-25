@@ -1,4 +1,3 @@
-import { verify } from 'jsonwebtoken';
 import { getDocs, query, where, collection, getFirestore, documentId } from 'firebase/firestore';
 import { initializeApp } from "firebase/app";
 import config from "../config/firebase.config"
@@ -29,7 +28,7 @@ const isLogin = async (req, res, next) => {
         }
 
         const userData = userSnapshot.docs[0].data();
-        req.userAuth = { id: userData.id, email: userData.email, role: userData.role };
+        req.userAuth = { id: verifiedToken.id, email: userData.email, role: userData.role };
         next();
     } catch (error) {
         return res.status(401).send({ message: "Invalid or expired token" });
