@@ -3,10 +3,12 @@ import uploadRouter from "./controllers/upload-file.controller";
 import employeeRouter from "./controllers/crud.controller";
 import cityRouter from "./controllers/cities-crud.controller";
 import creatorRouter from "./controllers/videoUpload";
+import authRouter from "./controllers/authentication";
 import bodyParser from "body-parser";
 import * as dotenv from 'dotenv'
 dotenv.config();
 
+const isLogin = require("./middlewares/isLogin");
 
 
 
@@ -29,6 +31,7 @@ app.get('/', (req, res) => {
 
 app.get('/v1/posts', (req, res) => res.status(200).send(data));
 
+app.use('/auth', authRouter);
 app.use('/creator', creatorRouter);
 app.use('/upload', uploadRouter);
 app.use('/employee', employeeRouter);
