@@ -15,23 +15,53 @@ initializeApp(config.firebaseConfig);
 
 const storage = getStorage();
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ storage: multer.memoryStorage(),
+			fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('video/') || file.mimetype.startsWith('image/') || file.mimetype.startsWith('creatorProfilePhotos/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not a video or image file!'), false);
+    }
+  }});
+
+const multipleUpload = upload.fields([{ name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]);
+
 const videoRef = collection(db, "CreatorVideos");
+import isLogin from '../middlewares/isLogin'; 
+import isCreator from '../middlewares/isCreator'; 
+import isExecutive from '../middlewares/isExecutive';
+
+
+const userRef = collection(db, "user");
 
 
 
-router.post('/video', upload.single("video"), async (req, res) => {
+
+
+router.post('/video', isLogin, isCreator, multipleUpload, async (req, res) => {
     try {
 
-        const dateTime = new Date().toISOString();
-        const storageRef = ref(storage, `creatorVideos/${dateTime}_${req.file.originalname}`);
-        const metadata = { contentType: req.file.mimetype };
-        const snapshot = await uploadBytesResumable(storageRef, req.file.buffer, metadata);
-        const downloadURL = await getDownloadURL(snapshot.ref);
+    const videoFile = req.files['video'][0];
+    const thumbnailFile = req.files['thumbnail'][0];
 
-        console.log('Video successfully uploaded.');
+    // Upload video
+    const videoDateTime = new Date().toISOString();
+    const videoStorageRef = ref(storage, `creatorVideos/${videoDateTime}_${videoFile.originalname}`);
+    const videoMetadata = { contentType: videoFile.mimetype };
+    const videoSnapshot = await uploadBytesResumable(videoStorageRef, videoFile.buffer, videoMetadata);
+    const videoDownloadURL = await getDownloadURL(videoSnapshot.ref);
 
-	const creatorVideo = { name: req.body.name, creatorId: req.body.creatorId, likes: 0, comments: 0, description: req.body.description, shares: 0, url: downloadURL  };
+    // Upload thumbnail
+    const thumbDateTime = new Date().toISOString();
+    const thumbStorageRef = ref(storage, `creatorThumbnails/${thumbDateTime}_${thumbnailFile.originalname}`);
+    const thumbMetadata = { contentType: thumbnailFile.mimetype };
+    const thumbSnapshot = await uploadBytesResumable(thumbStorageRef, thumbnailFile.buffer, thumbMetadata);
+    const thumbDownloadURL = await getDownloadURL(thumbSnapshot.ref);
+
+    console.log('Video and thumbnail successfully uploaded.');
+
+
+	const creatorVideo = { name: req.body.name, creatorId: req.body.creatorId, likes: 0, comments: 0, description: req.body.description, shares: 0, videoUrl: videoDownloadURL, thumbnailUrl: thumbDownloadURL  };
         const docRef = await addDoc(videoRef, creatorVideo);
         console.log("Creator Video document written with ID: ", docRef.id);
 
@@ -39,9 +69,9 @@ router.post('/video', upload.single("video"), async (req, res) => {
             message: 'New creator video added to DB and file uploaded to Firebase storage',
             videoId: docRef.id,
             fileInfo: {
-                name: req.file.originalname,
-                type: req.file.mimetype,
-                downloadURL: downloadURL
+                name: videoFile.originalname,
+                type: videoFile.mimetype,
+                downloadURL: videoDownloadURL
             }
         });
     } catch (error) {
@@ -49,6 +79,36 @@ router.post('/video', upload.single("video"), async (req, res) => {
         return res.status(400).send(error.message);
     }
 });
+
+
+router.put('/profile/:id', isLogin, isCreator,  upload.single("photo"), async (req, res) => {
+    try {
+
+        const dateTime = new Date().toISOString();
+        const storageRef = ref(storage, `creatorProfilePhotos/${dateTime}_${req.file.originalname}`);
+        const metadata = { contentType: req.file.mimetype };
+        const snapshot = await uploadBytesResumable(storageRef, req.file.buffer, metadata);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        console.log('Photo successfully uploaded.');
+
+	
+	const userId = req.params.id;
+        const UpdatedUser = { profile: downloadURL  };
+        const q = query(userRef, where(documentId(), "==", userId));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            return res.send(`User with id ${userId} does not exists.`)
+        }
+        await updateDoc(doc(db, "user", userId), UpdatedUser);
+        res.send('User record edited.')
+    } catch (error) {
+        console.error("Error adding creator profile photo or uploading photo: ", error.message);
+        return res.status(400).send(error.message);
+    }
+});
+
+
 
 router.get('/video/', async (req: Request, res: Response) => {
     try {
@@ -115,7 +175,7 @@ router.get('/video/:id', async (req: Request, res: Response) => {
     }
 })
 
-router.put('/video/:id/like', async (req, res) => {
+router.put('/video/:id/like', isLogin, async (req, res) => {
     try {
         const videoId = req.params.id;
         const videoDoc = doc(db, "CreatorVideos", videoId);
@@ -136,7 +196,7 @@ router.put('/video/:id/like', async (req, res) => {
     }
 });
 
-router.put('/video/:id/unlike', async (req, res) => {
+router.put('/video/:id/unlike', isLogin, async (req, res) => {
     try {
         const videoId = req.params.id;
         const videoDoc = doc(db, "CreatorVideos", videoId);
@@ -160,7 +220,7 @@ router.put('/video/:id/unlike', async (req, res) => {
 });
 
 
-router.post('/video/:id/comment', async (req, res) => {
+router.post('/video/:id/comment', isLogin, async (req, res) => {
     const videoId = req.params.id;
     const { userId, comment } = req.body;
 
@@ -205,7 +265,7 @@ router.post('/video/:id/comment', async (req, res) => {
 });
 
 
-router.delete('/video/:videoId/comment/:commentId', async (req, res) => {
+router.delete('/video/:videoId/comment/:commentId', isLogin, async (req, res) => {
     const { videoId, commentId } = req.params;
 
     try {

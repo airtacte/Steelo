@@ -9,28 +9,27 @@ const app = initializeApp(config.firebaseConfig);
 
 const db = getFirestore(app);
 
-const isCreator = async (req, res, next) => {
+const isExecutive = async (req, res, next) => {
 
-	console.log(req.userAuth);
 	const userId = req?.userAuth?.id
 	const userRef = collection(db, "user");
 	const creatorQuery = query(userRef, where(documentId(), "==", userId));
         const userSnapshot = await getDocs(creatorQuery);
 
         if (userSnapshot.empty) {
-            throw new Error("No creator found with this id");
+            throw new Error("No executive found with this id");
         }
 
         const adminFound = userSnapshot.docs[0].data();
 	
-	if (adminFound?.role === "creator" ) {
+	if (adminFound?.role === "executive" ) {
 		next();
 	}
 	else {
-		return res.status(401).send({ message: "Access denied creator only" });
+		return res.status(401).send({ message: "Access denied executive only" });
 	}
 
 }
 
 
-module.exports = isCreator;
+module.exports = isExecutive;

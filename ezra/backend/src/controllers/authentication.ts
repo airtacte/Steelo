@@ -10,6 +10,7 @@ const generateToken = require("../../utils/generateToken");
 
 import isLogin from '../middlewares/isLogin'; 
 import isCreator from '../middlewares/isCreator'; 
+import isExecutive from '../middlewares/isExecutive'; 
 
 
 
@@ -19,27 +20,63 @@ const app = initializeApp(config.firebaseConfig);
 const db = getFirestore(app);
 
 const employeesRef = collection(db, "employee");
-const creatorRef = collection(db, "creator");
+const userRef = collection(db, "user");
 
 
 
+router.post('/register/executive', async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        const executiveQuery = query(userRef, where("email", "==", email));
+        const existingExecutives = await getDocs(executiveQuery);
 
+        if (!existingExecutives.empty) {
+            return res.status(400).send('Executive already exists.');
+        }
+
+        const executive = { email: req.body.email, password: await hashPassword(req.body.password), role: "executive"  }
+        const docRef = await addDoc(userRef, executive);
+        console.log("Document written with ID: ", docRef.id);
+        return res.send('New executive added to DB.')
+    } catch (e) {
+        return res.status(400).send(e.message)
+    }
+});
 
 
 router.post('/register/creator', async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
-        const creatorQuery = query(creatorRef, where("email", "==", email));
+        const creatorQuery = query(userRef, where("email", "==", email));
         const existingCreators = await getDocs(creatorQuery);
 
         if (!existingCreators.empty) {
             return res.status(400).send('Creator already exists.');
         }
 
-        const creator = { email: req.body.email, password: await hashPassword(req.body.password), role: "creator"  }
-        const docRef = await addDoc(creatorRef, creator);
+        const creator = { name: req.body.name, email: req.body.email, password: await hashPassword(req.body.password), role: "creator"  }
+        const docRef = await addDoc(userRef, creator);
         console.log("Document written with ID: ", docRef.id);
         return res.send('New creator added to DB.')
+    } catch (e) {
+        return res.status(400).send(e.message)
+    }
+});
+
+router.post('/register/user', async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        const userQuery = query(userRef, where("email", "==", email));
+        const existingUsers = await getDocs(userQuery);
+
+        if (!existingUsers.empty) {
+            return res.status(400).send('User already exists.');
+        }
+
+        const user = { email: req.body.email, password: await hashPassword(req.body.password), role: "user"  }
+        const docRef = await addDoc(userRef, user);
+        console.log("Document written with ID: ", docRef.id);
+        return res.send('New user added to DB.')
     } catch (e) {
         return res.status(400).send(e.message)
     }
@@ -48,7 +85,7 @@ router.post('/register/creator', async (req: Request, res: Response) => {
 router.post('/login', async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
-        const creatorQuery = query(creatorRef, where("email", "==", email));
+        const creatorQuery = query(userRef, where("email", "==", email));
         const querySnapshot = await getDocs(creatorQuery);
 
         if (querySnapshot.empty) {
@@ -64,72 +101,72 @@ router.post('/login', async (req: Request, res: Response) => {
 	else {
 	return res.json({ 
 		data: generateToken(querySnapshot.docs[0].id),
-		message: "creator loggedin succesfully",
+		message: "user loggedin succesfully",
 	});
 });
 
 
 
 
-router.get('/', isLogin, isCreator, async (req: Request, res: Response) => {
+router.get('/', isLogin, isExecutive, async (req: Request, res: Response) => {
     try {
-        const querySnapshot = await getDocs(employeesRef);
+        const querySnapshot = await getDocs(userRef);
         const records = [];
         querySnapshot.forEach((doc) => {
             records.push(doc.data());
         });
         return res.send({
-            'employees records': records
+            'users records': records
         });
     } catch (err) {
         res.status(400).send(err.message);
     }
 })
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', isLogin, isExecutive, async (req: Request, res: Response) => {
     try {
-        const employeeId = req.params.id
+        const userId = req.params.id
 
-        const q = query(employeesRef, where(documentId(), "==", employeeId));
+        const q = query(userRef, where(documentId(), "==", userId));
 
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
-            return res.send(`Employee with id ${employeeId} does not exists.`)
+            return res.send(`User with id ${userId} does not exists.`)
         }
-        const employeeRecord = querySnapshot.docs[0].data();
+        const userRecord = querySnapshot.docs[0].data();
         res.send({
-            'Employee record': employeeRecord
+            'user record': userRecord
         })
     } catch (error) {
         res.status(400).send(error.message)
     }
 })
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', isLogin, isExecutive, async (req: Request, res: Response) => {
     try {
-        const employeeId = req.params.id;
-        const UpdatedEmployee = pick(req.body, ['name', 'age', 'position', 'isPermanent']);
-        const q = query(employeesRef, where(documentId(), "==", employeeId));
+        const userId = req.params.id;
+        const UpdatedUser = pick(req.body, ['role']);
+        const q = query(userRef, where(documentId(), "==", userId));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
-            return res.send(`Employee with id ${employeeId} does not exists.`)
+            return res.send(`User with id ${employeeId} does not exists.`)
         }
-        await updateDoc(doc(db, "employee", employeeId), UpdatedEmployee);
-        res.send('Employee record edited.')
+        await updateDoc(doc(db, "user", userId), UpdatedUser);
+        res.send('User record edited.')
     } catch (error) {
         res.status(400).send(error.message)
     }
 })
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', isLogin, isExecutive, async (req: Request, res: Response) => {
     try {
-        const employeeId = req.params.id;
-        const querySnapshot = await getDocs(query(employeesRef, where(documentId(), "==", employeeId)));
+        const userId = req.params.id;
+        const querySnapshot = await getDocs(query(userRef, where(documentId(), "==", userId)));
         if (querySnapshot.empty) {
-            return res.send(`Employee with id ${employeeId} does not exists.`)
+            return res.send(`User with id ${userId} does not exists.`)
         }
-        await deleteDoc(doc(db, "employee", employeeId));
-        res.send('Employee records Deleted.')
+        await deleteDoc(doc(db, "user", userId));
+        res.send('User records Deleted.')
     } catch (error) {
         res.status(400).send(error.message)
     }

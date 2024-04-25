@@ -19,7 +19,7 @@ const isLogin = async (req, res, next) => {
 	const verifiedToken = verifyToken(token);
 
 
-        const userRef = collection(db, "creator");
+        const userRef = collection(db, "user");
         const userQuery = query(userRef, where(documentId(), "==", verifiedToken.id));
         const userSnapshot = await getDocs(userQuery);
 
