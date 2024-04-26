@@ -144,13 +144,19 @@ struct Investor {
     }
 
 
+    struct Message {
+	string message;
+	uint256 timeSent;
+    }
+
     struct Creator {
         uint256 creatorId;
         uint256 profileId;
         address profileAddress;
-        mapping(uint256 => Content) content; 
-        mapping(address => Investor) investors; 
-        mapping(uint256 => Contributor[]) credits; 
+//        mapping(uint256 => Content) content; 
+//        mapping(address => Investor) investors; 
+//        mapping(uint256 => Contributor[]) credits; 
+	
     }
 
     struct SIP {
@@ -226,6 +232,11 @@ struct AppStorage {
     mapping(uint256 => Seller[]) sellers;
     bool P2PTransaction;
     address P2PSeller;
+
+
+    mapping( uint256 => mapping (address => mapping(address => Message[]))) p2pMessages;
+    mapping( uint256 => mapping(address => address[])) contacts;
+    mapping( uint256 => Message[]) posts;
     
    
 
