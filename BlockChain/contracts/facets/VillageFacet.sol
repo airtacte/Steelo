@@ -27,6 +27,10 @@ contract VillageFacet {
 	function deleteMessage(uint256 creatorId, address recipient, uint256 messageId) public {
 		LibVillage.deleteMessage( creatorId, msg.sender, recipient, messageId);
 	}
+
+	function editMessage(uint256 creatorId, address recipient, uint256 messageId, string memory message) public {
+		LibVillage.editMessage( creatorId, msg.sender, recipient, messageId, message);
+	}
 	
 
 

@@ -94,6 +94,22 @@ describe('DiamondTest', async function () {
       console.log(contacts);
 
     })
+    
+    it('edit a message of arr1 from owner', async () => { 
+  
+	const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+	editedMessage = "yo how are you brother?";
+  	await expect(Village.connect(owner).editMessage(0, addr1.address, 1, editedMessage)).to.not.be.reverted;
+
+    })
+    it('check if message is edited', async () => { 
+  
+      const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+      let chat = await Village.connect(owner).getChat(0, addr1.address);
+      console.log(chat);
+
+    })
+
     it('delete a message of arr1 from owner', async () => { 
   
 	const Village = await ethers.getContractAt('VillageFacet', diamondAddress);

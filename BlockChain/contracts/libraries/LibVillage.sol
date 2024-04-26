@@ -62,6 +62,18 @@ library LibVillage {
 	
 	}
 
+	function editMessage( uint256 creatorId, address sender, address recipient, uint256 messageId, string memory message) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(sender != address(0), "0 address can not create a steez");
+		uint length =  s.p2pMessages[creatorId][sender][recipient].length;
+		for (uint i = 0; i < length; i++) {
+         	   	if (s.p2pMessages[creatorId][sender][recipient][i].id == messageId) {
+         		       s.p2pMessages[creatorId][sender][recipient][i].message = message;
+         	   	}
+        	}
+	
+	}
+
 	
 
 }	
