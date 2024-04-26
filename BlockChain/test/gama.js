@@ -94,6 +94,19 @@ describe('DiamondTest', async function () {
       console.log(contacts);
 
     })
+    it('delete a message of arr1 from owner', async () => { 
+  
+	const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+  	await expect(Village.connect(owner).deleteMessage(0, addr1.address, 1)).to.not.be.reverted;
+
+    })
+    it('check if message is deleted', async () => { 
+  
+      const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+      let chat = await Village.connect(owner).getChat(0, addr1.address);
+      console.log(chat);
+
+    })
 
     
  

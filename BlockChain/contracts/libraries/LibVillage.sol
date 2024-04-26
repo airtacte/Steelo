@@ -12,7 +12,9 @@ library LibVillage {
 	function sendMessage( uint256 creatorId, address sender, address recipient, string memory message) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(sender != address(0), "0 address can not create a steez");
+		s.messageCounter ++;
 		Message memory newMessage = Message({
+				id: s.messageCounter,
 				message: message,
 				timeSent: block.timestamp
         	});
@@ -45,7 +47,20 @@ library LibVillage {
          	   	}
         	}
         	return false;
-    		}
+    	}
+
+	function deleteMessage( uint256 creatorId, address sender, address recipient, uint256 messageId) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(sender != address(0), "0 address can not create a steez");
+		uint length =  s.p2pMessages[creatorId][sender][recipient].length;
+		for (uint i = 0; i < length; i++) {
+         	   	if (s.p2pMessages[creatorId][sender][recipient][i].id == messageId) {
+         		       s.p2pMessages[creatorId][sender][recipient][i] = s.p2pMessages[creatorId][sender][recipient][length - 1];
+			       s.p2pMessages[creatorId][sender][recipient].pop();	
+         	   	}
+        	}
+	
+	}
 
 	
 

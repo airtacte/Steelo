@@ -145,6 +145,7 @@ struct Investor {
 
 
     struct Message {
+	uint256 id;
 	string message;
 	uint256 timeSent;
     }
@@ -237,6 +238,7 @@ struct AppStorage {
     mapping( uint256 => mapping (address => mapping(address => Message[]))) p2pMessages;
     mapping( uint256 => mapping(address => address[])) contacts;
     mapping( uint256 => Message[]) posts;
+    uint256 messageCounter;
     
    
 

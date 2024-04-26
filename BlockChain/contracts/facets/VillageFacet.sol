@@ -11,7 +11,6 @@ contract VillageFacet {
 
 	function sendMessage(uint256 creatorId, address recipient, string memory message) public {
 		LibVillage.sendMessage( creatorId, msg.sender, recipient, message);
-		
 	}
 
 	function getChat(uint256 creatorId, address recipient) public view returns (Message[] memory, Message[] memory) {
@@ -23,6 +22,10 @@ contract VillageFacet {
 
 	function getContacts(uint256 creatorId) public view returns (address[] memory) {
 		return s.contacts[creatorId][msg.sender];
+	}
+
+	function deleteMessage(uint256 creatorId, address recipient, uint256 messageId) public {
+		LibVillage.deleteMessage( creatorId, msg.sender, recipient, messageId);
 	}
 	
 
