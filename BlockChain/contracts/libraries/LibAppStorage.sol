@@ -148,6 +148,8 @@ struct Investor {
 	uint256 id;
 	string message;
 	uint256 timeSent;
+	address sender;
+	address recipient;
     }
 
     struct Creator {

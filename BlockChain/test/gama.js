@@ -124,6 +124,51 @@ describe('DiamondTest', async function () {
 
     })
 
+    it('post  an owner message to creator 0 community', async () => { 
+  
+	const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+	let message = "Hey guys what a great community";
+  	await expect(Village.connect(owner).postMessage(0, message)).to.not.be.reverted;
+
+    })
+
+    it('check if message is posted', async () => { 
+  
+      const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+      let chat = await Village.connect(owner).getGroupChat(0);
+      console.log(chat);
+
+    })
+
+    it('edit a post message owner', async () => { 
+  
+	const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+	editedMessage = "hi everyone my name is ruby?";
+  	await expect(Village.connect(owner).editGroupMessage(0, 3, editedMessage)).to.not.be.reverted;
+
+    })
+    it('check if message is edited', async () => { 
+  
+      const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+      let chat = await Village.connect(owner).getGroupChat(0);
+      console.log(chat);
+
+    })
+
+    it('delete a message of arr1 from owner', async () => { 
+  
+	const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+  	await expect(Village.connect(owner).deleteGroupMessage(0, 3)).to.not.be.reverted;
+
+    })
+    it('check if message is deleted', async () => { 
+  
+      const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+      let chat = await Village.connect(owner).getGroupChat(0);
+      console.log(chat);
+
+    })
+
     
  
 	

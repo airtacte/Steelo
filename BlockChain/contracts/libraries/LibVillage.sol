@@ -16,6 +16,8 @@ library LibVillage {
 		Message memory newMessage = Message({
 				id: s.messageCounter,
 				message: message,
+				sender: sender,
+				recipient: recipient,
 				timeSent: block.timestamp
         	});
 		s.p2pMessages[creatorId][sender][recipient].push(newMessage);
@@ -69,6 +71,46 @@ library LibVillage {
 		for (uint i = 0; i < length; i++) {
          	   	if (s.p2pMessages[creatorId][sender][recipient][i].id == messageId) {
          		       s.p2pMessages[creatorId][sender][recipient][i].message = message;
+         	   	}
+        	}
+	
+	}
+
+	function postMessage( uint256 creatorId, address sender, string memory message) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(sender != address(0), "0 address can not create a steez");
+		s.messageCounter ++;
+		Message memory newMessage = Message({
+				id: s.messageCounter,
+				sender: sender,
+				recipient: s.steez[creatorId].creatorAddress,
+				message: message,
+				timeSent: block.timestamp
+        	});
+		s.posts[creatorId].push(newMessage);
+		
+	}
+
+	function deleteGroupMessage( uint256 creatorId, address sender, uint256 messageId) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(sender != address(0), "0 address can not create a steez");
+		uint length =  s.posts[creatorId].length;
+		for (uint i = 0; i < length; i++) {
+         	   	if (s.posts[creatorId][i].id == messageId) {
+         		       s.posts[creatorId][i] = s.posts[creatorId][length - 1];
+			       s.posts[creatorId].pop();	
+         	   	}
+        	}
+	
+	}
+
+	function editGroupMessage( uint256 creatorId, address sender, uint256 messageId, string memory message) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(sender != address(0), "0 address can not create a steez");
+		uint length =  s.posts[creatorId].length;
+		for (uint i = 0; i < length; i++) {
+         	   	if (s.posts[creatorId][i].id == messageId) {
+         		       s.posts[creatorId][i].message = message;
          	   	}
         	}
 	

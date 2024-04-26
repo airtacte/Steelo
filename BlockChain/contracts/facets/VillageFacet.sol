@@ -31,6 +31,20 @@ contract VillageFacet {
 	function editMessage(uint256 creatorId, address recipient, uint256 messageId, string memory message) public {
 		LibVillage.editMessage( creatorId, msg.sender, recipient, messageId, message);
 	}
+	function postMessage(uint256 creatorId, string memory message) public {
+		LibVillage.postMessage( creatorId, msg.sender, message);
+	}
+
+	function getGroupChat(uint256 creatorId) public view returns (Message[] memory) {
+		return s.posts[creatorId];		
+	}
+
+	function deleteGroupMessage(uint256 creatorId, uint256 messageId) public {
+		LibVillage.deleteGroupMessage( creatorId, msg.sender, messageId);
+	}
+	function editGroupMessage(uint256 creatorId, uint256 messageId, string memory message) public {
+		LibVillage.editGroupMessage( creatorId, msg.sender, messageId, message);
+	}
 	
 
 
