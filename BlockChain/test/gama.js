@@ -66,6 +66,13 @@ describe('DiamondTest', async function () {
   	await expect(Village.connect(owner).sendMessage(0, addr1.address, message)).to.not.be.reverted;
 
     })
+    it('send owner from addr1 a message', async () => { 
+  
+	const Village = await ethers.getContractAt('VillageFacet', diamondAddress);
+	let message = "I am good yo?";
+  	await expect(Village.connect(addr1).sendMessage(0, owner.address, message)).to.not.be.reverted;
+
+    })
     it('check if message is sent', async () => { 
   
       const Village = await ethers.getContractAt('VillageFacet', diamondAddress);

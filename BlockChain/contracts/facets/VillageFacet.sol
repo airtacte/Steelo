@@ -14,8 +14,11 @@ contract VillageFacet {
 		
 	}
 
-	function getChat(uint256 creatorId, address recipient) public view returns (Message[] memory) {
-		return s.p2pMessages[creatorId][msg.sender][recipient];		
+	function getChat(uint256 creatorId, address recipient) public view returns (Message[] memory, Message[] memory) {
+		return ( 
+			s.p2pMessages[creatorId][msg.sender][recipient],
+			s.p2pMessages[creatorId][recipient][msg.sender]
+		       );		
 	}
 
 	function getContacts(uint256 creatorId) public view returns (address[] memory) {
