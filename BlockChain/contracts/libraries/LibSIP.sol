@@ -52,6 +52,7 @@ library LibSIP {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.sips[sipId].proposer != address(0), "there is no proposal with this SIP id");
 		require(!s.sips[sipId].executed, "SIP has already been executed");
+		require(s.userMembers[voter] == true, "at lease you must have an account to vote");
 		if (block.timestamp >= s.sips[sipId].endTime) {
 			initiateSIPApproval(sipId);
 		}
