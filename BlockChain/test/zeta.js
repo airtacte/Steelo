@@ -180,6 +180,14 @@ describe('DiamondTest', async function () {
 
     })
 
+    it('must be reverted vote on SIP registered owner after SIP time ended again', async () => { 
+  
+	const SIP = await ethers.getContractAt('SIPFacet', diamondAddress);
+	let vote = true;
+  	await expect(SIP.connect(owner).voteOnSip(1, vote)).to.be.reverted;
+
+    })
+
 
     it('check if a proposa has been executed', async () => { 
   
