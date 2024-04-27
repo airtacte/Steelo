@@ -44,6 +44,11 @@ contract SIPFacet {
 
 	}
 
+	function roleChanger(uint256 sipId) public {
+		LibSIP.roleChanger(sipId, msg.sender);
+
+	}
+
 
 
 }

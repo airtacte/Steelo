@@ -36,6 +36,7 @@ library LibSIP {
 
 	function register(address voter, uint256 sipId) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(s.sips[sipId].proposer != address(0), "there is no proposal with this SIP id");
 		require(s.votes[sipId][voter].voter == address(0), "you are already registered to vote");
 		require(!s.sips[sipId].executed, "SIP has already been executed");
 		Voter memory newVoter = Voter({
@@ -111,6 +112,13 @@ library LibSIP {
 	function SIPTimeEnder(uint256 sipId) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		s.sips[sipId].endTime -= 30 days;	
+	}
+
+	function roleChanger(uint256 sipId, address voter) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(s.sips[sipId].proposer != address(0), "there is no proposal with this SIP id");
+		require(s.votes[sipId][voter].voter != address(0), "you have not registered to vote");
+		s.votes[sipId][voter].role = "creator";
 	}
 
 }	

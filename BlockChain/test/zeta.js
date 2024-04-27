@@ -143,6 +143,28 @@ describe('DiamondTest', async function () {
 
     })
 
+    it('register addr2 as voter', async () => { 
+  
+	const SIP = await ethers.getContractAt('SIPFacet', diamondAddress);
+  	await expect(SIP.connect(addr2).registerVoter(1)).to.not.be.reverted;
+
+    })
+
+    it('change role of addr2', async () => { 
+  
+	const SIP = await ethers.getContractAt('SIPFacet', diamondAddress);
+  	await expect(SIP.connect(addr2).roleChanger(1)).to.not.be.reverted;
+
+    })
+
+    it('vote on SIP registered addr2', async () => { 
+  
+	const SIP = await ethers.getContractAt('SIPFacet', diamondAddress);
+	let vote = true;
+  	await expect(SIP.connect(addr2).voteOnSip(1, vote)).to.not.be.reverted;
+
+    })
+
     it('SIP time ender', async () => { 
   
 	const SIP = await ethers.getContractAt('SIPFacet', diamondAddress);
