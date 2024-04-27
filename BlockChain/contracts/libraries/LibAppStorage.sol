@@ -66,6 +66,23 @@ library AppConstants{
         // Utility Constants
         uint256 constant oneYear = 365 days;
         uint256 constant oneWeek = 7 days;
+
+
+
+
+	string constant EXECUTIVE_ROLE = "EXECUTIVE_ROLE";
+    	string constant ADMIN_ROLE = "ADMIN_ROLE";
+    	string constant EMPLOYEE_ROLE = "EMPLOYEE_ROLE";
+    	string constant TESTER_ROLE = "TESTER_ROLE";
+    	string constant STAKER_ROLE = "STAKER_ROLE";
+    	string constant USER_ROLE = "USER_ROLE";
+    	string constant VISITOR_ROLE = "VISITOR_ROLE";
+    	string constant CREATOR_ROLE = "CREATOR_ROLE";
+    	string constant TEAM_ROLE = "TEAM_ROLE";
+    	string constant MODERATOR_ROLE = "MODERATOR_ROLE";
+    	string constant COLLABORATOR_ROLE = "COLLABORATOR_ROLE";
+    	string constant INVESTOR_ROLE = "INVESTOR_ROLE";
+    	string constant SUBSCRIBER_ROLE = "SUBSCRIBER_ROLE";
 }
 
 
@@ -256,6 +273,24 @@ struct AppStorage {
     uint256 _lastSIPId;
     SIP[] allSIPs;
     mapping( uint256 => mapping( address => Voter)) votes;
+
+
+	mapping(address => string) roles;
+        mapping(address => bool) executiveMembers;
+        mapping(address => bool) adminMembers;
+        mapping(address => bool) employeeMembers;
+        mapping(address => bool) testerMembers;
+        mapping(address => bool) stakerMembers;
+        mapping(address => bool) userMembers;
+        mapping(address => bool) visitorMembers;
+        mapping(address => bool) creatorMembers;
+        mapping(address => bool) teamMembers;
+        mapping(address => bool) collaboratorMembers;
+        mapping(address => bool) investorMembers;
+        mapping(address => bool) moderatorMembers;
+        mapping(address => bool) subscriberMembers;
+	bool accessInitialized;
+    
    
 
 }
