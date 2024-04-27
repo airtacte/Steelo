@@ -162,6 +162,13 @@ struct Investor {
 	
     }
 
+    struct Voter {
+        bool voted; 
+        address voter;
+        bool vote;
+	string role;
+    }
+
     struct SIP {
         uint256 sipId;
         string sipType;
@@ -178,7 +185,9 @@ struct Investor {
         uint256 startTime;
         uint256 endTime;
         bool executed;
-        mapping(address => bool) votes;
+	string status;
+
+//        mapping(address => bool) votes;
     }
 
     struct Seller {
@@ -241,7 +250,12 @@ struct AppStorage {
     mapping( uint256 => mapping(address => address[])) contacts;
     mapping( uint256 => Message[]) posts;
     uint256 messageCounter;
-    
+   
+
+//    mapping( uint256 => mapping(address => bool)) votes;
+    uint256 _lastSIPId;
+    SIP[] allSIPs;
+    mapping( uint256 => mapping( address => Voter)) votes;
    
 
 }
