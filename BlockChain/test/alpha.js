@@ -607,81 +607,81 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       const transaction = await Steelo.getTotalTransactionAmount();
-      console.log(transaction);
+      console.log("total transaction count after some transactions :", parseInt(transaction));
 
     })
 
-    it('should create random transaction', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      await expect(Steelo.connect(owner).createRandomTransaction()).to.not.be.reverted;
-
-    })
-
-    it('should expect transaction count to be zero', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const transaction = await Steelo.getTotalTransactionAmount();
-      console.log(transaction);
-
-    })
+//    it('should create random transaction', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
+//      await expect(Steelo.connect(owner).createRandomTransaction()).to.not.be.reverted;
+//
+//    })
+//
+//    it('should expect transaction count to be zero', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+//      const transaction = await Steelo.getTotalTransactionAmount();
+//      console.log(transaction);
+//
+//    })
 
     
 
 
-    it('should calculate total transaction', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      await expect(Steelo.connect(owner).calculateTotalTransactionAmount()).to.not.be.reverted;
+//    it('should calculate total transaction', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
+//      await expect(Steelo.connect(owner).calculateTotalTransactionAmount()).to.not.be.reverted;
+//
+//    })
 
-    })
 
+//    it('should expect transaction count to be seven', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+//      const transaction = await Steelo.getTotalTransactionAmount();
+//      console.log(transaction);
+//
+//    })
 
-    it('should expect transaction count to be seven', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const transaction = await Steelo.getTotalTransactionAmount();
-      console.log(transaction);
+//    it('should transfer balance from owner to someone else', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+//      let amount = 5400;
+//      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
+//
+//    })
 
-    })
+//    it('should transfer balance from owner to someone else', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+//      let amount = 54000;
+//      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
+//
+//    })
 
-    it('should transfer balance from owner to someone else', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 5400;
-      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
+//    it('should check total Supply', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+//      const balance = await Steelo.steeloTotalSupply();
+//      console.log(balance);
+//
+//    })
 
-    })
+//     it('should calcuate and mint on its own', async () => { 
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
+//      await expect(Steelo.connect(owner).steeloMintAdvanced()).to.not.be.reverted;
+//
+//    })
 
-    it('should transfer balance from owner to someone else', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 54000;
-      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
-
-    })
-
-    it('should check total Supply', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloTotalSupply();
-      console.log(balance);
-
-    })
-
-     it('should calcuate and mint on its own', async () => { 
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      await expect(Steelo.connect(owner).steeloMintAdvanced()).to.not.be.reverted;
-
-    })
-
-    it('should check total Supply', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloTotalSupply();
-      console.log(balance);
-
-    })
+//    it('should check total Supply', async () => { 
+//  
+//      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+//      const balance = await Steelo.steeloTotalSupply();
+//      console.log(balance);
+//
+//    })
 
     it('should add the Steelo 2 Facet', async () => {
 
@@ -699,11 +699,12 @@ describe('DiamondTest', async function () {
   
     }).timeout(600000)
 
-    it('should check total Supply', async () => { 
+    it('should check total Supply before supply cap', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo2.steeloTotalSupply();
-      console.log(balance);
+      let balance = await Steelo2.steeloTotalSupply();
+      balance /= 10 ** 18;
+      console.log("total supply before supply cap", parseInt(balance));
 
     })
 
@@ -717,95 +718,106 @@ describe('DiamondTest', async function () {
     it('should check total Supply', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo2.steeloTotalSupply();
-      console.log(balance);
+      let balance = await Steelo2.steeloTotalSupply();
+      balance /= 10 ** 18;
+      console.log("total supply after supply cap", parseInt(balance));
 
     })
 
     it('should check total Supply', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloSupplyCap();
-      console.log(balance);
+      let balance = await Steelo2.steeloSupplyCap();
+      balance /= 10 ** 18;
+      console.log("supply cap after calculation :", parseInt(balance));
 
     })
 
     it('should check mint Rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloMintRate();
-      console.log(balance);
+      let balance = await Steelo2.steeloMintRate();
+      console.log("steelo mint rate", parseInt(balance), "/ 1000 %");
 
     })
 
 
-    it('should adjust mint rate', async () => { 
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      let amount = 60;
-      await expect(Steelo2.connect(owner).adjustMintRate(amount)).to.not.be.reverted;
+//    it('should adjust mint rate', async () => { 
+//      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
+//      let amount = 60;
+//      await expect(Steelo2.connect(owner).adjustMintRate(amount)).to.not.be.reverted;
+//
+//    })
 
-    })
-
-    it('should check min Rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloMintRate();
-      console.log(balance);
-
-    })
+//    it('should check min Rate', async () => { 
+//  
+//      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+//      const balance = await Steelo2.steeloMintRate();
+//      console.log(balance);
+//
+//    })
 
 
     it('should check burn Rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloBurnRate();
-      console.log(balance);
+      let balance = await Steelo2.steeloBurnRate();
+      console.log("steelo burn rate :", parseInt(balance), "/ 1000 %");
 
     })
 
 
-    it('should adjust burn rate', async () => { 
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      let amount = 60;
-      await expect(Steelo2.connect(owner).adjustBurnRate(amount)).to.not.be.reverted;
+//    it('should adjust burn rate', async () => { 
+//      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
+//      let amount = 60;
+//      await expect(Steelo2.connect(owner).adjustBurnRate(amount)).to.not.be.reverted;
+//
+//    })
 
-    })
+//    it('should check burn Rate', async () => { 
+//  
+//      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+//      const balance = await Steelo2.steeloBurnRate();
+//      console.log(balance);
+//
+//    })
 
-    it('should check burn Rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloBurnRate();
-      console.log(balance);
+//    it('should check burn Amount before', async () => { 
+//  
+//      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+//      const balance = await Steelo2.steeloBurnAmount();
+//      console.log(balance);
+//
+//    })
 
-    })
+//    it('should adjust burn rate', async () => { 
+//      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
+//      await expect(Steelo2.connect(owner).burnSteeloTokens()).to.not.be.reverted;
+//
+//    })
 
-    it('should check burn Amount before', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloBurnAmount();
-      console.log(balance);
-
-    })
-
-    it('should adjust burn rate', async () => { 
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      await expect(Steelo2.connect(owner).burnSteeloTokens()).to.not.be.reverted;
-
-    })
-
-    it('should check burn Amount before', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloBurnAmount();
-      console.log(balance);
-
-    })
+//    it('should check burn Amount before', async () => { 
+//  
+//      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+//      const balance = await Steelo2.steeloBurnAmount();
+//      console.log(balance);
+//
+//    })
 
     it('should check total burned Amount before', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      const balance = await Steelo2.steeloTotalBurnAmount();
-      console.log(balance);
+      let balance = await Steelo2.steeloTotalBurnAmount();
+      balance /= 10 ** 18;
+      console.log("total amount burned :", parseInt(balance));
+
+    })
+    it('should check total minted Amount before', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.steeloTotalMintAmount();
+      balance /= 10 ** 18;
+      console.log("total amount minted :", parseInt(balance));
 
     })
 

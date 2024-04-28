@@ -123,6 +123,7 @@ library LibSteelo {
 	        s.balances[from] -= amount;
 		s.totalSupply -= amount;
 		s.totalTransactionCount += 1;
+		s.totalBurned += amount;
 	}
 
 	function mint(address from, uint256 amount) internal {
@@ -133,6 +134,7 @@ library LibSteelo {
 	        s.balances[from] += amount;
 		s.totalSupply += amount;
 		s.totalTransactionCount += 1;
+		s.totalMinted += amount;
 	}
 
 
@@ -178,10 +180,12 @@ library LibSteelo {
         	s.burnAmount = calculateBurnAmount(amount);
         	if (s.burnAmount > 0 && from != address(0)) {
             		s.totalSupply -= s.burnAmount;
+			s.totalBurned += s.burnAmount;
         	}
 		s.mintAmount = calculateMintAmount(amount);
 		if (s.mintAmount > 0 && from != address(0)) {
             		s.totalSupply += s.mintAmount;
+			s.totalMinted += s.mintAmount;
         	}
     }
 

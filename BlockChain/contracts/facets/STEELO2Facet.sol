@@ -24,7 +24,7 @@ contract STEELO2Facet {
 	}
 
 	function steeloSupplyCap() public view returns(uint256) {
-		return s.supplyCap / 10 ** 18;
+		return s.supplyCap;
 	}
 
 	function adjustMintRate( uint256 amount) external {
@@ -33,7 +33,7 @@ contract STEELO2Facet {
    	}
 
 	function steeloMintRate() public view returns (uint256) {
-		return s.mintRate / 10 ** 18;
+		return s.mintRate;
    	}
 
 	function adjustBurnRate( uint256 amount) external {
@@ -51,11 +51,15 @@ contract STEELO2Facet {
 	}
 
 	function steeloBurnAmount() public view returns (uint256) {
-		return (s.burnAmount * 100) / 10 ** 18;
+		return (s.burnAmount * 100);
    	}
 
 	function steeloTotalBurnAmount() public view returns (uint256) {
 		return s.totalBurned;
+   	}
+
+	function steeloTotalMintAmount() public view returns (uint256) {
+		return s.totalMinted;
    	}
 
 	function verifyTransaction(uint256 sipId) public {
