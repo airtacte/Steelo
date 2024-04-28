@@ -42,9 +42,9 @@ library AppConstants{
         address constant treasury = 0xB0a21EC5A00743252a08528357267B746048595E;
         uint256 constant trasuryTGE = 35;
         uint256 constant treasuryMint = 35;
-        address constant liquidityProviders = 0x22a909748884b504bb3BDC94FAE155aaa917416D;
+        address constant liquidityProviders = 0x161380C639fDafA35225DB5BeD0e709d7c65AF1a;
         uint256 constant liquidityProvidersMint = 55;
-        address constant ecosystemProviders = 0x3aBb3ad502003909d738fF014f23519071d003B6;
+        address constant ecosystemProviders = 0x34e5F0aE6D87cC84D298E4bBc73CcB108604E951;
         uint256 constant ecosystemProvidersMint = 10;
         address constant foundersAddress = 0xcB0b5a14da81c475df610B5BCE7ECF392a2AC203;
         uint256 constant foundersTGE = 20;

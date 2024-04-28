@@ -18,6 +18,7 @@ library LibSteelo {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(!s.steeloInitiated, "steelo already initiated");
 		require( treasury != address(0), "treasurer can not be zeero address");
+		require(s.executiveMembers[treasury], "only executive can initialize the steelo tokens");
 		s.name = "Steelo";
 		s.symbol = "STLO";
 		if (s.balances[treasury] == 0) {
@@ -33,6 +34,7 @@ library LibSteelo {
 	function TGE(address treasury) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require( treasury != address(0), "token can not be generated with zero address");
+		require(s.executiveMembers[treasury], "only executive can initialize the steelo tokens");
 		require(!s.tgeExecuted, "STEELOFacet: steeloTGE can only be executed once");
 		require(s.totalTransactionCount == 0, "STEELOFacet: TransactionCount must be equal to 0");
 		require(s.steeloCurrentPrice >= 0, "STEELOFacet: steeloCurrentPrice must be greater than 0");
@@ -56,6 +58,7 @@ library LibSteelo {
 
 	function approve(address from, address to, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require(s.stakerMembers[from], "you must stake in order to approve steelo transaction");
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( amount > 0, "you can not approve 0 amount");
 		require(s.balances[from] >= amount, "you can not approve what you do not have");
@@ -69,6 +72,7 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( to != address(0), "STEELOFacet: Cannot transfer to the zero address" );
+		require(s.stakerMembers[from], "you must stake in order to transfer steelo transaction");
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
 		require( amount > 0, "you can not transfer 0 amount");
 		uint256 feeAmount = (amount * AppConstants.FEE_RATE) / 10000;
@@ -77,23 +81,27 @@ library LibSteelo {
         	beforeTokenTransfer(from, feeAmount);
 		s.balances[from] -= transferAmount;
 		s.balances[to] += transferAmount;
+		s.stakerMembers[to] = true;
 	}
 
 	function transferFrom(address from, address to, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( to != address(0), "STEELOFacet: Cannot transfer to the zero address" );
+		require(s.stakerMembers[from], "the sender must stake in order to transfer steelo transaction");
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
 		require(s.allowance[from][to] >= amount, "did not allow this much allowance");
 		require( amount > 0, "you can not transfer 0 amount");
 		s.balances[from] -= amount;
 		s.balances[to] += amount;
 		s.allowance[from][to] -= amount;
+		s.stakerMembers[to] = true;
 		
 	}
 
 	function burn(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require(s.adminMembers[from], "only admin can burn steelo tokens");
 //		require(amount > 0, "can not burn 0 amount");
 		require(amount < 825000000 * 10 ** 18, "can not burn 825 million tokens");
 		require(s.balances[from] > amount, "you should have enough amount to burn some tokens");
@@ -104,6 +112,7 @@ library LibSteelo {
 
 	function mint(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require(s.adminMembers[from], "only admins can mint steelo tokens");
 		require(amount > 0, "can not mint 0 amount");
 		require(amount <= 825000000 * 10 ** 18, "can not mint more than 825 million tokens");
 	        s.balances[from] += amount;
@@ -123,7 +132,7 @@ library LibSteelo {
 
 	function withdraw(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
-		require(address(this).balance > (amount * (10 ** 18)), "no ether is available in the treasury of contract balance");
+		require(address(this).balance >= (amount * (10 ** 18)), "no ether is available in the treasury of contract balance");
 		require(s.balances[from] >= amount, "not sufficient steelo tokens to sell");
 		s.balances[from] -= (amount * 100 * (10 ** 18));
 		s.balances[s.treasury] += (amount * 100 * (10 ** 18));
