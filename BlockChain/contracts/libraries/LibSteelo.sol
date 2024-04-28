@@ -21,11 +21,14 @@ library LibSteelo {
 		require(s.executiveMembers[treasury], "only executive can initialize the steelo tokens");
 		s.name = "Steelo";
 		s.symbol = "STLO";
-		if (s.balances[treasury] == 0) {
-			mint(treasury, AppConstants.TGE_AMOUNT);
-			s.treasury = treasury;
-		}
-		s.lastMintEvent = block.timestamp;
+//		if (s.balances[treasury] == 0) {
+//			mint(treasury, AppConstants.TGE_AMOUNT);
+//			s.treasury = treasury;
+//		}
+		s.treasury = treasury;
+//		s.lastMintEvent = block.timestamp;
+		s.steeloCurrentPrice = 0.05 * (10 ** 6);
+//		s.steeloCurrentPrice = 500 * (10 ** 6);
 		s.steeloInitiated = true;
 		
 		
@@ -37,8 +40,8 @@ library LibSteelo {
 		require(s.executiveMembers[treasury], "only executive can initialize the steelo tokens");
 		require(!s.tgeExecuted, "STEELOFacet: steeloTGE can only be executed once");
 		require(s.totalTransactionCount == 0, "STEELOFacet: TransactionCount must be equal to 0");
-		require(s.steeloCurrentPrice >= 0, "STEELOFacet: steeloCurrentPrice must be greater than 0");
-		require(s.totalSupply == AppConstants.TGE_AMOUNT, "STEELOFacet: steeloTGE can only be called for the Token Generation Event");
+		require(s.steeloCurrentPrice > 0, "STEELOFacet: steeloCurrentPrice must be greater than 0");
+		require(s.totalSupply == 0, "STEELOFacet: steeloTGE can only be called for the Token Generation Event");
 
 
 		uint256 communityAmount = (AppConstants.TGE_AMOUNT * AppConstants.communityTGE) / 100;
@@ -52,6 +55,7 @@ library LibSteelo {
         	mint(AppConstants.earlyInvestorsAddress, earlyInvestorsAmount);
         	mint(msg.sender, treasuryAmount);
 
+		s.mintTransactionLimit = 1000;
         	s.tgeExecuted = true;
 		
 	}
@@ -75,13 +79,17 @@ library LibSteelo {
 		require(s.stakerMembers[from], "you must stake in order to transfer steelo transaction");
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
 		require( amount > 0, "you can not transfer 0 amount");
-		uint256 feeAmount = (amount * AppConstants.FEE_RATE) / 10000;
-		uint256 transferAmount = amount - feeAmount;
+		uint256 transferAmount = amount;
 		beforeTokenTransfer(from, transferAmount);
-        	beforeTokenTransfer(from, feeAmount);
+		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
+			s.mintTransactionLimit += 1000;
+			steeloMint(s.treasury);
+
+		}
 		s.balances[from] -= transferAmount;
 		s.balances[to] += transferAmount;
 		s.stakerMembers[to] = true;
+		s.totalTransactionCount += 1;
 	}
 
 	function transferFrom(address from, address to, uint256 amount) internal {
@@ -92,10 +100,17 @@ library LibSteelo {
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
 		require(s.allowance[from][to] >= amount, "did not allow this much allowance");
 		require( amount > 0, "you can not transfer 0 amount");
+		beforeTokenTransfer(from, amount);
+		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
+			s.mintTransactionLimit += 1000;
+			steeloMint(s.treasury);
+
+		}
 		s.balances[from] -= amount;
 		s.balances[to] += amount;
 		s.allowance[from][to] -= amount;
 		s.stakerMembers[to] = true;
+		s.totalTransactionCount += 1;
 		
 	}
 
@@ -132,7 +147,7 @@ library LibSteelo {
 
 	function withdraw(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
-		require(address(this).balance >= (amount * (10 ** 18)), "no ether is available in the treasury of contract balance");
+		require(address(this).balance >= ((amount / 2) * (10 ** 18)), "no ether is available in the treasury of contract balance");
 		require(s.balances[from] >= amount, "not sufficient steelo tokens to sell");
 		s.balances[from] -= (amount * 100 * (10 ** 18));
 		s.balances[s.treasury] += (amount * 100 * (10 ** 18));
@@ -162,20 +177,57 @@ library LibSteelo {
 
         	s.burnAmount = calculateBurnAmount(amount);
         	if (s.burnAmount > 0 && from != address(0)) {
-            		burn(from, s.burnAmount);
-            		amount -= s.burnAmount;
-        }
+            		s.totalSupply -= s.burnAmount;
+        	}
+		s.mintAmount = calculateMintAmount(amount);
+		if (s.mintAmount > 0 && from != address(0)) {
+            		s.totalSupply += s.mintAmount;
+        	}
     }
 
     function calculateBurnAmount( uint256 transactionValue ) private returns (uint256) {
 		AppStorage storage s = LibAppStorage.diamondStorage();
-		s.burnRate = 1;
+		s.burnRate = 0;
+		if (s.steeloCurrentPrice <= AppConstants.pMin) {
+			s.burnRate = 1;
+		}
+		if (s.steeloCurrentPrice <= AppConstants.pMin * 10) {
+			s.burnRate = 5;
+		}
+		if (s.steeloCurrentPrice <= AppConstants.pMin * 100) {
+			s.burnRate = 10;
+		}
 		
 
         	if (s.totalTransactionCount > 0) {
             		s.burnAmount = ((transactionValue * AppConstants.FEE_RATE * s.burnRate) / 1000);
-			require( s.burnAmount >= AppConstants.MIN_BURN_RATE && s.burnAmount <= AppConstants.MAX_BURN_RATE, "STEELOFacet: Suggested Burn Rate not within permitted range");
+			require( s.burnRate >= AppConstants.MIN_BURN_RATE && s.burnRate <= AppConstants.MAX_BURN_RATE, "STEELOFacet: Suggested Burn Rate not within permitted range");
             		return s.burnAmount;
+        	} else {
+            		return 0;
+        	}
+
+        	
+    	}
+
+	function calculateMintAmount( uint256 transactionValue ) private returns (uint256) {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		s.mintRate = 0;
+		if (s.steeloCurrentPrice >= AppConstants.pMin) {
+			s.mintRate = 1;
+		}
+		if (s.steeloCurrentPrice >= AppConstants.pMin * 10) {
+			s.mintRate = 5;
+		}
+		if (s.steeloCurrentPrice >= AppConstants.pMin * 100) {
+			s.mintRate = 10;
+		}
+		
+
+        	if (s.totalTransactionCount > 0) {
+            		s.mintAmount = ((transactionValue * AppConstants.FEE_RATE * s.mintRate) / 1000);
+			require( s.mintRate >= AppConstants.MIN_MINT_RATE && s.burnRate <= AppConstants.MAX_MINT_RATE, "STEELOFacet: Suggested Mint Rate not within permitted range");
+            		return s.mintAmount;
         	} else {
             		return 0;
         	}
@@ -185,17 +237,17 @@ library LibSteelo {
 
      function steeloMint(address from) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
-		s.mintAmount = calculateMintAmount( s.totalTransactionCount, s.steeloCurrentPrice);
+		s.mintAmount = calculateGenerationMintAmount();
 		require( s.totalTransactionCount > 0,"STEELOFacet: s.totalTransactionCount must be greater than 0");
-        	require(s.steeloCurrentPrice >= 0,"STEELOFacet: steeloCurrentPrice must be greater than 0");
+        	require(s.steeloCurrentPrice > 0,"STEELOFacet: steeloCurrentPrice must be greater than 0");
 
 		uint256 treasuryAmount = (s.mintAmount * AppConstants.treasuryMint) / 100;
         	uint256 liquidityProvidersAmount = (s.mintAmount * AppConstants.liquidityProvidersMint) / 100;
         	uint256 ecosystemProvidersAmount = (s.mintAmount * AppConstants.ecosystemProvidersMint) / 100;
 
 
-        	s.totalMinted += s.mintAmount;
-        	s.lastMintEvent = block.timestamp;
+	       	s.totalMinted += s.mintAmount;
+	       	s.lastMintEvent = block.timestamp;
 
         	mint(from, treasuryAmount);
         	mint(AppConstants.liquidityProviders, liquidityProvidersAmount);
@@ -205,20 +257,18 @@ library LibSteelo {
 		
      }
 
-     function calculateMintAmount( int256 totalTransactionCount, uint256 steeloCurrentPrice ) public returns (uint256) {
+     function calculateGenerationMintAmount() public returns (uint256) {
 		AppStorage storage s = LibAppStorage.diamondStorage();
-		uint256 adjustmentFactor = 100 * 10 ** 18;
+		uint256 adjustmentFactor = 1 * (10 ** 6);
         	if (s.steeloCurrentPrice >= AppConstants.pMax) {
-            		adjustmentFactor += ((s.steeloCurrentPrice - AppConstants.pMax) * AppConstants.alpha) / 100;
+            		adjustmentFactor += (((s.steeloCurrentPrice - AppConstants.pMax) * AppConstants.alpha) / 100);
         	} else if (s.steeloCurrentPrice <= AppConstants.pMin) {
-            		adjustmentFactor -= ((AppConstants.pMin - s.steeloCurrentPrice) * AppConstants.beta) / 100;
+            		adjustmentFactor -= (((AppConstants.pMin - s.steeloCurrentPrice) * AppConstants.beta) / 100);
         	} else {
             		adjustmentFactor += adjustmentFactor / 100;
         	}
-        	s.mintAmount = (AppConstants.rho * uint256(s.totalTransactionCount) * adjustmentFactor) / 10 ** 18;
-		s.mintAmount = s.mintAmount / 100;
-		require( s.mintAmount >= AppConstants.MIN_MINT_RATE && s.mintAmount <= AppConstants.MAX_MINT_RATE, "STEELOFacet: Suggested Mint Rate not within permitted range");
-
+        	s.mintAmount = (AppConstants.rho * uint256(s.totalTransactionCount) * adjustmentFactor) / 10 ** 15;
+		s.mintAmount *= 10 ** 18;
 
         	return s.mintAmount;
     }
@@ -237,14 +287,14 @@ library LibSteelo {
 	function adjustMintRate(uint256 amount) internal {
 		amount = amount * 10 ** 18;
 		AppStorage storage s = LibAppStorage.diamondStorage();
-		require( amount >= AppConstants.MIN_MINT_RATE && amount <= AppConstants.MAX_MINT_RATE, "STEELOFacet: Invalid burn rate");
+//		require( s.mintRate >= AppConstants.MIN_MINT_RATE && amount <= AppConstants.MAX_MINT_RATE, "STEELOFacet: Invalid burn rate");
         	s.mintRate = amount;	
 	}	
 
 	function adjustBurnRate(uint256 amount) internal {
 		amount = amount * 10 ** 18;
 		AppStorage storage s = LibAppStorage.diamondStorage();
-		require( amount >= AppConstants.MIN_BURN_RATE && amount <= AppConstants.MAX_BURN_RATE, "STEELOFacet: Invalid burn rate");
+//		require( amount >= AppConstants.MIN_BURN_RATE && amount <= AppConstants.MAX_BURN_RATE, "STEELOFacet: Invalid burn rate");
         	s.burnRate = amount / 10 ** 18;	
 	}
 

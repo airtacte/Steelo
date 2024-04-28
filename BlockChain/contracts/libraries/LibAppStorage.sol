@@ -7,16 +7,16 @@ library AppConstants{
     	uint256 constant _ENTERED = 2;
     	uint256 constant decimal = 18;
     	uint256 constant TGE_AMOUNT = 825_000_000 * 10 ** decimal;
-        uint256 constant pMin = 50 * 10 ** 18;
-        uint256 constant pMax = 500 * 10 ** 18;
-        uint256 constant rho = 100 * 10 ** 18;
+        uint256 constant pMin = 0.5 * (10 ** 6);
+        uint256 constant pMax = 5 * (10 ** 6);
+        uint256 constant rho = 1 * (10 ** 6);
         uint256 constant alpha = 10;
         uint256 constant beta = 10;
         uint256 constant delta = 10;
-        uint256 constant MIN_MINT_RATE = 50 * 10 ** 18;
-        uint256 constant MAX_MINT_RATE = 825000000 * 10 ** 18;
+        uint256 constant MIN_MINT_RATE = 0;
+        uint256 constant MAX_MINT_RATE = 10;
         uint256 constant MIN_BURN_RATE = 0;
-        uint256 constant MAX_BURN_RATE = 550 * 10 ** 18;
+        uint256 constant MAX_BURN_RATE = 10;
         // Tokenomics for STEEZ
         uint256 constant AUCTION_DURATION = 24 hours;
         uint256 constant PRE_ORDER_SUPPLY = 5;
@@ -39,18 +39,18 @@ library AppConstants{
         uint256 constant MAX_CREATOR_TOKENS = 5000;
         uint256 constant ANNUAL_TOKEN_INCREASE_PERCENTAGE = 10;
         // Stakeholder's royalty distribution
-        address constant treasury = 0xB0a21EC5A00743252a08528357267B746048595E;
+        address constant treasury = 0xa7B5050cCF4A51C6338fdD12B620e57A757F8F14;
         uint256 constant trasuryTGE = 35;
         uint256 constant treasuryMint = 35;
         address constant liquidityProviders = 0x161380C639fDafA35225DB5BeD0e709d7c65AF1a;
         uint256 constant liquidityProvidersMint = 55;
         address constant ecosystemProviders = 0x34e5F0aE6D87cC84D298E4bBc73CcB108604E951;
         uint256 constant ecosystemProvidersMint = 10;
-        address constant foundersAddress = 0xcB0b5a14da81c475df610B5BCE7ECF392a2AC203;
+        address constant foundersAddress = 0xBfb39d9b74818138504445BA9b4E4c62b1414ce9;
         uint256 constant foundersTGE = 20;
-        address constant earlyInvestorsAddress = 0xA64c87ADc19364eEaca2e9806BAE025013C83F20;
+        address constant earlyInvestorsAddress = 0x0B760964C90CDa410a3b5c9aED4be88F41154804;
         uint256 constant earlyInvestorsTGE = 10;
-        address constant communityAddress = 0xd86AD7c60a9B2d608740a99C3488D256f6fA493b;
+        address constant communityAddress = 0x86065623e84432F7050FB19DE5fb5E8C51727039;
         uint256 constant communityTGE = 35;
         address constant steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
         uint256 constant FEE_RATE = 25;
@@ -240,6 +240,7 @@ struct AppStorage {
     mapping(uint256 => SIP) sips;
     address treasury;
     bool steeloInitiated;
+    uint256 mintTransactionLimit;
 
     string creatorTokenName;
     string creatorTokenSymbol;

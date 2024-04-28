@@ -23,11 +23,11 @@ describe('DiamondTest', async function () {
   let receipt
   let result
   const addresses = []
-  let owner, addr1, addr2, addr3;
+  let owner, addr1, addr2, addr3, addr4, addr5, addr6;
   this.timeout(60000);
 
   before(async function () {
-    [owner, addr1, addr2, addr3] = await ethers.getSigners();
+    [owner, addr1, addr2, addr3, addr4, addr5, addr6] = await ethers.getSigners();
     diamondAddress = await deployDiamond()
     diamondCutFacet = await ethers.getContractAt('DiamondCutFacet', diamondAddress)
     diamondLoupeFacet = await ethers.getContractAt('DiamondLoupeFacet', diamondAddress)
@@ -135,12 +135,81 @@ describe('DiamondTest', async function () {
       console.log("admin power of addr2 :", role);
 
     })
+    it('executive owner grant role admin to addr3', async () => { 
+  
+	const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+	role = "ADMIN_ROLE";
+  	await expect(AccessControl.connect(owner).grantRole(role, addr3.address)).to.not.be.reverted;
 
-    it('check out the role of addr3', async () => { 
+    })
+
+    it('check out the role of addr3 ', async () => { 
   
       const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
       let role = await AccessControl.connect(addr3).getRole();
       console.log("role of addr3 address :", role);
+
+    })
+     
+    it('check out the power of the addr3', async () => { 
+  
+      const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+      let role = await AccessControl.connect(addr3).getPower();
+      console.log("admin power of addr3 :", role);
+
+    })
+    it('executive owner grant role admin to addr4', async () => { 
+  
+	const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+	role = "ADMIN_ROLE";
+  	await expect(AccessControl.connect(owner).grantRole(role, addr4.address)).to.not.be.reverted;
+
+    })
+
+    it('check out the role of addr4 ', async () => { 
+  
+      const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+      let role = await AccessControl.connect(addr4).getRole();
+      console.log("role of addr4 address :", role);
+
+    })
+     
+    it('check out the power of the addr4', async () => { 
+  
+      const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+      let role = await AccessControl.connect(addr4).getPower();
+      console.log("admin power of addr4 :", role);
+
+    }) 
+    it('executive owner grant role admin to addr5', async () => { 
+  
+	const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+	role = "ADMIN_ROLE";
+  	await expect(AccessControl.connect(owner).grantRole(role, addr5.address)).to.not.be.reverted;
+
+    })
+
+    it('check out the role of addr5 ', async () => { 
+  
+      const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+      let role = await AccessControl.connect(addr5).getRole();
+      console.log("role of addr5 address :", role);
+
+    })
+     
+    it('check out the power of the addr5', async () => { 
+  
+      const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+      let role = await AccessControl.connect(addr5).getPower();
+      console.log("admin power of addr5 :", role);
+
+    })
+
+    it('check out the role of addr6', async () => { 
+  
+      const AccessControl = await ethers.getContractAt('AccessControlFacet', diamondAddress);
+      let role = await AccessControl.connect(addr6).getRole();
+      console.log("role of addr6 address :", role);
 
     })
   it('should add the Steelo Facet', async () => {
@@ -214,6 +283,12 @@ describe('DiamondTest', async function () {
       console.log("total supply of steelo after executive initiated :", parseInt(totalSupply));
 
     })
+    it('should go with Steelo Token Generation', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
+      await expect(Steelo.connect(owner).steeloTGE()).to.not.be.reverted;
+
+    })
 
     it('should fail to check total supply of Steelo to be 200', async () => { 
   
@@ -280,15 +355,16 @@ describe('DiamondTest', async function () {
     
 
 
-    it('should check account balance', async () => { 
+    it('should check account balance of owner before STLO transaction', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf(owner.address);
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(owner.address);
+      balance /= 10 ** 18;
+      console.log("balance of owner address after mint", parseInt(balance));
 
     })
 
-    it('should transfer balance from owner to someone else', async () => { 
+    it('should transfer 10 STLO from owner to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 10;
@@ -296,23 +372,75 @@ describe('DiamondTest', async function () {
 
     })
 
-    it('should check account balance', async () => { 
+    it('should check account balance of owner after STLO transaction', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf(owner.address);
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(owner.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of owner :", parseInt(balance));
+
+    })
+     it('should check account balance of addr1 after STLO transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of addr1 :", parseInt(balance));
+
+    })
+    
+    it('should check total supply of steelo after a transfer between two addresses', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let totalSupply = await Steelo.steeloTotalSupply()
+      totalSupply = totalSupply / 10 ** 18;
+      console.log("total supply value after 10 steelo transfer", parseInt(totalSupply))
 
     })
 
-    it('should check allowance between 2 accounts', async () => { 
+    it('should transfer 740000 STLO from owner to addr1', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let amount = 740000;
+      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
+
+    })
+
+    it('should check account balance of owner after STLO transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(owner.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of owner :", parseInt(balance));
+
+    })
+     it('should check account balance of addr1 after STLO transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of addr1 :", parseInt(balance));
+
+    })
+    
+    it('should check total supply of steelo after a transfer between two addresses', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let totalSupply = await Steelo.steeloTotalSupply()
+      totalSupply = totalSupply / 10 ** 18;
+      console.log("total supply value after 740000 steelo transfer", parseInt(totalSupply))
+
+    })
+
+    it('should check allowance between 2 accounts before no allowance', async () => { 
   
       	const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       	const allowance = await Steelo.steeloAllowance(owner.address, addr1.address);
-	console.log(allowance);
+	console.log("allowance between owner address and addr1 :", parseInt(allowance));
 
     })
 
-    it('should check if the owner approved some amount to spender', async () => { 
+    it('should check if the owner approved some amount to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 10;
@@ -320,11 +448,12 @@ describe('DiamondTest', async function () {
 
     })
     
-    it('should check allowance between 2 accounts', async () => { 
+    it('should check allowance between 2 accounts after allowance', async () => { 
   
       	const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      	const allowance = await Steelo.steeloAllowance(owner.address, addr1.address);
-	console.log(allowance);
+      	let allowance = await Steelo.steeloAllowance(owner.address, addr1.address);
+	allowance /= 10 ** 18;
+	console.log("allowance between owner address and addr1 after owner approved 10 STLO", parseInt(allowance));
 
     })
 
@@ -354,16 +483,17 @@ describe('DiamondTest', async function () {
     it('should check account balance', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf(owner.address);
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(owner.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of owner after he let smart contract transfer 10 STLO to addr1 :", parseInt(balance));
 
     })
     
-    it('should check allowance between 2 accounts', async () => { 
+    it('should check allowance between 2 accounts after transfer', async () => { 
   
       	const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       	const allowance = await Steelo.steeloAllowance(owner.address, addr1.address);
-	console.log(allowance);
+	console.log("allowance between owner and addr1 after smart transfer :", parseInt(allowance));
 
     })
 
@@ -378,23 +508,33 @@ describe('DiamondTest', async function () {
     it('should check total supply of steelo to be 825000050', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let totalSupply = await Steelo.steeloTotalSupply()
-      console.log(totalSupply);
+      let totalSupply = await Steelo.steeloTotalSupply();
+      totalSupply /= 10 ** 18;
+      console.log("total supply after owner burned 50 tokens :", parseInt(totalSupply));
+
+    })
+    it('should check account balance', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("addr1 balance before buying STLO with 1 ether :", parseInt(balance));
 
     })
 
     it('should convert ETH to Steelo', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      await expect(Steelo.connect(owner).convertEtherToSteelo({value: ethers.utils.parseEther("2")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr1).convertEtherToSteelo({value: ethers.utils.parseEther("1")})).to.not.be.reverted;
 
     })
     
     it('should check account balance', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf(owner.address);
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("addr1 balance after buying STLO with 1 ether :", parseInt(balance));
 
     })
 
@@ -402,7 +542,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let amount = 100;
-      await expect(Steelo.connect(owner).convertSteeloToEther(amount)).to.not.be.reverted;
+      await expect(Steelo.connect(addr1).convertSteeloToEther(amount)).to.not.be.reverted;
 
     })
 
@@ -410,8 +550,9 @@ describe('DiamondTest', async function () {
     it('should check account balance', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf(owner.address);
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("addr1 STLO balance after selling STLO :", parseInt(balance));
 
     })
 
@@ -426,47 +567,38 @@ describe('DiamondTest', async function () {
     it('should check total Supply', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloTotalSupply();
-      console.log(balance);
+      let balance = await Steelo.steeloTotalSupply();
+      balance /= 10 ** 18;
+      console.log("total supply after owner burned 50 STLO again", parseInt(balance));
 
     })
 
-    it('should go with Steelo Token Generation', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      await expect(Steelo.connect(owner).steeloTGE()).to.be.reverted;
+    
 
-    })
-
-    it('should check account balance', async () => { 
+    it('should check account balance of community provider', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf(owner.address);
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(addr3.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of  community provider:", parseInt(balance));
 
     })
 
-    it('should check account balance', async () => { 
+    it('should check account balance of founder provider', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf("0xd86AD7c60a9B2d608740a99C3488D256f6fA493b");
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(addr4.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of founder provider:", parseInt(balance));
 
     })
 
-    it('should check account balance', async () => { 
+    it('should check account balance of early investor provider', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf("0xA64c87ADc19364eEaca2e9806BAE025013C83F20");
-      console.log(balance);
-
-    })
-
-    it('should check account balance', async () => { 
-  
-      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      const balance = await Steelo.steeloBalanceOf("0xcB0b5a14da81c475df610B5BCE7ECF392a2AC203");
-      console.log(balance);
+      let balance = await Steelo.steeloBalanceOf(addr5.address);
+      balance /= 10 ** 18;
+      console.log("STLO balance of  early investor:", parseInt(balance));
 
     })
 
@@ -525,7 +657,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 54000;
-      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.be.reverted;
+      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
 
     })
 
