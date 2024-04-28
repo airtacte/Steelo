@@ -81,11 +81,11 @@ library LibSteelo {
 		require( amount > 0, "you can not transfer 0 amount");
 		uint256 transferAmount = amount;
 		beforeTokenTransfer(from, transferAmount);
-		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
-			s.mintTransactionLimit += 1000;
-			steeloMint(s.treasury);
-
-		}
+//		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
+//			s.mintTransactionLimit += 1000;
+//			steeloMint(s.treasury);
+//
+//		}
 		s.balances[from] -= transferAmount;
 		s.balances[to] += transferAmount;
 		s.stakerMembers[to] = true;
@@ -101,11 +101,11 @@ library LibSteelo {
 		require(s.allowance[from][to] >= amount, "did not allow this much allowance");
 		require( amount > 0, "you can not transfer 0 amount");
 		beforeTokenTransfer(from, amount);
-		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
-			s.mintTransactionLimit += 1000;
-			steeloMint(s.treasury);
-
-		}
+//		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
+//			s.mintTransactionLimit += 1000;
+//			steeloMint(s.treasury);
+//
+//		}
 		s.balances[from] -= amount;
 		s.balances[to] += amount;
 		s.allowance[from][to] -= amount;
@@ -204,7 +204,7 @@ library LibSteelo {
 		
 
         	if (s.totalTransactionCount > 0) {
-            		s.burnAmount = ((transactionValue * AppConstants.FEE_RATE * s.burnRate) / 1000);
+            		s.burnAmount = ((transactionValue * s.burnRate) / 1000);
 			require( s.burnRate >= AppConstants.MIN_BURN_RATE && s.burnRate <= AppConstants.MAX_BURN_RATE, "STEELOFacet: Suggested Burn Rate not within permitted range");
             		return s.burnAmount;
         	} else {
@@ -229,7 +229,7 @@ library LibSteelo {
 		
 
         	if (s.totalTransactionCount > 0) {
-            		s.mintAmount = ((transactionValue * AppConstants.FEE_RATE * s.mintRate) / 1000);
+            		s.mintAmount = ((transactionValue * s.mintRate) / 1000);
 			require( s.mintRate >= AppConstants.MIN_MINT_RATE && s.burnRate <= AppConstants.MAX_MINT_RATE, "STEELOFacet: Suggested Mint Rate not within permitted range");
             		return s.mintAmount;
         	} else {
