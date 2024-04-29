@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'DiscoveryPage.dart';
+import 'package:provider/provider.dart';
+import 'package:steelo/pages/DiscoveryPage.dart';
+import 'package:steelo/services/ContractFactoryServices.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +13,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ChangeNotifierProvider<ContractFactoryServices>(create: (context) => ContractFactoryServices(),
+      child: MaterialApp(
       title: 'Steelo',
       theme: ThemeData(
         
@@ -19,8 +22,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: DiscoveryPage(),
+    ), 
     );
-  }
+    }
 }
 
 
