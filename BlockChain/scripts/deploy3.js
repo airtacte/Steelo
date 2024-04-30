@@ -6,27 +6,27 @@ const { assert, expect } = require('chai')
 
 const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
 
-async function deployVillageFacet () {
+async function deployAccessControlFacet () {
     // diamondAddress = await deployDiamond()
     
     diamondAddress = "0x6b3e010c4EcCaB1519C32684CfE0B93B2347b53C";
     console.log("diamondAddress", diamondAddress);
 
-    const VillageFacet = await ethers.getContractFactory('VillageFacet')
-    const villageFacet = await VillageFacet.deploy()
+    const AccessControlFacet = await ethers.getContractFactory('AccessControlFacet')
+    const accessControlFacet = await AccessControlFacet.deploy()
 
-    console.log('Deployed villageFacet to ', villageFacet.address)
+    console.log('Deployed accessControlFacet to ', accessControlFacet.address)
 
     let addresses = [];
-    addresses.push(villageFacet.address)
-    let selectors = getSelectors(villageFacet)
+    addresses.push(accessControlFacet.address)
+    let selectors = getSelectors(accessControlFacet)
 
     const diamondCutFacet = await ethers.getContractAt('IDiamondCut', diamondAddress)
     const diamondLoupeFacet = await ethers.getContractAt('DiamondLoupeFacet', diamondAddress)
 
     tx = await diamondCutFacet.diamondCut(
     [{
-        facetAddress: villageFacet.address,
+        facetAddress: accessControlFacet.address,
         action: FacetCutAction.Add,
         functionSelectors: selectors
     }],
@@ -35,17 +35,17 @@ async function deployVillageFacet () {
     if (!receipt.status) {
     throw Error(`Diamond upgrade failed: ${tx.hash}`)
     }
-    result = await diamondLoupeFacet.facetFunctionSelectors(villageFacet.address)
+    result = await diamondLoupeFacet.facetFunctionSelectors(accessControlFacet.address)
     assert.sameMembers(result, selectors)
-    console.log("villageFacet Added To Diamond");
-    return villageFacet.address;
+    console.log("accessControlFacet Added To Diamond");
+    return accessControlFacet.address;
 
 }
 
 // We recommend this pattern to be able to use async/await every where
 // and properly handle errors.
 if (require.main === module) {
-    deployVillageFacet()
+    deployAccessControlFacet()
     .then(() => process.exit(0))
     .catch(error => {
       console.error(error)
@@ -53,4 +53,4 @@ if (require.main === module) {
     })
 }
 
-exports.deployVillageFacet = deployVillageFacet
+exports.deployAccessControlFacet = deployAccessControlFacet
