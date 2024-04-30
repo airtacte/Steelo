@@ -9,7 +9,7 @@ const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
 async function deploySteelo2Facet () {
     // diamondAddress = await deployDiamond()
     
-    diamondAddress = "0xf534d650114516780fF8c06ae449B9552Ba66a34";
+    diamondAddress = "0x7d4bEd8E3AF826753701e088aD4D369e08137182";
     console.log("diamondAddress", diamondAddress);
 
     const STEELO2Facet = await ethers.getContractFactory('STEELO2Facet')

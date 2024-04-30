@@ -19,6 +19,10 @@ contract STEELOFacet {
     	event steeloTGEExecuted(uint256 tgeAmount);
     	event DeflationaryTokenomicsActivated();
 
+	function authors() public returns (string memory) {
+		return "Ezra";
+	}
+
 
 	function steeloInitiate () public returns (bool success) {
 		LibSteelo.initiate(msg.sender);
