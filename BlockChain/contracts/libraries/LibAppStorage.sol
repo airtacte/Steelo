@@ -39,18 +39,18 @@ library AppConstants{
         uint256 constant MAX_CREATOR_TOKENS = 5000;
         uint256 constant ANNUAL_TOKEN_INCREASE_PERCENTAGE = 10;
         // Stakeholder's royalty distribution
-        address constant treasury = 0x611cca251cbCfA54FE8082de3eDABc584e1376dE;
+        address constant treasury = 0x05c56e2369A0307C5bE7A559D65ab328BbA61649;
         uint256 constant trasuryTGE = 35;
         uint256 constant treasuryMint = 35;
-        address constant liquidityProviders = 0xe78C6383338e8517C83F42b71F3EbA1F182F92d3;
+        address constant liquidityProviders = 0xE7b67C5E74Daef9B273B8f6073e571EFB7B650BE;
         uint256 constant liquidityProvidersMint = 55;
-        address constant ecosystemProviders = 0x27d5F1Ce16C68a3e1840ff3BA2F77fDEff69BE65;
+        address constant ecosystemProviders = 0x4C5dF0e053611538399327372Bdd593D3638103c;
         uint256 constant ecosystemProvidersMint = 10;
-        address constant foundersAddress = 0x7Ab5E384106c82fBD78f42C4Ed1A48bB34f2F148;
+        address constant foundersAddress = 0x16cD5923E9Bbc8B5Da0eaB9C4445c0F0308c92b2;
         uint256 constant foundersTGE = 20;
-        address constant earlyInvestorsAddress = 0x796eb759412B5FEf44461402f7aCFC77eefa067F;
+        address constant earlyInvestorsAddress = 0x7fe2A5DECcD41aCbB611eab60fEBa7539831CD0E;
         uint256 constant earlyInvestorsTGE = 10;
-        address constant communityAddress = 0x05D017374cE47caAe57E21F7EA512abA897a2452;
+        address constant communityAddress = 0xfb422E51cD3F0DA4c0454C6B661C6f49f38EDC63;
         uint256 constant communityTGE = 35;
         address constant steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
         uint256 constant FEE_RATE = 25;
@@ -89,14 +89,19 @@ library AppConstants{
 
 
 
-struct Investor {
-        uint256 investorId;
-        uint256 profileId; 
-        address walletAddress;
-	uint256 steeloInvested;
-	uint256 timeInvested;
-        bool isInvestor;
-    }
+	struct Investor {
+        	uint256 investorId;
+        	uint256 profileId; 
+        	address walletAddress;
+		uint256 steeloInvested;
+		uint256 timeInvested;
+        	bool isInvestor;
+    	}
+
+	struct Staker {
+		uint256 amount;
+		uint256 endTime;
+	}
 
     struct Royalty {
         uint256 creatorId; 
@@ -241,6 +246,8 @@ struct AppStorage {
     address treasury;
     bool steeloInitiated;
     uint256 mintTransactionLimit;
+    mapping(address => Staker) stakers;
+    
 
     string creatorTokenName;
     string creatorTokenSymbol;
@@ -291,6 +298,9 @@ struct AppStorage {
         mapping(address => bool) moderatorMembers;
         mapping(address => bool) subscriberMembers;
 	bool accessInitialized;
+
+
+
     
    
 

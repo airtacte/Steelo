@@ -100,17 +100,22 @@ contract STEELOFacet {
 		return true;
 	}
 
-	function convertEtherToSteelo() public payable returns (bool){
-		LibSteelo.donate(msg.sender, msg.value);
+	function stakeSteelo(uint256 month) public payable returns (bool){
+		LibSteelo.stake(msg.sender, msg.value, month);
 		return true;
         }
     	
 
-	function convertSteeloToEther(uint256 amount) external payable returns (bool) {
-		amount = amount / 100;
-               (bool success, ) = msg.sender.call{value: amount * 10 ** 18}("");
+	function unstakeSteelo(uint256 amount) external payable returns (bool) {
+		amount *= 10 ** 18;
+		amount /= 100;
+		require(address(this).balance >= ((amount)), "no ether is available in the treasury of contract balance");
+		require(s.balances[msg.sender] >= amount, "not sufficient steelo tokens to sell");
+		require(s.stakers[msg.sender].amount >= amount, "you are asking more amount of ether than you staked");
+		require(block.timestamp >= s.stakers[msg.sender].endTime, "you can not unstake until your staking period is over");
+               (bool success, ) = msg.sender.call{value: amount}("");
                 require(success, "Transfer failed.");
-		LibSteelo.withdraw(msg.sender, amount);
+		LibSteelo.unstake(msg.sender, amount);
 		return true;
 	}
 

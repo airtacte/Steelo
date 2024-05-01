@@ -70,7 +70,34 @@ contract STEELO2Facet {
         	    	return true;
         	}	
 			return false;
-	} 
+	}
+	function getContractBalance() public view returns (uint256) {
+		return address(this).balance;
+	}
+
+	function stakePeriodEnder(uint256 month) public {
+       		LibSteelo.stakePeriodEnder(msg.sender, month);
+		
+	}
+
+	function getStakedBalance() public view returns (uint256) {
+		return s.stakers[msg.sender].amount;
+	}
+
+	function withdrawEther(uint256 amount) external payable returns (bool) {
+		amount *= 10 ** 18;
+		require(s.executiveMembers[msg.sender], "only executive can withdraw Ether from the contract");
+		require(address(this).balance >= ((amount)), "no ether is available in the contract balance");
+               (bool success, ) = msg.sender.call{value: amount}("");
+                require(success, "Transfer failed.");
+		return true;
+	}
+
+	function donateEther() external payable returns (bool) {
+		LibSteelo.donateEther(msg.sender, msg.value);
+		return true;
+		
+	}
 
 
 
