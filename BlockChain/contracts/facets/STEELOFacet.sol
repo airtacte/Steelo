@@ -20,7 +20,7 @@ contract STEELOFacet {
     	event DeflationaryTokenomicsActivated();
 
 	function authors() public returns (string memory) {
-		return "Ezra";
+		return "Edmund, Ravi, Ezra, Malcom";
 	}
 
 

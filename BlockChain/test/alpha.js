@@ -565,12 +565,78 @@ describe('DiamondTest', async function () {
       await expect(Steelo.connect(addr1).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
 
     })
+     it('should check total supply of steelo to be ', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let totalSupply = await Steelo.steeloTotalSupply();
+      totalSupply /= 10 ** 18;
+      console.log("total supply before stakers transfer :", parseFloat(totalSupply));
+
+    })
+    it('Balance of owner before stakers transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(owner.address);
+      balance /= 10 ** 18;
+      console.log("owner balance before stakers transaction :", parseFloat(balance));
+
+    })
+    it('liquidity provider balance before any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("liquidity provider steelo balance :", parseFloat(balance));
+
+    })
+
+     it('ecosystem provider balance before any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr2.address);
+      balance /= 10 ** 18;
+      console.log("ecosystem provider steelo balance :", parseFloat(balance));
+
+    })
 
      it('should transfer 10 STLO from addr1 to addr2', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 10;
       await expect(Steelo.connect(addr1).steeloTransfer(addr2.address, amount )).to.not.be.reverted;
+
+    })
+    it('should check total supply of steelo to be ', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let totalSupply = await Steelo.steeloTotalSupply();
+      totalSupply /= 10 ** 18;
+      console.log("total supply after stakers transfer :", parseFloat(totalSupply));
+
+    })
+     it('Balance of owner after stakers transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(owner.address);
+      balance /= 10 ** 18;
+      console.log("owner balance after stakers transaction :", parseFloat(balance));
+
+    })
+     it('liquidity provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("liquidity provider steelo balance :", parseFloat(balance));
+
+    })
+
+     it('ecosystem provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr2.address);
+      balance /= 10 ** 18;
+      console.log("ecosystem provider steelo balance :", parseFloat(balance));
 
     })
     

@@ -53,7 +53,7 @@ library LibSteelo {
 		mint(AppConstants.communityAddress, communityAmount);
         	mint(AppConstants.foundersAddress, foundersAmount);
         	mint(AppConstants.earlyInvestorsAddress, earlyInvestorsAmount);
-        	mint(msg.sender, treasuryAmount);
+        	mint(s.treasury, treasuryAmount);
 
 		s.mintTransactionLimit = 1000;
         	s.tgeExecuted = true;
@@ -206,15 +206,48 @@ library LibSteelo {
 
         	s.burnAmount = calculateBurnAmount(amount);
         	if (s.burnAmount > 0 && from != address(0)) {
+			require(s.balances[s.treasury] >= s.burnAmount, "treasury has insufficient steelo tokens to burn");
+			s.balances[s.treasury] -= s.burnAmount;		
             		s.totalSupply -= s.burnAmount;
 			s.totalBurned += s.burnAmount;
         	}
 		s.mintAmount = calculateMintAmount(amount);
 		if (s.mintAmount > 0 && from != address(0)) {
-            		s.totalSupply += s.mintAmount;
-			s.totalMinted += s.mintAmount;
+            		mintAdvanced(s.mintAmount);	
         	}
     }
+
+    function mintAdvanced(uint256 amount) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require(s.totalTransactionCount > 0, "STEELOFacet: TransactionCount must be equal to 0");
+		require(s.steeloCurrentPrice > 0, "STEELOFacet: steeloCurrentPrice must be greater than 0");
+		require(s.totalSupply > 0, "STEELOFacet: steeloTGE can only be called for the Token Generation Event");
+
+
+//		uint256 communityAmount = (amount * AppConstants.communityTGE) / 100;
+//        	uint256 foundersAmount = (amount * AppConstants.foundersTGE) / 100;
+//        	uint256 earlyInvestorsAmount = (amount * AppConstants.earlyInvestorsTGE) / 100;
+//        	uint256 treasuryAmount = (amount * AppConstants.trasuryTGE) / 100;
+
+
+//		mint(AppConstants.communityAddress, communityAmount);
+//        	mint(AppConstants.foundersAddress, foundersAmount);
+//        	mint(AppConstants.earlyInvestorsAddress, earlyInvestorsAmount);
+//        	mint(s.treasury, treasuryAmount);
+
+		uint256 treasuryAmount = (amount * AppConstants.treasuryMint) / 100;
+        	uint256 liquidityProvidersAmount = (amount * AppConstants.liquidityProvidersMint) / 100;
+        	uint256 ecosystemProvidersAmount = (amount * AppConstants.ecosystemProvidersMint) / 100;
+ 
+
+        	mint(s.treasury, treasuryAmount);
+        	mint(AppConstants.liquidityProviders, liquidityProvidersAmount);
+        	mint(AppConstants.ecosystemProviders, ecosystemProvidersAmount);
+
+		s.totalMinted += s.mintAmount;
+        	s.lastMintEvent = block.timestamp;
+		
+	}
 
     function calculateBurnAmount( uint256 transactionValue ) private returns (uint256) {
 		AppStorage storage s = LibAppStorage.diamondStorage();
