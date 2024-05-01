@@ -109,11 +109,11 @@ contract STEELOFacet {
 	function unstakeSteelo(uint256 amount) external payable returns (bool) {
 		amount *= 10 ** 18;
 		amount /= 100;
-		require(address(this).balance >= ((amount)), "no ether is available in the treasury of contract balance");
+		require(address(this).balance >= (amount +  ((amount * s.stakers[msg.sender].month) / 100 )), "no ether is available in the treasury of contract balance");
 		require(s.balances[msg.sender] >= amount, "not sufficient steelo tokens to sell");
 		require(s.stakers[msg.sender].amount >= amount, "you are asking more amount of ether than you staked");
 		require(block.timestamp >= s.stakers[msg.sender].endTime, "you can not unstake until your staking period is over");
-               (bool success, ) = msg.sender.call{value: amount}("");
+               (bool success, ) = msg.sender.call{value: ( amount +  ((amount * s.stakers[msg.sender].month) / 100 ))}("");
                 require(success, "Transfer failed.");
 		LibSteelo.unstake(msg.sender, amount);
 		return true;

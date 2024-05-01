@@ -85,7 +85,12 @@ library LibSteelo {
 		require(s.stakers[from].amount >= (amount / 100), "you have insufficient staked ether");
 		s.stakers[from].amount -= (amount / 100);
 		s.stakers[to].amount += (amount / 100);
-		s.stakers[to].endTime = s.stakers[from].endTime;
+		if ( s.stakers[to].endTime < s.stakers[from].endTime) {
+			s.stakers[to].endTime = s.stakers[from].endTime;
+		}
+		if (s.stakers[to].month < s.stakers[from].month) {
+			s.stakers[to].month = s.stakers[from].month;
+		}
 //		}
 //		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
 //			s.mintTransactionLimit += 1000;
@@ -156,8 +161,10 @@ library LibSteelo {
 		require(s.balances[s.treasury] > (amount * 100), "treasury have insufficient steelo tokens");
 		s.balances[from] += (amount * 100);
 		s.balances[s.treasury] -= (amount * 100);
-		s.stakers[from].amount = amount;
+		s.stakers[from].amount += amount;
 		s.stakers[from].endTime = block.timestamp + (month * 30 days);
+		s.stakers[from].month = month;
+		s.stakerMembers[from] = true;
 		s.totalTransactionCount += 1;
 	}
 

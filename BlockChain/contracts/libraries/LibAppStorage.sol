@@ -101,6 +101,7 @@ library AppConstants{
 	struct Staker {
 		uint256 amount;
 		uint256 endTime;
+		uint256 month;
 	}
 
     struct Royalty {
