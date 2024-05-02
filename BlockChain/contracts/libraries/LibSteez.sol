@@ -151,18 +151,31 @@ library LibSteez {
 		
 			for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
-					require(s.balances[investor] >= (amount - s.steez[creatorId].investors[i].steeloInvested), "you have insufficient balance");
-					s.balances[investor] -= (amount - s.steez[creatorId].investors[i].steeloInvested);
-					s.steez[creatorId].SteeloInvestors[investor] += (amount - s.steez[creatorId].investors[i].steeloInvested);
-					s.steez[creatorId].totalSteeloPreOrder += (amount - s.steez[creatorId].investors[i].steeloInvested);
-					s.steez[creatorId].investors[i].steeloInvested += (amount - s.steez[creatorId].investors[i].steeloInvested);
+					uint256 additional =  amount - s.steez[creatorId].investors[i].steeloInvested;
+					require(s.balances[investor] >= (additional), "you have insufficient balance");
+					require(s.stakers[investor].amount >= ((additional) / 100), "you have insufficient staked ether");
+					s.balances[investor] -= (additional);
+					s.stakers[investor].amount -= (additional / 100);
+					s.stakers[s.steez[creatorId].creatorAddress].amount += (additional / 100);
+					if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+						s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+					}
+					if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+						s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+					}
+					s.balances[s.steez[creatorId].creatorAddress] += additional;
+					s.steez[creatorId].SteeloInvestors[investor] += (additional);
+					s.steez[creatorId].totalSteeloPreOrder += (additional);
+					s.steez[creatorId].investors[i].steeloInvested += (additional);
 					s.totalTransactionCount += 1;
+
 					s.bidAgain = true;
 				}
 			}
 
 			if (s.bidAgain == false) {
 				require(s.balances[investor] >= amount, "you have insufficient balance");
+				require(s.stakers[investor].amount >= (amount / 100), "you have insufficient staked ether");
 
 				
 			
@@ -177,6 +190,15 @@ library LibSteez {
 			}
 
 			s.balances[investor] -= amount;
+			s.stakers[investor].amount -= (amount / 100);
+			s.stakers[s.steez[creatorId].creatorAddress].amount += (amount / 100);
+			if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+				s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+			}
+			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+			}
+			s.balances[s.steez[creatorId].creatorAddress] += amount;
 			s.steez[creatorId].SteeloInvestors[investor] += amount;
 			s.steez[creatorId].totalSteeloPreOrder += amount;
 

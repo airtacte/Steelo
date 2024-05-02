@@ -144,7 +144,7 @@ library LibSteelo {
 
 	function mint(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
-//		require(s.adminMembers[from], "only admins can mint steelo tokens");
+		require(s.adminMembers[from], "only admins can mint steelo tokens");
 //		require(amount > 0, "can not mint 0 amount");
 //		require(amount <= 825000000 * 10 ** 18, "can not mint more than 825 million tokens");
 	        s.balances[from] += amount;
