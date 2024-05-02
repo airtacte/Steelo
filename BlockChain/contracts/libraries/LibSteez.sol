@@ -156,14 +156,14 @@ library LibSteez {
 					require(s.stakers[investor].amount >= ((additional) / 100), "you have insufficient staked ether");
 					s.balances[investor] -= (additional);
 					s.stakers[investor].amount -= (additional / 100);
-					s.stakers[s.steez[creatorId].creatorAddress].amount += (additional / 100);
-					if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
-						s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
-					}
-					if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
-						s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
-					}
-					s.balances[s.steez[creatorId].creatorAddress] += additional;
+//					s.stakers[s.steez[creatorId].creatorAddress].amount += (additional / 100);
+//					if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+//						s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+//					}
+//					if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+//						s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+//					}
+//					s.balances[s.steez[creatorId].creatorAddress] += additional;
 					s.steez[creatorId].SteeloInvestors[investor] += (additional);
 					s.steez[creatorId].totalSteeloPreOrder += (additional);
 					s.steez[creatorId].investors[i].steeloInvested += (additional);
@@ -191,14 +191,14 @@ library LibSteez {
 
 			s.balances[investor] -= amount;
 			s.stakers[investor].amount -= (amount / 100);
-			s.stakers[s.steez[creatorId].creatorAddress].amount += (amount / 100);
-			if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
-				s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
-			}
-			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
-				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
-			}
-			s.balances[s.steez[creatorId].creatorAddress] += amount;
+//			s.stakers[s.steez[creatorId].creatorAddress].amount += (amount / 100);
+//			if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+//				s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+//			}
+//			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+//				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+//			}
+//			s.balances[s.steez[creatorId].creatorAddress] += amount;
 			s.steez[creatorId].SteeloInvestors[investor] += amount;
 			s.steez[creatorId].totalSteeloPreOrder += amount;
 
@@ -301,7 +301,15 @@ library LibSteez {
 							s.balances[investor] -= additional;
 							s.steez[creatorId].SteeloInvestors[investor] += additional;
 							s.steez[creatorId].investors[i].steeloInvested += additional;
-							s.steez[creatorId].totalSteeloPreOrder += additional;	
+							s.steez[creatorId].totalSteeloPreOrder += additional;
+							s.stakers[s.steez[creatorId].creatorAddress].amount += ((s.steez[creatorId].currentPrice * 90) / 10000 );
+							if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+								s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+							}
+							if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+								s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+							}
+							s.balances[s.steez[creatorId].creatorAddress] += (s.steez[creatorId].currentPrice * 90) / 100;
 							s.steezInvested[investor][creatorId] += 1;
 							s.steez[creatorId].liquidityPool -= 1;
 							s.preorderBidFinished[investor][creatorId] = true;
@@ -309,6 +317,7 @@ library LibSteez {
 						}
 						else {
 							s.balances[investor] += s.steez[creatorId].investors[i].steeloInvested;
+							s.stakers[investor].amount += (s.steez[creatorId].investors[i].steeloInvested / 100);
                                                         s.steez[creatorId].SteeloInvestors[investor] -=  s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].investors[i].steeloInvested -= s.steez[creatorId].investors[i].steeloInvested;
@@ -324,6 +333,14 @@ library LibSteez {
 							s.steez[creatorId].SteeloInvestors[investor] -= refund;
 							s.steez[creatorId].totalSteeloPreOrder -= refund;	
 							s.steez[creatorId].investors[i].steeloInvested -= refund;
+							s.stakers[s.steez[creatorId].creatorAddress].amount += ((s.steez[creatorId].currentPrice * 90) / 10000 );
+							if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+								s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+							}
+							if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+								s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+							}
+							s.balances[s.steez[creatorId].creatorAddress] += (s.steez[creatorId].currentPrice * 90) / 100;
 							s.steezInvested[investor][creatorId] += 1;
 							s.steez[creatorId].liquidityPool -= 1;
 							s.preorderBidFinished[investor][creatorId] = true;
@@ -331,6 +348,7 @@ library LibSteez {
 						}
 						else {
 							s.balances[investor] += s.steez[creatorId].investors[i].steeloInvested;
+							s.stakers[investor].amount += (s.steez[creatorId].investors[i].steeloInvested / 100);
                                                         s.steez[creatorId].SteeloInvestors[investor] -=  s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].investors[i].steeloInvested -= s.steez[creatorId].investors[i].steeloInvested;
@@ -367,6 +385,15 @@ library LibSteez {
 			}
 
 		s.balances[investor] -= (s.steez[creatorId].currentPrice * amount);
+		s.balances[s.steez[creatorId].creatorAddress] += (s.steez[creatorId].currentPrice * amount * 90) /100;
+		s.stakers[investor].amount -= ((s.steez[creatorId].currentPrice * amount) / 100);
+		s.stakers[s.steez[creatorId].creatorAddress].amount += ((s.steez[creatorId].currentPrice * amount * 90) / 10000);
+			if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+				s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+			}
+			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+			}
 		s.steez[creatorId].SteeloInvestors[investor] += (s.steez[creatorId].currentPrice * amount);
 		s.steez[creatorId].totalSteeloPreOrder += (s.steez[creatorId].currentPrice * amount);
 		s.steezInvested[investor][creatorId] += amount;
