@@ -8,7 +8,7 @@ import "./LibAppStorage.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {AppConstants} from "./LibAppStorage.sol";
-import {Creator, Steez, Investor, Seller} from "./LibAppStorage.sol";
+import {Creator, Steez, Investor, Seller, CreatorSteez} from "./LibAppStorage.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 
@@ -41,8 +41,6 @@ library LibSteez {
             		profileAddress: creator
         	});
 
-		s.allCreatorIds.push(profileId);
-		s.allCreators.push(creator);
 		s.creatorIdentity[creator] = profileId;
 		s.creators[profileId] = newCreator; 
 	}
@@ -79,6 +77,14 @@ library LibSteez {
     			s.steez[creatorId].auctionStartTime = block.timestamp + AppConstants.oneWeek;
     			s.steez[creatorId].auctionSlotsSecured = 0;
     			s.steez[creatorId].auctionConcluded = false;
+			
+			CreatorSteez memory newCreatorSteez = CreatorSteez({
+         			creatorId: creatorId,
+            			creatorAddress: creator,
+				steezPrice: s.steez[creatorId].currentPrice,
+				totalInvestors: s.steez[creatorId].investors.length
+        		});
+			s.allCreators.push(newCreatorSteez);
 	        	
 	
 	        	if ( s.steez[creatorId].lastMintTime == 0 || (s.steez[creatorId].lastMintTime + AppConstants.oneYear) <= block.timestamp ) { 

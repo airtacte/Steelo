@@ -1246,6 +1246,77 @@ describe('DiamondTest', async function () {
 	console.log("bid Amount should be :", parseInt(balance[0], 10) / (10 ** 18),"steelo balance should be :", parseInt(balance[1], 10) / (10 ** 18),"total steelo  :", parseInt(balance[2], 10) / (10 ** 18), "steez invested should be 1:", parseInt(balance[3], 10), "lqiuidity pool before bid launch should be 0:", parseInt(balance[4], 10));
     });
 
+    it('fetch creator with id', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const creator = await Steez2.connect(addr2).getCreatorWithId(creatorId);
+	console.log("Creator id:", creator[0].creatorId);
+	console.log("Creator Address:", creator[0].profileAddress);
+	console.log("Steez Price:", (parseFloat(creator[1]) / 10 ** 18));
+	console.log("Total Investors:", parseFloat(creator[2]));
+	
+    })
+
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creators:", creator);
+	
+    })
+
+    it('create a Creator another Account', async () => { 
+  
+	    try {
+		const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress);
+		profileId = "Vdew6XMcdTJQH2nsBLYF";
+   		await Steez2.connect(addr5).createCreator(profileId);
+		console.log("Creator Account Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Creator Account Did not create successully :", error.message);
+	    }
+
+    })
+
+    it('should create Steez', async () => { 
+  
+	    try {
+		const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress);
+   		await Steez.connect(addr5).createSteez();
+		console.log("Steez Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Steez Did not create successully :", error.message);
+	    }
+
+    })
+
+    it('fetch creator with id', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress);
+	let creatorId = "Vdew6XMcdTJQH2nsBLYF";
+   	const creator = await Steez2.connect(addr2).getCreatorWithId(creatorId);
+	console.log("Creator id:", creator[0].creatorId);
+	console.log("Creator Address:", creator[0].profileAddress);
+	console.log("Steez Price:", (parseFloat(creator[1]) / 10 ** 18));
+	console.log("Total Investors:", parseFloat(creator[2]));
+	
+    })
+
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creators:", creator);
+	
+    })
+
+
+
+   
+
     
  
 	

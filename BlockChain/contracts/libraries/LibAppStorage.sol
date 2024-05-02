@@ -218,6 +218,13 @@ library AppConstants{
 	uint256 sellingAmount;
     }
 
+    struct CreatorSteez {
+	string creatorId;
+	address creatorAddress;
+	uint256 steezPrice;
+	uint256 totalInvestors;
+    }
+
 
 
 
@@ -260,7 +267,7 @@ struct AppStorage {
     mapping( address => mapping(string => uint256)) steezInvested;
     mapping( address => mapping(string => bool)) preorderBidFinished;
     mapping ( uint256 => uint256) lastSteezId;
-    address[] allCreators;
+    CreatorSteez[] allCreators;
     bool equality;
     uint256 popInvestorIndex;
     bool bidAgain;

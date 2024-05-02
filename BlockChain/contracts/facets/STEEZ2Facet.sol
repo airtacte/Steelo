@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../libraries/LibAppStorage.sol";
 import {LibSteez} from "../libraries/LibSteez.sol";
-import {AppConstants, Seller} from "../libraries/LibAppStorage.sol";
+import {AppConstants, Seller, Steez, Creator, CreatorSteez} from "../libraries/LibAppStorage.sol";
 
 
 contract STEEZ2Facet {
@@ -53,6 +53,16 @@ contract STEEZ2Facet {
 	function FirstAndLast(string memory creatorId) public view returns (uint256, uint256) {
 		return (s.steez[creatorId].investors[0].steeloInvested, s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1].steeloInvested);
 	}
+
+	function getCreatorWithId( string memory creatorId) public view returns (Creator memory, uint256, uint256) {
+		return (s.creators[creatorId], s.steez[creatorId].currentPrice, s.steez[creatorId].investors.length);
+	}
+
+	function getAllCreatorsData() public view returns (CreatorSteez[] memory) {
+		return (s.allCreators);
+	}
+
+	
 
 
 
