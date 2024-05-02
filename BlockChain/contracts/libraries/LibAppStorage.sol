@@ -39,18 +39,18 @@ library AppConstants{
         uint256 constant MAX_CREATOR_TOKENS = 5000;
         uint256 constant ANNUAL_TOKEN_INCREASE_PERCENTAGE = 10;
         // Stakeholder's royalty distribution
-        address constant treasury = 0x05c56e2369A0307C5bE7A559D65ab328BbA61649;
+        address constant treasury = 0x485d7AE82d5c5EAC99f65b6128b21814CF196102;
         uint256 constant trasuryTGE = 35;
         uint256 constant treasuryMint = 35;
-        address constant liquidityProviders = 0xE7b67C5E74Daef9B273B8f6073e571EFB7B650BE;
+        address constant liquidityProviders = 0x98cACCE0F72176121e866e78eE24247CdA3EfffF;
         uint256 constant liquidityProvidersMint = 55;
-        address constant ecosystemProviders = 0x4C5dF0e053611538399327372Bdd593D3638103c;
+        address constant ecosystemProviders = 0xe02b02E531d0AdE65727F5ABEB25303901a456a3;
         uint256 constant ecosystemProvidersMint = 10;
-        address constant foundersAddress = 0x16cD5923E9Bbc8B5Da0eaB9C4445c0F0308c92b2;
+        address constant foundersAddress = 0xe61f31F799e0eDeFA92c36114BB2CF28AF2B9797;
         uint256 constant foundersTGE = 20;
-        address constant earlyInvestorsAddress = 0x7fe2A5DECcD41aCbB611eab60fEBa7539831CD0E;
+        address constant earlyInvestorsAddress = 0x5C8c9E12020B3332bb16aC52232cAeFc8fB9e005;
         uint256 constant earlyInvestorsTGE = 10;
-        address constant communityAddress = 0xfb422E51cD3F0DA4c0454C6B661C6f49f38EDC63;
+        address constant communityAddress = 0x10D9F9c2e56FD84e5d19468f6c43EDDD5675A980;
         uint256 constant communityTGE = 35;
         address constant steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
         uint256 constant FEE_RATE = 25;
@@ -117,8 +117,8 @@ library AppConstants{
 
 
     struct Steez {
-        uint256 creatorId; 
-        uint256 steezId;
+        string creatorId; 
+        string steezId;
         bool creatorExists; 
         uint256 totalSupply; 
         uint256 transactionCount; 
@@ -176,8 +176,7 @@ library AppConstants{
     }
 
     struct Creator {
-        uint256 creatorId;
-        uint256 profileId;
+        string creatorId;
         address profileAddress;
 //        mapping(uint256 => Content) content; 
 //        mapping(address => Investor) investors; 
@@ -233,8 +232,8 @@ struct AppStorage {
     bool tgeExecuted;
     int256 totalTransactionCount;
     uint256 steeloCurrentPrice;
-    uint256[] allCreatorIds;
-    mapping(uint256 => Steez) steez;
+    string[] allCreatorIds;
+    mapping(string => Steez) steez;
     uint256 burnAmount;
     uint256 burnRate;
     uint256 mintAmount;
@@ -256,9 +255,10 @@ struct AppStorage {
     uint256 _lastProfileId;
     uint256 _lastSteezId;
     string baseURI;
-    mapping(uint256 => Creator) creators;
-    mapping( address => mapping(uint256 => uint256)) steezInvested;
-    mapping( address => mapping(uint256 => bool)) preorderBidFinished;
+    mapping(string => Creator) creators;
+    mapping(address => string) creatorIdentity;
+    mapping( address => mapping(string => uint256)) steezInvested;
+    mapping( address => mapping(string => bool)) preorderBidFinished;
     mapping ( uint256 => uint256) lastSteezId;
     address[] allCreators;
     bool equality;
@@ -267,14 +267,16 @@ struct AppStorage {
     bool steezInitiated;
     address popInvestorAddress;
     uint256 popInvestorPrice;
-    mapping(uint256 => Seller[]) sellers;
+    mapping(string => Seller[]) sellers;
     bool P2PTransaction;
     address P2PSeller;
+//    mapping ( string => Steez) profileSteez;
+//    mapping ( string => Creator) profileCreator;
 
 
-    mapping( uint256 => mapping (address => mapping(address => Message[]))) p2pMessages;
-    mapping( uint256 => mapping(address => address[])) contacts;
-    mapping( uint256 => Message[]) posts;
+    mapping( string => mapping (address => mapping(address => Message[]))) p2pMessages;
+    mapping( string => mapping(address => address[])) contacts;
+    mapping( string => Message[]) posts;
     uint256 messageCounter;
    
 

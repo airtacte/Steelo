@@ -195,17 +195,17 @@ library LibSteelo {
 		
 		uint256 length = s.allCreatorIds.length;
 
-		for (uint256 i = 0; i < length; i++) {
-            		uint256 creatorId = s.allCreatorIds[i];
-            		s.totalTransactionCount += int256(s.steez[creatorId].transactionCount);
-        	}
+//		for (uint256 i = 0; i < length; i++) {
+//            		uint256 creatorId = s.allCreatorIds[i];
+//            		s.totalTransactionCount += int256(s.steez[creatorId].transactionCount);
+//        	}
 
 	}
 
 	function createRandomTransaction() internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
-		s.steez[1].transactionCount = 7;
-		s.allCreatorIds = [1];
+		s.steez["XT67OYGFDSA"].transactionCount = 7;
+		s.allCreatorIds = ["XT67OYGFDSA"];
 	}
 
 	function beforeTokenTransfer(address from, uint256 amount ) internal {

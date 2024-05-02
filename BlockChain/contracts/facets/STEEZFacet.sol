@@ -74,32 +74,32 @@ contract STEEZFacet {
 		LibSteez.createSteez( msg.sender );
     	}
 
-	function getAllCreator(uint256 creatorId) public view returns (address, uint256, uint256 ) {
+	function getAllCreator(string memory creatorId) public view returns (address, uint256, uint256 ) {
 		return (s.steez[creatorId].creatorAddress, s.steez[creatorId].totalSupply, s.steez[creatorId].currentPrice );
 	}
 
-	function getAllCreator2(uint256 creatorId) public view returns (uint256, uint256, bool ) {
+	function getAllCreator2(string memory creatorId) public view returns (uint256, uint256, bool ) {
 		return (s.steez[creatorId].auctionStartTime, s.steez[creatorId].anniversaryDate, s.steez[creatorId].auctionConcluded );
 	}
 
-	function initializePreOrder(uint256 creatorId ) public payable {
+	function initializePreOrder(string memory creatorId ) public payable {
 		LibSteez.preOrder( creatorId, msg.sender );
     	}
 
-	function getAllCreator3(uint256 creatorId) public view returns (uint256, uint256, bool ) {
+	function getAllCreator3(string memory creatorId) public view returns (uint256, uint256, bool ) {
 		return (s.steez[creatorId].preOrderStartTime, s.steez[creatorId].liquidityPool, s.steez[creatorId].preOrderStarted );
 	}
 
-	function bidPreOrder(uint256 creatorId, uint256 amount) public payable {
+	function bidPreOrder(string memory creatorId, uint256 amount) public payable {
 		LibSteez.bidPreOrder( msg.sender, creatorId, amount );
 		
 	}
 
-	function checkBidAmount(uint256 creatorId) public view returns (uint256, uint256, uint256, uint256 ) {
+	function checkBidAmount(string memory creatorId) public view returns (uint256, uint256, uint256, uint256 ) {
 		return (s.steez[creatorId].SteeloInvestors[msg.sender], s.steez[creatorId].liquidityPool, s.steez[creatorId].auctionSlotsSecured, s.steez[creatorId].totalSteeloPreOrder );
 	}
 
-	function checkInvestors(uint256 creatorId) public view returns (uint256, uint256, uint256, address ) {
+	function checkInvestors(string memory creatorId) public view returns (uint256, uint256, uint256, address ) {
 		return s.steez[creatorId].investors.length > 0
         		? (s.steez[creatorId].investors.length, 
            		s.steez[creatorId].investors[0].steeloInvested, 
@@ -108,43 +108,25 @@ contract STEEZFacet {
         		: (0, 0, 0, address(0));
 	}
 
-	function equality () public view returns (bool) {
-		return s.equality;
-	}
+	
 
-	function getPopIndex() public view returns (uint256, address, uint256) {
-		return (s.popInvestorIndex, s.popInvestorAddress, s.popInvestorPrice );
-	}
+	
 
-	function getPopData(uint256 creatorId) public view returns (uint256, address) {
-		return ( s.steez[creatorId].investors[s.popInvestorIndex].steeloInvested, s.steez[creatorId].investors[s.popInvestorIndex].walletAddress);
-	}
-
-	function checkInvestorsLength(uint256 creatorId) public view returns (uint256) {
+	function checkInvestorsLength(string memory creatorId) public view returns (uint256) {
 		return s.steez[creatorId].investors.length;
 	}
 
-	function PreOrderEnder(uint256 creatorId, uint256 amount) public {
+	function PreOrderEnder(string memory creatorId, uint256 amount) public {
 		LibSteez.PreOrderEnder( msg.sender, creatorId, amount );
 		
 	}
 	
-	function AcceptOrReject(uint256 creatorId, bool answer) public {
+	function AcceptOrReject(string memory creatorId, bool answer) public {
 		LibSteez.AcceptOrReject( msg.sender, creatorId, answer );
 		
 	}
 
-	function checkPreOrderStatus(uint256 creatorId) public view returns (uint256, uint256 , uint256, uint256, uint256) {
-		return ( s.steez[creatorId].SteeloInvestors[msg.sender], s.balances[msg.sender], s.steez[creatorId].totalSteeloPreOrder , s.steezInvested[msg.sender][creatorId], s.steez[creatorId].liquidityPool );
-	}
-
-	function PreOrderEnded(uint256 creatorId) public view returns (bool) {
-		return ( s.steez[creatorId].preOrderEnded);
-	}
-
-	function FirstAndLast(uint256 creatorId) public view returns (uint256, uint256) {
-		return (s.steez[0].investors[0].steeloInvested, s.steez[0].investors[4].steeloInvested);
-	}
+	
 
 
 }

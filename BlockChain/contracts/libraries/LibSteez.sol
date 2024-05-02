@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 library LibSteez {
 
 	
-   	modifier withinAuctionPeriod(uint256 creatorId) {
+   	modifier withinAuctionPeriod(string memory creatorId) {
         	AppStorage storage s = LibAppStorage.diamondStorage();
         	require( s.steez[creatorId].auctionStartTime != 0, "STEEZFacet: Auction hasn't started" );
         	require( block.timestamp < s.steez[creatorId].auctionStartTime + AppConstants.AUCTION_DURATION, "STEEZFacet: Auction has ended.");
@@ -34,26 +34,38 @@ library LibSteez {
 		
 	}
 
+	function createCreator( address creator, string memory profileId ) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		Creator memory newCreator = Creator({
+         		creatorId: profileId,
+            		profileAddress: creator
+        	});
+
+		s.allCreatorIds.push(profileId);
+		s.allCreators.push(creator);
+		s.creatorIdentity[creator] = profileId;
+		s.creators[profileId] = newCreator; 
+	}
+
 
 	function createSteez( address creator) internal {
 			AppStorage storage s = LibAppStorage.diamondStorage();
 	
 		        require( creator != address(0), "STEEZFacet: Cannot mint to zero address" );
-        		for (uint i = 0; i < s.allCreators.length; i++) {
-            			require( s.allCreators[i] != creator, "this address already created steez tokens");
-			}
+			require(keccak256(abi.encodePacked(s.creatorIdentity[creator])) != keccak256(abi.encodePacked("")), "you have no creator account please create a creator account");
+//        		for (uint i = 0; i < s.allCreators.length; i++) {
+//            			require( s.allCreators[i] != creator, "this address already created steez tokens");
+//			}
 	
-		        uint256 creatorId = s._lastCreatorId++;
-		        uint256 profileId = s._lastProfileId++;
-		        uint256 steezId = s._lastSteezId++;
-	
-		        require(creatorId < type(uint256).max, "STEEZFacet: Creator overflow");
+			string memory creatorId = s.creatorIdentity[creator]; 
+		        string memory steezId = s.creatorIdentity[creator];
+
+			require(s.steez[creatorId].creatorAddress == address(0), "this account already has a steez");
+//		        require(creatorId < type(uint256).max, "STEEZFacet: Creator overflow");
 		        require( !s.steez[creatorId].creatorExists, "STEEZFacet: Token already exists");
 
 	
-		        s.creators[profileId].creatorId = creatorId;
-    			s.creators[profileId].profileId = profileId;
-    			s.creators[profileId].profileAddress = creator;
+		        
 
     			s.steez[creatorId].creatorId = creatorId;
     			s.steez[creatorId].creatorAddress = creator;
@@ -67,8 +79,7 @@ library LibSteez {
     			s.steez[creatorId].auctionStartTime = block.timestamp + AppConstants.oneWeek;
     			s.steez[creatorId].auctionSlotsSecured = 0;
     			s.steez[creatorId].auctionConcluded = false;
-	        	s.allCreatorIds.push(creatorId);
-			s.allCreators.push(creator);
+	        	
 	
 	        	if ( s.steez[creatorId].lastMintTime == 0 || (s.steez[creatorId].lastMintTime + AppConstants.oneYear) <= block.timestamp ) { 
 				s.steez[creatorId].lastMintTime = block.timestamp;
@@ -77,7 +88,7 @@ library LibSteez {
 	    	}
 
 
-	function preOrder( uint256 creatorId, address from ) internal {
+	function preOrder( string memory creatorId, address from ) internal {
 			AppStorage storage s = LibAppStorage.diamondStorage();
 			 require( s.steez[creatorId].creatorAddress == from, "STEEZFacet: Only creators can initiate pre-orders.");
 			 require(!s.steez[creatorId].auctionConcluded, "STEEZFacet: Auction has concluded.");
@@ -92,7 +103,7 @@ library LibSteez {
         
 		}
 
-	function mintSteez( address to, uint256 creatorId,  uint256 amount ) internal {
+	function mintSteez( address to, string memory creatorId,  uint256 amount ) internal {
 			AppStorage storage s = LibAppStorage.diamondStorage();
         		require(to != address(0), "STEEZFacet: mint to the zero address");
         		require(amount > 0, "STEEZFacet: mint amount must be positive");
@@ -112,7 +123,7 @@ library LibSteez {
     	}
 
 
-	function bidPreOrder( address investor, uint256 creatorId,  uint256 amount ) internal {
+	function bidPreOrder( address investor, string memory creatorId,  uint256 amount ) internal {
 			AppStorage storage s = LibAppStorage.diamondStorage();
 			amount = amount * 10 ** 18;
 			require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
@@ -183,7 +194,7 @@ library LibSteez {
     }
 
 
-    function sortInvestors(uint256 creatorId) internal {
+    function sortInvestors(string memory creatorId) internal {
     	AppStorage storage s = LibAppStorage.diamondStorage();
     	uint length = s.steez[creatorId].investors.length;
 	Investor memory temp;
@@ -203,7 +214,7 @@ library LibSteez {
 	}
 
 	
-	function findPopInvestor(uint256 creatorId) internal {
+	function findPopInvestor(string memory creatorId) internal {
     		AppStorage storage s = LibAppStorage.diamondStorage();
     		uint length = s.steez[creatorId].investors.length;
 
@@ -224,7 +235,7 @@ library LibSteez {
         	
 	}
 
-	function removeInvestor(uint256 creatorId) internal {
+	function removeInvestor(string memory creatorId) internal {
     		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.popInvestorIndex < s.steez[creatorId].investors.length, "index out of bounds");
 		s.balances[s.steez[creatorId].investors[s.popInvestorIndex].walletAddress] += s.steez[creatorId].investors[s.popInvestorIndex].steeloInvested;
@@ -238,7 +249,7 @@ library LibSteez {
 		
 	}
 
-	function PreOrderEnder(address investor, uint256 creatorId, uint256 amount) internal {
+	function PreOrderEnder(address investor, string memory creatorId, uint256 amount) internal {
     		AppStorage storage s = LibAppStorage.diamondStorage();
 //		sortInvestors(creatorId);
 //		findPopInvestor(creatorId);
@@ -249,7 +260,7 @@ library LibSteez {
 
 	}
 
-	function AcceptOrReject(address investor, uint256 creatorId, bool answer) internal {
+	function AcceptOrReject(address investor, string memory creatorId, bool answer) internal {
     		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.steez[creatorId].SteeloInvestors[investor] > 0, "you have not bid any amount");
 		require(!s.preorderBidFinished[investor][creatorId], "you have finished bidding for your preorder finished");
@@ -306,12 +317,12 @@ library LibSteez {
 		
 	}
 
-	function launchStarter(uint256 creatorId) internal {
+	function launchStarter(string memory creatorId) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		s.steez[creatorId].auctionStartTime -= AppConstants.oneWeek;	
 	}
 
-	function bidLaunch(address investor, uint256 creatorId, uint256 amount) internal {
+	function bidLaunch(address investor, string memory creatorId, uint256 amount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(block.timestamp >= s.steez[creatorId].auctionStartTime, "launch has not started yet");
 		require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
@@ -355,7 +366,7 @@ library LibSteez {
 	}
 	
 
-	function initiateP2PSell(address seller , uint256 creatorId, uint256 sellingPrice, uint256 steezAmount) internal {
+	function initiateP2PSell(address seller , string memory creatorId, uint256 sellingPrice, uint256 steezAmount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		sellingPrice *= 10 ** 18;
 		require(steezAmount > 0 && steezAmount <= 5 , "steez has to be between 1 and 5");
@@ -369,7 +380,7 @@ library LibSteez {
 
 	}
 
-	function P2PBuy(address buyer, uint256 creatorId, uint256 buyingPrice, uint256 buyingAmount) internal {
+	function P2PBuy(address buyer, string memory creatorId, uint256 buyingPrice, uint256 buyingAmount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.steez[creatorId].P2PStarted, "Peer to Peer transaction not allowed yet");
 		if (block.timestamp > s.steez[creatorId].anniversaryDate) {
@@ -447,7 +458,7 @@ library LibSteez {
 
 	}
 
-	function anniversaryStarter(uint256 creatorId) internal {
+	function anniversaryStarter(string memory creatorId) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		s.steez[creatorId].anniversaryDate -= 365 days;	
 	}
@@ -456,7 +467,7 @@ library LibSteez {
 
 
 
-	function bidAnniversary(address investor, uint256 creatorId, uint256 amount) internal {
+	function bidAnniversary(address investor, string memory creatorId, uint256 amount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(block.timestamp >= s.steez[creatorId].anniversaryDate, "anniversary has not started yet");
 		require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");

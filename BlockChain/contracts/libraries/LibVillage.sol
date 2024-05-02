@@ -9,7 +9,7 @@ import {Message} from "./LibAppStorage.sol";
 
 library LibVillage {
 
-	function sendMessage( uint256 creatorId, address sender, address recipient, string memory message) internal {
+	function sendMessage( string memory creatorId, address sender, address recipient, string memory message) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(sender != address(0), "0 address can not create a steez");
 		s.messageCounter ++;
@@ -41,7 +41,7 @@ library LibVillage {
 		}
 	}
 
-	function exists( address contact, uint256 creatorId, address owner) private view returns (bool) {
+	function exists( address contact, string memory creatorId, address owner) private view returns (bool) {
 		AppStorage storage s = LibAppStorage.diamondStorage();
         	for (uint i = 0; i < s.contacts[creatorId][owner].length; i++) {
          	   	if (s.contacts[creatorId][owner][i] == contact) {
@@ -51,7 +51,7 @@ library LibVillage {
         	return false;
     	}
 
-	function deleteMessage( uint256 creatorId, address sender, address recipient, uint256 messageId) internal {
+	function deleteMessage( string memory creatorId, address sender, address recipient, uint256 messageId) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(sender != address(0), "0 address can not create a steez");
 		uint length =  s.p2pMessages[creatorId][sender][recipient].length;
@@ -64,7 +64,7 @@ library LibVillage {
 	
 	}
 
-	function editMessage( uint256 creatorId, address sender, address recipient, uint256 messageId, string memory message) internal {
+	function editMessage( string memory creatorId, address sender, address recipient, uint256 messageId, string memory message) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(sender != address(0), "0 address can not create a steez");
 		uint length =  s.p2pMessages[creatorId][sender][recipient].length;
@@ -76,7 +76,7 @@ library LibVillage {
 	
 	}
 
-	function postMessage( uint256 creatorId, address sender, string memory message) internal {
+	function postMessage( string memory creatorId, address sender, string memory message) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(sender != address(0), "0 address can not create a steez");
 		s.messageCounter ++;
@@ -91,7 +91,7 @@ library LibVillage {
 		
 	}
 
-	function deleteGroupMessage( uint256 creatorId, address sender, uint256 messageId) internal {
+	function deleteGroupMessage( string memory creatorId, address sender, uint256 messageId) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(sender != address(0), "0 address can not create a steez");
 		uint length =  s.posts[creatorId].length;
@@ -104,7 +104,7 @@ library LibVillage {
 	
 	}
 
-	function editGroupMessage( uint256 creatorId, address sender, uint256 messageId, string memory message) internal {
+	function editGroupMessage( string memory creatorId, address sender, uint256 messageId, string memory message) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(sender != address(0), "0 address can not create a steez");
 		uint length =  s.posts[creatorId].length;
