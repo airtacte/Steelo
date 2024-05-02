@@ -458,8 +458,16 @@ library LibSteez {
 
 		for (uint256 i = 0; i < s.sellers[creatorId].length; i++) {	
 			if (buyingPrice == s.sellers[creatorId][i].sellingPrice && buyingAmount <= s.sellers[creatorId][i].sellingAmount) {
-				s.balances[s.sellers[creatorId][i].sellerAddress] += (buyingPrice * buyingAmount);
+				s.balances[s.sellers[creatorId][i].sellerAddress] += (buyingPrice * buyingAmount * 90) / 100;
 				s.balances[buyer] -= (buyingPrice * buyingAmount);
+				s.stakers[buyer].amount -= ((buyingPrice * buyingAmount) / 100);
+				s.stakers[s.sellers[creatorId][i].sellerAddress].amount += ((buyingPrice * buyingAmount * 90) / 10000);
+				if ( s.stakers[s.sellers[creatorId][i].sellerAddress].endTime < s.stakers[buyer].endTime) {
+					s.stakers[s.sellers[creatorId][i].sellerAddress].endTime = s.stakers[buyer].endTime;
+				}
+				if (s.stakers[s.sellers[creatorId][i].sellerAddress].month < s.stakers[buyer].month) {
+					s.stakers[s.sellers[creatorId][i].sellerAddress].month = s.stakers[buyer].month;
+				}
 				s.steezInvested[buyer][creatorId] += buyingAmount;
 				
 				s.steezInvested[s.sellers[creatorId][i].sellerAddress][creatorId] -= buyingAmount;
@@ -537,6 +545,15 @@ library LibSteez {
 			}
 
 		s.balances[investor] -= (s.steez[creatorId].currentPrice * amount);
+		s.balances[s.steez[creatorId].creatorAddress] += (s.steez[creatorId].currentPrice * amount * 90) /100;
+		s.stakers[investor].amount -= ((s.steez[creatorId].currentPrice * amount) / 100);
+		s.stakers[s.steez[creatorId].creatorAddress].amount += ((s.steez[creatorId].currentPrice * amount * 90) / 10000);
+			if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
+				s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
+			}
+			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
+				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
+			}
 		s.steez[creatorId].SteeloInvestors[investor] += (s.steez[creatorId].currentPrice * amount);
 		s.steez[creatorId].totalSteeloPreOrder += (s.steez[creatorId].currentPrice * amount);
 		s.steezInvested[investor][creatorId] += amount;
