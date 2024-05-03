@@ -304,6 +304,7 @@ library LibSteez {
 							s.steez[creatorId].investors[i].steeloInvested += additional;
 							s.steez[creatorId].totalSteeloPreOrder += additional;
 							s.stakers[s.steez[creatorId].creatorAddress].amount += ((s.steez[creatorId].currentPrice * 90) / 10000 );
+							s.stakers[s.treasury].amount += ((s.steez[creatorId].currentPrice * 10) / 10000 );
 							if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
 								s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
 							}
@@ -311,6 +312,7 @@ library LibSteez {
 								s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
 							}
 							s.balances[s.steez[creatorId].creatorAddress] += (s.steez[creatorId].currentPrice * 90) / 100;
+							s.balances[s.treasury] += (s.steez[creatorId].currentPrice * 10) / 100;
 							s.steezInvested[investor][creatorId] += 1;
 							s.steez[creatorId].liquidityPool -= 1;
 							s.preorderBidFinished[investor][creatorId] = true;
@@ -388,8 +390,15 @@ library LibSteez {
 
 		s.balances[investor] -= (s.steez[creatorId].currentPrice * amount);
 		s.balances[s.steez[creatorId].creatorAddress] += (s.steez[creatorId].currentPrice * amount * 90) /100;
+		s.balances[s.treasury] += (s.steez[creatorId].currentPrice * amount * 75) /1000;
 		s.stakers[investor].amount -= ((s.steez[creatorId].currentPrice * amount) / 100);
 		s.stakers[s.steez[creatorId].creatorAddress].amount += ((s.steez[creatorId].currentPrice * amount * 90) / 10000);
+		s.stakers[s.treasury].amount += ((s.steez[creatorId].currentPrice * amount * 75) / 100000);
+		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
+			s.balances[s.steez[creatorId].investors[i].walletAddress] += (s.steez[creatorId].currentPrice * amount * 25) /10000;
+			s.stakers[s.steez[creatorId].investors[i].walletAddress].amount += ((s.steez[creatorId].currentPrice * amount * 25) / 1000000);
+			
+		}
 			if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
 				s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
 			}
@@ -470,9 +479,13 @@ library LibSteez {
 		for (uint256 i = 0; i < s.sellers[creatorId].length; i++) {	
 			if (buyingPrice == s.sellers[creatorId][i].sellingPrice && buyingAmount <= s.sellers[creatorId][i].sellingAmount) {
 				s.balances[s.sellers[creatorId][i].sellerAddress] += (buyingPrice * buyingAmount * 90) / 100;
+				s.balances[s.treasury] += (buyingPrice * buyingAmount * 25) / 1000;
+				s.balances[s.steez[creatorId].creatorAddress] += (buyingPrice * buyingAmount * 50) / 1000;
 				s.balances[buyer] -= (buyingPrice * buyingAmount);
 				s.stakers[buyer].amount -= ((buyingPrice * buyingAmount) / 100);
 				s.stakers[s.sellers[creatorId][i].sellerAddress].amount += ((buyingPrice * buyingAmount * 90) / 10000);
+				s.stakers[s.treasury].amount += ((buyingPrice * buyingAmount * 25) / 100000);
+				s.stakers[s.steez[creatorId].creatorAddress].amount += ((buyingPrice * buyingAmount * 50) / 100000);
 				if ( s.stakers[s.sellers[creatorId][i].sellerAddress].endTime < s.stakers[buyer].endTime) {
 					s.stakers[s.sellers[creatorId][i].sellerAddress].endTime = s.stakers[buyer].endTime;
 				}
@@ -558,8 +571,15 @@ library LibSteez {
 
 		s.balances[investor] -= (s.steez[creatorId].currentPrice * amount);
 		s.balances[s.steez[creatorId].creatorAddress] += (s.steez[creatorId].currentPrice * amount * 90) /100;
+		s.balances[s.treasury] += (s.steez[creatorId].currentPrice * amount * 75) /1000;
 		s.stakers[investor].amount -= ((s.steez[creatorId].currentPrice * amount) / 100);
 		s.stakers[s.steez[creatorId].creatorAddress].amount += ((s.steez[creatorId].currentPrice * amount * 90) / 10000);
+		s.stakers[s.treasury].amount += ((s.steez[creatorId].currentPrice * amount * 75) / 100000);
+		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
+			s.balances[s.steez[creatorId].investors[i].walletAddress] += (s.steez[creatorId].currentPrice * amount * 25) /10000;
+			s.stakers[s.steez[creatorId].investors[i].walletAddress].amount += ((s.steez[creatorId].currentPrice * amount * 25) / 1000000);
+			
+		}
 			if ( s.stakers[s.steez[creatorId].creatorAddress].endTime < s.stakers[investor].endTime) {
 				s.stakers[s.steez[creatorId].creatorAddress].endTime = s.stakers[investor].endTime;
 			}
