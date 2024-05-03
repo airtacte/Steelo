@@ -76,7 +76,7 @@ contract STEELOFacet {
 
 	function unstakeSteelo(uint256 amount) external payable returns (bool) {
 		amount *= 10 ** 18;
-		amount /= 100;
+		amount /= 10000;
 		LibSteelo.unstake(msg.sender, amount);
 		return true;
 

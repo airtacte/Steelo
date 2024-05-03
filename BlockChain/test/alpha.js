@@ -824,7 +824,7 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 90;
+      		let amount = 9000;
       		await Steelo.connect(addr1).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -838,7 +838,7 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 10;
+      		let amount = 1000;
       		await Steelo.connect(addr2).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1385,7 +1385,7 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 117;
+      		let amount = 12084;
       		await Steelo.connect(addr6).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1399,7 +1399,7 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 55;
+      		let amount = 5665;
       		await Steelo.connect(addr5).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1413,7 +1413,7 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 138;
+      		let amount = 14151;
       		await Steelo.connect(addr4).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1427,7 +1427,7 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 29;
+      		let amount = 2961;
       		await Steelo.connect(addr3).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1441,7 +1441,7 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 61;
+      		let amount = 6100;
       		await Steelo.connect(addr2).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
