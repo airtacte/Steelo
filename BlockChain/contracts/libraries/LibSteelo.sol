@@ -8,7 +8,7 @@ import "./LibAppStorage.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {AppConstants} from "./LibAppStorage.sol";
-import { Steez } from "./LibAppStorage.sol";
+import { Steez, Unstakers } from "./LibAppStorage.sol";
 
 
 
@@ -200,7 +200,12 @@ library LibSteelo {
 		require(s.balances[from] >= amount, "not sufficient steelo tokens to sell");
 		require(s.stakers[from].amount >= amount, "you are asking more amount of ether than you staked");
 		require(s.unstakers.length <= 5, "the unstakers queue is filled right now please try another time");
-		s.unstakers.push(from);		
+		Unstakers memory newUnstaker = Unstakers({
+         		account: from,
+            		amount:  amount
+        	});
+		
+		s.unstakers.push(newUnstaker);		
 		
 //		s.balances[from] -= (amount * 100);
 //		s.balances[s.treasury] += (amount * 100);
@@ -324,7 +329,7 @@ library LibSteelo {
         	
     	}
 
-     function steeloMint(address from) internal {
+     function steeloMint() internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		s.mintAmount = calculateGenerationMintAmount();
 		require( s.totalTransactionCount > 0,"STEELOFacet: s.totalTransactionCount must be greater than 0");
@@ -334,11 +339,26 @@ library LibSteelo {
         	uint256 liquidityProvidersAmount = (s.mintAmount * AppConstants.liquidityProvidersMint) / 100;
         	uint256 ecosystemProvidersAmount = (s.mintAmount * AppConstants.ecosystemProvidersMint) / 100;
 
+		for (uint256 i = 0; i < s.unstakers.length; i++) {
+	        	(bool success, ) = s.unstakers[i].account.call{value: ((s.unstakers[i].amount))}("");
+	                require(success, "Transfer failed.");
+			s.stakers[s.unstakers[i].account].amount -= s.unstakers[i].amount;
+			if (s.stakers[s.unstakers[i].account].amount == 0) {
+				s.stakers[s.unstakers[i].account].interest = 0;	
+			}
+			s.balances[s.unstakers[i].account] -= (s.unstakers[i].amount * 100);
+		}
+
+		delete s.unstakers;
+
+		
+
+
 
 	       	s.totalMinted += s.mintAmount;
 	       	s.lastMintEvent = block.timestamp;
 
-        	mint(from, treasuryAmount);
+        	mint(s.treasury, treasuryAmount);
         	mint(AppConstants.liquidityProviders, liquidityProvidersAmount);
         	mint(AppConstants.ecosystemProviders, ecosystemProvidersAmount);
 
@@ -356,7 +376,7 @@ library LibSteelo {
         	} else {
             		adjustmentFactor += adjustmentFactor / 100;
         	}
-        	s.mintAmount = (AppConstants.rho * uint256(s.totalTransactionCount) * adjustmentFactor) / 10 ** 15;
+        	s.mintAmount = (AppConstants.rho * uint256(s.totalTransactionCount) * adjustmentFactor) / 10 ** 12;
 		s.mintAmount *= 10 ** 18;
 
         	return s.mintAmount;
@@ -402,5 +422,25 @@ library LibSteelo {
 		s.sips[sipId].voteCountForCommunity = 4;
 		s.sips[sipId].voteCountForSteelo = 6;
 	}
+
+	function periodicMint() internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+
+
+		uint256 communityAmount = (AppConstants.TGE_AMOUNT * AppConstants.communityTGE) / 100;
+        	uint256 foundersAmount = (AppConstants.TGE_AMOUNT * AppConstants.foundersTGE) / 100;
+        	uint256 earlyInvestorsAmount = (AppConstants.TGE_AMOUNT * AppConstants.earlyInvestorsTGE) / 100;
+        	uint256 treasuryAmount = (AppConstants.TGE_AMOUNT * AppConstants.trasuryTGE) / 100;
+
+
+		mint(AppConstants.communityAddress, communityAmount);
+        	mint(AppConstants.foundersAddress, foundersAmount);
+        	mint(AppConstants.earlyInvestorsAddress, earlyInvestorsAmount);
+        	mint(s.treasury, treasuryAmount);
+
+		s.mintTransactionLimit = 1000;
+        	s.tgeExecuted = true;
+		
+	} 
 
 }

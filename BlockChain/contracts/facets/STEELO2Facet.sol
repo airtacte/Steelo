@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../libraries/LibAppStorage.sol";
-import {AppConstants} from "../libraries/LibAppStorage.sol";
+import {AppConstants, Unstakers} from "../libraries/LibAppStorage.sol";
 import {LibSteelo} from "../libraries/LibSteelo.sol";
 
 contract STEELO2Facet {
@@ -99,7 +99,7 @@ contract STEELO2Facet {
 		
 	}
 
-	function getUnstakers() public view returns (address[] memory) {
+	function getUnstakers() public view returns (Unstakers[] memory) {
 		return s.unstakers;
 	}
 	function getInterest() public view returns (uint256) {

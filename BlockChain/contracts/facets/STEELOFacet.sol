@@ -136,8 +136,7 @@ contract STEELOFacet {
 	}
 
 	function steeloMintAdvanced() external payable{
-		LibSteelo.steeloMint(msg.sender);
-		emit TokensMinted(msg.sender, s.mintAmount);
+		LibSteelo.steeloMint();
 	}
 
 	

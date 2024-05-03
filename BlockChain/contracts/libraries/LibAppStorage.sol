@@ -226,6 +226,11 @@ library AppConstants{
 	uint256 totalInvestors;
     }
 
+    struct Unstakers {
+	address account;
+	uint256 amount;
+    }
+
 
 
 
@@ -255,7 +260,7 @@ struct AppStorage {
     bool steeloInitiated;
     uint256 mintTransactionLimit;
     mapping(address => Staker) stakers;
-    address[] unstakers;
+    Unstakers[] unstakers;
     
 
     string creatorTokenName;
