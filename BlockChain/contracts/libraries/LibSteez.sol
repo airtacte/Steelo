@@ -299,6 +299,7 @@ library LibSteez {
 						uint256 additional = s.steez[creatorId].currentPrice - s.steez[creatorId].investors[i].steeloInvested; 
 						if (answer && (s.balances[investor] >= additional)) {
 							s.balances[investor] -= additional;
+							s.stakers[investor].amount -= (additional / 100);
 							s.steez[creatorId].SteeloInvestors[investor] += additional;
 							s.steez[creatorId].investors[i].steeloInvested += additional;
 							s.steez[creatorId].totalSteeloPreOrder += additional;
@@ -330,6 +331,7 @@ library LibSteez {
 						uint256 refund = s.steez[creatorId].investors[i].steeloInvested - s.steez[creatorId].currentPrice; 
 						if (answer) {
 							s.balances[investor] += refund;
+							s.stakers[investor].amount += (refund / 100);
 							s.steez[creatorId].SteeloInvestors[investor] -= refund;
 							s.steez[creatorId].totalSteeloPreOrder -= refund;	
 							s.steez[creatorId].investors[i].steeloInvested -= refund;
@@ -452,7 +454,16 @@ library LibSteez {
 		require(buyingAmount > 0, "can not buy 0 steez");
 		require(s.balances[buyer] > buyingPrice * buyingAmount, "has insufficient steelo tokens");
 		require(s.steezInvested[buyer][creatorId] + buyingAmount <= 5, "can not own more than 5 steez tokens");
-
+		
+		if (buyingAmount == s.steez[creatorId].currentPrice) {
+			s.steez[creatorId].currentPrice = s.steez[creatorId].currentPrice;
+		}
+		else if (buyingPrice > s.steez[creatorId].currentPrice) {
+			s.steez[creatorId].currentPrice += (buyingPrice - s.steez[creatorId].currentPrice) / 10;
+		}
+		else if (buyingPrice < s.steez[creatorId].currentPrice) {
+			s.steez[creatorId].currentPrice -= (s.steez[creatorId].currentPrice - buyingPrice) / 10;
+		}
 		bool P2PTransaction = false;
 		address P2PSeller;
 
@@ -471,6 +482,7 @@ library LibSteez {
 				s.steezInvested[buyer][creatorId] += buyingAmount;
 				
 				s.steezInvested[s.sellers[creatorId][i].sellerAddress][creatorId] -= buyingAmount;
+				
 				P2PTransaction = true;
 				P2PSeller = s.sellers[creatorId][i].sellerAddress;
 				Investor memory newInvestor = Investor({
