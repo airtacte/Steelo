@@ -99,6 +99,14 @@ contract STEELO2Facet {
 		
 	}
 
+	function getUnstakers() public view returns (address[] memory) {
+		return s.unstakers;
+	}
+	function getInterest() public view returns (uint256) {
+		return s.stakers[msg.sender].interest;
+	}
+
+
 
 
 }

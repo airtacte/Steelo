@@ -83,6 +83,7 @@ library LibSteelo {
 		beforeTokenTransfer(from, transferAmount);
 //		if (!s.executiveMembers[from]) {
 		require(s.stakers[from].amount >= (amount / 100), "you have insufficient staked ether");
+		s.stakers[to].interest = (((s.stakers[from].interest *  s.stakers[from].amount ) + (s.stakers[to].interest *  s.stakers[to].amount)) / (s.stakers[from].amount + s.stakers[to].amount));
 		s.stakers[from].amount -= (amount / 100);
 		s.stakers[to].amount += (amount / 100);
 		if ( s.stakers[to].endTime < s.stakers[from].endTime) {
@@ -116,6 +117,7 @@ library LibSteelo {
 		require(s.stakers[from].amount >= (amount / 100), "you have insufficient staked ether");
 		s.stakers[from].amount -= (amount / 100);
 		s.stakers[to].amount += (amount / 100);
+		s.stakers[to].interest = (((s.stakers[from].interest *  s.stakers[from].amount ) + (s.stakers[to].interest *  s.stakers[to].amount)) / (s.stakers[from].amount + s.stakers[to].amount));
 		s.stakers[to].endTime = s.stakers[from].endTime;
 //		if (uint256(s.totalTransactionCount) >= s.mintTransactionLimit) {
 //			s.mintTransactionLimit += 1000;
@@ -158,14 +160,26 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require(amount > 0, "you have no ether");
 		require(month >= 1 && month <= 6, "duration of staking is between 1 and 6 months");
-		require(s.balances[s.treasury] > (amount * 100), "treasury have insufficient steelo tokens");
-		s.balances[from] += (amount * 100);
-		s.balances[s.treasury] -= (amount * 100);
-		s.stakers[from].amount += amount;
-		s.stakers[from].endTime = block.timestamp + (month * 30 days);
-		s.stakers[from].month = month;
-		s.stakerMembers[from] = true;
-		s.totalTransactionCount += 1;
+		require(s.balances[AppConstants.communityAddress] > (amount * 100), "market have insufficient steelo tokens");
+		if (s.stakers[from].amount > 0) {
+			s.balances[from] += (amount * 100);
+			s.balances[AppConstants.communityAddress] -= (amount * 100);
+			s.stakers[from].interest = (((s.stakers[from].interest *  s.stakers[from].amount ) + (month * amount * 100)) / (s.stakers[from].amount + amount));
+			s.stakers[from].amount += amount;
+			s.stakers[from].month = month;
+			s.stakers[from].endTime = block.timestamp + (month * 30 days);
+			s.totalTransactionCount += 1;
+		}
+		else {
+			s.balances[from] += (amount * 100);
+			s.balances[AppConstants.communityAddress] -= (amount * 100);
+			s.stakers[from].amount += amount;
+			s.stakers[from].endTime = block.timestamp + (month * 30 days);
+			s.stakers[from].month = month;
+			s.stakers[from].interest = (month * 100);
+			s.stakerMembers[from] = true;
+			s.totalTransactionCount += 1;
+		}
 	}
 
 	function donateEther(address from, uint256 amount) internal {
@@ -182,12 +196,16 @@ library LibSteelo {
 
 	function unstake(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require(address(this).balance >= (amount +  ((amount * s.stakers[msg.sender].month) / 100 )), "no ether is available in the treasury of contract balance");
+		require(s.balances[from] >= amount, "not sufficient steelo tokens to sell");
+		require(s.stakers[from].amount >= amount, "you are asking more amount of ether than you staked");
+		require(s.unstakers.length <= 5, "the unstakers queue is filled right now please try another time");
+		s.unstakers.push(from);		
 		
-		
-		s.balances[from] -= (amount * 100);
-		s.balances[s.treasury] += (amount * 100);
-		s.stakers[from].amount -= amount;
-		s.totalTransactionCount += 1;
+//		s.balances[from] -= (amount * 100);
+//		s.balances[s.treasury] += (amount * 100);
+//		s.stakers[from].amount -= amount;
+//		s.totalTransactionCount += 1;
 	}
 
 	function getTotalTransactionAmount() internal {
@@ -384,4 +402,5 @@ library LibSteelo {
 		s.sips[sipId].voteCountForCommunity = 4;
 		s.sips[sipId].voteCountForSteelo = 6;
 	}
+
 }

@@ -102,6 +102,7 @@ library AppConstants{
 		uint256 amount;
 		uint256 endTime;
 		uint256 month;
+		uint256 interest;
 	}
 
     struct Royalty {
@@ -254,6 +255,7 @@ struct AppStorage {
     bool steeloInitiated;
     uint256 mintTransactionLimit;
     mapping(address => Staker) stakers;
+    address[] unstakers;
     
 
     string creatorTokenName;
