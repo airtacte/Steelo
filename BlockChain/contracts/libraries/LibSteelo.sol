@@ -197,8 +197,8 @@ library LibSteelo {
 	function unstake(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require(address(this).balance >= (amount +  ((amount * s.stakers[msg.sender].month) / 100 )), "no ether is available in the treasury of contract balance");
-		require(s.balances[from] >= amount, "not sufficient steelo tokens to sell");
-		require(s.stakers[from].amount >= amount, "you are asking more amount of ether than you staked");
+		require(s.balances[from] + ((s.balances[from] * s.stakers[from].interest)/10000) >= amount, "not sufficient steelo tokens to sell");
+		require(s.stakers[from].amount + ((s.stakers[from].amount * s.stakers[from].interest)/10000) >= amount, "you are asking more amount of ether than you staked");
 		require(s.unstakers.length <= 5, "the unstakers queue is filled right now please try another time");
 		Unstakers memory newUnstaker = Unstakers({
          		account: from,
@@ -340,12 +340,17 @@ library LibSteelo {
         	uint256 ecosystemProvidersAmount = (s.mintAmount * AppConstants.ecosystemProvidersMint) / 100;
 
 		for (uint256 i = 0; i < s.unstakers.length; i++) {
-	        	(bool success, ) = s.unstakers[i].account.call{value: ((s.unstakers[i].amount))}("");
+			s.balances[s.unstakers[i].account] += ((s.balances[s.unstakers[i].account] * s.stakers[s.unstakers[i].account].interest)/10000);
+			s.stakers[s.unstakers[i].account].amount +=  ((s.stakers[s.unstakers[i].account].amount * s.stakers[s.unstakers[i].account].interest)/10000);
+
+
+
+	        	(bool success, ) = s.unstakers[i].account.call{value: ( s.unstakers[i].amount)}("");
 	                require(success, "Transfer failed.");
-			s.stakers[s.unstakers[i].account].amount -= s.unstakers[i].amount;
-			if (s.stakers[s.unstakers[i].account].amount == 0) {
+			s.stakers[s.unstakers[i].account].amount -= (s.unstakers[i].amount);
+//			if (s.stakers[s.unstakers[i].account].amount == 0) {
 				s.stakers[s.unstakers[i].account].interest = 0;	
-			}
+//			}
 			s.balances[s.unstakers[i].account] -= (s.unstakers[i].amount * 100);
 		}
 

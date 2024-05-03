@@ -19,9 +19,7 @@ contract STEELOFacet {
     	event steeloTGEExecuted(uint256 tgeAmount);
     	event DeflationaryTokenomicsActivated();
 
-	function authors() public returns (string memory) {
-		return "Edmund, Ravi, Ezra, Malcom";
-	}
+
 
 
 	function steeloInitiate () public returns (bool success) {
@@ -37,27 +35,7 @@ contract STEELOFacet {
 		return true;
 	}
 
-	function steeloName () public view returns (string memory) {
-		return s.name;
-	}
-
-	function steeloSymbol () public view returns (string memory) {
-		return s.symbol;
-	}
-
-	function steeloDecimal () public view returns (uint256) {
-		return AppConstants.decimal;
-	}
-
-	function steeloTotalSupply () public view returns (uint256 ) {
-		return s.totalSupply;
-	}
-
 	
-
-	function steeloTotalTokens() public view returns (uint256) {
-		return (AppConstants.TGE_AMOUNT);
-	}
 
 	
 	function steeloBalanceOf(address account) public view returns (uint256) {
@@ -88,17 +66,7 @@ contract STEELOFacet {
 			
 	}
 
-	function steeloBurn(uint256 amount) public returns (bool) {
-		amount = amount * 10 ** 18;
-		LibSteelo.burn(msg.sender, amount);
-		return true;
-	}
-
-	function steeloMint(uint256 amount) public returns (bool) {
-		amount = amount * 10 ** 18;
-		LibSteelo.mint(msg.sender, amount);
-		return true;
-	}
+	
 
 	function stakeSteelo(uint256 month) public payable returns (bool){
 		LibSteelo.stake(msg.sender, msg.value, month);
@@ -122,18 +90,11 @@ contract STEELOFacet {
 	}
 
 
-	function calculateTotalTransactionAmount() public payable {
-		LibSteelo.getTotalTransactionAmount();
-	}
+	
 
 
-	function getTotalTransactionAmount() public view returns (int256) {
-		return s.totalTransactionCount;
-	}
-
-	function createRandomTransaction() public payable {
-		LibSteelo.createRandomTransaction();
-	}
+	
+	
 
 	function steeloMintAdvanced() external payable{
 		LibSteelo.steeloMint();
