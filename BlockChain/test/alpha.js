@@ -23,11 +23,11 @@ describe('DiamondTest', async function () {
   let receipt
   let result
   const addresses = []
-  let owner, addr1, addr2, addr3, addr4, addr5, addr6;
+  let owner, addr1, addr2, addr3, addr4, addr5, addr6, addr7, addr8, addr9;
   this.timeout(60000);
 
   before(async function () {
-    [owner, addr1, addr2, addr3, addr4, addr5, addr6] = await ethers.getSigners();
+    [owner, addr1, addr2, addr3, addr4, addr5, addr6, addr7, addr8, addr9] = await ethers.getSigners();
     diamondAddress = await deployDiamond()
     diamondCutFacet = await ethers.getContractAt('DiamondCutFacet', diamondAddress)
     diamondLoupeFacet = await ethers.getContractAt('DiamondLoupeFacet', diamondAddress)

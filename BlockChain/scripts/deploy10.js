@@ -6,27 +6,27 @@ const { assert, expect } = require('chai')
 
 const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
 
-async function deploySteez2Facet () {
+async function deploySteelo3Facet () {
     // diamondAddress = await deployDiamond()
     
     diamondAddress = "0xaC70A90277A2c480BDbFB3541A550Ff4D48a177e";
     console.log("diamondAddress", diamondAddress);
 
-    const STEEZ2Facet = await ethers.getContractFactory('STEEZ2Facet')
-    const steez2Facet = await STEEZ2Facet.deploy()
+    const STEELO3Facet = await ethers.getContractFactory('STEELO3Facet')
+    const steelo3Facet = await STEELO3Facet.deploy()
 
-    console.log('Deployed steez2Facet to ', steez2Facet.address)
+    console.log('Deployed steelo3Facet to ', steelo3Facet.address)
 
     let addresses = [];
-    addresses.push(steez2Facet.address)
-    let selectors = getSelectors(steez2Facet)
+    addresses.push(steelo3Facet.address)
+    let selectors = getSelectors(steelo3Facet)
 
     const diamondCutFacet = await ethers.getContractAt('IDiamondCut', diamondAddress)
     const diamondLoupeFacet = await ethers.getContractAt('DiamondLoupeFacet', diamondAddress)
 
     tx = await diamondCutFacet.diamondCut(
     [{
-        facetAddress: steez2Facet.address,
+        facetAddress: steelo3Facet.address,
         action: FacetCutAction.Add,
         functionSelectors: selectors
     }],
@@ -35,17 +35,17 @@ async function deploySteez2Facet () {
     if (!receipt.status) {
     throw Error(`Diamond upgrade failed: ${tx.hash}`)
     }
-    result = await diamondLoupeFacet.facetFunctionSelectors(steez2Facet.address)
+    result = await diamondLoupeFacet.facetFunctionSelectors(steelo3Facet.address)
     assert.sameMembers(result, selectors)
-    console.log("steez2Facet Added To Diamond");
-    return steez2Facet.address;
+    console.log("steelo3Facet Added To Diamond");
+    return steelo3Facet.address;
 
 }
 
 // We recommend this pattern to be able to use async/await every where
 // and properly handle errors.
 if (require.main === module) {
-    deploySteez2Facet()
+    deploySteelo3Facet()
     .then(() => process.exit(0))
     .catch(error => {
       console.error(error)
@@ -53,4 +53,4 @@ if (require.main === module) {
     })
 }
 
-exports.deploySteez2Facet = deploySteez2Facet
+exports.deploySteelo3Facet = deploySteelo3Facet

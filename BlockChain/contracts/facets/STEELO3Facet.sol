@@ -19,7 +19,7 @@ contract STEELO3Facet {
     	event steeloTGEExecuted(uint256 tgeAmount);
     	event DeflationaryTokenomicsActivated();
 
-	function authors() public returns (string memory) {
+	function authors() public view returns (string memory) {
 		return "Edmund, Ravi, Ezra, Malcom";
 	}
 
