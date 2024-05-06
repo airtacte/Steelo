@@ -17,6 +17,7 @@ function App() {
 
   const [token, setToken] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
   const [loginData, setLoginData] = useState({
 		      email: "",
 		      password: "",
@@ -493,7 +494,7 @@ useEffect(() => {
 				<div className='row'>
 	  			<Router>
 	  <Routes>
-	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} />} />
+	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} />} />
 	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}

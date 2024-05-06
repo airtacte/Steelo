@@ -100,6 +100,7 @@ router.post('/login', async (req: Request, res: Response) => {
 	}
 	else {
 	return res.json({ 
+		userId: querySnapshot.docs[0].id,
 		role: creatorData.role,
 		email: email,
 		token: generateToken(querySnapshot.docs[0].id),

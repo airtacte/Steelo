@@ -24,7 +24,7 @@ interface Props {
 	  selectedService: any; 
 }
 
-function Login({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken }: Props) {
+function Login({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole }: Props) {
 	  const userRef = useRef(null);
 	  const errRef = useRef(null);
 
@@ -62,6 +62,8 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 			            const response = await axios.post('http://localhost:9000/auth/login', formData);
 			            console.log(response);
 			            const token = response?.data?.token;
+			      	    const roleData = response?.data?.role;
+			      	    const userId = response?.data?.userId;
 			            console.log(token);
 			            console.log(formData.email);
 			            console.log(formData.password);
@@ -74,7 +76,21 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 			            setlogin(true);
 			      	    setEmail(email);
 			      	    setToken(token);
-			      	    navigate("/1");
+			            setRole(roleData);
+			      	    console.log("role :", roleData);
+			      	    console.log("userId :", userId);
+			            if (roleData == "executive") {
+			      	    	navigate("/admin");
+				    }
+			      	    else if (roleData == "creator") {
+					navigate("/creator");
+				    }
+			      	    else if (roleData == "user") {
+					navigate("/bazaar");
+				    }
+			      	    else {
+					navigate("/1");
+				    }
 			          } catch (err) {
 					        if (!err?.response) {
 							        setErrMsg('No Server Response');
