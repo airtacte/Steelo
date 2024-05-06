@@ -24,7 +24,7 @@ module.exports = {
   networks: {
     ganache: {
       url: "HTTP://127.0.0.1:7545",
-      accounts: ['0xc0ea7f0cfc96bd577dbcd642e7a5a7065f735069e3edf04f1aba39f0aab2a072', '0x2e69fb85733f03ace9c6bca2872d87b8158bc447ec04af4b4a96a94e7a578e15', '0x10526e887f6e058ad7f77a512f962a9d3427051dc22d5c2e67102e1062871153'],
+      accounts: ['0x138ae41d86f7ef78df7960cef2cf05fca2f4ce793e7be296455215df92f92f8a', '0xbe6319b35fbfe8f0c3e4aeef8edb73fd500dc77d112b1b0dd334955a03152e40', '0x525e9a756bae807bd4ae4d66a4773bfd44166c4e982be5161077ccd542790a9b'],
       timeout: 600000
     }
   }

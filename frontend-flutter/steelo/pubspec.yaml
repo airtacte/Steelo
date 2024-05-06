@@ -39,6 +39,9 @@ dependencies:
   http:
   web_socket_channel: ^2.4.0
   web3dart: ^2.6.1
+  walletconnect_dart: ^0.0.11
+  url_launcher: ^6.2.6
+  flutter_web3: ^2.1.9
 
 
 dev_dependencies:

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
 
-	final CONTRACT_ADDRESS = "0xC852EE1dD2d53EA2524B90D89092944d23470F17";
+	final CONTRACT_ADDRESS = "0x6b3e010c4EcCaB1519C32684CfE0B93B2347b53C";
 	final CONTRACT_ABI_PATH = "images/abis/steeloDiamond.json";
 
 	final NETWORK_HTTPS_RPC = "http://127.0.0.1:7545";

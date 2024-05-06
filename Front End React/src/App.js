@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import Greeter from "./artifacts/contracts/Greeter.sol/Greeter.json";
 import Diamond from "./artifacts/steeloDiamond.json";
 import "./App.css";
 import Navbar from './Components/Navbar';
 import Main from "./Components/Main";
 import ParticleSettings from './ParticleSettings';
+import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 
-const diamondAddress = "0x4C1eeeb3D7E4cd3768c6d4CB8cAcA540809E29fb";
+const diamondAddress = "0xf116C264ed730B595e37F7B9faEab40cbf162643";
 
 function App() {
 
@@ -59,8 +59,16 @@ function App() {
 
 
   async function requestAccount() {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-  }
+    if (window.ethereum) {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+        } catch (error) {
+            console.error("Error requesting accounts access: ", error);
+        }
+    } else {
+        console.error('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html');
+    }
+}
 
   async function fetchDiamond() {
     if (typeof window.ethereum !== "undefined") {
@@ -142,7 +150,7 @@ function App() {
 	setHighestBid(parseInt(Bidders[2], 10));
 	
       } catch (error) {
-        console.log("Error: ", error);
+        console.log("Blockchain interaction failed :", error);
       }
     }
   }
