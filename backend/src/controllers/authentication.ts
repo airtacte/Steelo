@@ -57,7 +57,14 @@ router.post('/register/creator', async (req: Request, res: Response) => {
         const creator = { name: req.body.name, email: req.body.email, password: await hashPassword(req.body.password), role: "creator"  }
         const docRef = await addDoc(userRef, creator);
         console.log("Document written with ID: ", docRef.id);
-        return res.send('New creator added to DB.')
+        return res.json({ 
+		userId: docRef.id,
+		name: req.body.name,
+		role: "creator",
+		email: req.body.email,
+		token: generateToken(docRef.id),
+		message: "creator registered succesfully",
+	});
     } catch (e) {
         return res.status(400).send(e.message)
     }
@@ -73,10 +80,17 @@ router.post('/register/user', async (req: Request, res: Response) => {
             return res.status(400).send('User already exists.');
         }
 
-        const user = { email: req.body.email, password: await hashPassword(req.body.password), role: "user"  }
+        const user = { name: req.body.name, email: req.body.email, password: await hashPassword(req.body.password), role: "user"  }
         const docRef = await addDoc(userRef, user);
         console.log("Document written with ID: ", docRef.id);
-        return res.send('New user added to DB.')
+        return res.json({ 
+		userId: docRef.id,
+		name: req.body.name,
+		role: "user",
+		email: req.body.email,
+		token: generateToken(docRef.id),
+		message: "user registered succesfully",
+	});
     } catch (e) {
         return res.status(400).send(e.message)
     }
@@ -101,6 +115,7 @@ router.post('/login', async (req: Request, res: Response) => {
 	else {
 	return res.json({ 
 		userId: querySnapshot.docs[0].id,
+		name: creatorData.name,
 		role: creatorData.role,
 		email: email,
 		token: generateToken(querySnapshot.docs[0].id),
