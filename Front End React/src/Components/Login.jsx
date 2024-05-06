@@ -24,7 +24,7 @@ interface Props {
 	  selectedService: any; 
 }
 
-function Login({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole }: Props) {
+function Login({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId }: Props) {
 	  const userRef = useRef(null);
 	  const errRef = useRef(null);
 
@@ -63,7 +63,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 			            console.log(response);
 			            const token = response?.data?.token;
 			      	    const roleData = response?.data?.role;
-			      	    const userId = response?.data?.userId;
+			      	    const userIdData = response?.data?.userId;
 			            console.log(token);
 			            console.log(formData.email);
 			            console.log(formData.password);
@@ -77,16 +77,17 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 			      	    setEmail(email);
 			      	    setToken(token);
 			            setRole(roleData);
+			            setUserId(userIdData)
 			      	    console.log("role :", roleData);
-			      	    console.log("userId :", userId);
+			      	    console.log("userId :", userIdData);
 			            if (roleData == "executive") {
-			      	    	navigate("/admin");
+			      	    	navigate(`/admin/${userIdData}`);
 				    }
 			      	    else if (roleData == "creator") {
-					navigate("/creator");
+					navigate(`/creator/${userIdData}`);
 				    }
 			      	    else if (roleData == "user") {
-					navigate("/bazaar");
+					navigate(`/bazaar`);
 				    }
 			      	    else {
 					navigate("/1");
@@ -113,7 +114,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 		      setSuccess(false);
 		      setlogin(false);
 		    }
-	document.title = "Sign up"
+	document.title = "Sign In"
 	  return (
 		  	    <>
 		        <link

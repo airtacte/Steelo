@@ -1,192 +1,190 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
-import axios from 'axios';
-import styles from "../App.module.css";
-import AuthContext from "../context/AuthProvider";
+import axios, { AxiosResponse, AxiosError } from 'axios';
+import styles from '../Components/Signup.module.css';
 import { useNavigate } from 'react-router-dom';
-import imdb from "../assets/imdb.png";
+
+
 
 interface Props {
-	user: string;
-	token: string;
-	formData: {};
-	setFormData: () => void;
-	loggedin: boolean;
-	setlogin: () => void;
+	  user: string;
+	  token: string;
+	  formData: {
+		      email: string;
+		      password: string;
+		    };
+	  setFormData: any;
+	  loggedin: boolean;
+	  setlogin: React.Dispatch<React.SetStateAction<boolean>>;
+	  response: any;
+	  search: any;
+	  setSearch: any;
+	  setSelectedAbout: any;
+	  setSelectedService: any;
+	  selectedAbout: any;
+	  selectedService: any; 
 }
 
-function Signup( {user, token, formData, setFormData, loggedin, setlogin} : Props) {
-	const { setAuth } = useContext(AuthContext);
-	const userRef = useRef();
-	const errRef = useRef();
-	const [errMsg, setErrMsg] = useState("");
-	const [success, setSuccess] = useState(false);
-	const navigate = useNavigate();
-	const [allUsers, setAllUsers] = useState([]);
-	console.log(formData)	
+function SignUp({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId }: Props) {
+	  const userRef = useRef(null);
+	  const errRef = useRef(null);
 
-	useEffect(() => {
-		if (user) {
-		setSuccess(true);
-		setlogin(true);
-		navigate("/");
-	}
+	  const [errMsg, setErrMsg] = useState('');
+	  const [success, setSuccess] = useState(false);
+	  const navigate = useNavigate();
 
-		userRef.current.focus();
-	}, [])
-	useEffect(() => {
-		setErrMsg("")
-	}, [formData.username, formData.password])
+	  useEffect(() => {
+		      if (email && token) {
+			            setSuccess(true);
+			            setlogin(true);
+				    navigate("/1");
+			          }
 
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setFormData({
-			...formData,
-			[name]: value,
-		});
-	};
+		      if (userRef.current) {
+			            userRef.current.focus();
+			          }
+		    }, [email, token]);
 
-	const handleSubmit = async (e) => {
-    		e.preventDefault();
+	  useEffect(() => {
+		      setErrMsg('');
+		    }, [formData.name, formData.email, formData.password]);
 
-		try {
-			const response = await axios.post("https://imdb-top-60-video-games-ezra.onrender.com/user/dj-rest-auth/registration/", formData);
-			const token = response?.data?.key
-			console.log(response.data);
-			console.log(token);
-			console.log(formData.username);
-			console.log(formData.password);
-			const user = formData.username;
-			const pwd = formData.password
-			console.log('Signup successful:', response.data);
-			setAuth({ user, pwd, token});
-			localStorage.setItem("user", user)
-			localStorage.setItem("token", token);
-			setSuccess(true);
-			setlogin(true);
-			navigate("/");
+	  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		      setFormData({
+			            ...formData,
+			            [e.target.name]: e.target.value,
+			          });
+		    };
 
-		} catch (err) {
-			if (formData.password1 !== formData.password2) {
-				setErrMsg("passwords do not match")
-			}
+	  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		      e.preventDefault();
+
+		      try {
+			            const response = await axios.post('http://localhost:9000/auth/register/creator', formData);
+			            console.log(response);
+			            const token = response?.data?.token;
+			      	    const roleData = response?.data?.role;
+			      	    const userIdData = response?.data?.userId;
+			            console.log(token);
+			            console.log(formData.email);
+			            console.log(formData.password);
+			            const email = formData.email;
+			            const password = formData.password;
+			            console.log('Login successful:', response.data);
+			            localStorage.setItem('email', email);
+			            localStorage.setItem('token', token);
+			            setSuccess(true);
+			            setlogin(true);
+			      	    setEmail(email);
+			      	    setToken(token);
+			            setRole(roleData);
+			            setUserId(userIdData)
+			      	    console.log("role :", roleData);
+			      	    console.log("userId :", userIdData);
+			            if (roleData == "executive") {
+			      	    	navigate(`/admin/${userIdData}`);
+				    }
+			      	    else if (roleData == "creator") {
+					navigate(`/creator/${userIdData}`);
+				    }
+			      	    else if (roleData == "user") {
+					navigate(`/bazaar`);
+				    }
+			      	    else {
+					navigate("/1");
+				    }
+			          } catch (err) {
+					        if (!err?.response) {
+							        setErrMsg('No Server Response');
+							      } else if (err.response.status === 400) {
+								              setErrMsg('Missing user name or password');
+								            } else if (err.response.status === 401) {
+										            setErrMsg('Unauthorized');
+										          } else {
+												          setErrMsg('Login Failed');
+												        }
+					        if (errRef.current) {
+							        errRef.current.focus();
+							      }
+					      }
+		    }
+
+	  function remover() {
+		      localStorage.removeItem('email');
+		      localStorage.removeItem('token');
+		      setSuccess(false);
+		      setlogin(false);
+		    }
+	document.title = "Sign Up"
+	  return (
+		  	    <>
+		        <link
+		          href="https://fonts.googleapis.com/css2?family=Advent+Pro:wght@100;400&family=Aguafina+Script&family=Amatic+SC&family=Barrio&family=Bellota:wght@300&family=Black+Ops+One&family=Caveat&family=Chakra+Petch:ital,wght@1,300&family=Cinzel&family=Cookie&family=Croissant+One&family=Dancing+Script&family=Faster+One&family=Fuggles&family=Gugi&family=Hammersmith+One&family=Homemade+Apple&family=Itim&family=Lilita+One&family=Montserrat+Alternates:wght@100&family=Nothing+You+Could+Do&family=Orbitron&family=Playball&family=Rajdhani&family=Satisfy&family=Sedgwick+Ave+Display&family=Shadows+Into+Light&family=Space+Mono&family=Tilt+Prism&family=Yellowtail&display=swap"
+		          rel="stylesheet"
+		        />
 
 
-			const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
-			if (!passwordRegex.test(formData.password1)) {
-				setErrMsg("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
-			}
 
-			const usernameRegex = /^[a-zA-Z0-9_]+$/;
-			if (!usernameRegex.test(formData.username)) {
-				setErrMsg("Username contains invalid characters.");
-			}
-
-			
-			const isAllLetters = /^[a-zA-Z]+$/.test(formData.password1);
-			const isAllNumbers = /^[0-9]+$/.test(formData.password1);
-			const isAllSpecialCharacters = /^[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]+$/g.test(formData.password1);
-
-			if (isAllLetters || isAllNumbers || isAllSpecialCharacters) {
-				setErrMsg("Password should include a mix of letters, numbers, and special characters.");
-			}
-			const commonPasswords = ["password", "12345678", "qwerty", "admin", "87654321"];
-
-			if (commonPasswords.includes(formData.password1.toLowerCase())) {
-				setErrMsg("Password is too common. Please choose a stronger password.");
-			}
-
-			const getuser = async () => {
-                        	const result = await axios.get("https://imdb-top-60-video-games-ezra.onrender.com/user/");
-				setAllUsers(result.data);
-				result.data.map(all => formData.username === all.username ? setErrMsg("user already exists") : null);
-				allUsers.map(all => console.log(all.username));
-			}
-			getuser();
-			if (formData.password1.length < 8 || formData.password2 < 8)
-			{
-				setErrMsg("password must be between 8 - 24 characters")
-			}
-			if (!formData.password1 || !formData.password2) {
-				setErrMsg("You must input a password.");
-			}
-			if (!formData.username) {
-				setErrMsg("you have to input a user name")
-			}
-			if (!err?.response) {
-				setErrMsg("No server found")
-			}
-			if (err.response?.status === 401) {
-                        setErrMsg("Unauthorized");
-			}
-		}
-	};
-	function remover() {
-		localStorage.removeItem("user");
-		localStorage.removeItem("token");
-		setSuccess(false);
-		setlogin(false);
-	}
-
-	return (
-		<>
-	  			{success ? (
-				<div>
-				<h1>You are Signed Up!</h1>
-				<br />
-				<p><button onClick={remover}>Log Out</button></p>
-				</div>
-			) : (
-	    <div className={styles.form}>
-	    <div className={styles.login}>
-	    <a href="/"><img className={styles.loginimdb} src={imdb} /></a>
-	<p className={styles.rederror}>{errMsg}</p>
-      <h1 className={styles.formTitle}>Register</h1>
-      <form onSubmit={handleSubmit}>
-	<div className={styles.loginlabel}>
-          <label>Your name</label>
-	</div>
-	<div>
-          <input
-		className={styles.logininput}
-            	type="text"
-            	name="username"
-		ref={userRef}
-		value={formData.username}
-		autoComplete="off"
-		onChange={handleChange}
-          />
-        </div>
-        <div className={styles.loginlabel}>
-          <label>Password</label>
-	</div>
-	<div>
-          <input
-	    className={styles.logininput}
-            type="password"
-            name="password1"
-            value={formData.password1}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.loginlabel}>
-          <label>Re-Enter Password</label>
-	</div>
-	<div>
-          <input
-	    className={styles.logininput}
-            type="password"
-            name="password2"
-            value={formData.password2}
-            onChange={handleChange}
-          />
-        </div>
-        <button className={styles.loginbutton} type="submit">Create your IMDb account</button>
-      </form>
-    </div>
-	</div>
-		)}
-	</>
-  );
+		        {success ? (
+				        <div className={styles.login}>
+				          <h1 className={styles.logintitle}>You are logged In!</h1>
+				          <br />
+				          <p>
+				            <button onClick={remover} className={styles.loginbutton}>Log Out</button>
+					    <a className={styles.loggedlink} href="/"> Go to Home Page </a>
+				          </p>
+				        </div>
+				      ) : (
+					              <>
+					                <div className={styles.login}>
+					                  <h1 className={styles.logintitle}>Sign Up</h1>
+					                  <p
+					                    className={errMsg ? `${styles.rederror}` : 'offscreen'}
+					                    ref={errRef}
+					                    aria-live="assertive"
+					                  >
+					                    <span className={styles.rederror}>{errMsg}</span>
+					                  </p>
+					                  <form onSubmit={handleSubmit}>
+					                    <label className={styles.labeltitle}>Name</label>
+					                    <input
+					                      className={styles.titleinput}
+					                      type="text"
+					                      name="name"
+					      		placeholder="name"
+					                      ref={userRef}
+					                      autoComplete="off"
+					                      value={formData.name}
+					                      onChange={handleChange}
+					                    />
+					                    <label className={styles.labeltitle}>Email</label>
+					                    <input
+					                      className={styles.titleinput}
+					                      type="text"
+					                      name="email"
+					      		placeholder="email"
+					                      ref={userRef}
+					                      autoComplete="off"
+					                      value={formData.email}
+					                      onChange={handleChange}
+					                    />
+					                    <label className={styles.labeltitle}>Password</label>
+					                    <input
+					                      className={styles.titleinput}
+					                      type="password"
+					                      name="password"
+					      		placeholder="password"
+					                      value={formData.password}
+					                      onChange={handleChange}
+					                    />
+					                    <button className={styles.loginbutton} type="submit">
+					                      Signin
+					                    </button>
+					                  </form>
+					                </div>
+					              </>
+					            )}
+		      </>
+		    );
 }
 
-export default Signup;
+export default SignUp;

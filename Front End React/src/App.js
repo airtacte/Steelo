@@ -5,6 +5,7 @@ import "./App.css";
 import Navbar from './Components/Navbar';
 import Main from "./Components/Main";
 import Login from "./Components/Login";
+import SignUp from "./Components/SignUp";
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 
@@ -18,11 +19,13 @@ function App() {
   const [token, setToken] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
+  const [userId, setUserId] = useState("");
   const [loginData, setLoginData] = useState({
 		      email: "",
 		      password: "",
 		    });
   const [signupData, setSignupData] = useState({
+	      name: '',
 	      email: '',
 	      password: '',
 	    });
@@ -489,12 +492,13 @@ useEffect(() => {
 			<div style={{ position: 'absolute' }}>
 			<ParticleSettings />
 			</div>
-			<Navbar account={myAccount} setEmail={setEmail} setToken={setToken} />
+			<Navbar account={myAccount} userId={userId} role={role} setRole={setRole} setEmail={setEmail} setToken={setToken} setUserId={setUserId} />
 			<div className="container-fluid mt-5" >
 				<div className='row'>
 	  			<Router>
 	  <Routes>
-	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} />} />
+	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId}  />} />
+	        <Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId}  />} />
 	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}

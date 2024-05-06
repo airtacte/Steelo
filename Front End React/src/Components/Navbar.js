@@ -2,13 +2,15 @@ import React from 'react';
 import bank from '../bank-2.png';
 import styles from '../Components/Signup.module.css';
 
-function Navbar({ account, setEmail, setToken }) {
+function Navbar({ account, setEmail, setToken, setUserId, userId, role, setRole }) {
 
 	function remover() {
 		      localStorage.removeItem('email');
 		      localStorage.removeItem('token');
 		      setEmail("");
 		      setToken("");
+		      setUserId("");
+		      setRole("");
 //		      setSuccess(false);
 //		      setlogin(false);
 	}
@@ -24,6 +26,16 @@ function Navbar({ account, setEmail, setToken }) {
                     <li className='text-nowrap d-none nav-item d-sm-block'>
                         <small style={{ color: 'white' }}>
                             ACCOUNT NUMBER: {account}
+                        </small>
+                    </li>
+		    <li className='text-nowrap d-none nav-item d-sm-block'>
+		        <small style={{ color: 'white' }}>
+		    	    User ID: {userId}
+                        </small>
+                    </li>
+		    <li className='text-nowrap d-none nav-item d-sm-block'>
+		        <small style={{ color: 'white' }}>
+		    	    Role: {role}
                         </small>
                     </li>
                 </ul>
