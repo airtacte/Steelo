@@ -18,6 +18,7 @@ library LibSteelo {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(!s.steeloInitiated, "steelo already initiated");
 		require( treasury != address(0), "treasurer can not be zeero address");
+		require (s.userMembers[treasury], "you  have no steelo account");
 		require(s.executiveMembers[treasury], "only executive can initialize the steelo tokens");
 		s.name = "Steelo";
 		s.symbol = "STLO";
@@ -37,6 +38,7 @@ library LibSteelo {
 	function TGE(address treasury) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require( treasury != address(0), "token can not be generated with zero address");
+		require (s.userMembers[treasury], "you  have no steelo account");
 		require(s.executiveMembers[treasury], "only executive can initialize the steelo tokens");
 		require(!s.tgeExecuted, "STEELOFacet: steeloTGE can only be executed once");
 		require(s.totalTransactionCount == 0, "STEELOFacet: TransactionCount must be equal to 0");
@@ -60,8 +62,21 @@ library LibSteelo {
 		
 	}
 
+	function createSteeloUser(address account) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require (account != address(0), "zero address can not have a steelo account");
+		require (s.userMembers[account] == false, "already have account");
+
+		s.userMembers[account] = true;
+		if (keccak256(abi.encodePacked(s.roles[account])) == keccak256(abi.encodePacked("")) || keccak256(abi.encodePacked(s.roles[account])) == keccak256(abi.encodePacked(AppConstants.VISITOR_ROLE))) {
+			s.roles[account] = AppConstants.USER_ROLE;
+		}
+
+	}
+
 	function approve(address from, address to, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[from], "you  have no steelo account");
 		require(s.stakerMembers[from], "you must stake in order to approve steelo transaction");
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( amount > 0, "you can not approve 0 amount");
@@ -76,6 +91,7 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( to != address(0), "STEELOFacet: Cannot transfer to the zero address" );
+		require (s.userMembers[from], "you  have no steelo account");
 		require(s.stakerMembers[from], "you must stake in order to transfer steelo transaction");
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
 		require( amount > 0, "you can not transfer 0 amount");
@@ -109,6 +125,7 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( to != address(0), "STEELOFacet: Cannot transfer to the zero address" );
+		require (s.userMembers[from], "you  have no steelo account");
 		require(s.stakerMembers[from], "the sender must stake in order to transfer steelo transaction");
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
 		require(s.allowance[from][to] >= amount, "did not allow this much allowance");
@@ -134,6 +151,7 @@ library LibSteelo {
 
 	function burn(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[from], "you  have no steelo account");
 		require(s.adminMembers[from], "only admin can burn steelo tokens");
 //		require(amount > 0, "can not burn 0 amount");
 		require(amount < 825000000 * 10 ** 18, "can not burn 825 million tokens");
@@ -146,6 +164,7 @@ library LibSteelo {
 
 	function mint(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[from], "you  have no steelo account");
 		require(s.adminMembers[from], "only admins can mint steelo tokens");
 //		require(amount > 0, "can not mint 0 amount");
 //		require(amount <= 825000000 * 10 ** 18, "can not mint more than 825 million tokens");
@@ -158,6 +177,7 @@ library LibSteelo {
 
 	function stake(address from, uint256 amount, uint256 month) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[from], "you  have no steelo account");
 		require(amount > 0, "you have no ether");
 		require(month >= 1 && month <= 6, "duration of staking is between 1 and 6 months");
 		require(s.balances[AppConstants.communityAddress] > (amount * 100), "market have insufficient steelo tokens");
@@ -184,6 +204,8 @@ library LibSteelo {
 
 	function donateEther(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[from], "you  have no steelo account");
+		require(s.executiveMembers[from], "only executive can initialize the steelo tokens");
 		require(amount > 0, "you have no ether");
 		s.balances[s.treasury] += (amount * 100);
 		s.totalTransactionCount += 1;
@@ -197,6 +219,7 @@ library LibSteelo {
 	function unstake(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require(address(this).balance >= (amount +  ((amount * s.stakers[msg.sender].month) / 100 )), "no ether is available in the treasury of contract balance");
+		require (s.userMembers[from], "you  have no steelo account");
 		require(s.balances[from] + ((s.balances[from] * s.stakers[from].interest)/10000) >= amount, "not sufficient steelo tokens to sell");
 		require(s.stakers[from].amount + ((s.stakers[from].amount * s.stakers[from].interest)/10000) >= amount, "you are asking more amount of ether than you staked");
 		require(s.unstakers.length <= 5, "the unstakers queue is filled right now please try another time");
@@ -233,6 +256,7 @@ library LibSteelo {
 
 	function beforeTokenTransfer(address from, uint256 amount ) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[from], "you  have no steelo account");
 
         	s.burnAmount = calculateBurnAmount(amount);
         	if (s.burnAmount > 0 && from != address(0)) {
@@ -339,7 +363,20 @@ library LibSteelo {
         	uint256 liquidityProvidersAmount = (s.mintAmount * AppConstants.liquidityProvidersMint) / 100;
         	uint256 ecosystemProvidersAmount = (s.mintAmount * AppConstants.ecosystemProvidersMint) / 100;
 
+		
+
+
+	       	s.totalMinted += s.mintAmount;
+	       	s.lastMintEvent = block.timestamp;
+
+        	mint(s.treasury, treasuryAmount);
+        	mint(AppConstants.liquidityProviders, liquidityProvidersAmount);
+        	mint(AppConstants.ecosystemProviders, ecosystemProvidersAmount);
+
+
+
 		for (uint256 i = 0; i < s.unstakers.length; i++) {
+			s.balances[AppConstants.liquidityProviders] -= ((s.balances[s.unstakers[i].account] * s.stakers[s.unstakers[i].account].interest)/10000);
 			s.balances[s.unstakers[i].account] += ((s.balances[s.unstakers[i].account] * s.stakers[s.unstakers[i].account].interest)/10000);
 			s.stakers[s.unstakers[i].account].amount +=  ((s.stakers[s.unstakers[i].account].amount * s.stakers[s.unstakers[i].account].interest)/10000);
 
@@ -359,14 +396,6 @@ library LibSteelo {
 		
 
 
-
-	       	s.totalMinted += s.mintAmount;
-	       	s.lastMintEvent = block.timestamp;
-
-        	mint(s.treasury, treasuryAmount);
-        	mint(AppConstants.liquidityProviders, liquidityProvidersAmount);
-        	mint(AppConstants.ecosystemProviders, ecosystemProvidersAmount);
-
         	
 		
      }
@@ -381,7 +410,7 @@ library LibSteelo {
         	} else {
             		adjustmentFactor += adjustmentFactor / 100;
         	}
-        	s.mintAmount = (AppConstants.rho * uint256(s.totalTransactionCount) * adjustmentFactor) / 10 ** 12;
+        	s.mintAmount = (AppConstants.rho * uint256(s.totalTransactionCount) * adjustmentFactor) / 10 ** 11;
 		s.mintAmount *= 10 ** 18;
 
         	return s.mintAmount;

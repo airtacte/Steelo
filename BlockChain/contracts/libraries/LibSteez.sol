@@ -25,6 +25,7 @@ library LibSteez {
 
 	function initiate(address treasury) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[treasury], "you  have no steelo account");	
 		require( treasury != address(0), "0 address can not initiate steez");
 		require( treasury == s.treasury, "only treasurer can initiate steez");
 		require( !s.steezInitiated, "steez already initiated");
@@ -36,6 +37,8 @@ library LibSteez {
 
 	function createCreator( address creator, string memory profileId ) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		require( creator != address(0), "STEEZFacet: Cannot create account for zero address" );
+		require(keccak256(abi.encodePacked(s.creatorIdentity[creator])) == keccak256(abi.encodePacked("")), "you already have a creator account please create a creator account");
 		Creator memory newCreator = Creator({
          		creatorId: profileId,
             		profileAddress: creator
@@ -43,6 +46,26 @@ library LibSteez {
 
 		s.creatorIdentity[creator] = profileId;
 		s.creators[profileId] = newCreator; 
+	}
+
+	function deleteCreator( address creator, string memory profileId ) internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		require( creator != address(0), "STEEZFacet: Cannot delete to zero address" );
+		require(s.creators[profileId].profileAddress == creator, "you can not delete other creators account");
+		require(keccak256(abi.encodePacked(s.creatorIdentity[creator])) != keccak256(abi.encodePacked("")), "you have no creator account please create a creator account");
+		s.creatorIdentity[creator] = "";
+		delete s.creators[profileId];
+		delete s.steez[profileId];
+		uint256 length = s.allCreators.length;
+
+		for (uint256 i = 0; i < length; i++) {
+			if (s.allCreators[i].creatorAddress == creator) {
+				s.allCreators[i] =  s.allCreators[length - 1];
+				s.allCreators.pop();
+			}
+		}
+
+		 
 	}
 
 
@@ -77,6 +100,8 @@ library LibSteez {
     			s.steez[creatorId].auctionStartTime = block.timestamp + AppConstants.oneWeek;
     			s.steez[creatorId].auctionSlotsSecured = 0;
     			s.steez[creatorId].auctionConcluded = false;
+    			s.steez[creatorId].status = "Not Initiated";
+
 			
 			CreatorSteez memory newCreatorSteez = CreatorSteez({
          			creatorId: creatorId,
@@ -90,6 +115,7 @@ library LibSteez {
 	        	if ( s.steez[creatorId].lastMintTime == 0 || (s.steez[creatorId].lastMintTime + AppConstants.oneYear) <= block.timestamp ) { 
 				s.steez[creatorId].lastMintTime = block.timestamp;
 		        }
+			s.mintingTransactionLimit[creatorId] = 10;
 	
 	    	}
 
@@ -102,6 +128,7 @@ library LibSteez {
 			s.steez[creatorId].totalSupply = AppConstants.PRE_ORDER_SUPPLY;
         		s.steez[creatorId].preOrderStartTime = block.timestamp;
             		s.steez[creatorId].preOrderStarted = true;
+    			s.steez[creatorId].status = "PreOrder";
 	    		
 			
 			mintSteez(from, creatorId, AppConstants.PRE_ORDER_SUPPLY);
@@ -116,6 +143,7 @@ library LibSteez {
         		require(amount <= 500, "STEEZFacet: mint amount must be less than 500");
         		
 			s.steez[creatorId].liquidityPool += amount;
+			s.totalSteezTransaction[creatorId] += 1;
     }
 
     	function encodeSteezId( uint256 creatorId, uint256 steezId ) internal pure returns (uint256) {
@@ -132,10 +160,15 @@ library LibSteez {
 	function bidPreOrder( address investor, string memory creatorId,  uint256 amount ) internal {
 			AppStorage storage s = LibAppStorage.diamondStorage();
 			amount = amount * 10 ** 18;
+			require (s.userMembers[investor], "you  have no steelo account");	
 			require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
 			require(!s.steez[creatorId].launchStarted, "Launch has started");	
 			require(!s.steez[creatorId].preOrderEnded, "Preorder has ended");	
 			require(amount >= s.steez[creatorId].currentPrice, "you should higher than the steez current price");
+//			if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
+//				steeloMint();
+//				s.mintingTransactionLimit[creatorId] += 10;
+//			}
 			if (block.timestamp > s.steez[creatorId].preOrderStartTime + 24 hours) {
 				s.steez[creatorId].currentPrice = s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].investors.length;
 				s.steez[creatorId].preOrderStarted = false;
@@ -145,6 +178,7 @@ library LibSteez {
 				s.steez[creatorId].totalSupply += AppConstants.LAUNCH_SUPPLY;
             			s.steez[creatorId].launchStarted = true;				
 				mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.LAUNCH_SUPPLY);
+    				s.steez[creatorId].status = "Launch";
 			}
 
 			if (!s.steez[creatorId].launchStarted) {
@@ -199,7 +233,7 @@ library LibSteez {
 //				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
 //			}
 //			s.balances[s.steez[creatorId].creatorAddress] += amount;
-			s.steez[creatorId].SteeloInvestors[investor] += amount;
+			s.steez[creatorId].SteeloInvestors[investor] = amount;
 			s.steez[creatorId].totalSteeloPreOrder += amount;
 
 			s.steez[creatorId].auctionSlotsSecured += 1;
@@ -220,6 +254,8 @@ library LibSteez {
 			}
 			
     }
+
+
 
 
     function sortInvestors(string memory creatorId) internal {
@@ -290,9 +326,14 @@ library LibSteez {
 
 	function AcceptOrReject(address investor, string memory creatorId, bool answer) internal {
     		AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[investor], "you  have no steelo account");	
 		require(s.steez[creatorId].SteeloInvestors[investor] > 0, "you have not bid any amount");
 		require(!s.preorderBidFinished[investor][creatorId], "you have finished bidding for your preorder finished");
 		require(s.steez[creatorId].launchStarted, "launch has not started");
+		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
+				steeloMint();
+				s.mintingTransactionLimit[creatorId] += 10;
+			}
 		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
 					if (s.steez[creatorId].currentPrice > s.steez[creatorId].investors[i].steeloInvested) {
@@ -317,6 +358,7 @@ library LibSteez {
 							s.steez[creatorId].liquidityPool -= 1;
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
+							s.totalSteezTransaction[creatorId] += 1;
 						}
 						else {
 							s.balances[investor] += s.steez[creatorId].investors[i].steeloInvested;
@@ -349,6 +391,7 @@ library LibSteez {
 							s.steez[creatorId].liquidityPool -= 1;
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
+							s.totalSteezTransaction[creatorId] += 1;
 						}
 						else {
 							s.balances[investor] += s.steez[creatorId].investors[i].steeloInvested;
@@ -374,6 +417,7 @@ library LibSteez {
 
 	function bidLaunch(address investor, string memory creatorId, uint256 amount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[investor], "you  have no steelo account");	
 		require(block.timestamp >= s.steez[creatorId].auctionStartTime, "launch has not started yet");
 		require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
 		require(s.steez[creatorId].launchStarted, "Launch has not started");
@@ -381,6 +425,10 @@ library LibSteez {
 		require(s.balances[investor] >= (s.steez[creatorId].currentPrice * amount), "you have insufficient balance");
 		require(amount > 0 && amount <= 5, "amount of steez per person is between 1 and 5");
 		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
+		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
+				steeloMint();
+				s.mintingTransactionLimit[creatorId] += 10;
+			}
 
 		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
@@ -405,13 +453,14 @@ library LibSteez {
 			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
 				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
 			}
-		s.steez[creatorId].SteeloInvestors[investor] += (s.steez[creatorId].currentPrice * amount);
+		s.steez[creatorId].SteeloInvestors[investor] = (s.steez[creatorId].currentPrice);
 		s.steez[creatorId].totalSteeloPreOrder += (s.steez[creatorId].currentPrice * amount);
 		s.steezInvested[investor][creatorId] += amount;
 
 		s.steez[creatorId].auctionSlotsSecured += 1;
 		s.totalTransactionCount += 1;
     		s.steez[creatorId].liquidityPool -= amount;
+		s.totalSteezTransaction[creatorId] += 1;
 
 		 Investor memory newInvestor = Investor({
          		investorId: s.steez[creatorId].investors.length,
@@ -422,11 +471,12 @@ library LibSteez {
             		isInvestor: true
         	});
         	s.steez[creatorId].investors.push(newInvestor);
-		s.steez[creatorId].currentPrice = ( s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice);
+		s.steez[creatorId].currentPrice = ((75 * s.steez[creatorId].currentPrice) / 100) + ( (25 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
 		
 		if (s.steez[creatorId].liquidityPool == 0) {
 			s.steez[creatorId].launchEnded = true;
 			s.steez[creatorId].P2PStarted = true;
+    			s.steez[creatorId].status = "P2P";
 		} 
 
 	}
@@ -435,6 +485,7 @@ library LibSteez {
 	function initiateP2PSell(address seller , string memory creatorId, uint256 sellingPrice, uint256 steezAmount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		sellingPrice *= 10 ** 18;
+		require (s.userMembers[seller], "you  have no steelo account");	
 		require(steezAmount > 0 && steezAmount <= 5 , "steez has to be between 1 and 5");
 		require(s.steezInvested[seller][creatorId] >= steezAmount, "you have insufficient steez tokens to sell");
 		Seller memory newSeller = Seller({
@@ -448,10 +499,16 @@ library LibSteez {
 
 	function P2PBuy(address buyer, string memory creatorId, uint256 buyingPrice, uint256 buyingAmount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[buyer], "you  have no steelo account");	
 		require(s.steez[creatorId].P2PStarted, "Peer to Peer transaction not allowed yet");
+		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
+				steeloMint();
+				s.mintingTransactionLimit[creatorId] += 10;
+			}
 		if (block.timestamp > s.steez[creatorId].anniversaryDate) {
 			s.steez[creatorId].P2PStarted = false;
 			s.steez[creatorId].AnniversaryStarted = true;
+    			s.steez[creatorId].status = "Anniversary";
 			s.steez[creatorId].totalSupply += AppConstants.EXPANSION_SUPPLY;
 			mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.EXPANSION_SUPPLY);
 		}
@@ -495,6 +552,7 @@ library LibSteez {
 				s.steezInvested[buyer][creatorId] += buyingAmount;
 				
 				s.steezInvested[s.sellers[creatorId][i].sellerAddress][creatorId] -= buyingAmount;
+				s.totalSteezTransaction[creatorId] += 1;
 				
 				P2PTransaction = true;
 				P2PSeller = s.sellers[creatorId][i].sellerAddress;
@@ -518,6 +576,7 @@ library LibSteez {
 						}	
 						else {
 						s.steez[creatorId].investors[j].steeloInvested -= (buyingPrice * buyingAmount);
+						s.totalTransactionCount += 1;	
 						
 						}
 					}
@@ -532,7 +591,7 @@ library LibSteez {
 							uint length = s.sellers[creatorId].length;
 							s.sellers[creatorId][k] =  s.sellers[creatorId][length - 1];
 							s.sellers[creatorId].pop();
-							s.totalTransactionCount += 1;
+//							s.totalTransactionCount += 1;
 							break;
 					}
 					else if (s.sellers[creatorId][k].sellerAddress == P2PSeller && s.sellers[creatorId][k].sellingAmount != buyingAmount ) {
@@ -557,11 +616,16 @@ library LibSteez {
 
 	function bidAnniversary(address investor, string memory creatorId, uint256 amount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		require (s.userMembers[investor], "you  have no steelo account");	
 		require(block.timestamp >= s.steez[creatorId].anniversaryDate, "anniversary has not started yet");
 		require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
 		require(s.balances[investor] >= (s.steez[creatorId].currentPrice * amount), "you have insufficient balance");
 		require(amount > 0 && amount <= 5, "amount of steez per person is between 1 and 5");
 		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
+		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
+				steeloMint();
+				s.mintingTransactionLimit[creatorId] += 10;
+			}
 
 		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
@@ -586,11 +650,12 @@ library LibSteez {
 			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
 				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
 			}
-		s.steez[creatorId].SteeloInvestors[investor] += (s.steez[creatorId].currentPrice * amount);
+		s.steez[creatorId].SteeloInvestors[investor] = (s.steez[creatorId].currentPrice);
 		s.steez[creatorId].totalSteeloPreOrder += (s.steez[creatorId].currentPrice * amount);
 		s.steezInvested[investor][creatorId] += amount;
 
 		s.steez[creatorId].auctionSlotsSecured += 1;
+		s.totalSteezTransaction[creatorId] += 1;
 		s.totalTransactionCount += 1;
    		s.steez[creatorId].liquidityPool -= amount;
 
@@ -603,14 +668,92 @@ library LibSteez {
             		isInvestor: true
         	});
         	s.steez[creatorId].investors.push(newInvestor);
-		s.steez[creatorId].currentPrice = ( s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice);
+		s.steez[creatorId].currentPrice = ((75 * s.steez[creatorId].currentPrice) / 100) + ( (25 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
 		
 		if (s.steez[creatorId].liquidityPool == 0) {
 			s.steez[creatorId].P2PStarted = true;
+    			s.steez[creatorId].status = "P2P";
 			s.steez[creatorId].anniversaryDate += block.timestamp + 365 days;
 		} 
 
 	}
+
+	function steeloMint() internal {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		s.mintAmount = calculateGenerationMintAmount();
+		require( s.totalTransactionCount > 0,"STEELOFacet: s.totalTransactionCount must be greater than 0");
+        	require(s.steeloCurrentPrice > 0,"STEELOFacet: steeloCurrentPrice must be greater than 0");
+
+		uint256 treasuryAmount = (s.mintAmount * AppConstants.treasuryMint) / 100;
+        	uint256 liquidityProvidersAmount = (s.mintAmount * AppConstants.liquidityProvidersMint) / 100;
+        	uint256 ecosystemProvidersAmount = (s.mintAmount * AppConstants.ecosystemProvidersMint) / 100;
+
+		
+
+
+	       	s.totalMinted += s.mintAmount;
+	       	s.lastMintEvent = block.timestamp;
+
+        	mint(s.treasury, treasuryAmount);
+        	mint(AppConstants.liquidityProviders, liquidityProvidersAmount);
+        	mint(AppConstants.ecosystemProviders, ecosystemProvidersAmount);
+
+
+
+		for (uint256 i = 0; i < s.unstakers.length; i++) {
+			s.balances[AppConstants.liquidityProviders] -= ((s.balances[s.unstakers[i].account] * s.stakers[s.unstakers[i].account].interest)/10000);
+			s.balances[s.unstakers[i].account] += ((s.balances[s.unstakers[i].account] * s.stakers[s.unstakers[i].account].interest)/10000);
+			s.stakers[s.unstakers[i].account].amount +=  ((s.stakers[s.unstakers[i].account].amount * s.stakers[s.unstakers[i].account].interest)/10000);
+
+
+
+	        	(bool success, ) = s.unstakers[i].account.call{value: ( s.unstakers[i].amount)}("");
+	                require(success, "Transfer failed.");
+			s.stakers[s.unstakers[i].account].amount -= (s.unstakers[i].amount);
+			if (s.stakers[s.unstakers[i].account].amount == 0) {
+				s.stakers[s.unstakers[i].account].interest = 0;	
+			}
+			s.balances[s.unstakers[i].account] -= (s.unstakers[i].amount * 100);
+			if ( i == s.unstakers.length - 1) {
+				s.steeloCurrentPrice -= ((s.steeloCurrentPrice * 1) / 10000);
+			}
+		}
+
+		delete s.unstakers;
+
+		
+
+
+        	
+		
+     }
+
+     function mint(address from, uint256 amount) internal {
+	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require(s.adminMembers[from], "only admins can mint steelo tokens");
+//		require(amount > 0, "can not mint 0 amount");
+//		require(amount <= 825000000 * 10 ** 18, "can not mint more than 825 million tokens");
+	        s.balances[from] += amount;
+		s.totalSupply += amount;
+		s.totalTransactionCount += 1;
+		s.totalMinted += amount;
+	}
+
+	 function calculateGenerationMintAmount() public returns (uint256) {
+		AppStorage storage s = LibAppStorage.diamondStorage();
+		uint256 adjustmentFactor = 1 * (10 ** 6);
+        	if (s.steeloCurrentPrice >= AppConstants.pMax) {
+            		adjustmentFactor += (((s.steeloCurrentPrice - AppConstants.pMax) * AppConstants.alpha) / 100);
+        	} else if (s.steeloCurrentPrice <= AppConstants.pMin) {
+            		adjustmentFactor -= (((AppConstants.pMin - s.steeloCurrentPrice) * AppConstants.beta) / 100);
+        	} else {
+            		adjustmentFactor += adjustmentFactor / 100;
+        	}
+        	s.mintAmount = (AppConstants.rho * uint256(s.totalTransactionCount) * adjustmentFactor) / 10 ** 11;
+		s.mintAmount *= 10 ** 18;
+
+        	return s.mintAmount;
+    }
 	 
 		
 

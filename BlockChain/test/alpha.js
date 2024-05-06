@@ -243,6 +243,54 @@ describe('DiamondTest', async function () {
       assert.sameMembers(result, selectors)
   
     }).timeout(600000)
+
+
+   it('should add the Steelo4 Facet', async () => {
+
+      const Steelo4Facet = await ethers.getContractFactory('STEELO4Facet')
+      const steelo4Facet = await Steelo4Facet.deploy()
+  
+      let selectors = getSelectors(steelo4Facet);
+      let addresses = [];
+      addresses.push(steelo4Facet.address);
+      
+      await diamondCutFacet.diamondCut([[steelo4Facet.address, FacetCutAction.Add, selectors]], ethers.constants.AddressZero, '0x');
+  
+      result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
+      assert.sameMembers(result, selectors)
+  
+    }).timeout(600000)
+
+   it('addr6 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr6).createSteeloUser()).to.not.be.reverted;
+
+    })
+   
+    it('addr7 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr7).createSteeloUser()).to.not.be.reverted;
+
+    })
+
+    it('addr8 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr8).createSteeloUser()).to.not.be.reverted;
+
+    })
+
+    it('addr9 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr9).createSteeloUser()).to.not.be.reverted;
+
+    })
+
+
+
    it('should initiate Steelo from addr1 must be rejected', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
@@ -566,7 +614,7 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance before staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr1).getStakedBalance();
+      let balance = await Steelo2.connect(addr2).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance :", parseFloat(balance));
 
@@ -576,7 +624,7 @@ describe('DiamondTest', async function () {
     it('Get interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr1).getInterest();
+      let interest = await Steelo2.connect(addr2).getInterest();
       console.log("Interest before staking:",parseFloat(interest));
 
     })
@@ -586,14 +634,14 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 1;
-      await expect(Steelo.connect(addr1).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr2).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
 
     })
 
     it('Get interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr1).getInterest();
+      let interest = await Steelo2.connect(addr2).getInterest();
       console.log("Interest after staking:", parseFloat(interest));
 
     })
@@ -602,14 +650,14 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 6;
-      await expect(Steelo.connect(addr1).stakeSteelo(month, {value: ethers.utils.parseEther("0.5")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr2).stakeSteelo(month, {value: ethers.utils.parseEther("0.5")})).to.not.be.reverted;
 
     })
 
     it('Get interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr1).getInterest();
+      let interest = await Steelo2.connect(addr2).getInterest();
       console.log("Interest after staking twice :", parseFloat(interest));
 
     })
@@ -619,7 +667,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 6;
-      await expect(Steelo.connect(addr3).stakeSteelo(month, {value: ethers.utils.parseEther("0.5")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr7).stakeSteelo(month, {value: ethers.utils.parseEther("0.5")})).to.not.be.reverted;
 
     })
 
@@ -627,14 +675,14 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 1;
-      await expect(Steelo.connect(addr2).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr6).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
 
     })
 
     it('Addr2 Interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr2).getInterest();
+      let interest = await Steelo2.connect(addr6).getInterest();
       console.log("Interest after staking twice :", parseFloat(interest));
 
     })
@@ -644,14 +692,14 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 50;
-      await expect(Steelo.connect(addr3).steeloTransfer(addr2.address, amount )).to.not.be.reverted;
+      await expect(Steelo.connect(addr7).steeloTransfer(addr6.address, amount )).to.not.be.reverted;
 
     })
 
      it('Addr2 Interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr2).getInterest();
+      let interest = await Steelo2.connect(addr6).getInterest();
       console.log("Interest after staking twice :", parseFloat(interest));
 
     })
@@ -696,7 +744,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 10;
-      await expect(Steelo.connect(addr1).steeloTransfer(addr2.address, amount )).to.not.be.reverted;
+      await expect(Steelo.connect(addr2).steeloTransfer(addr6.address, amount )).to.not.be.reverted;
 
     })
     it('should check total supply of steelo to be ', async () => { 
@@ -745,7 +793,7 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance after staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr1).getStakedBalance();
+      let balance = await Steelo2.connect(addr2).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr1 :", parseFloat(balance));
 
@@ -754,7 +802,7 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance after of addr2 after transffering from addr1:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr2).getStakedBalance();
+      let balance = await Steelo2.connect(addr6).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr2 :", parseFloat(balance));
 
@@ -763,7 +811,7 @@ describe('DiamondTest', async function () {
     it('should check account balance', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      let balance = await Steelo.steeloBalanceOf(addr2.address);
       balance /= 10 ** 18;
       console.log("addr1 balance after buying STLO with 1 ether :", parseFloat(balance));
 
@@ -773,7 +821,7 @@ describe('DiamondTest', async function () {
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
       let month = 6;
-      await expect(Steelo2.connect(addr1).stakePeriodEnder(month)).to.not.be.reverted;
+      await expect(Steelo2.connect(addr2).stakePeriodEnder(month)).to.not.be.reverted;
 
     })
     
@@ -781,7 +829,7 @@ describe('DiamondTest', async function () {
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
       let month = 6;
-      await expect(Steelo2.connect(addr2).stakePeriodEnder(month)).to.not.be.reverted;
+      await expect(Steelo2.connect(addr6).stakePeriodEnder(month)).to.not.be.reverted;
 
     })
 
@@ -825,7 +873,7 @@ describe('DiamondTest', async function () {
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       		let amount = 9000;
-      		await Steelo.connect(addr1).unstakeSteelo(amount);
+      		await Steelo.connect(addr2).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
       		console.error('Transaction failed with error:', error.message);
@@ -839,7 +887,7 @@ describe('DiamondTest', async function () {
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       		let amount = 1000;
-      		await Steelo.connect(addr2).unstakeSteelo(amount);
+      		await Steelo.connect(addr6).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
       		console.error('Transaction failed with error:', error.message);
@@ -867,7 +915,7 @@ describe('DiamondTest', async function () {
     it('should check account balance', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      let balance = await Steelo.steeloBalanceOf(addr2.address);
 //      balance /= 10 ** 18;
       console.log("addr1 STLO balance after selling STLO :", parseInt(balance));
 
@@ -1171,7 +1219,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 2;
-      await expect(Steelo.connect(addr6).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr9).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
 
     })
 
@@ -1179,7 +1227,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 3;
-      await expect(Steelo.connect(addr5).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr8).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
 
     })
 
@@ -1187,7 +1235,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 4;
-      await expect(Steelo.connect(addr4).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr7).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
 
     })
 
@@ -1195,7 +1243,34 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       let month = 1;
-      await expect(Steelo.connect(addr3).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
+      await expect(Steelo.connect(addr6).stakeSteelo(month, {value: ethers.utils.parseEther("1")})).to.not.be.reverted;
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr9).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr9:", parseFloat(balance));
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr8).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr8:", parseFloat(balance));
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr7).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr7:", parseFloat(balance));
 
     })
 
@@ -1205,33 +1280,6 @@ describe('DiamondTest', async function () {
       let balance = await Steelo2.connect(addr6).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr6:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr5).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr5:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr4).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr4:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr3).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr3:", parseFloat(balance));
 
     })
 
@@ -1246,13 +1294,13 @@ describe('DiamondTest', async function () {
 
     })
 
-    it('should transfer 45 STLO from owner to addr1', async () => { 
+    it('should transfer 45 STLO from owner to addr2', async () => { 
   
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       		let amount = 45;
-      		await Steelo.connect(addr6).steeloTransfer(addr2.address, amount );
+      		await Steelo.connect(addr9).steeloTransfer(addr6.address, amount );
       		console.log('Transaction succeeded');
     	} catch (error) {
       		console.error('Transaction failed with error:', error.message);
@@ -1264,7 +1312,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 45;
-      await expect(Steelo.connect(addr5).steeloTransfer(addr2.address, amount )).to.not.be.reverted;
+      await expect(Steelo.connect(addr8).steeloTransfer(addr6.address, amount )).to.not.be.reverted;
 
     })
 
@@ -1272,7 +1320,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 62;
-      await expect(Steelo.connect(addr4).steeloTransfer(addr6.address, amount )).to.not.be.reverted;
+      await expect(Steelo.connect(addr7).steeloTransfer(addr9.address, amount )).to.not.be.reverted;
 
     })
 
@@ -1280,7 +1328,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 29;
-      await expect(Steelo.connect(addr2).steeloTransfer(addr3.address, amount )).to.not.be.reverted;
+      await expect(Steelo.connect(addr6).steeloTransfer(addr7.address, amount )).to.not.be.reverted;
 
     })
 
@@ -1288,7 +1336,7 @@ describe('DiamondTest', async function () {
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
       let amount = 100;
-      await expect(Steelo.connect(addr3).steeloTransfer(addr4.address, amount )).to.not.be.reverted;
+      await expect(Steelo.connect(addr6).steeloTransfer(addr7.address, amount )).to.not.be.reverted;
 
     })
 
@@ -1296,7 +1344,7 @@ describe('DiamondTest', async function () {
      it('get staked ETH balance after staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr6).getStakedBalance();
+      let balance = await Steelo2.connect(addr9).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr6:", parseFloat(balance));
 
@@ -1305,7 +1353,7 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance after staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr5).getStakedBalance();
+      let balance = await Steelo2.connect(addr8).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr5:", parseFloat(balance));
 
@@ -1314,7 +1362,7 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance after staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr4).getStakedBalance();
+      let balance = await Steelo2.connect(addr7).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr4:", parseFloat(balance));
 
@@ -1323,7 +1371,7 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance after staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr3).getStakedBalance();
+      let balance = await Steelo2.connect(addr6).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr3:", parseFloat(balance));
 
@@ -1338,36 +1386,36 @@ describe('DiamondTest', async function () {
 
     })
 
+    it('stake period ender for addr9', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
+      let month = 6;
+      await expect(Steelo2.connect(addr9).stakePeriodEnder(month)).to.not.be.reverted;
+
+    })
+
+    it('stake period ender for addr8', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
+      let month = 6;
+      await expect(Steelo2.connect(addr8).stakePeriodEnder(month)).to.not.be.reverted;
+
+    })
+
+    it('stake period ender for addr7', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
+      let month = 6;
+      await expect(Steelo2.connect(addr7).stakePeriodEnder(month)).to.not.be.reverted;
+
+    })
+
+
     it('stake period ender for addr6', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
       let month = 6;
       await expect(Steelo2.connect(addr6).stakePeriodEnder(month)).to.not.be.reverted;
-
-    })
-
-    it('stake period ender for addr5', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      let month = 6;
-      await expect(Steelo2.connect(addr5).stakePeriodEnder(month)).to.not.be.reverted;
-
-    })
-
-    it('stake period ender for addr4', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      let month = 6;
-      await expect(Steelo2.connect(addr4).stakePeriodEnder(month)).to.not.be.reverted;
-
-    })
-
-
-    it('stake period ender for addr3', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      let month = 6;
-      await expect(Steelo2.connect(addr3).stakePeriodEnder(month)).to.not.be.reverted;
 
     })
 
@@ -1380,13 +1428,13 @@ describe('DiamondTest', async function () {
 
     })
 
-    it('unstake 100 STLO for addr6', async () => { 
+    it('unstake 100 STLO for addr9', async () => { 
   
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       		let amount = 12084;
-      		await Steelo.connect(addr6).unstakeSteelo(amount);
+      		await Steelo.connect(addr9).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
       		console.error('Transaction failed with error:', error.message);
@@ -1394,13 +1442,13 @@ describe('DiamondTest', async function () {
 
     })
 
-    it('unstake 100 STLO for addr5', async () => { 
+    it('unstake 100 STLO for addr8', async () => { 
   
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       		let amount = 5665;
-      		await Steelo.connect(addr5).unstakeSteelo(amount);
+      		await Steelo.connect(addr8).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
       		console.error('Transaction failed with error:', error.message);
@@ -1408,13 +1456,13 @@ describe('DiamondTest', async function () {
 
     })
 
-    it('unstake 100 STLO for addr4', async () => { 
+    it('unstake 100 STLO for addr7', async () => { 
   
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       		let amount = 14151;
-      		await Steelo.connect(addr4).unstakeSteelo(amount);
+      		await Steelo.connect(addr7).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
       		console.error('Transaction failed with error:', error.message);
@@ -1422,13 +1470,13 @@ describe('DiamondTest', async function () {
 
     })
 
-    it('unstake 100 STLO for addr3', async () => { 
+    it('unstake 100 STLO for addr6', async () => { 
   
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
       		let amount = 2961;
-      		await Steelo.connect(addr3).unstakeSteelo(amount);
+      		await Steelo.connect(addr6).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
       		console.error('Transaction failed with error:', error.message);
@@ -1499,36 +1547,36 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance before staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr9).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr9:", parseFloat(balance));
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr8).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr8:", parseFloat(balance));
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr7).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr7:", parseFloat(balance));
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
       let balance = await Steelo2.connect(addr6).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr6:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr5).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr5:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr4).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr4:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr3).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr3:", parseFloat(balance));
 
     })
 
@@ -1544,20 +1592,11 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance before staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr1).getStakedBalance();
+      let balance = await Steelo2.connect(addr2).getStakedBalance();
       balance /= 10 ** 18;
-      console.log("Staked Balance of addr1:", parseFloat(balance));
+      console.log("Staked Balance of addr2:", parseFloat(balance));
 
     })
-
-    it('Addr1 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr1).getInterest();
-      console.log("Interest addr1 :", parseFloat(interest));
-
-    })
-    
 
     it('Addr2 Interest rate', async () => { 
   
@@ -1566,46 +1605,55 @@ describe('DiamondTest', async function () {
       console.log("Interest addr2 :", parseFloat(interest));
 
     })
-          
-
-    it('Addr3 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr3).getInterest();
-      console.log("Interest addr3 :", parseFloat(interest));
-
-    })
     
-
-   
-
-    it('Addr4 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr4).getInterest();
-      console.log("Interest addr4 :", parseFloat(interest));
-
-    })
-    
-
-   
-
-    it('Addr5 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr5).getInterest();
-      console.log("Interest addr5 :", parseFloat(interest));
-
-    })
-    
-
-   
 
     it('Addr6 Interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
       let interest = await Steelo2.connect(addr6).getInterest();
-      console.log("Interest after staking twice :", parseFloat(interest));
+      console.log("Interest addr6 :", parseFloat(interest));
+
+    })
+          
+
+    it('Addr7 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr7).getInterest();
+      console.log("Interest addr7 :", parseFloat(interest));
+
+    })
+    
+
+   
+
+    it('Addr8 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr8).getInterest();
+      console.log("Interest addr8 :", parseFloat(interest));
+
+    })
+    
+
+   
+
+    it('Addr9 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr9).getInterest();
+      console.log("Interest addr9 :", parseFloat(interest));
+
+    })
+    
+
+   
+
+    it('Addr9 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr9).getInterest();
+      console.log("Interest addr9 :", parseFloat(interest));
 
     })
 
@@ -1630,12 +1678,12 @@ describe('DiamondTest', async function () {
 
 
 
-    it('Unstakers get what they were owed', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      await expect(Steelo2.connect(addr2).steeloMintAdvanced()).to.not.be.reverted;
-
-    })
+//    it('Unstakers get what they were owed', async () => { 
+//  
+//      const Steelo2 = await ethers.getContractAt('STEELOFacet', diamondAddress);
+//      await expect(Steelo2.connect(addr2).steeloMintAdvanced()).to.not.be.reverted;
+//
+//    })
 
 	it('Get Unstakers before', async () => { 
 	  
@@ -1647,62 +1695,62 @@ describe('DiamondTest', async function () {
 	
 
  
-     it('Addr1 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr1).getInterest();
-      console.log("Interest addr1 :", parseFloat(interest));
-
-    })
-    
-
-    it('Addr2 Interest rate', async () => { 
+     it('Addr2 Interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
       let interest = await Steelo2.connect(addr2).getInterest();
       console.log("Interest addr2 :", parseFloat(interest));
 
     })
-          
-
-    it('Addr3 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr3).getInterest();
-      console.log("Interest addr3 :", parseFloat(interest));
-
-    })
     
-
-   
-
-    it('Addr4 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr4).getInterest();
-      console.log("Interest addr4 :", parseFloat(interest));
-
-    })
-    
-
-   
-
-    it('Addr5 Interest rate', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let interest = await Steelo2.connect(addr5).getInterest();
-      console.log("Interest addr5 :", parseFloat(interest));
-
-    })
-    
-
-   
 
     it('Addr6 Interest rate', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
       let interest = await Steelo2.connect(addr6).getInterest();
-      console.log("Interest after staking twice :", parseFloat(interest));
+      console.log("Interest addr6 :", parseFloat(interest));
+
+    })
+          
+
+    it('Addr7 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr7).getInterest();
+      console.log("Interest addr7 :", parseFloat(interest));
+
+    })
+    
+
+   
+
+    it('Addr8 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr8).getInterest();
+      console.log("Interest addr8 :", parseFloat(interest));
+
+    })
+    
+
+   
+
+    it('Addr9 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr9).getInterest();
+      console.log("Interest addr9 :", parseFloat(interest));
+
+    })
+    
+
+   
+
+    it('Addr9 Interest rate', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let interest = await Steelo2.connect(addr9).getInterest();
+      console.log("Interest addr9 :", parseFloat(interest));
 
     })
     
@@ -1710,6 +1758,33 @@ describe('DiamondTest', async function () {
     
     
 
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr9).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr9:", parseFloat(balance));
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr8).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr8:", parseFloat(balance));
+
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr7).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr7:", parseFloat(balance));
+
+    })
 
     it('get staked ETH balance before staking:', async () => { 
   
@@ -1717,33 +1792,6 @@ describe('DiamondTest', async function () {
       let balance = await Steelo2.connect(addr6).getStakedBalance();
       balance /= 10 ** 18;
       console.log("Staked Balance of addr6:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr5).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr5:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr4).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr4:", parseFloat(balance));
-
-    })
-
-    it('get staked ETH balance before staking:', async () => { 
-  
-      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr3).getStakedBalance();
-      balance /= 10 ** 18;
-      console.log("Staked Balance of addr3:", parseFloat(balance));
 
     })
 
@@ -1760,9 +1808,9 @@ describe('DiamondTest', async function () {
     it('get staked ETH balance before staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
-      let balance = await Steelo2.connect(addr1).getStakedBalance();
+      let balance = await Steelo2.connect(addr2).getStakedBalance();
       balance /= 10 ** 18;
-      console.log("Staked Balance of addr1:", parseFloat(balance));
+      console.log("Staked Balance of addr2:", parseFloat(balance));
 
     })
    
@@ -1793,7 +1841,14 @@ describe('DiamondTest', async function () {
       console.log("ecosystem provider steelo balance :", parseFloat(balance));
 
     })
-    
+   
+
+    it('addr9 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr9).createSteeloUser()).to.be.reverted;
+
+    })
 
     
 

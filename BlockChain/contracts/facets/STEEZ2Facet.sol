@@ -20,14 +20,8 @@ contract STEEZ2Facet {
 	function bidLaunch(string memory creatorId, uint256 amount) public payable {		
 		LibSteez.bidLaunch(msg.sender, creatorId, amount);
 	}
-	function P2PBuy( string memory creatorId, uint256 buyingPrice, uint256 buyingAmount) public {
-		LibSteez.P2PBuy(msg.sender, creatorId, buyingPrice, buyingAmount);
-	}
-
 	
-	function bidAnniversary(string memory creatorId, uint256 amount) public payable {		
-		LibSteez.bidAnniversary(msg.sender, creatorId, amount);
-	}
+
 
 	
 

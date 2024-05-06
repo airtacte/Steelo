@@ -273,10 +273,76 @@ it('add the Village Facet', async () => {
   
     }).timeout(600000)
 
+    it('Add the Steez4 Facet', async () => {
+
+      const Steez4Facet = await ethers.getContractFactory('STEEZ4Facet')
+      const steez4Facet = await Steez4Facet.deploy()
+  
+      let selectors = getSelectors(steez4Facet);
+      let addresses = [];
+      addresses.push(steez4Facet.address);
+      
+      await diamondCutFacet.diamondCut([[steez4Facet.address, FacetCutAction.Add, selectors]], ethers.constants.AddressZero, '0x');
+  
+      result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
+      assert.sameMembers(result, selectors)
+  
+    }).timeout(600000)
+
+    it('Add the Steez5 Facet', async () => {
+
+      const Steez5Facet = await ethers.getContractFactory('STEEZ5Facet')
+      const steez5Facet = await Steez5Facet.deploy()
+  
+      let selectors = getSelectors(steez5Facet);
+      let addresses = [];
+      addresses.push(steez5Facet.address);
+      
+      await diamondCutFacet.diamondCut([[steez5Facet.address, FacetCutAction.Add, selectors]], ethers.constants.AddressZero, '0x');
+  
+      result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
+      assert.sameMembers(result, selectors)
+  
+    }).timeout(600000)
+
+
+    it('Add the Steez6 Facet', async () => {
+
+      const Steez6Facet = await ethers.getContractFactory('STEEZ6Facet')
+      const steez6Facet = await Steez6Facet.deploy()
+  
+      let selectors = getSelectors(steez6Facet);
+      let addresses = [];
+      addresses.push(steez6Facet.address);
+      
+      await diamondCutFacet.diamondCut([[steez6Facet.address, FacetCutAction.Add, selectors]], ethers.constants.AddressZero, '0x');
+  
+      result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
+      assert.sameMembers(result, selectors)
+  
+    }).timeout(600000)
+
+
+    it('Add the Steez7 Facet', async () => {
+
+      const Steez7Facet = await ethers.getContractFactory('STEEZ7Facet')
+      const steez7Facet = await Steez7Facet.deploy()
+  
+      let selectors = getSelectors(steez7Facet);
+      let addresses = [];
+      addresses.push(steez7Facet.address);
+      
+      await diamondCutFacet.diamondCut([[steez7Facet.address, FacetCutAction.Add, selectors]], ethers.constants.AddressZero, '0x');
+  
+      result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
+      assert.sameMembers(result, selectors)
+  
+    }).timeout(600000)
+
 
 //   it('should initiate Steez', async () => { 
 //  
-//	const Steez = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+//	const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
 //  	await expect(Steez.connect(owner).steezInitiate()).to.not.be.reverted;
 //
 //    })
@@ -284,7 +350,7 @@ it('add the Village Facet', async () => {
 
 //   it('should check name of Steez token name is Steez', async () => { 
 //  
-//      const Steelo = await ethers.getContractAt('STEEZ3Facet', diamondAddress)
+//      const Steelo = await ethers.getContractAt('STEEZ4Facet', diamondAddress)
 //      let name = await Steelo.creatorTokenName()
 //      expect(name).to.equal("Steez");
 //
@@ -295,7 +361,7 @@ it('add the Village Facet', async () => {
    
     it('should fail to check name of Steelo coin name is Ezra', async () => { 
   
-      const Steelo = await ethers.getContractAt('STEEZ3Facet', diamondAddress)
+      const Steelo = await ethers.getContractAt('STEEZ4Facet', diamondAddress)
       let name = await Steelo.creatorTokenName()
       expect(name).to.not.equal("Ezra");
 
@@ -333,7 +399,7 @@ it('add the Village Facet', async () => {
     it('should create Steez', async () => { 
   
 	    try {
-		const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress);
+		const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
    		await Steez.connect(owner).createSteez();
 		console.log("Steez Created Successulyy");
 	    }
@@ -372,7 +438,7 @@ it('add the Village Facet', async () => {
     it('should create Steez Again', async () => { 
   
 	try {
-		const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress);
+		const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
    		await Steez.connect(owner).createSteez();
 		console.log("Transaction Succeded");
 	}
@@ -385,7 +451,7 @@ it('add the Village Facet', async () => {
 
 //    it('should create Steez again', async () => { 
 //  
-//	const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress);
+//	const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
 //   	await expect(Steez.connect(owner).createSteez()).to.not.be.reverted;
 //
 //    })
@@ -399,10 +465,37 @@ it('add the Village Facet', async () => {
 //
 //    })
 
+   it('should add the Steelo 4 Facet', async () => {
+
+      const Steelo4Facet = await ethers.getContractFactory('STEELO4Facet')
+      const steelo4Facet = await Steelo4Facet.deploy()
+  
+      let selectors = getSelectors(steelo4Facet);
+      let addresses = [];
+      addresses.push(steelo4Facet.address);
+      
+      await diamondCutFacet.diamondCut([[steelo4Facet.address, FacetCutAction.Add, selectors]], ethers.constants.AddressZero, '0x');
+  
+      result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
+      assert.sameMembers(result, selectors)
+  
+    }).timeout(600000)
+
+
+    it('Steez Status', async() => {
+  
+	const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const steezStatus = await Steelo4.connect(addr2).steezStatus(creatorId);
+	console.log("Steez Status:", steezStatus);
+	
+    })
+    
+
 
     it('should preorder steez', async () => { 
   
-	const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress);
+	const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
 	let creatorId = "fvG74d0z271TuaE6WD2t";
    	await expect(Steez.connect(owner).initializePreOrder(creatorId)).to.not.be.reverted;
 
@@ -420,7 +513,7 @@ it('add the Village Facet', async () => {
 
     it('should fail to preorder steez again', async () => { 
   
-	const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress);
+	const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
 	let creatorId = "fvG74d0z271TuaE6WD2t";
    	await expect(Steez.connect(owner).initializePreOrder(creatorId)).to.be.reverted;
 
@@ -530,7 +623,7 @@ it('add the Village Facet', async () => {
   
     }).timeout(600000)
 
-        it('should add the Steelo 3 Facet', async () => {
+    it('should add the Steelo 3 Facet', async () => {
 
       const Steelo3Facet = await ethers.getContractFactory('STEELO3Facet')
       const steelo3Facet = await Steelo3Facet.deploy()
@@ -545,8 +638,37 @@ it('add the Village Facet', async () => {
       assert.sameMembers(result, selectors)
   
     }).timeout(600000)
+
+      
     
 
+      it('addr6 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr6).createSteeloUser()).to.not.be.reverted;
+
+    })
+   
+    it('addr7 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr7).createSteeloUser()).to.not.be.reverted;
+
+    })
+
+    it('addr8 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr8).createSteeloUser()).to.not.be.reverted;
+
+    })
+
+    it('addr9 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      await expect(Steelo4.connect(addr9).createSteeloUser()).to.not.be.reverted;
+
+    })
 
 
       it('should convert ETH to Steelo', async () => { 
@@ -1385,7 +1507,7 @@ it('add the Village Facet', async () => {
 
     it('addr1 accepting preorder bid', async () => { 
   
-      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr1).AcceptOrReject(creatorId, true )).to.not.be.reverted;
 
@@ -1393,7 +1515,7 @@ it('add the Village Facet', async () => {
 
     it('addr1 accepting preorder bid again', async () => { 
   
-      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr1).AcceptOrReject(creatorId, true )).to.be.reverted;
 
@@ -1401,7 +1523,7 @@ it('add the Village Facet', async () => {
 
     it('addr2 accepting preorder bid', async () => { 
   
-      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr2).AcceptOrReject(creatorId, true )).to.not.be.reverted;
 
@@ -1409,7 +1531,7 @@ it('add the Village Facet', async () => {
 
     it('addr3 accepting preorder bid', async () => { 
   
-      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr3).AcceptOrReject(creatorId, true )).to.not.be.reverted;
 
@@ -1439,7 +1561,7 @@ it('add the Village Facet', async () => {
 
     it('addr4 accepting preorder bid', async () => { 
   
-      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr4).AcceptOrReject(creatorId, true )).to.not.be.reverted;
 
@@ -1447,7 +1569,7 @@ it('add the Village Facet', async () => {
 
     it('addr5 accepting preorder bid', async () => { 
   
-      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr5).AcceptOrReject(creatorId, true )).to.not.be.reverted;
 
@@ -1475,14 +1597,14 @@ it('add the Village Facet', async () => {
 
 //    it('should accept or reject after preorder 6 first', async () => { 
 //  
-//      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+//      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 //      await expect(Steez.connect(addr6).AcceptOrReject(0, true )).to.not.be.reverted;
 //
 //    })
 
     it('should accept or reject after preorder 6 again', async () => { 
   
-      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
+      const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr6).AcceptOrReject(creatorId, true )).to.be.reverted;
 
@@ -1688,9 +1810,19 @@ it('add the Village Facet', async () => {
 
     })
 
+ it('Steez Status', async() => {
+  
+	const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const steezStatus = await Steelo4.connect(addr2).steezStatus(creatorId);
+	console.log("Steez Status:", steezStatus);
+	
+    })
+    
+
     it('Launch Starter add minus 1 week of the time stamp', async () => { 
   
-      const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress)
+      const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez2.connect(addr6).launchStarter(creatorId)).to.not.be.reverted;
 
@@ -2158,7 +2290,7 @@ it('get staked ETH balance before staking:', async () => {
   it('addr1 P2P sell 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr1).initiateP2PSell(creatorId, 54, 1);
       		console.log('Transaction succeeded');
@@ -2171,7 +2303,7 @@ it('get staked ETH balance before staking:', async () => {
     it('addr2 P2P sell 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr2).initiateP2PSell(creatorId, 56, 1);
       		console.log('Transaction succeeded');
@@ -2185,7 +2317,7 @@ it('get staked ETH balance before staking:', async () => {
     it('addr3 P2P sell 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr3).initiateP2PSell(creatorId, 57, 1);
       		console.log('Transaction succeeded');
@@ -2198,7 +2330,7 @@ it('get staked ETH balance before staking:', async () => {
     it('addr4 P2P sell 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr4).initiateP2PSell(creatorId, 58, 1);
       		console.log('Transaction succeeded');
@@ -2211,7 +2343,7 @@ it('get staked ETH balance before staking:', async () => {
     it('addr5 P2P sell 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr5).initiateP2PSell(creatorId, 59, 1);
       		console.log('Transaction succeeded');
@@ -2223,7 +2355,7 @@ it('get staked ETH balance before staking:', async () => {
     })
     it('return all sellers', async () => { 
   
-	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+	const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
 	let creatorId = "fvG74d0z271TuaE6WD2t";
         const sellers = await Steez2.returnSellers(creatorId);
         console.log("sellers of index : ", sellers.length);
@@ -2273,12 +2405,41 @@ it('get staked ETH balance before staking:', async () => {
 
     })
 
+   it('see all Steez transaction', async() => {
+  
+	const Steez4 = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const transaction = await Steez4.connect(addr2).returnSteezTransaction(creatorId);
+	console.log(" Steez Transaction:", parseFloat(transaction));
+	
+    })
+   
+    it('liquidity provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("liquidity provider steelo balance :", parseFloat(balance));
+
+    })
+
+     it('ecosystem provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr2.address);
+      balance /= 10 ** 18;
+      console.log("ecosystem provider steelo balance :", parseFloat(balance));
+
+    })
+
+  
+
 
 
   it('addr6 P2P buy 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ6Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr6).P2PBuy(creatorId, 59, 1);
       		console.log('Transaction succeeded');
@@ -2288,6 +2449,8 @@ it('get staked ETH balance before staking:', async () => {
       	
 
     })
+
+    
 
     it('should check investors length after p2p buy', async () => { 
   
@@ -2332,7 +2495,7 @@ it('get staked ETH balance before staking:', async () => {
     })
 	it('return all sellers', async () => { 
   
-	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+	const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
 	let creatorId = "fvG74d0z271TuaE6WD2t";
         const sellers = await Steez2.returnSellers(creatorId);
         console.log("sellers of index : ", sellers.length);
@@ -2340,10 +2503,12 @@ it('get staked ETH balance before staking:', async () => {
 
   });
 
+   
+
    it('addr6 P2P buy 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ6Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr6).P2PBuy(creatorId, 56, 1);
       		console.log('Transaction succeeded');
@@ -2354,19 +2519,125 @@ it('get staked ETH balance before staking:', async () => {
 
     })
 
+   it('Steez Status', async() => {
+  
+	const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const steezStatus = await Steelo4.connect(addr2).steezStatus(creatorId);
+	console.log("Steez Status:", steezStatus);
+	
+    })
+
+    
+
 
    it('Anniversary Starter add minus 1 year of the time stamp', async () => { 
   
-      const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress)
+      const Steez2 = await ethers.getContractAt('STEEZ4Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez2.connect(addr6).anniversaryStarter(creatorId)).to.not.be.reverted;
+
+    })
+
+    it('see all Steez transaction', async() => {
+  
+	const Steez4 = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const transaction = await Steez4.connect(addr2).returnSteezTransaction(creatorId);
+	console.log("Steez Transaction:", parseFloat(transaction));
+	
+    })
+   
+    it('liquidity provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("liquidity provider steelo balance :", parseFloat(balance));
+
+    })
+
+     it('ecosystem provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr2.address);
+      balance /= 10 ** 18;
+      console.log("ecosystem provider steelo balance :", parseFloat(balance));
+
+    })
+
+    it('unstake 100 STLO for addr9', async () => { 
+  
+      
+      try {	
+      		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
+      		let amount = 12084;
+      		await Steelo.connect(addr9).unstakeSteelo(amount);
+      		console.log('Transaction succeeded');
+    	} catch (error) {
+      		console.error('Transaction failed with error:', error.message);
+    	}
+
+    })
+
+    it('unstake 10 STLO for addr2', async () => { 
+  
+      
+      try {	
+      		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
+      		let amount = 1665;
+      		await Steelo.connect(addr2).unstakeSteelo(amount);
+      		console.log('Transaction succeeded');
+    	} catch (error) {
+      		console.error('Transaction failed with error:', error.message);
+    	}
+
+    })
+
+    it('unstake 10 STLO for addr6', async () => { 
+  
+      
+      try {	
+      		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
+      		let amount = 1415;
+      		await Steelo.connect(addr7).unstakeSteelo(amount);
+      		console.log('Transaction succeeded');
+    	} catch (error) {
+      		console.error('Transaction failed with error:', error.message);
+    	}
+
+    })
+
+    it('Get Unstakers before', async () => { 
+  	
+  	    const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+  	    let unstakers = await Steelo2.getUnstakers();
+  	    console.log("Unstakers before :", unstakers);
+
+     })
+
+    it('get staked ETH balance before staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr2).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr2:", parseFloat(balance));
+
+    })
+
+    it('Steelo Current Price:', async () => { 
+  
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress)
+      let price = await Steelo4.connect(addr1).steeloPrice();
+      price /= 10 ** 6;
+      console.log("Steelo Price Before :", parseFloat(price));
 
     })
 
 	it('addr6 P2P buy 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ6Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr6).P2PBuy(creatorId, 57, 1);
       		console.log('Transaction succeeded');
@@ -2377,7 +2648,61 @@ it('get staked ETH balance before staking:', async () => {
 
     })
 
-it('get staked ETH balance before staking:', async () => { 
+    it('Steelo Current Price:', async () => { 
+  
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress)
+      let price = await Steelo4.connect(addr1).steeloPrice();
+      price /= 10 ** 6;
+      console.log("Steelo Price Before :", parseFloat(price));
+
+    })
+
+
+    it('get staked ETH balance after staking:', async () => { 
+  
+      const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+      let balance = await Steelo2.connect(addr2).getStakedBalance();
+      balance /= 10 ** 18;
+      console.log("Staked Balance of addr2:", parseFloat(balance));
+
+    })
+
+    it('Get Unstakers after', async () => { 
+  	
+  	    const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
+  	    let unstakers = await Steelo2.getUnstakers();
+  	    console.log("Unstakers after :", unstakers);
+
+  	  })
+ 
+    it('liquidity provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr1.address);
+      balance /= 10 ** 18;
+      console.log("liquidity provider steelo balance :", parseFloat(balance));
+
+    })
+
+     it('ecosystem provider balance after any transaction', async () => { 
+  
+      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
+      let balance = await Steelo.steeloBalanceOf(addr2.address);
+      balance /= 10 ** 18;
+      console.log("ecosystem provider steelo balance :", parseFloat(balance));
+
+    })
+   
+    it('see all Steez transaction', async() => {
+  
+	const Steez4 = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const transaction = await Steez4.connect(addr2).returnSteezTransaction(creatorId);
+	console.log("Steez Transaction:", parseFloat(transaction));
+	
+    })
+
+    it('get staked ETH balance before staking:', async () => { 
   
       const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress)
       let balance = await Steelo2.connect(addr1).getStakedBalance();
@@ -2517,7 +2842,7 @@ it('get staked ETH balance before staking:', async () => {
     it('addr2 bid anniversary 1 steez', async () => { 
   
       	try {	
-      		const Steez2 = await ethers.getContractAt('STEEZ2Facet', diamondAddress) 
+      		const Steez2 = await ethers.getContractAt('STEEZ7Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr2).bidAnniversary(creatorId, 1 );
       		console.log('Transaction succeeded');
@@ -2701,7 +3026,7 @@ it('get staked ETH balance before staking:', async () => {
     it('should create Steez', async () => { 
   
 	    try {
-		const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress);
+		const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
    		await Steez.connect(addr5).createSteez();
 		console.log("Steez Created Successulyy");
 	    }
@@ -2728,6 +3053,60 @@ it('get staked ETH balance before staking:', async () => {
 	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
    	const creator = await Steez2.connect(addr2).getAllCreatorsData();
 	console.log("Creators:", creator);
+	
+    })
+
+    it('delete a Creator another Account', async () => { 
+  
+	    try {
+		const Steez4 = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
+		profileId = "Vdew6XMcdTJQH2nsBLYF";
+   		await Steez4.connect(addr5).deleteCreator(profileId);
+		console.log("Creator Account Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Creator Account Did not create successully :", error.message);
+	    }
+
+    })
+
+    
+
+    it('fetch creator with id', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+	let creatorId = "Vdew6XMcdTJQH2nsBLYF";
+   	const creator = await Steez2.connect(addr2).getCreatorWithId(creatorId);
+	console.log("Creator id:", creator[0].creatorId);
+	console.log("Creator Address:", creator[0].profileAddress);
+	console.log("Steez Price:", (parseFloat(creator[1]) / 10 ** 18));
+	console.log("Total Investors:", parseFloat(creator[2]));
+	
+    })
+
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creators:", creator);
+	
+    })
+
+    it('see all Steez transaction', async() => {
+  
+	const Steez4 = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const transaction = await Steez4.connect(addr2).returnSteezTransaction(creatorId);
+	console.log("Steez Transaction:", parseFloat(transaction));
+	
+    })
+ 
+    it('Steez Status', async() => {
+  
+	const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const steezStatus = await Steelo4.connect(addr2).steezStatus(creatorId);
+	console.log("Steez Status:", steezStatus);
 	
     })
 

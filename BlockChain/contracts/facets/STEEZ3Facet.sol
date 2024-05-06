@@ -10,34 +10,7 @@ contract STEEZ3Facet {
    
 	AppStorage internal s;
 
-	function steezInitiate () public returns (bool success) {
-		LibSteez.initiate(msg.sender);
-		return true;
-	}
-
 	
-	function creatorTokenName () public view returns (string memory) {
-		return s.creatorTokenName;
-	}
-
-	
-    	function launchStarter(string memory creatorId) public {
-		LibSteez.launchStarter(creatorId);
-	}
-
-	function anniversaryStarter(string memory creatorId) public {
-		LibSteez.anniversaryStarter(creatorId);
-
-	}
-	
-	
-	function initiateP2PSell(string memory creatorId, uint256 sellingAmount, uint256 steezAmount) public {
-		LibSteez.initiateP2PSell(msg.sender, creatorId, sellingAmount, steezAmount);
-		
-	}
-	function returnSellers(string memory creatorId) public view returns (Seller[] memory) {
-		return s.sellers[creatorId];
-	}
 	
 	
 

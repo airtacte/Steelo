@@ -96,9 +96,7 @@ contract STEELOFacet {
 	
 	
 
-	function steeloMintAdvanced() external payable{
-		LibSteelo.steeloMint();
-	}
+	
 
 	
 

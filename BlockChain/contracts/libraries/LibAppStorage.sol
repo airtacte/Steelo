@@ -39,29 +39,29 @@ library AppConstants{
         uint256 constant MAX_CREATOR_TOKENS = 5000;
         uint256 constant ANNUAL_TOKEN_INCREASE_PERCENTAGE = 10;
         // Stakeholder's royalty distribution
-        address constant treasury = 0x1AC96404FB2Bc17E6716b8329bd5333E54d7ABea;
+        address constant treasury = 0xAf7E99DB9161E168485E1595171E825DB741eA97;
         uint256 constant trasuryTGE = 35;
         uint256 constant treasuryMint = 35;
-        address constant liquidityProviders = 0xaCaF5558013410d72087eEDF70F769B16ea1c9a2;
+        address constant liquidityProviders = 0x319F155b2d6BB276Cd57a77aA72BFEdEDd227e14;
         uint256 constant liquidityProvidersMint = 55;
-        address constant ecosystemProviders = 0xDD1f7587A0a1da0Fe21ACCcf2d0485D0AE7eD8Ff;
+        address constant ecosystemProviders = 0x651E0D1ffbFf9F3E9DFAF134fE38289B1A5fEBAC;
         uint256 constant ecosystemProvidersMint = 10;
-        address constant foundersAddress = 0x1B198070e0D00E662d8e0234aF310de96005736e;
+        address constant foundersAddress = 0x456Fb01ad5a411aA7200a2C7fe3c7A79793f0726;
         uint256 constant foundersTGE = 20;
-        address constant earlyInvestorsAddress = 0x81F4ee83AFCCDEBcb4e935524881c098cb33f0a3;
+        address constant earlyInvestorsAddress = 0xA599AdD77EBa453C6433ea58cD82D6cbf9265B77;
         uint256 constant earlyInvestorsTGE = 10;
-        address constant communityAddress = 0x583336e341DEC077376Fcc585fF75Ad3ef218718;
+        address constant communityAddress = 0x42CE3a06768A83d2B3dE6d3E2138cCD094c5DddE;
         uint256 constant communityTGE = 35;
-        address constant steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
+//        address constant steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
         uint256 constant FEE_RATE = 25;
-        address constant uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
-        address constant gbptAddress = 0x86B4dBE5D203e634a12364C0e428fa242A3FbA98;
+//        address constant uniswapAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
+//        address constant gbptAddress = 0x86B4dBE5D203e634a12364C0e428fa242A3FbA98;
         // Safe Global - Addresses to be replaced
-        address constant SAFE_PROXY_FACTORY_ADDRESS = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
-        address constant SAFE_MASTER_COPY = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
+//        address constant SAFE_PROXY_FACTORY_ADDRESS = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
+//        address constant SAFE_MASTER_COPY = 0x07720111f3d48427e55e35CB07b5D203A4edCd08;
         uint256 constant saltNonce = 1000;
         // Chainlink
-        address constant CHAINLINK_TOKEN_ADDRESS = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;
+//        address constant CHAINLINK_TOKEN_ADDRESS = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;
         uint256 constant CHAINLINK_FEE = 0.1 ether;
         // Utility Constants
         uint256 constant oneYear = 365 days;
@@ -143,6 +143,7 @@ library AppConstants{
         Investor[] investors; 
         Royalty royalties; 
 	mapping(address => uint256) SteeloInvestors;
+	string status;
     }
 
 
@@ -286,6 +287,8 @@ struct AppStorage {
     address P2PSeller;
 //    mapping ( string => Steez) profileSteez;
 //    mapping ( string => Creator) profileCreator;
+    mapping ( string => uint256) totalSteezTransaction;
+    mapping ( string => uint256) mintingTransactionLimit;
 
 
     mapping( string => mapping (address => mapping(address => Message[]))) p2pMessages;

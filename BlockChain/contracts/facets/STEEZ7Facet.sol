@@ -10,7 +10,7 @@ import {AppConstants} from "../libraries/LibAppStorage.sol";
 import {Steez} from "../libraries/LibAppStorage.sol";
 
 
-contract STEEZFacet {
+contract STEEZ7Facet {
    
 	AppStorage internal s;
 
@@ -61,12 +61,11 @@ contract STEEZFacet {
 
 	
 
-	
-
-	function bidPreOrder(string memory creatorId, uint256 amount) public payable {
-		LibSteez.bidPreOrder( msg.sender, creatorId, amount );
 		
+	function bidAnniversary(string memory creatorId, uint256 amount) public payable {		
+		LibSteez.bidAnniversary(msg.sender, creatorId, amount);
 	}
+
 	
 
 	
