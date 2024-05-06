@@ -5,7 +5,8 @@ import cityRouter from "./controllers/cities-crud.controller";
 import creatorRouter from "./controllers/videoUpload";
 import authRouter from "./controllers/authentication";
 import bodyParser from "body-parser";
-import * as dotenv from 'dotenv'
+import * as dotenv from 'dotenv';
+const cors = require('cors');
 dotenv.config();
 
 const isLogin = require("./middlewares/isLogin");
@@ -24,6 +25,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+const corsOptions = {
+  origin: 'http://localhost:3000', // Allow only this origin to communicate with the server
+  credentials: true, // Allowing cookies and headers to be included in requests
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+};
+
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
     res.send('hello world.')

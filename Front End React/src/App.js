@@ -4,12 +4,54 @@ import Diamond from "./artifacts/steeloDiamond.json";
 import "./App.css";
 import Navbar from './Components/Navbar';
 import Main from "./Components/Main";
+import Login from "./Components/Login";
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 
 const diamondAddress = "0xBb82189095956d7E0CD0f1835de347deeaD57051";
 
 function App() {
+
+
+
+
+  const [token, setToken] = useState('');
+  const [user, setUser] = useState('');
+  const [loginData, setLoginData] = useState({
+		      email: "",
+		      password: "",
+		    });
+  const [signupData, setSignupData] = useState({
+	      email: '',
+	      password: '',
+	    });
+  const [remover, setRemover] = useState(true);
+  const [shower, setShower] = useState(false);
+  const [loggedin, setlogin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+	      if (typeof localStorage !== 'undefined') {
+		            const storedToken = localStorage.getItem("token");
+		            const storedUser = localStorage.getItem("user");
+		            const storedIsAuthenticated = localStorage.getItem('token') !== null;
+
+		            if (storedToken) setToken(storedToken);
+		            if (storedUser) setUser(storedUser);
+		            setIsAuthenticated(storedIsAuthenticated);
+		          }
+	    }, []);
+
+
+
+
+
+
+
+
+
+
+
 
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -262,6 +304,22 @@ function App() {
 	}
 
 
+	async function initiateAccess( ) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.initialize();
+			setChange(10);
+			window.location.reload()
+		}
+	}
+
 
 	async function initiate( ) {
 		if (typeof window.ethereum !== "undefined") {
@@ -435,7 +493,7 @@ useEffect(() => {
 				<div className='row'>
 	  			<Router>
 	  <Routes>
-	  	<Route index element={<Navbar  account={myAccount} />} />
+	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} user={user} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setUser={setUser} />} />
 	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}

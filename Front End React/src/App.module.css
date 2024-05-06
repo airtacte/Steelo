@@ -1,0 +1,2047 @@
+.formTitle {
+	display: inline-block;
+	position: absolute;
+	margin: 0px;
+	padding: 0px;
+	right: 65px;
+	font-family: "roboto mono";
+	top: 80px;
+}
+
+.imdbpic {
+	display: flex;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+}
+
+.form {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 60%;
+}
+
+.castName {
+	display: inline-block;
+	position: relative;
+	left: -20%;
+	top: -25px;
+	font-family: "Rubik Glitch";
+	font-size: 12px;
+}
+.castName:hover {
+	cursor: pointer;
+}
+
+.noPlayer {
+	display: none;
+}
+
+.sideTexts {
+	display: inline-block;
+	position: relative;
+	left: 5%;
+	font-size: 15px;
+	width: 80%;
+	font-family: "Diphylleia";
+}
+
+.sideTexts:hover {
+	cursor: pointer;
+}
+
+
+.allhome {
+	display: flex;
+	position: absolute;
+	width: 20%;
+}
+
+.ezra {
+	position: absolute;
+	right: 0%;
+	top: 50%;
+}
+
+.adder {
+	color: #ffff00;
+}
+
+.loadhome {
+	position: relative;
+	left: 30%;
+	width: 30%;
+}
+
+.rederror {
+	color: #ff0000;
+}
+
+.infoimage {
+	position: relative;
+	z-index: 10002;
+	right: -87%;
+	top: -44%;
+	width: 5%;
+}
+
+.infoimage:hover {
+	cursor: pointer;
+}
+
+
+.indent {
+	margin-left: 100px;
+}
+
+.infocontent {
+	position: relative;
+	z-index: 10001;
+}
+
+.infotitle {
+	position: relative;
+	top: -30%;
+	left: 0%;
+	z-index: 1001;
+}
+
+.imdbinfo {
+	color: #cccc00;
+	font-weight: 999;
+	font-family: z003;
+	font-family: 'Cinzel', serif;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	background-color: #000000;
+	opacity: 90%;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+}
+
+.loadingimage {
+	align-items: center;
+	width: 100%;
+}
+
+.loading {
+	position: absolute;
+	align-items: center;
+	left: 30%;
+}
+
+.showerandhider {
+	position: relative;
+	font-family: Lato Hairline;
+	font-family: 'Bellota', cursive;
+	border: none;
+	border-width: 0.0001px;
+	border-radius: 10px 10px 10px 10px;
+	background-color: #ffffff;
+	padding: 10px 10px 10px 10px;
+	right: 0%;
+}
+.showerandhider:hover {
+	background-color: #ffcc00;
+}
+
+.raterbuttons {
+	font-family: Lato Hairline;
+	font-family: 'Bellota', cursive;
+	background-color: #777777;
+	border: none;
+	width: 80%;
+	margin-top: 10%;
+	padding: 10px 10px 10px 10px;
+	margin-right: 5%;
+	border-radius: 10px 10px 10px 10px;
+}
+.raterbuttons:hover {
+	background-color: #ffff00;
+}
+
+.homewatchlist {
+	position: absolute;
+	width: 45px;
+	left: -10px;
+	top: -5px;
+	opacity: 70%;
+	z-index: 999;
+}
+
+.homeratingvalue {
+	position: relative;
+	font-size: 85%;
+	color: #006666;
+	position: relative;
+	top: -153px;
+	left: 25px;
+}
+
+.homeratelink {
+	font-size: 80%;
+	color: #006666;
+	position: relative;
+	top: -133px;
+	left: 25px;
+}
+
+.homeratingstar {
+	position: relative;
+	top: -155px;
+	width: 15px;
+	left: 25px;
+}
+
+.sorter {
+	font-family: Lato Hairline;
+	font-family: 'Bellota', cursive;
+	padding: 5px 5px 5px 5px;
+	border: none;
+	color: #0000ff;
+	background-color: #ffffff;
+}
+.sorter:hover {
+	cursor: pointer;
+}
+
+.sortall {
+	position: relative;
+	left: 100%;
+	font-family: Lato Hairline;
+	font-family: 'Bellota', cursive;
+}
+
+.addreview {
+	position: relative;
+	width: 5%;
+	right: 1%;
+}
+
+.reviewbutton {
+	background-color: #ffffff;
+	width: 100%;
+	padding: 5px 10px 5px 10px;
+	border-radius: 10px 10px 10px 10px;
+}
+
+.reviewall {
+	position: absolute;
+	font-family: Lato Hairline;
+	font-family: 'Bellota', cursive;
+}
+
+.signupimdb {
+	position: absolute;
+	right: 30%;
+	top: -30%;
+}
+
+.signuplinkbutton {
+	background-color: #ffffff;
+	margin-top: 10%;
+	width: 95%;
+	border-width: 0.001px;
+	border-radius: 7px 7px 7px 7px;
+	padding: 5px 5px 5px 5px;
+	font-family: "bellota";
+}
+
+.signuplinkbutton:hover {
+	cursor: pointer;
+}
+
+.loginbutton {
+	background-color: #ffcc00;
+	border: none;
+	margin-top: 10%;
+	width: 95%;
+	padding: 5px 5px 5px 5px;
+	border-radius: 15px 15px 15px 15px;
+	font-family: "bellota";
+}
+
+.loginbutton:hover {
+	background-color: #ffaa00;
+	cursor: pointer;
+}
+
+.loginlabel {
+	position: relative;
+	margin-top: 5%;
+	font-weight: 10000;
+	font-size: 90%;
+}
+
+.logininput {
+	position: relative;
+	width: 90%;
+}
+
+.loginimdb {
+	display: inline-block;
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	top: -20px;
+	right: -60px;
+}
+.loginimdb:hover {
+	cursor: pointer;
+}
+
+
+.logout {
+	background-color: #000000;
+	color: #cccccc;
+	font-family: purisa;
+	font-family: 'Bellota', cursive;
+	position: relative;
+	top: -10px;
+	left: -20px;
+	width: 60px;
+	border: none;
+	z-index: 999;
+	font-family: "protest riot";
+}
+
+.logout:hover {
+	cursor: pointer;
+}
+
+.signinlink {
+	color: #bbbbbb;
+}
+
+.login{
+	font-family: Lato Hairline;
+	background-color: #ffbb55;
+	font-family: 'Bellota', cursive;
+	align-items: center;
+	position: relative;
+	width: 40%;
+	margin-left: 50%;
+	border: solid;
+	border-width: 0.0001px;
+	border-radius: 15px 15px 15px 15px;
+	top: 100px;
+	padding: 20px;
+	padding-left: 40px;
+	height: 400px;
+	right: 7%;
+}
+
+.reviewname {
+	position: absolute;
+	right: 5%;
+}
+
+.watchlistimage {
+	position: relative;
+	width: 30%;
+	opacity: 70%;
+}
+.watchlistimage:hover {
+	cursor: pointer;
+}
+
+.watchlist {
+	position: absolute;
+	z-index: 999;
+
+}
+
+.ratelink {
+	color: #7777ff;
+	font-size: 90%;
+	margin-left: 0%;
+}
+
+.youratingstar {
+	width: 15%;
+}
+
+.darkoverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 999;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.starrating input[type="radio"] {
+  display: none;
+}
+
+.starrating label {
+  float: left;
+  padding: 0 0.1em;
+  cursor: pointer;
+}
+
+.starrating label::before {
+  content: "★";
+  font-size: 2em;
+  color: #007bff; 
+}
+
+.starrating input[type="radio"]:checked ~ label::before {
+  color: #ffbf00; 
+}
+
+.reviewlink {
+	position: absolute;
+	color: #0000ff;
+	right: 20%;
+	margin-top: -2%;
+}
+
+
+.between {
+	position: relative;
+	top: 9500px;
+	width: 100%;
+}
+
+.blackicons {
+	position: relative;
+	width: 35px;
+	text-align: center;
+	margin-right: 5%;
+}
+
+.blackcontent {
+	text-align: left;
+	margin-left: 5%;
+	margin-top: 40px;
+}
+
+.blacktitle {
+	position: relative;
+	margin-left: 5%;
+	top: 9%;
+	font-size: 170%;
+	text-align: left;
+}
+
+.blackbottomdetail {
+	text-align: center;
+	font-family: gubbi;
+	font-family: 'Caveat', cursive;
+	position: relative;
+	background-color: #000000;
+	width: 100%;
+	height: 300px;
+	top: 5000px;
+	color: #ffffff;
+	margin-top: 50%;
+	border-radius: 25px 25px 25px 25px;
+}
+
+.blackbottomhome {
+        text-align: center;
+        font-family: gubbi;
+	font-family: 'Caveat', cursive;
+        position: absolute;
+        background-color: #000000;
+        width: 160%;
+	left: -5%;
+        height: 300px;
+        top: 9350px;
+        color: #ffffff;
+        margin-top: 50%;
+}
+
+.genra {
+	display: inline-block;
+	margin-right: 2%;
+}
+
+.detailseach {
+        border: solid;
+	margin-top: 1%;
+	padding: 1%;
+        border-width: 0.005px 0px 0px 0px;
+        border-color: #000000;
+        width: 80%;
+}
+
+.detailresult {
+	color: #0000ff;
+}
+
+.detailstitle {
+	margin-top: 5%;
+}
+.details {
+	font-size: 80%;
+}
+
+.faqtitle {
+	margin-top: 5%;
+}
+
+.faq {
+	color: #0000ff;
+	font-size: 60%;
+	border: solid;
+	border-width: 0.005px 0px 0px 0px;
+	border-color: #0000ff;
+	width: 80%;
+}
+
+.wordadditional {
+	font-family: ani;
+	font-family: 'Sedgwick Ave Display', cursive;
+	font-family: "roboto mono";
+	font-size: 160%;
+	font-weight: bold;
+}
+
+.wordparent {
+	font-family: ani;
+	font-family: 'Space Mono', monospace;
+	font-size: 140%;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.parentalguide {
+	position: relative;
+	margin-top: 10%;
+}
+
+.bulleting {
+	width: 3%;
+}
+
+.expandable {
+	position: absolute;
+	background-color: #ffff00;
+	color: #0000ff;
+	font-family: Lato Hairline;
+	font-family: 'Montserrat Alternates', sans-serif;
+	font-style: italic;
+	padding: 5px;
+	right: 0%;
+	border-radius: 20px 20px 20px 20px;
+	border-color: #00ffff;
+}
+.expandable:hover {
+	background-color: #ffcc00;
+	border-color: #0000ff;
+	cursor: pointer;
+}
+
+.review {
+	position: relative;
+	margin-top: 30%;
+}
+
+.additionalnone {
+	display: none;
+}
+
+.know {
+	margin-top: 10%;
+}
+
+.detailadditional {
+	font-family: Lato Hairline;
+	font-family: 'Amatic SC', cursive;
+	font-family: 'Nothing You Could Do', cursive;
+	font-family: 'Playball', cursive;
+	font-family: 'Comic Neue', cursive;
+	font-size: 80%;
+	position: relative;
+	margin-top: 2%;
+	padding: -2px;
+	border: solid;
+	border-width: 0.000001px;
+	border-radius: 5px 5px 5px 5px;
+	width: 80%;
+	min-height: 0px;
+}
+
+.detailhr {
+	position: absolute;
+	border-color: black;
+}
+
+.middlewriter {
+	position: absolute;
+	margin-top: 5%;
+}
+
+.detailcastimage {
+	position: relative;
+	margin-top: 5%;
+	margin-right: 20%;
+	border-radius: 100%;
+	width: 10%;
+}
+.detailcastimage:hover {
+	cursor: pointer;
+}
+
+.detailcast {
+	position: absolute;
+	top: 1100px;
+	left: 5%;
+	width: 80%;
+}
+
+.detailvideoimage1 {
+	position: absolute;
+	width: 40%;
+	height: 20px;
+	border: solid;
+	border-color: white;
+	padding: 20px;
+	left: 2%;
+	margin-right: -1%;
+	margin-left: -2%;
+	height: auto;
+}
+
+
+.detailvideoimage1 iframe {
+	position: relative;
+	width: 100%;
+	top: 0px;
+	left: 0%;
+	height: 200px;
+	height: auto
+}
+
+.detailvideoimage2 {
+	position: absolute;
+	width: 40%;
+	height: 20px;
+	border: solid;
+	border-color: white;
+	padding: 20px;
+	left: 49%;
+	margin-left: 5%;
+	height: auto;
+}
+
+
+.detailvideoimage2 iframe {
+	position: relative;
+	width: 100%;
+	top: 0px;
+	left: 0%;
+	height: 200px;
+	height: auto;
+}
+
+
+.postertrailer {
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	height: auto;
+}
+
+.play {
+	opacity: 100%;
+	width: 15%;
+	position: absolute;
+	left: 45%;
+	margin-top: 17%;
+}
+
+.play:hover {
+	cursor: pointer;
+}
+
+.Player {
+	z-index: 0;
+}
+
+.poster-overlay {
+display: none;
+  position: relative;
+  width: 200%;
+  height: 200%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.poster-overlay img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+
+.arrowleftvideoimage {
+	opacity: 30%;
+	position: absolute;
+	width: 5%;
+	height: 50px;
+	margin-right: 0%;
+	bottom: -130%;
+       left: 0%;
+       z-index: 999;
+	width: 50px;
+}
+.arrowleftvideoimage:hover {
+	opacity: 100%;
+	cursor: pointer;
+}
+.arrowrightvideoimage {
+	opacity: 30%;
+	position: absolute;
+	width: 5%;
+	height: 50px;
+	bottom: -130%;
+	right: -10%;
+	margin-left: -27%;
+	z-index: 999;
+	width: 50px;
+}
+.arrowrightvideoimage:hover {
+	opacity: 100%;
+	cursor: pointer;
+}
+.arrowleftvideo {
+	display: inline-block;
+}
+.arrowrightvideo {
+	display: inline-block;
+}
+
+.detailvideoword {
+	position: relative;
+	font-size: 140%;
+	left: 4%;
+}
+
+
+.detailvideo {
+	position: absolute;
+	top: 150px;
+	width: 80%;
+}
+
+
+.arrowleftphotoimage {
+        opacity: 30%;
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        margin-right: 0%;
+        bottom: -300%;
+       left: 3%;
+	z-index: 999;       
+}
+.arrowleftphotoimage:hover {
+	opacity: 100%;
+	cursor: pointer;
+}
+.arrowrightphotoimage {
+	opacity: 15%;
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        bottom: -300%;
+        right: 13%;
+        margin-left: -7%;
+	z-index: 999;
+}
+.arrowrightphotoimage:hover {
+	cursor: pointer;
+	opacity: 100%;
+}
+.arrowleftphoto {
+	display: inline-block;
+}
+.arrowrightphoto {
+	display: inline-block;
+}
+
+.detailphotoword {
+	position: relative;
+	font-size: 140%;
+	left: 4%;
+}
+
+.detailphotoimage {
+	position: absolute;
+	max-width: 70%;
+	border: solid;
+	border-color: #ffff00;
+	padding: 20px;
+	left: 5%;
+	margin-right: 2%;
+	margin-left: 2%;
+	margin-top: 5%;
+	max-height: 420px;
+}
+
+.detailphoto {
+	position: absolute;
+	top: 550px;
+	width: 100%;
+}
+
+.awardword {
+	position: relative;
+	left: 30px;
+	font-size: 100%;
+	display: inline-block;
+}
+
+
+.middledetail {
+	font-family: purisa;
+	font-family: 'Bellota', cursive;
+	font-size: 120%;
+	background-color: #ffffff;
+	position: absolute;
+	width: 80%;
+	height: 1000px;
+}
+.awards {
+	background-image: linear-gradient(135deg, #ffff00, white, white, white);
+	display: inline-block;
+	margin-top: 10px;
+	border: solid;
+	border-color: #ffff00;
+	border-radius: 10px 10px 10px 10px;
+	width: 70%;
+	padding: 10px;
+	position: absolute;
+	left: 4%;
+}
+
+.topstarlist {
+	color: #4444ff;
+}
+
+.topstars {
+	position: relative;
+	font-size: 120%;
+	top: 510px;
+	color: #ffffff;
+	left: 40px;
+}
+
+.topwriterlist {
+	color: #4444ff;
+}
+
+.topwriters {
+	font-size: 100%;
+	position: relative;
+	top: 490px;
+	color: #ffffff;
+	left: 40px;
+}
+
+.topstory {
+	position: relative;
+	top: 470px;
+	color: #ffffff;
+	left: 40px;
+	width: 60%;
+       font-size: 120%;	
+}
+
+.topdetailgenre {
+	position: absolute;
+	top: 430px;
+	left: 40px;
+	color: #ffffff;
+}
+.topdetailgenrelist {
+	display: inline-block;
+	margin-right: 14px;
+	border: solid;
+	border-radius: 15px 15px 15px 15px;
+	padding: 5px;
+	border-width: 1px;
+}
+
+.detailtopmain {
+	position: absolute;
+	width: 83.5%;
+	top: 145px;
+	background-color: none;
+}
+
+.topgallery {
+	position: absolute;
+	top: -80px;
+	right: 6%;
+	display: inline-block;
+	width: 6%;
+}
+
+.topvideos {
+	font-family: uroob;
+	font-family: 'Itim', cursive;
+	position: relative;
+	left: 65px;
+	top: 95px;
+	display: inline-block;
+       background-color: #444444;
+	padding: 110%;
+       color: #ffffff;	
+       border-radius: 10px 10px 10px 10px;
+       opacity: 50%;
+}
+.topphotos {
+        font-family: uroob;
+	font-family: 'Itim', cursive;
+        position: relative;
+        left: 65px;
+        top: 100px;
+        display: inline-block;
+       background-color: #444444;
+        padding: 110%;
+       color: #ffffff;
+       border-radius: 10px 10px 10px 10px;
+       opacity: 50%;
+}
+
+.topyellowstar {
+	width: 30px;
+}
+.topbluestar {
+	width: 30px;
+}
+
+.topimdbrating {
+	display: inline-block;
+}
+
+.topownrating {
+	margin-left: 25px;
+	display: inline-block;
+}
+
+.topratings {
+	font-family: uroob;
+	font-family: 'Itim', cursive;
+	font-size: 140%;
+        top: -90px;
+        position: absolute;
+        right: -10%;
+        color: #ffffff;
+}
+
+.topownrating:hover {
+	cursor: pointer;
+}
+
+.userlink {
+	margin-left: 12.5px;
+}
+
+.l1 {
+	position: relative;
+	bottom: 5px;
+	margin-left: 12.5px;
+}
+.l2 {
+	position: relative;
+	bottom: 5px;
+	margin-left: 12.5px;
+}
+
+.trivialink {
+	margin-left: 12.5px;
+}
+
+.alltopiclink {
+	margin-left: 25px;
+}
+
+.alltopic {
+	position: relative;
+	top: 10px;
+	width: 30px;
+	margin-right: 10px;
+}
+
+.topshareimage {
+	position: relative;
+	margin-left: 25px;
+	top: 10px;
+	width: 30px;
+}
+.castlink {
+	position: relative;
+}
+
+.links {
+	top: 10px;
+	position: absolute;
+	right: 4%;
+	color: #ffffff;
+}
+.castlink:hover {
+	cursor: pointer;
+}
+.userlink:hover {
+	cursor: pointer;
+}
+.trivialink:hover {
+	cursor: pointer;
+}
+.alltopiclink:hover {
+	cursor: pointer;
+}
+.topsharelink:hover {
+	cursor: pointer;
+}
+
+.detailtrailer {
+	position: absolute;
+	width: 63%;
+	top: 20%;
+	left: 30%;
+	max-height: 450px;
+	height: auto;
+}
+.detailtrailer iframe {
+	position: relative;
+	top: 0px;
+	left: 0%;
+	width: 100%;
+	max-height: 450px;
+}
+
+.v {
+	position: absolute;
+	top: 145px;
+	left: 4%;
+
+}
+
+.detailcover {
+	position: absolute;
+	left: 4%;
+	width: 25%;
+	top: 20%;
+	max-height: 400px;
+}
+
+.d1 {
+	position: relative;
+	bottom: 5px;
+}
+
+.d2 {
+	position: relative;
+	bottom: 5px;
+}
+
+.v3 {
+	position: relative;
+	display: inline;
+	left: 20px;
+	color: #ffffff;
+}
+
+.v2 {
+	display: inline;
+	position: relative;
+	left: 10px;
+	color: #ffffff;
+}
+
+.v1 {
+	display: inline;
+	position: relative;
+	left: 0px;
+	color: #ffffff;
+}
+
+.detailtitle {
+	position: relative;
+	display: inline-block;
+	width: 80%;
+	font-size: 300%;
+	color: #ffffff;
+	top: -10px;
+	left: 4%;
+	max-width: 670px;
+}
+
+.topdetail {
+	position: relative;
+	width: 100%;
+	height: 850px;
+	left: 0px;
+	background-image: linear-gradient(to top, #000033, #003300, #330000);
+	font-family: cambria;
+	font-family: 'Sedgwick Ave Display', cursive;
+	font-family: "Dhurjati";
+	font-family: "Rubik Glitch";
+	font-family: "Protest Riot";
+	font-family: "Akronim";
+	font-family: "Mystery Quest";
+	font-family: "Margarine";
+	z-index: 10000px;
+}
+.alldetail {
+	position: relative;
+	width: 100%;
+	top: -4px;
+	background-color: none;
+}
+
+.gameownratingstar {
+        position: relative;
+        top: -110px;
+        left: 55px;
+        width: 17px;
+}
+
+.gameownrating {
+        font-size: 90%;
+        position: relative;
+        display: inline-block;
+        left: 5px;
+        bottom: 22px;
+}
+hr {
+	position: relative;
+	margin-top: -100px;
+	top: 0px;
+	opacity: 90%;
+	border: solid #eeeeee;
+	border-width: 0.05px;
+}
+.gameratingstar {
+	position: relative;
+	top: 3px;
+	right: 5px;
+	width: 20px;
+}
+
+.gamerating {
+        font-size: 80%;
+        position: relative;
+        display: inline-block;
+        left: 40px;
+        bottom: 155px;
+}
+
+.gamecertificate {
+        font-size: 80%;
+        position: relative;
+        display: inline-block;
+        left: 120px;
+        bottom: 185px;
+}
+
+.gameyear {
+	font-size: 80%;
+	position: relative;
+	display: inline-block;
+	left: 90px;
+	bottom: 185px;
+}
+
+.gamemetascore {
+        font-size: 80%;
+        position: relative;
+        display: inline-block;
+        left: 105px;
+        bottom: 184px;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+.gametitle {
+	position: relative;
+	left: 105px;
+	margin-left: 17px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	bottom: 183px;
+}
+.numbering {
+  counter-reset: item;
+  padding-left: 10px;
+  list-style-type: none;
+}
+
+.numbering li {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.numbering li::before {
+  content: counter(item) '.';
+  counter-increment: item;
+  position: absolute;
+  top: 5px;
+  left: 91px;
+  width: 20%; 
+  text-align: left; 
+}
+
+
+.maincover {
+	position: relative;
+	width: 80px;
+	height: 120px;
+	margin-bottom: 66px;
+}
+
+.middlemain {
+	position: absolute;
+	top: 250px;
+	font-family: 'Tilt Prism', cursive;
+	font-family: 'Satisfy', cursive;
+	font-family: 'Chakra Petch', sans-serif;
+	font-size: 100%;
+	width: 80%;
+	margin-left: 30px;
+	border: solid;
+	border-color:#cccccc;
+	border-width: 1px;
+}
+
+.yellowbox {
+	display: inline-block;
+	width: 5px;
+	height: 30px;
+	background-color: #ffcc00;
+	margin-right: 10px;
+}
+.topmain {
+	position: absolute;
+	left: 0px;
+	top: 40px;
+	font-family: uroob;
+	font-family: 'Black Ops One', cursive;
+	padding: 7% 0% 0% 3%;
+}
+.toptitle{
+	padding-bottom: 0%;
+	font-size: 110%;
+}
+.hometitle {
+	display: inline-block;
+	padding-top: 0%;
+	font-size: 180%;
+}
+.bottomtitle {
+	font-size: 95%;
+	font-weight: -900;
+	color: #999999;
+}
+
+.searchimage {
+	position: absolute;
+	width: 30px;
+	top: 0px;
+	margin-top: 0px;
+}
+
+.dropdownlanguage {
+	font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	position: absolute;
+	right: 1%;
+	width: 43px;
+	margin-top: 15px;
+	color: white;
+	background-color: black;
+	border: none;
+	font-size: 12px;
+}
+
+.dropdownlanguage:hover {
+	cursor: pointer;
+}
+
+
+.signupbutton {
+	position: absolute;
+	right: 5.5%;
+	top: 5px;
+	height: 40px;
+	color: white;
+	background-color: black;
+	width: 100px;
+	border-radius: 5px 5px 5px 5px;
+	border: none;
+}
+
+.signupword {
+	font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	display: inline-block;
+	margin-left: 26px;
+	margin-top: 10px;
+	font-size: 14px;
+}
+.signupworduser {
+        font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+        display: inline-block;
+        margin-left: 26px;
+        margin-top: 0px;
+	font-size: 14px;
+}
+.signupwordbutton {
+        font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+        display: inline-block;
+        margin-left: 26px;
+        margin-top: 10px;
+	font-size: 14px;
+}
+
+.signupimage {
+	border: none;
+	position: absolute;
+	left: -13px;
+	top: 0px;
+	width: 42px;
+}
+
+
+.imdbbutton {
+	border: none;
+	position: absolute;
+	width: 65px;
+	left: 10px;
+	top: 8px;
+	height: 35px;
+	background-color: black;
+	border-radius: 5px 5px 5px 5px;
+}
+
+.watchbutton {
+	position: absolute;
+	right: 15%;
+	top: 5px;
+	height: 40px;
+	color: white;
+	background-color: black;
+	width: 120px;
+	border-radius: 5px 5px 5px 5px;
+	border: none;
+}
+
+.watchword {
+	font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	font-size: 120%;
+	display: inline-block;
+	margin-top: 4px;
+	right: 19%;
+	font-size: 14px;
+}
+
+.watchword:hover {
+	cursor: pointer;
+}
+
+.watchimage {
+	position: absolute;
+	left: -10px;
+	top: 7px;
+	width: 30px;
+}
+.watchimage:hover {
+	cursor: pointer;
+}
+
+.allsearch {
+	font-family: uroob;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	position: absolute;
+	display: inline-block;
+	background-color: white;
+	top: 10px;
+	left: 180px;
+	margin-right: 2%;
+	right: 30%;
+	height: 35px;
+	border-radius: 5px 5px 5px 5px;
+	font-size: 14px;
+}
+
+.searchbutton {
+	font-family: uroob;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	font-size: 120%;
+	position: absolute;
+	right: 5%;
+	width: 30px;
+	height: 100%;
+	border: none;
+	background-color: white;
+	top: 5px;
+	height: 30px;
+	font-size: 14px;
+
+}
+
+.searchbar {
+	font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	font-size: 14px;
+	position: relative;
+	width: 70%;
+	margin-top: 7px;
+	border: none;
+	left: 110px;
+	height: 100%;
+	outline: none;
+}
+
+.dropdownsearch {
+	font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	font-size: 105%;
+	position: absolute;
+	top: 5px;
+	left: 0px;
+	width: 110px;
+	height: 25px;
+	background-color: white;
+	text-align: center;
+	border: none;
+	outline: none;
+	font-size: 14px;
+}
+
+.dropdownsearch:hover {
+	cursor: pointer;
+}
+
+
+.menuword {
+	font-family: purisa;
+	font-family: 'Gugi', cursive;
+	font-family: 'Roboto Mono', monospace;	
+	font-size: 120%;
+        display: inline-block;
+        margin-top: 0%;
+        right: 0%;
+	font-size: 14px;
+}
+.menuicon {
+        position: absolute;
+        left: 5%;
+        top: 8px;
+        width: 25px;
+        right: 24%;
+}
+.menu {
+        position: absolute;
+        left: 90px;
+        top: 5px;
+        height: 40px;
+        color: white;
+        background-color: black;
+        width: 100px;
+        border-radius: 5px 5px 5px 5px;
+	border: none;
+}
+.menu:hover {
+	cursor: pointer;
+}
+
+.imdb {
+	position: absolute;
+	left: 2%;
+	top: -40%;
+	width: 100%;
+	height: 180%;
+}
+.imdb:hover {
+	cursor: pointer;
+}
+
+
+.navigation {
+	font-family: 'Roboto Mono', monospace;	
+	background-color: #000000;
+	display: inline-block;
+	width: 100%;
+	height: 55px;
+	color: #ffffff;
+}
+.main {
+	position: relative;
+	background-color: #ffffff;
+	display: inline-block;
+	left: 2.5%;
+	width: 62.5%;
+	height: 90%;
+}
+.side {
+	position: absolute;
+	font-family: purisa;
+	font-family: 'Bellota', cursive;
+	font-size: 160%;
+	background-color: #fcfcfc;
+	display: inline-block;
+	top: 940px;
+	right: 2.5%;
+	width: 32.5%;
+	height: 1800px;
+	border-radius: 15px 15px 15px 15px;
+}
+.all {
+	position: absolute;
+	left: 0px;
+	width: 100%;
+	background-color: #ffffff;
+}
+
+@media(max-width: 1280px) {
+	.all {
+		width: 100%;
+	}
+	.side {
+		margin-right: 0%;
+		right: 0%;
+		width: 30%;
+	}
+	.main {
+		margin-left: 0%;
+		left: 0%;
+		right: 0%;
+		width: 60%;
+	}
+	.alldetail {
+		left: 0%;
+	}
+	.topdetail {
+		width: 100%;
+	}
+	.topmain {
+		width: 81.5%;
+	}
+	.blackbottomdetail {
+		right: 0%;
+		border-radius: 0%;
+		width: 100%;
+	}
+	.detailtitle {
+		width: 70%;
+		font-size: 280%;
+	}
+
+	.showerandhider {
+	position: relative;
+	font-family: Lato Hairline;
+	font-family: 'Playball', cursive;
+	border: none;
+	border-width: 0.0001px;
+	border-radius: 10px 10px 10px 10px;
+	background-color: #ffffff;
+	padding: 10px 10px 10px 10px;
+	margin-left: 1%;
+	left: 40%;
+}
+.all {
+	position: absolute;
+	width: 100%;
+}
+	.navigation {
+		position: relative;
+		width: 100%;
+		margin-right: 0px;
+		margin-left: 0px;
+	}
+
+
+}
+
+@media(max-width: 1055px) {
+	.detailtitle {
+		width: 60%;
+	}
+}
+
+@media(max-width: 1023px) {
+	.all {
+		width: 100%;
+	}
+	.side {
+		left: 0%;
+		width: 0%;
+		display: none;
+	}
+	.main {
+		width: 60%;
+	}
+	.watchbutton {
+		display: none;
+	}
+	.menuword {
+		display: none;
+	}
+	.menu {
+		left: 10px;
+		width: 20px;
+	}
+	.imdbbutton {
+		left: 40px;
+	}
+	.allsearch {
+		display: inline;
+		position: absolute;
+		left: 110px;
+		right: 22%;
+	}
+	.searchbutton {
+		position: absolute;
+	}
+	.alldetail {
+		width: 100%;
+	}
+	.topdetail {
+		width: 100%;
+	}
+	.topmain {
+		width: 74%;
+	}
+	.topgallery {
+		display: none;
+	}
+	.detailtrailer {
+		width: 87%;
+	}
+	        .castlink {
+                display: none;
+        }
+        .userlink {
+                display: none;
+        }
+        .trivialink {
+                display: none;
+        }
+	.topdetailgenre {
+		width: 100%;
+	}
+	.topstory {
+		width: 100%;
+	}
+	.topwriters {
+		width: 100%;
+	}
+	.l1 {
+		display: none;
+	}
+	.l2 {
+		display: none;
+	}
+	.topratings {
+	        position: relative;
+	        font-size: 120%;
+	        top: 550px;
+	        color: #ffffff;
+	        left: 40px;
+	}
+	.login {
+		width: 200px;
+	}
+	.loginimdb {
+	}
+	.topdetail {
+		height: 1005px;
+	}
+	.blackbottomdetail {
+		width: 100%;
+	}
+	.all {
+		position: absolute;
+		width: 100%;
+	}
+	.navigation {
+		position: relative;
+		width: 100%;
+	}
+	.middledetail {
+		width: 95%;
+	}
+	.blackbottomdetail {
+		width: 100%;
+	}
+
+
+
+}
+
+@media(max-width: 760px) {
+	.infotitle {
+		display: none;
+	}
+	.detailtitle {
+		width: 75%;
+	}
+}
+
+@media(max-width: 660px) {
+	.searchbar {
+		display: none;
+	}
+}
+
+@media(max-width: 599px) {
+	.topdetail {
+		width: 100%;
+	}
+	.searchbar{
+		display: none;
+		left: 0px;
+		width: 0%;
+	}
+	.dropdownsearch {
+		display: none;
+	}
+	.allsearch {
+		background-color: black;
+		color: white;
+	}
+	.searchbutton {
+		width: 40px;
+		color: white;
+		background-color: black;
+		margin-right: 3px;
+	}
+	.signupbutton {
+		right: 15%;
+		width: 20px;
+	}
+	.signupword {
+		display: none;
+	}
+	.dropdownlanguage {
+		right: 3%;
+		width: 37px;
+	}
+	.detailtitle {
+		font-size: 165%;
+	}
+	.v {
+		position:relative;
+		top: 35px;
+	}
+	.detailtopmain {
+		position: absolute;
+		width: 100%;
+		right: 25%;
+	}
+	.detailcover {
+		position: relative;
+		top: 400px;
+		margin-top: 0px;
+		left: 27%;
+		width: 25%;
+		height: auto;
+	}
+	.detailtitle {
+		width: 80%;
+	}
+	.detailtrailer {
+		position: absolute;
+		left: 25%;
+		margin-bottom: 0px;
+		width: 100%;
+		top: 60px;
+		z-index: 1;
+	}
+	.detailtrailer iframe {
+	        position: relative;
+        	top: 0px;
+        	left: 0%;
+        	width: 100%;
+		z-index: 0;
+	}
+
+
+	.topdetailgenre {
+		position: relative;
+		left: 55%;
+		width: 60%;
+		margin-top: 0px;
+		top: 190px;
+	}
+	.topstory {
+		position: relative;
+		font-size: 100%;
+		left: 55%;
+		width: 60%;
+		top: 190px;
+	}
+	.topwriters {
+		position: relative;
+		font-size: 80%;
+		left: 55%;
+		width: 60%;
+		top: 245px;
+	}
+	.topstars {
+		position: relative;
+		left: 55%;
+		width: 60%;
+	       top: 175px;	
+	}
+	.topratings {
+		position: relative;
+		top: 255px;
+		left: 30%;
+	}
+	.topicword {
+		display: none;
+	}
+	.detailvideoimage2 {
+		display: none;
+		height: auto;
+	}
+	.detailvideoimage1 {
+		width: 100%;
+	}
+	.detailvideoimage1 iframe {
+		height: auto;
+		min-height: 40px;
+	}
+	.arrowrightvideoimage {
+		right: -30%;
+		width: 50px;
+	}
+	.arrowleftvideoimage {
+		left: 2%;
+		width: 50px;
+	}
+	.detailcastimage {
+		margin-right: 5%;
+		margin-bottom: 20%;
+	}
+	.blackbottomdetail {
+		width: 100%;
+	}
+	.showerandhider {
+	display: none;
+	font-family: Lato Hairline;
+	font-family: 'Playball', cursive;
+	border: none;
+	border-width: 0.0001px;
+	border-radius: 10px 10px 10px 10px;
+	background-color: #ffffff;
+	padding: 10px 10px 10px 10px;
+	left: 0%;
+	bottom: 90%;
+}
+	.blackbottomhome {
+		top: 11000px;
+		width: 100%;
+	}
+	.all {
+		position: absolute;
+		width: 100%;
+		left: 0px;
+	}
+	.navigation {
+		position: relative;
+		width: 100%;
+	}
+	.main {
+		background-color: #000000;
+
+	}
+	.topmain {
+		width: 100%;
+		left: 0px;
+		font-size: 80%;
+	}
+	.middlemain {
+		width: 70%;
+		left: 0px;
+		border: none;
+	}
+	.gamemetascore {
+		left: 115px;
+	}
+	.gameyear {
+		left: 100px;
+	}
+	.gamecertificate {
+		left: 130px;
+	}
+	.gamerating {
+		position: absolute;
+		left: 95px;
+		bottom: 60px;
+	}
+	.gameratingstar {
+		position: absolute;
+		left: 45px;
+		bottom: 95px;
+	}
+	.gameownrating {
+		display: none;
+		position: absolute;
+		left: 90px;
+		bottom: -40px;
+	}
+	.homeratingstar {
+		display: none;
+		position: relative;
+		left: 95px;
+		top: 50px;
+	}
+	.homeratingvalue {
+		display: none;
+	}
+	hr {
+		width: 50%;
+	}
+	.signupworduser {
+		font-family: purisa;
+		font-family: 'Bellota', cursive;
+	        display: inline-block;
+		position: absolute;
+	        margin-left: 26px;
+	        margin-top: 0px;
+		margin-right: 26px;
+		right: 20px;
+	}
+	.signupwordbutton {
+		position: absolute;
+		margin-top: 15px;
+		right: 0px;
+		top: 20px;
+	}
+	.blackbottomdetail {
+		top: 5200px;
+	}
+	.maincover {
+		position: relative;
+	}
+	.sortall {
+		position: absolute;
+		left: 0%;
+	}
+	.side {
+		display: none;
+	}
+	.alldetail {
+		top: -4px;
+		width: 100%;
+	}
+	.links {
+		display: none;
+	}
+	.watchlistimage {
+		left: 20%;
+		width: 20%;
+		margin-top: 40px;
+	}
+	.topdetail {
+		position: relative;
+		width: 100%;
+	}
+	.topdetail {
+		display: inline-block;
+		position: relative;
+		margin: 0px;
+		padding: 0px;
+		left: 0px;
+		right: 0px;
+		width: 100%;
+		height: 1100px;
+	}
+	.topratings {
+		display: inline-block;
+		position: relative;
+		width: 80%;
+	}
+	.topownrating {
+		display: inline-block;
+		position: relative;
+		top: -5px;
+	}
+	.detailtitle {
+		margin-bottom: 0px;
+		top: 15px;
+	}
+	.v {
+		display: inline-block;
+		width: 80%;
+	}
+	.middledetail {
+		font-size: 13px;
+	}
+	.detailcastimage {
+		width: 30%;
+	}
+	.castName {
+		display: none;
+	}
+	.casts {
+		display: flex;
+		position: relative;
+		overflow-x: scroll;
+		width: 100%;
+	}
+	.arrowleftphotoimage {
+		bottom: -200%;
+	}
+	.arrowrightphotoimage {
+		bottom: -200%;
+		right: 5%;
+	}
+
+	.login {
+		left: 20%;
+		overflow-x: scroll;
+	}
+	
+}
+
+@media(max-width: 400px) {
+	.dropdownlanguage {
+		right: 0%;
+	}
+}
+@media (max-width: 345px) {
+	.topownrating {
+		display: inline-block;
+		position: relative;
+		top: 7px;
+		left: -23px;
+	}
+	.login {
+		left: 0%;
+	}
+	
+}
