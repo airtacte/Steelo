@@ -16,7 +16,7 @@ function App() {
 
 
   const [token, setToken] = useState('');
-  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
   const [loginData, setLoginData] = useState({
 		      email: "",
 		      password: "",
@@ -33,11 +33,11 @@ function App() {
   useEffect(() => {
 	      if (typeof localStorage !== 'undefined') {
 		            const storedToken = localStorage.getItem("token");
-		            const storedUser = localStorage.getItem("user");
+		            const storedEmail = localStorage.getItem("email");
 		            const storedIsAuthenticated = localStorage.getItem('token') !== null;
 
 		            if (storedToken) setToken(storedToken);
-		            if (storedUser) setUser(storedUser);
+		            if (storedEmail) setEmail(storedEmail);
 		            setIsAuthenticated(storedIsAuthenticated);
 		          }
 	    }, []);
@@ -488,12 +488,12 @@ useEffect(() => {
 			<div style={{ position: 'absolute' }}>
 			<ParticleSettings />
 			</div>
-			<Navbar account={myAccount}/>
+			<Navbar account={myAccount} setEmail={setEmail} setToken={setToken} />
 			<div className="container-fluid mt-5" >
 				<div className='row'>
 	  			<Router>
 	  <Routes>
-	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} user={user} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setUser={setUser} />} />
+	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} />} />
 	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}
@@ -519,7 +519,8 @@ useEffect(() => {
 	  									biddingAmount={biddingAmount} setBiddingAmount={setBiddingAmount} 
 	  									
 	  									answer={answer} setAnswer={setAnswer} preOrderEnder={preOrderEnder} AcceptOrReject={AcceptOrReject}
-	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid}
+	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
+										email={email} token={token}
 	  									
 	/>} />
 	  </Routes>

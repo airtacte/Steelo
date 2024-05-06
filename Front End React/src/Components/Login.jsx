@@ -24,7 +24,7 @@ interface Props {
 	  selectedService: any; 
 }
 
-function Login({ user, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService }: Props) {
+function Login({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken }: Props) {
 	  const userRef = useRef(null);
 	  const errRef = useRef(null);
 
@@ -33,15 +33,16 @@ function Login({ user, token, formData, setFormData, loggedin, setlogin, respons
 	  const navigate = useNavigate();
 
 	  useEffect(() => {
-		      if (user && token) {
+		      if (email && token) {
 			            setSuccess(true);
 			            setlogin(true);
+				    navigate("/1");
 			          }
 
 		      if (userRef.current) {
 			            userRef.current.focus();
 			          }
-		    }, [user, token]);
+		    }, [email, token]);
 
 	  useEffect(() => {
 		      setErrMsg('');
@@ -71,6 +72,9 @@ function Login({ user, token, formData, setFormData, loggedin, setlogin, respons
 			            localStorage.setItem('token', token);
 			            setSuccess(true);
 			            setlogin(true);
+			      	    setEmail(email);
+			      	    setToken(token);
+			      	    navigate("/1");
 			          } catch (err) {
 					        if (!err?.response) {
 							        setErrMsg('No Server Response');
@@ -88,7 +92,7 @@ function Login({ user, token, formData, setFormData, loggedin, setlogin, respons
 		    }
 
 	  function remover() {
-		      localStorage.removeItem('user');
+		      localStorage.removeItem('email');
 		      localStorage.removeItem('token');
 		      setSuccess(false);
 		      setlogin(false);
@@ -110,8 +114,6 @@ function Login({ user, token, formData, setFormData, loggedin, setlogin, respons
 				          <p>
 				            <button onClick={remover} className={styles.loginbutton}>Log Out</button>
 					    <a className={styles.loggedlink} href="/"> Go to Home Page </a>
-					    <a className={styles.loggedlink} href="/upload">Upload A Product </a>
-					    <a className={styles.loggedlink} href="/update-logo"> Update The Logo </a>
 				          </p>
 				        </div>
 				      ) : (

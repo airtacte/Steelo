@@ -100,6 +100,7 @@ router.post('/login', async (req: Request, res: Response) => {
 	}
 	else {
 	return res.json({ 
+		role: creatorData.role,
 		email: email,
 		token: generateToken(querySnapshot.docs[0].id),
 		message: "user loggedin succesfully",
