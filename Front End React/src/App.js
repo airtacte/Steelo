@@ -7,7 +7,7 @@ import Main from "./Components/Main";
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 
-const diamondAddress = "0xf116C264ed730B595e37F7B9faEab40cbf162643";
+const diamondAddress = "0xBb82189095956d7E0CD0f1835de347deeaD57051";
 
 function App() {
 
@@ -49,7 +49,7 @@ function App() {
   const [investorLength, setInvestorLength] = useState(0);
   const [timeInvested, setTimeInvested] = useState(0);
   const [investorAddress, setInvestorAddress] = useState(0);
-  const [creatorId, setCreatorId] = useState(0);
+  const [creatorId, setCreatorId] = useState("fvG74d0z271TuaE6WD2t");
   const [creatorIdBid, setCreatorIdBid] = useState(0);
   const [biddingAmount, setBiddingAmount] = useState(0);
   const [answer, setAnswer] = useState(false);
@@ -86,68 +86,69 @@ function App() {
       try {
 	
 	setMyAccount(signerAddress);
+	const authors = await contract.authors();
         const name = await contract.steeloName();
-        const creatorName = await contract.creatorTokenName();
-        const creatorSymbol = await contract.creatorTokenSymbol();
-        const symbol = await contract.steeloSymbol();
-        const totalSupply = await contract.steeloTotalSupply();
-        const totalToken = await contract.steeloTotalTokens();
-        const balance = await contract.steeloBalanceOf(signerAddress);
-        const creator = await contract.getAllCreator(creatorId);
-        const creator2 = await contract.getAllCreator2(creatorId);
-        const creator3 = await contract.getAllCreator3(creatorId);
-        const creator4 = await contract.checkBidAmount(creatorId);
-        const creator5 = await contract.checkInvestors(creatorId);
-        const index = await contract.getPopIndex();
-        const transactionCount = await contract.getTotalTransactionAmount();
-	const preOrderStatus = await contract.checkPreOrderStatus(creatorId);
-	const Bidders = await contract.FirstAndLast(creatorId);
-        console.log("name :", name);
-        console.log("symbol :", symbol);
-        console.log("totalSupply :", parseInt(totalSupply, 10));
-        console.log("totalToken :", parseInt(totalToken, 10));
-        console.log("balance :", parseInt(balance, 10));
-        console.log("Creator Name :", creatorName);
-        console.log("Creator Symbol :", creatorSymbol);
-	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
-	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),
-		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
-	console.log("auction start time :", new Date(creator2[0].toNumber() * 1000).toString(),"auction anniversery :", new Date(creator2[1].toNumber() * 1000).toString(),"auction concluded :", creator2[2]);
-	console.log("preorder start time :", new Date(creator3[0].toNumber() * 1000).toString(),"liquidity pool :", parseInt(creator3[1], 10),"preorder started :", creator3[2]);
-	console.log("bid Amount :", parseInt(creator4[0], 10),"liquidity pool :", parseInt(creator4[1], 10),"auction secured :", parseInt(creator4[2]), "Total Steelo Preorder :", parseInt(creator4[3], 10)/(10 ** 18));
-      console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
-	console.log("popping index :", parseInt(index[0]), "poppin address :", index[1].toString(), "popping price :", parseInt(index[2], 10));
+//        const creatorName = await contract.creatorTokenName();
+//      const creatorSymbol = await contract.creatorTokenSymbol();
+//        const symbol = await contract.steeloSymbol();
+//        const totalSupply = await contract.steeloTotalSupply();
+//        const totalToken = await contract.steeloTotalTokens();
+//        const balance = await contract.steeloBalanceOf(signerAddress);
+//        const creator = await contract.getAllCreator(creatorId);
+//        const creator2 = await contract.getAllCreator2(creatorId);
+//        const creator3 = await contract.getAllCreator3(creatorId);
+//        const creator4 = await contract.checkBidAmount(creatorId);
+//        const creator5 = await contract.checkInvestors(creatorId);
+//        const index = await contract.getPopIndex();
+//        const transactionCount = await contract.getTotalTransactionAmount();
+//	const preOrderStatus = await contract.checkPreOrderStatus(creatorId);
+//	const Bidders = await contract.FirstAndLast(creatorId);
+        console.log("authors :", authors);
+//        console.log("symbol :", symbol);
+//        console.log("totalSupply :", parseInt(totalSupply, 10));
+//        console.log("totalToken :", parseInt(totalToken, 10));
+//        console.log("balance :", parseInt(balance, 10));
+//        console.log("Creator Name :", creatorName);
+//        console.log("Creator Symbol :", creatorSymbol);
+//	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
+//	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),
+//		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
+//	console.log("auction start time :", new Date(creator2[0].toNumber() * 1000).toString(),"auction anniversery :", new Date(creator2[1].toNumber() * 1000).toString(),"auction concluded :", creator2[2]);
+//	console.log("preorder start time :", new Date(creator3[0].toNumber() * 1000).toString(),"liquidity pool :", parseInt(creator3[1], 10),"preorder started :", creator3[2]);
+//	console.log("bid Amount :", parseInt(creator4[0], 10),"liquidity pool :", parseInt(creator4[1], 10),"auction secured :", parseInt(creator4[2]), "Total Steelo Preorder :", parseInt(creator4[3], 10)/(10 ** 18));
+//      console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
+//	console.log("popping index :", parseInt(index[0]), "poppin address :", index[1].toString(), "popping price :", parseInt(index[2], 10));
 
-	console.log("transaction count :", parseInt(transactionCount, 10));
+//	console.log("transaction count :", parseInt(transactionCount, 10));
 	
 	setName(name);
-	setSymbol(symbol);
-	setTotalSupply(parseInt(totalSupply)/(10 ** 18));
-	setTotalTokens(parseInt(totalToken)/(10 ** 18));
-	setBalance(parseInt(balance)/(10 ** 18));
-	setCreatorName(creatorName);
-	setCreatorSymbol(creatorSymbol);
-	setCreatorAddress(creator[0].toString());
-	setSteezTotalSupply(parseInt(creator[1], 10));
-	setSteezCurrentPrice(parseInt(creator[2], 10)/(10 ** 18));
-	setSteezInvested(parseInt(preOrderStatus[3], 10));
-	setauctionStartTime(new Date(creator2[0].toNumber() * 1000).toString());
-	setauctionAnniversary(new Date(creator2[1].toNumber() * 1000).toString());	
-	setAuctionConlcuded(creator2[2]);
-	setPreOrderStartTime(new Date(creator3[0].toNumber() * 1000).toString());
-	setLiquidityPool(parseInt(creator3[1], 10));
-	setPreOrderStarted(creator3[2]);
-	setBidAmount(parseInt(creator4[0], 10) / (10 ** 18));
-	setAuctionSecured(parseInt(creator4[2]));
-	setTotalSteeloPreOrder(parseInt(creator4[3], 10)/(10 ** 18));
-	setInvestorLength(parseInt(creator5[0], 10));
-	setTimeInvested(new Date(creator5[2].toNumber() * 1000).toString());
-	setInvestorAddress(creator5[3].toString());
-	setTotalTransactionCount(parseInt(transactionCount, 10));
-	console.log("minimum allowed :", (parseInt(Bidders[1], 10) + (10 * 10 ** 18)), "minimum bid price :", parseInt(Bidders[1], 10), "highest bid :", parseInt(Bidders[2], 10));
-	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
-	setLowestBid(parseInt(Bidders[1], 10));
-	setHighestBid(parseInt(Bidders[2], 10));
+//	setSymbol(symbol);
+//	setTotalSupply(parseInt(totalSupply)/(10 ** 18));
+//	setTotalTokens(parseInt(totalToken)/(10 ** 18));
+//	setBalance(parseInt(balance)/(10 ** 18));
+//	setCreatorName(creatorName);
+//	setCreatorSymbol(creatorSymbol);
+//	setCreatorAddress(creator[0].toString());
+//	setSteezTotalSupply(parseInt(creator[1], 10));
+//	setSteezCurrentPrice(parseInt(creator[2], 10)/(10 ** 18));
+//	setSteezInvested(parseInt(preOrderStatus[3], 10));
+//	setauctionStartTime(new Date(creator2[0].toNumber() * 1000).toString());
+//	setauctionAnniversary(new Date(creator2[1].toNumber() * 1000).toString());	
+//	setAuctionConlcuded(creator2[2]);
+//	setPreOrderStartTime(new Date(creator3[0].toNumber() * 1000).toString());
+//	setLiquidityPool(parseInt(creator3[1], 10));
+//	setPreOrderStarted(creator3[2]);
+//	setBidAmount(parseInt(creator4[0], 10) / (10 ** 18));
+//	setAuctionSecured(parseInt(creator4[2]));
+//	setTotalSteeloPreOrder(parseInt(creator4[3], 10)/(10 ** 18));
+//	setInvestorLength(parseInt(creator5[0], 10));
+//	setTimeInvested(new Date(creator5[2].toNumber() * 1000).toString());
+//	setInvestorAddress(creator5[3].toString());
+//	setTotalTransactionCount(parseInt(transactionCount, 10));
+//	console.log("minimum allowed :", (parseInt(Bidders[1], 10) + (10 * 10 ** 18)), "minimum bid price :", parseInt(Bidders[1], 10), "highest bid :", parseInt(Bidders[2], 10));
+//	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
+//	setLowestBid(parseInt(Bidders[1], 10));
+//	setHighestBid(parseInt(Bidders[2], 10));
 	
       } catch (error) {
         console.log("Blockchain interaction failed :", error);
@@ -432,9 +433,10 @@ useEffect(() => {
 			<Navbar account={myAccount}/>
 			<div className="container-fluid mt-5" >
 				<div className='row'>
-					<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
-					<div>
-	  					<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
+	  			<Router>
+	  <Routes>
+	  	<Route index element={<Navbar  account={myAccount} />} />
+	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}
 										 addressToApprove={addressToApprove} setAddressToApprove={setAddressToApprove} 												   amountToApprove={amountToApprove} setAmountToApprove={setAmountToApprove}
@@ -461,10 +463,10 @@ useEffect(() => {
 	  									answer={answer} setAnswer={setAnswer} preOrderEnder={preOrderEnder} AcceptOrReject={AcceptOrReject}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid}
 	  									
-	/>
-						ezra			 
-					</div>
-					</main>
+	/>} />
+	  </Routes>
+	  </Router>
+					
 				</div>
 			</div>
 	</div>
