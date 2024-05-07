@@ -37,11 +37,11 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 	  const navigate = useNavigate();
 
 	  useEffect(() => {
-//		      if (email && token) {
-//			            setSuccess(true);
-//			            setlogin(true);
-//				    navigate("/1");
-//			          }
+		      if (email && token) {
+			            setSuccess(true);
+			            setlogin(true);
+   			            navigate("/1");
+			          }
 
 		      if (userRef.current) {
 			            userRef.current.focus();

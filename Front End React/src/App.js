@@ -105,6 +105,7 @@ function App() {
   const [totalTransactionCount, setTotalTransactionCount] = useState(0);
   const [lowestBid, setLowestBid] = useState(0);
   const [highestBid, setHighestBid] = useState(0);
+  let isConfirm = false
 
 
   async function requestAccount() {
@@ -119,8 +120,35 @@ function App() {
     }
 }
 
+  async function switchToNetwork() {
+    try {
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x539' }], // Hexadecimal version of 1337, commonly used for local development
+        });
+    } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: '0x539',
+                        rpcUrl: 'http://localhost:8545/' // Assuming Ganache or Hardhat is running on this port; adjust if different
+                    }],
+                });
+            } catch (addError) {
+                console.error('Failed to add the network:', addError);
+            }
+        } else {
+            console.error('Failed to switch the network:', switchError);
+        }
+    }
+}
+
   async function fetchDiamond() {
     if (typeof window.ethereum !== "undefined") {
+//      await switchToNetwork();
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(
@@ -207,6 +235,11 @@ function App() {
       }
     }
   }
+
+
+       window.ethereum.on('accountsChanged', async function (accounts) {
+                await fetchDiamond();
+	});
 
 	async function initiateSteez( ) {
 		if (typeof window.ethereum !== "undefined") {
@@ -558,7 +591,7 @@ useEffect(() => {
 	  			<Router>
 	  <Routes>
 	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} />}  profileId={profileId} profileIdUser={profileIdUser} fetchDiamond={fetchDiamond}  />
-	        <Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser} />} />
+	        <Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser} initiateAccess={initiateAccess} />} />
 	        <Route path="/admin/:id" element={<Admin initiateAccess={initiateAccess} />} />
 	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}

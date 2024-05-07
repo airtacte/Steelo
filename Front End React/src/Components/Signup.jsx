@@ -24,7 +24,7 @@ interface Props {
 	  selectedService: any; 
 }
 
-function SignUp({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId, userName, setUserName, createCreator, createSteeloUser }: Props) {
+function SignUp({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId, userName, setUserName, createCreator, createSteeloUser, initiateAccess }: Props) {
 	  const userRef = useRef(null);
 	  const errRef = useRef(null);
 
@@ -35,9 +35,9 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 
 	  useEffect(() => {
 		      if (email && token) {
-//			            setSuccess(true);
-//			            setlogin(true);
-//				    navigate("/1");
+			            setSuccess(true);
+			            setlogin(true);
+				    navigate("/1");
 			          }
 
 		      if (userRef.current) {
@@ -77,7 +77,14 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 
 				try {
 			            if (roleData == "executive") {
-			      	    	navigate(`/admin/${userIdData}`);
+					try {
+						await initiateAccess();
+			      	    		navigate(`/admin/${userIdData}`);
+					} catch (error) {
+						console.log("blockchain error :", error.data.message);	
+						setErrMsg(error.data.message);
+						throw error;
+					}
 				    }
 			      	    else if (roleData == "creator") {
 					try {
@@ -220,6 +227,7 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 					                <option value="" disabled>Choose Role</option>
 						        <option value="user">User</option>
 						        <option value="creator">Creator</option>
+						        <option value="executive">Executive</option>
 						      </select>
 						      <p>{selectedRole && <span>Selected Role: {selectedRole}</span>}</p>
 						    </div>
