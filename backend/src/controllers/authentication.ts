@@ -34,10 +34,17 @@ router.post('/register/executive', async (req: Request, res: Response) => {
             return res.status(400).send('Executive already exists.');
         }
 
-        const executive = { email: req.body.email, password: await hashPassword(req.body.password), role: "executive"  }
+        const executive = { name: req.body.name, email: req.body.email, password: await hashPassword(req.body.password), role: "executive"  }
         const docRef = await addDoc(userRef, executive);
         console.log("Document written with ID: ", docRef.id);
-        return res.send('New executive added to DB.')
+        return res.json({ 
+		userId: docRef.id,
+		name: req.body.name,
+		role: "executive",
+		email: req.body.email,
+		token: generateToken(docRef.id),
+		message: "executive registered succesfully",
+	});
     } catch (e) {
         return res.status(400).send(e.message)
     }
@@ -141,7 +148,7 @@ router.get('/', isLogin, isExecutive, async (req: Request, res: Response) => {
     }
 })
 
-router.get('/:id', isLogin, isExecutive, async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
     try {
         const userId = req.params.id
 
