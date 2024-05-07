@@ -10,9 +10,14 @@ import Admin from "./Components/Admin";
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 
+
+
+
+
 const diamondAddress = "0xB23D3b12616B0A9665156e93afcb7A5F3A2E9A40";
 
 function App() {
+
 
 
 
@@ -40,16 +45,20 @@ function App() {
 	      if (typeof localStorage !== 'undefined') {
 		            const storedToken = localStorage.getItem("token");
 		            const storedEmail = localStorage.getItem("email");
+		      	    const storedName = localStorage.getItem("name");
+		            const storedRole = localStorage.getItem("role");
 		            const storedIsAuthenticated = localStorage.getItem('token') !== null;
 
 		            if (storedToken) setToken(storedToken);
 		            if (storedEmail) setEmail(storedEmail);
+		            if (storedName) setRole(storedRole);
+		            if (storedName) setUserName(storedName);
 		            setIsAuthenticated(storedIsAuthenticated);
 		          }
 	    }, []);
 
 
-
+   
 
 
 
@@ -202,6 +211,7 @@ function App() {
 	
 	setName(name);
 	setProfileId(profileId);
+	setUserId(profileId);
 //	setSymbol(symbol);
 //	setTotalSupply(parseInt(totalSupply)/(10 ** 18));
 //	setTotalTokens(parseInt(totalToken)/(10 ** 18));
@@ -253,7 +263,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.steezInitiate();
 			setChange(11);
-			window.location.reload()
 		}
 	}
 
@@ -269,7 +278,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.createCreator( creatorId );
 			setChange(13);
-//			window.location.reload()
 		}
 	}
 
@@ -287,7 +295,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.createSteez();
 			setChange(12);
-			window.location.reload()
 		}
 	}
 
@@ -305,7 +312,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.createSteeloUser( profileId);
 			setChange(12);
-//			window.location.reload()
 		}
 	}
 
@@ -323,7 +329,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.initializePreOrder( creatorId );
 			setChange(13);
-			window.location.reload()
 		}
 	}
 
@@ -339,7 +344,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.bidPreOrder( creatorId, amount );
 			setChange(14);
-			window.location.reload()
 		}
 	}
 
@@ -355,7 +359,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.PreOrderEnder( creatorId, amount );
 			setChange(15);
-			window.location.reload()
 		}
 	}
 
@@ -380,7 +383,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.AcceptOrReject( creatorId, answer );
 			setChange(16);
-			window.location.reload()
 		}
 	}
 
@@ -569,9 +571,14 @@ function App() {
 
 
 useEffect(() => {
-    fetchDiamond();
-    document.title = "Steelo Test Blockchain"
-  }, [change]);
+  async function loadAndSet() {
+    await fetchDiamond();
+    document.title = "Steelo Test Blockchain";
+  }
+
+  loadAndSet();
+}, [change]);
+	
   
 
   return (
@@ -590,9 +597,28 @@ useEffect(() => {
 				<div className='row'>
 	  			<Router>
 	  <Routes>
+	  	
+
+
 	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} />}  profileId={profileId} profileIdUser={profileIdUser} fetchDiamond={fetchDiamond}  />
-	        <Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser} initiateAccess={initiateAccess} />} />
-	        <Route path="/admin/:id" element={<Admin initiateAccess={initiateAccess} />} />
+	        
+
+
+	  	<Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser} initiateAccess={initiateAccess} />} />
+	  
+
+
+	  	<Route path="/admin/:id" element={<Admin initiateAccess={initiateAccess} email={email} token={token}  initiate={initiate}  initiateSteez={initiateSteez} />} />
+
+
+
+
+
+
+
+
+
+
 	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}

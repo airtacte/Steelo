@@ -35,18 +35,26 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 	  const [errMsg, setErrMsg] = useState('');
 	  const [success, setSuccess] = useState(false);
 	  const navigate = useNavigate();
+	  console.log("userId :", userId);
 
 	  useEffect(() => {
-		      if (email && token) {
-			            setSuccess(true);
-			            setlogin(true);
-   			            navigate("/1");
+		      if (email && token && role && userId) {
+			            if (role == "user") {
+   			            	navigate("/bazaar");
+				    }
+			            else if (role == "creator") {
+					navigate(`/creator/${userId}`);
+				    }
+			            else if (role == "executive") {
+					    navigate(`/admin/${userId}`);
+				    }
+			      	    
 			          }
 
 		      if (userRef.current) {
 			            userRef.current.focus();
 			          }
-		    }, [email, token]);
+		    }, [email, token, userId, role]);
 
 	  useEffect(() => {
 		      setErrMsg('');
@@ -74,6 +82,21 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
     	return null;  // Return null or throw an error if the environment is not correct
 }
 
+	async function isExecutive() {
+    	if (typeof window.ethereum !== "undefined") {
+        	const provider = new ethers.providers.Web3Provider(window.ethereum);
+        	const signer = provider.getSigner();
+        	const contract = new ethers.Contract(
+        	    diamondAddress,
+        	    Diamond.abi,
+        	    signer
+        	);
+        	const signerAddress = await signer.getAddress();
+        	return await contract.isExecutive();  // Return the value directly
+    	}
+    	return null;  // Return null or throw an error if the environment is not correct
+}
+
 	  const handleSubmit = async (e) => {
     		e.preventDefault();
     		setErrMsg('');  // Reset error message at the start
@@ -82,7 +105,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
         		const { token, role: roleData, name: userNameData, userId: userIdData } = response.data;
         		const profileId = await profileIdUser();  // Fetch profile ID before deciding navigation
 
-        	if (roleData === "user" && profileId !== userIdData) {
+        	if ((roleData === "user" || roleData == "creator")  && profileId !== userIdData) {
 			try {
             			await axios.delete(`http://localhost:9000/auth/${userIdData}`);
             			console.log("This account is not recognized in the blockchain");
@@ -91,9 +114,23 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
         		}	
             		throw new Error("User profile ID mismatch.");
         	}
+			const executive = await isExecutive();
 
-        	localStorage.setItem('email', formData.email);
-        	localStorage.setItem('token', token);
+		if (roleData == "executive" && !executive) {
+			try {
+            			await axios.delete(`http://localhost:9000/auth/${userIdData}`);
+            			console.log("account deleted because account is not recognized in the blockchain");
+        		} catch (rollbackError) {
+            			console.error("Rollback failed:", rollbackError);
+        		}	
+            		throw new Error("User profile ID mismatch.");
+			
+		}
+
+        	localStorage.setItem('name', userNameData);
+		localStorage.setItem('email', formData.email);
+		localStorage.setItem('token', token);
+		localStorage.setItem('role', roleData);
 
         	setSuccess(true);
         	setlogin(true);
@@ -102,8 +139,16 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
         	setRole(roleData);
         	setUserId(userIdData);
         	setUserName(userNameData);
-
-        	navigate(`/${roleData}/${userIdData}`);
+		
+		if (roleData == "executive") {
+        		navigate(`/admin/${userIdData}`);
+		}
+		else if (roleData == "creator") {
+        		navigate(`/creator/${userIdData}`);
+		}
+		else if (roleData == "user") {
+			navigate(`/bazaar`);
+		}
 
     	} catch (err) {
 		        if (!err?.response) {

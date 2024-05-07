@@ -34,16 +34,23 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 	  const navigate = useNavigate();
 
 	  useEffect(() => {
-		      if (email && token) {
-			            setSuccess(true);
-			            setlogin(true);
-				    navigate("/1");
+		      if (email && token && role && userId) {
+			            if (role == "user") {
+   			            	navigate("/bazaar");
+				    }
+			            else if (role == "creator") {
+					navigate(`/creator/${userId}`);
+				    }
+			            else if (role == "executive") {
+					    navigate(`/admin/${userId}`);
+				    }
+			      	    
 			          }
 
 		      if (userRef.current) {
 			            userRef.current.focus();
 			          }
-		    }, [email, token]);
+		    }, [email, token, userId, role]);
 
 	  useEffect(() => {
 		      setErrMsg('');
@@ -76,6 +83,7 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 
 
 				try {
+				    console.log("role :", roleData);
 			            if (roleData == "executive") {
 					try {
 						await initiateAccess();
@@ -113,15 +121,17 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
         				console.error("Failed to create user-specific data:", innerError);
 					try {
             					await axios.delete(`http://localhost:9000/auth/${userIdData}`);
-            					console.log("This account is not recognized in the blockchain");
+            					console.log("account deleted because account is not recognized in the blockchain");
         				} catch (rollbackError) {
             					console.error("Rollback failed:", rollbackError);
         				}
         				throw innerError;
     				}
 				    console.log(response);
+			      	    localStorage.setItem('name', userNameData);
 			      	    localStorage.setItem('email', email);
 			            localStorage.setItem('token', token);
+			            localStorage.setItem('role', roleData);
 			            setSuccess(true);
 			            setlogin(true);
 			      	    setEmail(email);

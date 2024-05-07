@@ -6,10 +6,11 @@ function Navbar({ account, setEmail, setToken, setUserId, userId, role, setRole,
 
 	function remover() {
 		      localStorage.removeItem('email');
+		      localStorage.removeItem('name');
+		      localStorage.removeItem('role');
 		      localStorage.removeItem('token');
 		      setEmail("");
 		      setToken("");
-		      setUserId("");
 		      setRole("");
 		      setUserName("");
 //		      setSuccess(false);
