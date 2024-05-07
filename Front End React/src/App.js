@@ -6,10 +6,11 @@ import Navbar from './Components/Navbar';
 import Main from "./Components/Main";
 import Login from "./Components/Login";
 import SignUp from "./Components/SignUp";
+import Admin from "./Components/Admin";
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 
-const diamondAddress = "0xBb82189095956d7E0CD0f1835de347deeaD57051";
+const diamondAddress = "0xB23D3b12616B0A9665156e93afcb7A5F3A2E9A40";
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
   const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
   const [loginData, setLoginData] = useState({
 		      email: "",
 		      password: "",
@@ -58,6 +60,7 @@ function App() {
 
 
   const [name, setName] = useState("");
+  const [profileId, setProfileId] = useState("");
   const [symbol, setSymbol] = useState("");
   const [totalSupply, setTotalSupply] = useState(0);
   const [totalTokens, setTotalTokens] = useState(0);
@@ -134,6 +137,7 @@ function App() {
 	setMyAccount(signerAddress);
 	const authors = await contract.authors();
         const name = await contract.steeloName();
+	const profileId = await contract.profileIdUser();
 //        const creatorName = await contract.creatorTokenName();
 //      const creatorSymbol = await contract.creatorTokenSymbol();
 //        const symbol = await contract.steeloSymbol();
@@ -150,6 +154,7 @@ function App() {
 //	const preOrderStatus = await contract.checkPreOrderStatus(creatorId);
 //	const Bidders = await contract.FirstAndLast(creatorId);
         console.log("authors :", authors);
+	console.log("profile :", profileId);
 //        console.log("symbol :", symbol);
 //        console.log("totalSupply :", parseInt(totalSupply, 10));
 //        console.log("totalToken :", parseInt(totalToken, 10));
@@ -168,6 +173,7 @@ function App() {
 //	console.log("transaction count :", parseInt(transactionCount, 10));
 	
 	setName(name);
+	setProfileId(profileId);
 //	setSymbol(symbol);
 //	setTotalSupply(parseInt(totalSupply)/(10 ** 18));
 //	setTotalTokens(parseInt(totalToken)/(10 ** 18));
@@ -218,6 +224,24 @@ function App() {
 		}
 	}
 
+	async function createCreator( creatorId ) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.createCreator( creatorId );
+			setChange(13);
+//			window.location.reload()
+		}
+	}
+
+
+
 	async function createSteez( ) {
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -233,6 +257,26 @@ function App() {
 			window.location.reload()
 		}
 	}
+
+
+
+	async function createSteeloUser( profileId) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.createSteeloUser( profileId);
+			setChange(12);
+//			window.location.reload()
+		}
+	}
+
+
 
 	async function initializePreOrder( creatorId ) {
 		if (typeof window.ethereum !== "undefined") {
@@ -308,7 +352,7 @@ function App() {
 	}
 
 
-	async function initiateAccess( ) {
+	async function initiateAccess() {
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -320,9 +364,25 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.initialize();
 			setChange(10);
-			window.location.reload()
 		}
 	}
+
+	async function profileIdUser() {
+    	if (typeof window.ethereum !== "undefined") {
+        	const provider = new ethers.providers.Web3Provider(window.ethereum);
+        	const signer = provider.getSigner();
+        	const contract = new ethers.Contract(
+        	    diamondAddress,
+        	    Diamond.abi,
+        	    signer
+        	);
+        	const signerAddress = await signer.getAddress();
+        	return await contract.profileIdUser();  // Return the value directly
+    	}
+    	return null;  // Return null or throw an error if the environment is not correct
+}	
+
+ 
 
 
 	async function initiate( ) {
@@ -492,13 +552,14 @@ useEffect(() => {
 			<div style={{ position: 'absolute' }}>
 			<ParticleSettings />
 			</div>
-			<Navbar account={myAccount} userId={userId} role={role} setRole={setRole} setEmail={setEmail} setToken={setToken} setUserId={setUserId} />
+			<Navbar account={myAccount} userId={userId} role={role} setRole={setRole} setEmail={setEmail} setToken={setToken} setUserId={setUserId} userName={userName} setUserName={setUserName}/>
 			<div className="container-fluid mt-5" >
 				<div className='row'>
 	  			<Router>
 	  <Routes>
-	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId}  />} />
-	        <Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId}  />} />
+	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} />}  profileId={profileId} profileIdUser={profileIdUser} fetchDiamond={fetchDiamond}  />
+	        <Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser} />} />
+	        <Route path="/admin/:id" element={<Admin initiateAccess={initiateAccess} />} />
 	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}

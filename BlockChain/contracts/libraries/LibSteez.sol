@@ -38,13 +38,23 @@ library LibSteez {
 	function createCreator( address creator, string memory profileId ) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require( creator != address(0), "STEEZFacet: Cannot create account for zero address" );
+		require(!s.creatorMembers[creator], "already have a creator Account");
 		require(keccak256(abi.encodePacked(s.creatorIdentity[creator])) == keccak256(abi.encodePacked("")), "you already have a creator account please create a creator account");
 		Creator memory newCreator = Creator({
          		creatorId: profileId,
             		profileAddress: creator
         	});
 
+//		s.stakerMembers[creator] = true;
+		s.userMembers[creator] = true;
+		s.visitorMembers[creator] = true;
+		s.creatorMembers[creator] = true;
+		s.collaboratorMembers[creator] = true;
+//		s.investorMembers[creator] = true;
+//		s.subscriberMembers[creator] = true;
+
 		s.creatorIdentity[creator] = profileId;
+		s.userIdentity[creator] = profileId;
 		s.creators[profileId] = newCreator; 
 	}
 

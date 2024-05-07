@@ -2,6 +2,10 @@ import React, { useState, useContext, useRef, useEffect } from 'react';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import styles from '../Components/Signup.module.css';
 import { useNavigate } from 'react-router-dom';
+import { ethers } from "ethers";
+import Diamond from "../artifacts/steeloDiamond.json";
+
+const diamondAddress = "0xB23D3b12616B0A9665156e93afcb7A5F3A2E9A40";
 
 
 
@@ -24,7 +28,7 @@ interface Props {
 	  selectedService: any; 
 }
 
-function Login({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId }: Props) {
+function Login({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId, userName, setUserName, profileId, fetchDiamond }: Props) {
 	  const userRef = useRef(null);
 	  const errRef = useRef(null);
 
@@ -33,11 +37,11 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 	  const navigate = useNavigate();
 
 	  useEffect(() => {
-		      if (email && token) {
-			            setSuccess(true);
-			            setlogin(true);
-				    navigate("/1");
-			          }
+//		      if (email && token) {
+//			            setSuccess(true);
+//			            setlogin(true);
+//				    navigate("/1");
+//			          }
 
 		      if (userRef.current) {
 			            userRef.current.focus();
@@ -55,59 +59,67 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 			          });
 		    };
 
-	  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		      e.preventDefault();
+	async function profileIdUser() {
+    	if (typeof window.ethereum !== "undefined") {
+        	const provider = new ethers.providers.Web3Provider(window.ethereum);
+        	const signer = provider.getSigner();
+        	const contract = new ethers.Contract(
+        	    diamondAddress,
+        	    Diamond.abi,
+        	    signer
+        	);
+        	const signerAddress = await signer.getAddress();
+        	return await contract.profileIdUser();  // Return the value directly
+    	}
+    	return null;  // Return null or throw an error if the environment is not correct
+}
 
-		      try {
-			            const response = await axios.post('http://localhost:9000/auth/login', formData);
-			            console.log(response);
-			            const token = response?.data?.token;
-			      	    const roleData = response?.data?.role;
-			      	    const userIdData = response?.data?.userId;
-			            console.log(token);
-			            console.log(formData.email);
-			            console.log(formData.password);
-			            const email = formData.email;
-			            const password = formData.password;
-			            console.log('Login successful:', response.data);
-			            localStorage.setItem('email', email);
-			            localStorage.setItem('token', token);
-			            setSuccess(true);
-			            setlogin(true);
-			      	    setEmail(email);
-			      	    setToken(token);
-			            setRole(roleData);
-			            setUserId(userIdData)
-			      	    console.log("role :", roleData);
-			      	    console.log("userId :", userIdData);
-			            if (roleData == "executive") {
-			      	    	navigate(`/admin/${userIdData}`);
-				    }
-			      	    else if (roleData == "creator") {
-					navigate(`/creator/${userIdData}`);
-				    }
-			      	    else if (roleData == "user") {
-					navigate(`/bazaar`);
-				    }
-			      	    else {
-					navigate("/1");
-				    }
-			          } catch (err) {
-					        if (!err?.response) {
-							        setErrMsg('No Server Response');
-							      } else if (err.response.status === 400) {
-								              setErrMsg('Missing user name or password');
-								            } else if (err.response.status === 401) {
-										            setErrMsg('Unauthorized');
-										          } else {
-												          setErrMsg('Login Failed');
-												        }
+	  const handleSubmit = async (e) => {
+    		e.preventDefault();
+    		setErrMsg('');  // Reset error message at the start
+    		try {
+        		const response = await axios.post('http://localhost:9000/auth/login', formData);
+        		const { token, role: roleData, name: userNameData, userId: userIdData } = response.data;
+        		const profileId = await profileIdUser();  // Fetch profile ID before deciding navigation
+
+        	if (roleData === "user" && profileId !== userIdData) {
+			try {
+            			await axios.delete(`http://localhost:9000/auth/${userIdData}`);
+            			console.log("This account is not recognized in the blockchain");
+        		} catch (rollbackError) {
+            			console.error("Rollback failed:", rollbackError);
+        		}	
+            		throw new Error("User profile ID mismatch.");
+        	}
+
+        	localStorage.setItem('email', formData.email);
+        	localStorage.setItem('token', token);
+
+        	setSuccess(true);
+        	setlogin(true);
+        	setEmail(formData.email);
+        	setToken(token);
+        	setRole(roleData);
+        	setUserId(userIdData);
+        	setUserName(userNameData);
+
+        	navigate(`/${roleData}/${userIdData}`);
+
+    	} catch (err) {
+		        if (!err?.response) {
+//			      setErrMsg('No Server Response');
+		      } else if (err.response.status === 400) {
+		              setErrMsg('Invalid Credentials or Account does not exist');
+		      } else if (err.response.status === 401) {
+		              setErrMsg('Unauthorized');
+		      } else {
+		              setErrMsg('Login Failed');
+		      }
 					        if (errRef.current) {
 							        errRef.current.focus();
 							      }
 					      }
-		    }
-
+	}
 	  function remover() {
 		      localStorage.removeItem('email');
 		      localStorage.removeItem('token');
@@ -168,6 +180,10 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 					                    <button className={styles.loginbutton} type="submit">
 					                      Signin
 					                    </button>
+					                 Create Steelo Account
+							<a href="/signup" className={styles.loginbutton}>
+					                      Signup
+					                </a>
 					                  </form>
 					                </div>
 					              </>

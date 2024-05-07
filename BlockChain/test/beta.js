@@ -645,31 +645,34 @@ it('add the Village Facet', async () => {
       it('addr6 create steelo user account', async () => { 
  
       const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
-      await expect(Steelo4.connect(addr6).createSteeloUser()).to.not.be.reverted;
+      let profileId = "1ugs0SRpjX9dD4hSi6rB";
+      await expect(Steelo4.connect(addr6).createSteeloUser(profileId)).to.not.be.reverted;
 
     })
    
     it('addr7 create steelo user account', async () => { 
  
       const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
-      await expect(Steelo4.connect(addr7).createSteeloUser()).to.not.be.reverted;
+      let profileId = "Fhpz1LyFSXytoMG8MQa4";
+      await expect(Steelo4.connect(addr7).createSteeloUser(profileId)).to.not.be.reverted;
 
     })
 
     it('addr8 create steelo user account', async () => { 
  
       const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
-      await expect(Steelo4.connect(addr8).createSteeloUser()).to.not.be.reverted;
+      let profileId = "HX7A43WejtSY7T93Vor7";
+      await expect(Steelo4.connect(addr8).createSteeloUser(profileId)).to.not.be.reverted;
 
     })
 
     it('addr9 create steelo user account', async () => { 
  
       const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
-      await expect(Steelo4.connect(addr9).createSteeloUser()).to.not.be.reverted;
+      let profileId = "OJBnZxWJe2oflQXZG8FE";
+      await expect(Steelo4.connect(addr9).createSteeloUser(profileId)).to.not.be.reverted;
 
     })
-
 
       it('should convert ETH to Steelo', async () => { 
   

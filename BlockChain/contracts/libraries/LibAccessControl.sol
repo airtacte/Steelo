@@ -16,13 +16,13 @@ library LibAccessControl {
 		s.adminMembers[owner] = true;
 		s.employeeMembers[owner] = true;
 		s.testerMembers[owner] = true;
-		s.stakerMembers[owner] = true;
+//		s.stakerMembers[owner] = true;
 		s.userMembers[owner] = true;
 		s.visitorMembers[owner] = true;
-		s.creatorMembers[owner] = true;
+//		s.creatorMembers[owner] = true;
 		s.teamMembers[owner] = true;
-		s.collaboratorMembers[owner] = true;
-		s.investorMembers[owner] = true;
+//		s.collaboratorMembers[owner] = true;
+//		s.investorMembers[owner] = true;
 		s.moderatorMembers[owner] = true;
 		s.subscriberMembers[owner] = true;
 		s.accessInitialized = true;
@@ -39,13 +39,13 @@ library LibAccessControl {
 			s.adminMembers[account] = true;
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
-			s.stakerMembers[account] = true;
+//			s.stakerMembers[account] = true;
 			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
-			s.creatorMembers[account] = true;
+//			s.creatorMembers[account] = true;
 			s.teamMembers[account] = true;
-			s.collaboratorMembers[account] = true;
-			s.investorMembers[account] = true;
+//			s.collaboratorMembers[account] = true;
+//			s.investorMembers[account] = true;
 			s.moderatorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
@@ -54,13 +54,13 @@ library LibAccessControl {
 			s.adminMembers[account] = true;
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
-			s.stakerMembers[account] = true;
+//			s.stakerMembers[account] = true;
 			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
-			s.creatorMembers[account] = true;
+//			s.creatorMembers[account] = true;
 			s.teamMembers[account] = true;
-			s.collaboratorMembers[account] = true;
-			s.investorMembers[account] = true;
+//			s.collaboratorMembers[account] = true;
+//			s.investorMembers[account] = true;
 			s.moderatorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
@@ -68,13 +68,13 @@ library LibAccessControl {
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.TEAM_ROLE))) {
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
-			s.stakerMembers[account] = true;
+//			s.stakerMembers[account] = true;
 			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
-			s.creatorMembers[account] = true;
+//			s.creatorMembers[account] = true;
 			s.teamMembers[account] = true;
-			s.collaboratorMembers[account] = true;
-			s.investorMembers[account] = true;
+//			s.collaboratorMembers[account] = true;
+//			s.investorMembers[account] = true;
 			s.moderatorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
@@ -82,23 +82,23 @@ library LibAccessControl {
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.MODERATOR_ROLE))) {
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
-			s.stakerMembers[account] = true;
+//			s.stakerMembers[account] = true;
 			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
-			s.creatorMembers[account] = true;
-			s.collaboratorMembers[account] = true;
-			s.investorMembers[account] = true;
+//			s.creatorMembers[account] = true;
+//			s.collaboratorMembers[account] = true;
+//			s.investorMembers[account] = true;
 			s.moderatorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.CREATOR_ROLE))) {
-			s.stakerMembers[account] = true;
+//			s.stakerMembers[account] = true;
 			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 			s.creatorMembers[account] = true;
 			s.collaboratorMembers[account] = true;
-			s.investorMembers[account] = true;
+//			s.investorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
 
@@ -106,8 +106,8 @@ library LibAccessControl {
 			s.collaboratorMembers[account] = true;
 			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
-			s.investorMembers[account] = true;
-			s.stakerMembers[account] = true;
+//			s.investorMembers[account] = true;
+//			s.stakerMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
 

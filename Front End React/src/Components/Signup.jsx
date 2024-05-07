@@ -24,19 +24,20 @@ interface Props {
 	  selectedService: any; 
 }
 
-function SignUp({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId }: Props) {
+function SignUp({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId, userName, setUserName, createCreator, createSteeloUser }: Props) {
 	  const userRef = useRef(null);
 	  const errRef = useRef(null);
 
 	  const [errMsg, setErrMsg] = useState('');
 	  const [success, setSuccess] = useState(false);
+	  const [selectedRole, setSelectedRole] = useState("");
 	  const navigate = useNavigate();
 
 	  useEffect(() => {
 		      if (email && token) {
-			            setSuccess(true);
-			            setlogin(true);
-				    navigate("/1");
+//			            setSuccess(true);
+//			            setlogin(true);
+//				    navigate("/1");
 			          }
 
 		      if (userRef.current) {
@@ -54,23 +55,65 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 			            [e.target.name]: e.target.value,
 			          });
 		    };
+	const handleChangeRole = (event) => {
+	    setSelectedRole(event.target.value);
+	  };
 
 	  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		      e.preventDefault();
 
 		      try {
-			            const response = await axios.post('http://localhost:9000/auth/register/creator', formData);
-			            console.log(response);
+			            const response = await axios.post(`http://localhost:9000/auth/register/${selectedRole}`, formData);
+ 
 			            const token = response?.data?.token;
 			      	    const roleData = response?.data?.role;
+				    const userNameData = response?.data?.name;
 			      	    const userIdData = response?.data?.userId;
-			            console.log(token);
-			            console.log(formData.email);
-			            console.log(formData.password);
 			            const email = formData.email;
 			            const password = formData.password;
-			            console.log('Login successful:', response.data);
-			            localStorage.setItem('email', email);
+			            
+
+
+
+				try {
+			            if (roleData == "executive") {
+			      	    	navigate(`/admin/${userIdData}`);
+				    }
+			      	    else if (roleData == "creator") {
+					try {
+				    		await createCreator(userIdData);
+						navigate(`/creator/${userIdData}`);
+					} catch (error) {
+						console.log("blockchain error :", error.data.message);	
+						setErrMsg(error.data.message);
+						throw error;
+					}
+				    }
+			      	    else if (roleData == "user") {
+					try {
+						await createSteeloUser( userIdData);
+						navigate(`/bazaar`);
+					} catch (error) {
+						console.log("blockchain error :", error.data.message);	
+						setErrMsg(error.data.message);
+						throw error;
+					}
+				    }
+			      	    else {
+					navigate("/1");
+				    }
+				} catch (innerError) {
+        				console.error("Failed to create user-specific data:", innerError);
+					try {
+            					await axios.delete(`http://localhost:9000/auth/${userIdData}`);
+            					console.log("This account is not recognized in the blockchain");
+        				} catch (rollbackError) {
+            					console.error("Rollback failed:", rollbackError);
+        				}
+        				throw innerError;
+    				}
+				    console.log(response);
+			      	    localStorage.setItem('email', email);
 			            localStorage.setItem('token', token);
 			            setSuccess(true);
 			            setlogin(true);
@@ -78,30 +121,25 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 			      	    setToken(token);
 			            setRole(roleData);
 			            setUserId(userIdData)
+			            setUserName(userNameData);
+			            console.log("token :", token);
 			      	    console.log("role :", roleData);
 			      	    console.log("userId :", userIdData);
-			            if (roleData == "executive") {
-			      	    	navigate(`/admin/${userIdData}`);
-				    }
-			      	    else if (roleData == "creator") {
-					navigate(`/creator/${userIdData}`);
-				    }
-			      	    else if (roleData == "user") {
-					navigate(`/bazaar`);
-				    }
-			      	    else {
-					navigate("/1");
-				    }
+			            console.log("userName", userNameData);
+
+
+
+
 			          } catch (err) {
 					        if (!err?.response) {
-							        setErrMsg('No Server Response');
-							      } else if (err.response.status === 400) {
-								              setErrMsg('Missing user name or password');
-								            } else if (err.response.status === 401) {
-										            setErrMsg('Unauthorized');
-										          } else {
-												          setErrMsg('Login Failed');
-												        }
+//						        setErrMsg('No Server Response');
+						} else if (err.response.status === 400) {
+						        setErrMsg('Invalid Credentials or account already exists');
+						} else if (err.response.status === 401) {
+						        setErrMsg('Unauthorized');
+						} else {
+						        setErrMsg('Login Failed');
+						}
 					        if (errRef.current) {
 							        errRef.current.focus();
 							      }
@@ -176,8 +214,17 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 					                      value={formData.password}
 					                      onChange={handleChange}
 					                    />
+					      	<div>
+						      <h1>Select Your Role:</h1>
+						      <select value={selectedRole} onChange={handleChangeRole}>
+					                <option value="" disabled>Choose Role</option>
+						        <option value="user">User</option>
+						        <option value="creator">Creator</option>
+						      </select>
+						      <p>{selectedRole && <span>Selected Role: {selectedRole}</span>}</p>
+						    </div>
 					                    <button className={styles.loginbutton} type="submit">
-					                      Signin
+					                      Sign Up
 					                    </button>
 					                  </form>
 					                </div>

@@ -22,12 +22,24 @@ contract STEELO4Facet {
 		return s.steeloCurrentPrice;	
 	}
 
-	function createSteeloUser() public {
-		LibSteelo.createSteeloUser(msg.sender);
+	function createSteeloUser(string memory profileId) public {
+		LibSteelo.createSteeloUser(msg.sender, profileId);
 	}
 
 	function steezStatus(string memory creatorId) public view returns (string memory) {
 		return s.steez[creatorId].status;
+	}
+
+	function profileIdUser() public view returns (string memory) {
+		return s.userIdentity[msg.sender];
+	}
+
+	function profileIdCreator() public view returns (string memory) {
+		return s.creatorIdentity[msg.sender];
+	}
+
+	function isExecutive() public view returns (bool) {
+		return s.executiveMembers[msg.sender];
 	}
 	
 

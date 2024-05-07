@@ -176,7 +176,7 @@ router.put('/:id', isLogin, isExecutive, async (req: Request, res: Response) => 
     }
 })
 
-router.delete('/:id', isLogin, isExecutive, async (req: Request, res: Response) => {
+router.delete('/:id', async (req: Request, res: Response) => {
     try {
         const userId = req.params.id;
         const querySnapshot = await getDocs(query(userRef, where(documentId(), "==", userId)));

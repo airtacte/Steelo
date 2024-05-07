@@ -62,11 +62,13 @@ library LibSteelo {
 		
 	}
 
-	function createSteeloUser(address account) internal {
+	function createSteeloUser(address account, string memory profileId) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require (account != address(0), "zero address can not have a steelo account");
 		require (s.userMembers[account] == false, "already have account");
+		require(keccak256(abi.encodePacked(s.userIdentity[account])) == keccak256(abi.encodePacked("")), "you already have a steelo account please login with your account");
 
+		s.userIdentity[account] = profileId;
 		s.userMembers[account] = true;
 		if (keccak256(abi.encodePacked(s.roles[account])) == keccak256(abi.encodePacked("")) || keccak256(abi.encodePacked(s.roles[account])) == keccak256(abi.encodePacked(AppConstants.VISITOR_ROLE))) {
 			s.roles[account] = AppConstants.USER_ROLE;
