@@ -270,7 +270,7 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 					                  <form onSubmit={handleSubmit}>
 					                    <label className={styles.labeltitle}>Name</label>
 					                    <input
-					                      className={styles.titleinput}
+					                      className="form-control"
 					                      type="text"
 					                      name="name"
 					      		placeholder="name"
@@ -281,7 +281,7 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 					                    />
 					                    <label className={styles.labeltitle}>Email</label>
 					                    <input
-					                      className={styles.titleinput}
+					                      className="form-control"
 					                      type="text"
 					                      name="email"
 					      		placeholder="email"
@@ -292,7 +292,7 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 					                    />
 					                    <label className={styles.labeltitle}>Password</label>
 					                    <input
-					                      className={styles.titleinput}
+					                      className="form-control"
 					                      type="password"
 					                      name="password"
 					      		placeholder="password"

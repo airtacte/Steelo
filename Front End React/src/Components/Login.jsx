@@ -204,7 +204,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 					                  <form onSubmit={handleSubmit}>
 					                    <label className={styles.labeltitle}>Email</label>
 					                    <input
-					                      className={styles.titleinput}
+					                      className="form-control"
 					                      type="text"
 					                      name="email"
 					      		placeholder="email"
@@ -215,7 +215,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 					                    />
 					                    <label className={styles.labeltitle}>Password</label>
 					                    <input
-					                      className={styles.titleinput}
+					                      className="form-control"
 					                      type="password"
 					                      name="password"
 					      		placeholder="password"

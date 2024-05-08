@@ -19,8 +19,8 @@ function Navbar({ account, setEmail, setToken, setUserId, userId, role, setRole,
     return (
         <nav className='navbar navbar-dark fixed-top shadow p-0' style={{ backgroundColor: 'black', height: '50px' }}>
             <div className='navbar-brand col-sm-3 col-md-2 mr-0' style={{ color: 'white' }}>
-                <button onClick={remover} className={styles.loginbutton}>Log Out</button>
-	    	<a href={`/gallery/${userId}`} className={styles.loginbutton}>
+                <button onClick={remover} className="navbar-toggler">Log Out</button>
+	    	<a href={`/gallery/${userId}`} className="navbar-brand">
 	    		Gallery
 	    	</a>
                 <img src={bank} alt='Bank Logo' width='50' style={{ marginTop: '-10px' }} className='d-inline-block align-top' />
