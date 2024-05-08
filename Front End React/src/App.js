@@ -321,7 +321,7 @@ useEffect(() => {
 	  									
 	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
-										email={email} token={token} stakedPound={stakedPound} interest={interest} />} />
+										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role}/>} />
 
 
 
@@ -355,7 +355,7 @@ useEffect(() => {
 	  									
 	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
-										email={email} token={token}  stakedPound={stakedPound}
+										email={email} token={token}  stakedPound={stakedPound} role={role}
 	  									
 	/>} />
 	  </Routes>

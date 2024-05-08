@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 import {diamondAddress} from "../utils/constants";
 
 
-function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, balanceEther, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, createSteez, email, token  } ) {
+function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, balanceEther, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, createSteez, email, token, role  } ) {
 
 
 	  const navigate = useNavigate();
@@ -46,7 +46,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	  const [buyingAmount, setBuyingAmount] = useState(0);
 	  const [amountToBuy, setAmountToBuy] = useState(0);
 	  const [sellers, setSellers] = useState([]);
-	  const [interest, setInterest] = useState(0);
+	  
 	
 
 
@@ -143,13 +143,14 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 
 	useEffect(() => {
+		const storedRole = localStorage.getItem("role");
 		
-//        if (!token || !email) {
-//		    navigate("/");
-//	          }
+        if (!storedRole) {
+		    navigate("/");
+	          }
 	fetchCreatorDetail();
 
-	}, [email, token]);
+	}, [role]);
 
 
 
@@ -327,7 +328,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 		return(
 			<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
-			<img src={creatorDataBackend.profile ? creatorDataBackend.profile : userImage} alt="Image Preview" className={styl.previewImage} />
+			<img src={creatorDataBackend.profile ? creatorDataBackend.profile : userImage} alt="Image Preview" className={styl.previewImage} style={{ borderRadius: '50%'}}/>
 			<p style={{color: "white"}}>{creatorDataBackend.name ? creatorDataBackend.name : "unnamed creator"}</p>
 			
 

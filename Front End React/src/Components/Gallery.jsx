@@ -251,12 +251,13 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 
 	
 	useEffect(() => {
+		const storedRole = localStorage.getItem("role");
 		
-//        if (!token || !email || !role) {
-//		    navigate("/");
-//	          }
+        if (!storedRole) {
+		    navigate("/");
+	          }
 
-	}, [email, token, role]);
+	}, [role]);
 		
 	
 		return(

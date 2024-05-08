@@ -284,7 +284,7 @@ function Admin ( {  email, token, role } ) {
 						</div>
 		                                <div>
 						      <h1>Select Your Role:</h1>
-						      <select value={roleGranted} onChange={handleChangeRole}>
+						      <select value={roleGranted} onChange={handleChangeRole} className="form-select">
 					                <option value="" disabled>Choose Role</option>
 						        <option value="ADMIN_ROLE">Admin</option>
 						        <option value="EXECUTIVE_ROLE">Executive</option>

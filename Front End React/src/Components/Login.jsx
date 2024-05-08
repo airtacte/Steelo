@@ -107,8 +107,9 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 
         	if ((roleData === "user" || roleData == "creator")  && profileId !== userIdData) {
 			try {
-            			await axios.delete(`http://localhost:9000/auth/${userIdData}`);
-            			console.log("This account is not recognized in the blockchain");
+//            			await axios.delete(`http://localhost:9000/auth/${userIdData}`);
+            			console.log("you are using different account use your original account");
+				setErrMsg('you are using different account use your original account');
         		} catch (rollbackError) {
             			console.error("Rollback failed:", rollbackError);
         		}	
@@ -118,8 +119,9 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 
 		if (roleData == "executive" && !executive) {
 			try {
-            			await axios.delete(`http://localhost:9000/auth/${userIdData}`);
-            			console.log("account deleted because account is not recognized in the blockchain");
+//            			await axios.delete(`http://localhost:9000/auth/${userIdData}`);
+            			console.log("you are using different account use your original account");
+				setErrMsg('you are using different account use your original account')
         		} catch (rollbackError) {
             			console.error("Rollback failed:", rollbackError);
         		}	
