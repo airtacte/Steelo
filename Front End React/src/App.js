@@ -12,7 +12,7 @@ import Bazaar from "./Components/Baz";
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 import {diamondAddress} from "./utils/constants";
-import axios from "axios";
+
 
 
 
@@ -304,59 +304,7 @@ function App() {
 		}
 	}
 
-	async function bidPreOrder( creatorId, amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.bidPreOrder( creatorId, amount );
-			setChange(14);
-		}
-	}
 
-	async function preOrderEnder( creatorId, amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.PreOrderEnder( creatorId, amount );
-			setChange(15);
-		}
-	}
-
-	async function AcceptOrReject( creatorId, answer ) {
-		if ( answer == "yes") {
-			answer = true
-		}
-		else if (answer == "no"){
-			answer = false;
-		}
-		else {
-			answer = false;
-		}
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.AcceptOrReject( creatorId, answer );
-			setChange(16);
-		}
-	}
 
 
 	
@@ -576,7 +524,7 @@ useEffect(() => {
 
 
 
-	  	<Route path="/1"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
+	  	<Route path="/bazaar/:id"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}
 										 addressToApprove={addressToApprove} setAddressToApprove={setAddressToApprove} 												   amountToApprove={amountToApprove} setAmountToApprove={setAmountToApprove}
@@ -597,10 +545,10 @@ useEffect(() => {
 	  									bidAmount={bidAmount} auctionSecured={auctionSecured} totalSteeloPreOrder={totalSteeloPreOrder}  
 	  									investorLength={investorLength} timeInvested={timeInvested} investorAddress={investorAddress}
 	  									creatorId={creatorId} setCreatorId={setCreatorId} initializePreOrder={initializePreOrder}
-	  									bidPreOrder={bidPreOrder} creatorIdBid={creatorIdBid} setCreatorIdBid={setCreatorIdBid}
+	  									 creatorIdBid={creatorIdBid} setCreatorIdBid={setCreatorIdBid}
 	  									biddingAmount={biddingAmount} setBiddingAmount={setBiddingAmount} 
 	  									
-	  									answer={answer} setAnswer={setAnswer} preOrderEnder={preOrderEnder} AcceptOrReject={AcceptOrReject}
+	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
 										email={email} token={token}
 	  									

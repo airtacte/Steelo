@@ -1,28 +1,422 @@
 import React, { Component,  useEffect, useState } from 'react'
 import tether from '../tether.png';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from "axios";
+import userImage from "../assets/user.png";
+import styl from "../Components/Upload.module.css";
+import Diamond from "../artifacts/steeloDiamond.json";
+import { ethers } from "ethers";
+import {diamondAddress} from "../utils/constants";
+
 
 function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, balanceEther, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token  } ) {
 
 
 	const navigate = useNavigate();
-	
+	const { id } = useParams();
+	console.log("creator Id :", id);
+	const [creatorDataBackend, setCreatorDataBackend] = useState("");
+
+
+	useEffect(() => {
+		      const fetchCreatorData = async () => {
+			            try {
+					            const response = await axios.get(`http://localhost:9000/auth/${id}`, {
+							              headers: {
+									                  'Content-Type': 'application/json',
+									                  Authorization: `Bearer ${token}`,
+									                },
+							            });
+
+					            console.log('Creator fetched successfully');
+					            console.log(response.data);
+						    setCreatorDataBackend(response.data);
+					          } catch (error) {
+							          console.error('Network error:', error);
+							        }
+			          };
+
+		      fetchCreatorData();
+		    }, []);
+
+
 
 
 	useEffect(() => {
 		
-        if (!token || !email) {
-		    navigate("/");
-	          }
+//        if (!token || !email) {
+//		    navigate("/");
+//	          }
 
 	}, [email, token]);
 
+
+
+
+
+
+
+
+
+
+
+
+
+	async function bidPreOrder( creatorId, amount ) {
+		console.log("creator Id :", creatorId);
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.bidPreOrder( creatorId, amount );
+		}
+	}
+
+	async function preOrderEnder( creatorId, amount ) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.PreOrderEnder( creatorId, amount );
+		}
+	}
+
+
+	async function AcceptOrReject( creatorId, answer ) {
+		if ( answer == "yes") {
+			answer = true
+		}
+		else if (answer == "no"){
+			answer = false;
+		}
+		else {
+			answer = false;
+		}
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.AcceptOrReject( creatorId, answer );
+		}
+	}
+
+	
+
+
+
+
+
+
+
+
 		return(
 			<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
-			<div id='content' className='mt-3'>
-				<button onClick={initiate} className='btn btn-primary btn-lg btn-block'>
-							Initiate Steelo
-				</button>
+			<img src={creatorDataBackend.profile ? creatorDataBackend.profile : userImage} alt="Image Preview" className={styl.previewImage} />
+			<p style={{color: "white"}}>{creatorDataBackend.name ? creatorDataBackend.name : "unnamed creator"}</p>
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<div id='content' className='mt-3'>
+
+		
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Steez Total Supply</th>
+						<th scope='col'>Creator Address</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{steezTotalSupply}</td>
+						<td>{creatorAddress}</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Steez Current Price</th>
+						<th scope='col'>My {creatorName} Tokens</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{steezCurrentPrice} {symbol}</td>
+						<td>{steezInvested} {creatorSymbol}</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Auction Start Time</th>
+						<th scope='col'>Anniversary Date</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{auctionStartTime}</td>
+						<td>{auctionAnniversary}</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Auction Concluded</th>
+						<th scope='col'>Pre Order Start Time</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{auctionConcluded ? 'yes' : 'no' }</td>
+						<td>{preOrderStartTime}</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Bid Amount</th>
+						<th scope='col'>Auction Slots Secured</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{bidAmount}</td>
+						<td>{auctionSecured}</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Total Investors</th>
+						<th scope='col'> Bid Time</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{investorLength} </td>
+						<td>{timeInvested}</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Liquidity Pool</th>
+						<th scope='col'> PreOrder Started</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{liquidityPool}</td>
+						<td>{preOrderStarted ? 'yes' : 'no' }</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Total Steelo PreOrder</th>
+						<th scope='col'>Investor Address </th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{totalSteeloPreOrder}</td>
+						<td>{investorAddress}</td>
+					</tr>
+					</tbody>
+				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Highest Bid</th>
+						<th scope='col'>Lowest Bid</th>
+						<th scope='col'>Minimum Bid Allowed</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{highestBid / 10 ** 18}</td>
+						<td>{lowestBid / 10 ** 18}</td>
+						<td>{(auctionSecured == 5 ? lowestBid + (10 ** 19) : lowestBid ) / 10 ** 18}</td>
+					</tr>
+					</tbody>
+				</table>
+				
+				
+								
+				
+				
+				<div className='card mb-2' style={{opacity:'.9'}}>
+				
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							bidPreOrder(id, biddingAmount)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						
+					
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setBiddingAmount(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; {symbol}
+						</div>
+						</div>
+						</div>
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Bid
+						</button>
+						
+						</div>
+					</form>
+
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							preOrderEnder(id, biddingAmount)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						
+						
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setBiddingAmount(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; {symbol}
+						</div>
+						</div>
+						</div>
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Late Bid
+						</button>
+						
+						</div>
+					</form>
+
+
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							AcceptOrReject(id, answer)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						
+						
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Answer</label>
+						<input
+							
+							type='text'
+							placeholder='your answer'
+							onChange={(e) => setAnswer(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; 
+						</div>
+						</div>
+						</div>
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Accept Or Reject
+						</button>
+						
+						</div>
+					</form>
+
+
+
+					
+					<div className='card-body text-center' style={{ color: 'blue' }}>
+						
+					</div>
+				</div>
+		
+			</div>
+
+
+
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
 				<table className='table text-muted text-center'>
 					<thead>
 					<tr style={{ color: 'white' }}>
@@ -297,326 +691,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 						
 					</div>
 				</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			<button onClick={initiateSteez} className='btn btn-primary btn-lg btn-block'>
-							Initiate Steez
-				</button>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Steez Total Supply</th>
-						<th scope='col'>Creator Address</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{steezTotalSupply}</td>
-						<td>{creatorAddress}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Steez Current Price</th>
-						<th scope='col'>My {creatorName} Tokens</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{steezCurrentPrice} {symbol}</td>
-						<td>{steezInvested} {creatorSymbol}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Auction Start Time</th>
-						<th scope='col'>Anniversary Date</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{auctionStartTime}</td>
-						<td>{auctionAnniversary}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Auction Concluded</th>
-						<th scope='col'>Pre Order Start Time</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{auctionConcluded ? 'yes' : 'no' }</td>
-						<td>{preOrderStartTime}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Bid Amount</th>
-						<th scope='col'>Auction Slots Secured</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{bidAmount}</td>
-						<td>{auctionSecured}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Total Investors</th>
-						<th scope='col'> Bid Time</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{investorLength} </td>
-						<td>{timeInvested}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Liquidity Pool</th>
-						<th scope='col'> PreOrder Started</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{liquidityPool}</td>
-						<td>{preOrderStarted ? 'yes' : 'no' }</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Total Steelo PreOrder</th>
-						<th scope='col'>Investor Address </th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{totalSteeloPreOrder}</td>
-						<td>{investorAddress}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Highest Bid</th>
-						<th scope='col'>Lowest Bid</th>
-						<th scope='col'>Minimum Bid Allowed</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{highestBid / 10 ** 18}</td>
-						<td>{lowestBid / 10 ** 18}</td>
-						<td>{(auctionSecured == 5 ? lowestBid + (10 ** 19) : lowestBid ) / 10 ** 18}</td>
-					</tr>
-					</tbody>
-				</table>
-				
-				
-								
-				
-				
-				<div className='card mb-2' style={{opacity:'.9'}}>
-					<button onClick={createSteez} className='btn btn-primary btn-lg btn-block'>
-							Create Steez
-					</button>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							initializePreOrder(creatorId)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Creator Id</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setCreatorId(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; Id
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Initialize PreOrder
-						</button>
-						
-						</div>
-					</form>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							bidPreOrder(creatorIdBid, biddingAmount)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Creator Id</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setCreatorIdBid(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; Id
-						</div>
-						</div>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setBiddingAmount(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Bid
-						</button>
-						
-						</div>
-					</form>
-
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							preOrderEnder(creatorIdBid, biddingAmount)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Creator Id</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setCreatorIdBid(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; Id
-						</div>
-						</div>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setBiddingAmount(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Late Bid
-						</button>
-						
-						</div>
-					</form>
-
-
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							AcceptOrReject(creatorIdBid, answer)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Creator Id</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setCreatorIdBid(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; Id
-						</div>
-						</div>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Answer</label>
-						<input
-							
-							type='text'
-							placeholder='your answer'
-							onChange={(e) => setAnswer(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; 
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Accept Or Reject
-						</button>
-						
-						</div>
-					</form>
-
-
-
-					
-					<div className='card-body text-center' style={{ color: 'blue' }}>
-						
-					</div>
-				</div>
-		
-			</div>
+			
 		</main>
 		)
 }
