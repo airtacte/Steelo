@@ -173,34 +173,23 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 			<img src={creatorData.profile ? creatorData.profile : userImage} alt="Image Preview" className={styl.previewImage} />
 
 			<div className={styles.productdetail}>
-		      <img className={styles.detailimage} src="" alt={item.name} />
-		      <div className={styles.detailinfo}>
-		        <h1 className={styles.detailtitle}>{item.name}</h1>
-		        <ul className={styles.detaildescription}> Description	
-		        </ul>
-		        <p className={styles.detailcolor}>{item.description}</p>
-		        <p className={styles.detailcolor}>Color: {item.color}</p>
-		        <p className={styles.detailprice}>Price: {item.price} ETB</p>
-		        {item.isAvailable ? (
-				          <button className={styles.detailadd}>Available</button>
-				        ) : null}
-		      </div>
+		      
 		      {email && token ? (
 			              <>
 			      	<div className={styl.uploadbody}>
 			            <h1 className={styl.uploadtitle}>Update Profile</h1>
-			      	<form className={styl.uploadform} onSubmit={handleUpdate}>
+			      	<form className="mb-3" onSubmit={handleUpdate}>
 			            <label className={styl.labeltitle}>Profile Name</label>
 			            <input
-			              className={styl.titleinput}
+			              className="form-control"
 			              type="text"
 			              value={name}
 			              onChange={(e) => setName(e.target.value)}
 			              placeholder={creatorData.name ? creatorData.name : "please insert name"}
 			            />
-			            <label className={styl.labeltitle}>Product Image</label>
+			            <label className={styl.labeltitle}>Profile Image</label>
 			            <input
-			              className={styl.titleinput}
+			              className="form-control"
 			              type="file"
 			              accept="image/*"
 			              onChange={handleImageChange}
@@ -208,7 +197,7 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 			            />
 			            {imagePreview && <img src={imagePreview} alt="Image Preview" className={styl.previewImage} />}
 			           
-			            <button className={styl.uploadupdatebutton} type="submit">
+			            <button className="btn btn-primary" type="submit">
 			              Update Profile
 			            </button>
 			          </form>
