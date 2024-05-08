@@ -159,6 +159,7 @@ function App() {
         const totalToken = await contract.steeloTotalTokens();
         const balance = await contract.steeloBalanceOf(signerAddress);
 	const stakedPound = await contract.getStakedBalance();
+	const unstakers = await contract.getUnstakers();
 //        const creator = await contract.getAllCreator(creatorId);
 //        const creator2 = await contract.getAllCreator2(creatorId);
 //        const creator3 = await contract.getAllCreator3(creatorId);
@@ -177,6 +178,7 @@ function App() {
         console.log("balance :", parseFloat(balance, 10));
 	console.log("staked pound :", parseFloat(stakedPound));
         console.log("Creator Name :", creatorName);
+	console.log("Unstakers :", unstakers);
 //       console.log("Creator Symbol :", creatorSymbol);
 //	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
 //	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),

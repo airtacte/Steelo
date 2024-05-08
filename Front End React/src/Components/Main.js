@@ -41,6 +41,11 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	  const [highestBid, setHighestBid] = useState(0);
 	  const [launchAmount, setLaunchAmount] = useState(0);
 	  const [anniversaryAmount, setAnniversaryAmount] = useState(0);
+	  const [sellingAmount, setSellingAmount] = useState(0);
+	  const [amountToSell, setAmountToSell] = useState(0);
+	  const [buyingAmount, setBuyingAmount] = useState(0);
+	  const [amountToBuy, setAmountToBuy] = useState(0);
+	  const [sellers, setSellers] = useState([]);
 	
 
 
@@ -89,6 +94,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
         const creator5 = await contract.checkInvestors(id);
        const transactionCount = await contract.getTotalTransactionAmount();
 	const preOrderStatus = await contract.checkPreOrderStatus(id);
+	const sellers = await contract.returnSellers(id);
 //	const Bidders = await contract.FirstAndLast(id);
 	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
 	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
@@ -98,6 +104,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
       console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
 
 	console.log("transaction count :", parseInt(transactionCount, 10));
+	console.log("sellers :", sellers);
 	
 	setCreatorAddress(creator[0].toString());
 	setSteezTotalSupply(parseInt(creator[1], 10));
@@ -116,6 +123,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	setTimeInvested(new Date(creator5[2].toNumber() * 1000).toString());
 	setInvestorAddress(creator5[3].toString());
 	setTotalTransactionCount(parseInt(transactionCount, 10));
+	setSellers(sellers);
 //	console.log("minimum allowed :", (parseInt(Bidders[1], 10) + (10 * 10 ** 18)), "minimum bid price :", parseInt(Bidders[1], 10), "highest bid :", parseInt(Bidders[2], 10));
 //	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
 //	setLowestBid(parseInt(Bidders[1], 10));
@@ -236,6 +244,39 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 			await contract.bidLaunch( creatorId, amount );
 		}
 	}
+
+
+
+	async function initiateP2PSell( creatorId, sellingAmount, amountToSell ) {
+		console.log("selling Amount :", sellingAmount);
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.initiateP2PSell( creatorId, sellingAmount, amountToSell );
+		}
+	}
+
+	async function P2PBuy( creatorId, buyingAmount, amountToBuy ) {
+		console.log()
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.P2PBuy( creatorId, buyingAmount, amountToBuy );
+		}
+	}
+	
 
 
 
@@ -585,6 +626,181 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 						</div>
 					</form>
 
+
+
+
+
+
+					<button onClick={() => anniversaryStarter( id )} className='btn btn-primary btn-lg btn-block'>
+							Anniversary Starter
+					</button>
+
+						
+
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							bidAnniversary(id, anniversaryAmount)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						
+					
+
+
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setAnniversaryAmount(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; {symbol}
+						</div>
+						</div>
+						</div>
+
+
+						
+					
+						
+
+
+						
+
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Bid Anniversary
+						</button>
+						
+						</div>
+					</form>
+
+
+
+
+
+
+
+
+
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							initiateP2PSell( id, sellingAmount, amountToSell )
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						
+				
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Selling Price</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setSellingAmount(e.target.value) }
+							required />
+
+
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amounts To Sell</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setAmountToSell(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; {symbol}
+						</div>
+						</div>
+						</div>
+
+
+						
+					
+						
+
+
+						
+
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Sell Your Steez
+						</button>
+
+			<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+			    <div id="content" className="mt-3">
+			        {sellers?.map((seller, index) => (
+			            <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
+			                    <div className="d-flex justify-content-between align-items-center">
+ 			                       <div>
+			                            <h5 className="mb-1">Seller Address :{seller?.sellerAddress}</h5>
+			                        </div>
+			                    </div>
+		                    <div>Amount :{parseFloat(seller?.sellingAmount)}</div>
+		                    <div>Selling Price :{parseFloat(seller?.sellingPrice)/(10 ** 18)} £</div>
+			            </div>
+			        ))}
+			    </div>
+			</main>
+						
+						</div>
+					</form>
+
+
+
+
+
+
+				<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							P2PBuy( id, buyingAmount, amountToBuy )
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						
+				
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Buying Price</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setBuyingAmount(e.target.value) }
+							required />
+
+
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amounts To Buy</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setAmountToBuy(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; {symbol}
+						</div>
+						</div>
+						</div>
+
+
+						
+					
+						
+
+
+						
+
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Buy Peer To Peer
+						</button>
+
+									
+						</div>
+					</form>
 
 
 					

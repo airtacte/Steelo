@@ -8,7 +8,7 @@ import {diamondAddress} from "../utils/constants";
 
 
 
-function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound } ) {
+function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound, balanceEther } ) {
 
 	const [roleGranted, setRoleGranted] = useState("");
 	const [addressGranted, setAddressGranted] = useState("");
@@ -18,7 +18,6 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 	const [balanceChange, setBalanceChange] = useState(0);
 	const [month, setMonth] = useState(0);
 	const [stakingPound, setStakingPound] = useState(0);
-	const [balanceEther, setBalanceEther] = useState(0);
 	const [myAccount, setMyAccount] = useState("0x0");
 
 
@@ -204,7 +203,7 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 			}
 		}
 
-	async function getEther( amount ) {
+	async function unstakeSteelo( amount ) {
 		if (typeof window.ethereum !== "undefined") {
 		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -214,7 +213,7 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
         		signer
       		);
 		const signerAddress = await signer.getAddress();
-			await contract.convertSteeloToEther(amount)
+			await contract.unstakeSteelo(amount)
 			}
 		}
         async function steeloTGE() {
@@ -329,7 +328,7 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 					<form 
 						onSubmit={ (event) => {
 							event.preventDefault()
-							getEther(steeloAmount)
+							unstakeSteelo(steeloAmount)
 						}}
 						className='mb-3'
 						style={{ padding: '15px' }}>
@@ -349,7 +348,7 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 						</div>
 						</div>
 						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Change Your Steelo Token to ether
+							Unstake Your Tokens
 						</button>
 						
 						</div>
