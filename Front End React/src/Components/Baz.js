@@ -67,7 +67,7 @@ function Baazar ( {  email, token, role } ) {
 			}
 		}
 
-	console.log(creators[0]?.creatorAddress);
+	console.log(creators[0]);
 	console.log(creatorsDataBackend?.userRecords);
 
 	
@@ -86,19 +86,26 @@ function Baazar ( {  email, token, role } ) {
 		
 	
 		return(
-			<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
-			<div id='content' className='mt-3'>
-			{
-				creators?.map(creator => <li key={creator?.creatorId} style={{ color: "white"}}>
-					<a href={`bazaar/${creator?.creatorId}`}>
-					{creator?.creatorAddress}
-					<img src={creatorsDataBackend?.userRecords?.find(element => element.id == creator?.creatorId).profile ? creatorsDataBackend?.userRecords?.find(element => element.id == creator?.creatorId).profile : userImage} alt="Image Preview" className={styl.previewImage} />
-					<p>{creatorsDataBackend?.userRecords?.find(element => element.id == creator?.creatorId).name ? creatorsDataBackend?.userRecords?.find(element => element.id == creator?.creatorId).name : "Unnamed Creator"}</p>
-					</a>
-					</li>)
-			}
-			</div>
-		</main>
+			
+			<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+			    <div id="content" className="mt-3">
+			        {creators?.map(creator => (
+			            <div key={creator?.creatorId} className="list-group-item list-group-item-action bg-dark text-white mb-2">
+			                <a href={`bazaar/${creator?.creatorId}`} className="text-decoration-none text-white">
+			                    <div className="d-flex justify-content-between align-items-center">
+ 			                       <div>
+			                            <h5 className="mb-1">{creatorsDataBackend?.userRecords?.find(element => element.id === creator?.creatorId).name || "Unnamed Creator"}</h5>
+			                        </div>
+			                        <img src={creatorsDataBackend?.userRecords?.find(element => element.id === creator?.creatorId).profile || userImage} alt="Image Preview" className="img-fluid rounded" style={{ width: '100px' }} />
+			                    </div>
+		                    <div>Current Steez Price: £{parseFloat(creator?.steezPrice) / (10 ** 20)}</div>
+		                    <div>Total Investors: {parseFloat(creator?.totalInvestors)}</div>
+			                </a>
+			            </div>
+			        ))}
+			    </div>
+			</main>
+
 		)
 }
 
