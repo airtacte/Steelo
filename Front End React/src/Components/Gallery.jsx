@@ -8,7 +8,7 @@ import {diamondAddress} from "../utils/constants";
 
 
 
-function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound, balanceEther } ) {
+function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound, balanceEther, interest } ) {
 
 	const [roleGranted, setRoleGranted] = useState("");
 	const [addressGranted, setAddressGranted] = useState("");
@@ -203,6 +203,24 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 			}
 		}
 
+
+	async function stakePeriodEnder( month ) {
+		if (typeof window.ethereum !== "undefined") {
+		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.stakePeriodEnder(month)
+			}
+		}
+
+
+
+
 	async function unstakeSteelo( amount ) {
 		if (typeof window.ethereum !== "undefined") {
 		const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -289,6 +307,20 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 					</tr>
 					</tbody>
 				</table>
+				<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Interest</th>
+						<th scope='col'></th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{interest}</td>
+						<td></td>
+					</tr>
+					</tbody>
+				</table>
 				<div className='card mb-2' style={{opacity:'.9'}}>
 					<form 
 						onSubmit={ (event) => {
@@ -325,6 +357,35 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 						
 						</div>
 					</form>
+
+
+
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							stakePeriodEnder(month, stakingPound)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Month</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setMonth(e.target.value) }
+							required />
+						
+						</div>
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Stake Period Ender
+						</button>
+						
+						</div>
+					</form>
+
+
 					<form 
 						onSubmit={ (event) => {
 							event.preventDefault()

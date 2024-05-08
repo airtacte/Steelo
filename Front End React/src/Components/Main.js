@@ -46,6 +46,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	  const [buyingAmount, setBuyingAmount] = useState(0);
 	  const [amountToBuy, setAmountToBuy] = useState(0);
 	  const [sellers, setSellers] = useState([]);
+	  const [interest, setInterest] = useState(0);
 	
 
 
@@ -106,6 +107,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	console.log("transaction count :", parseInt(transactionCount, 10));
 	console.log("sellers :", sellers);
 	
+	
 	setCreatorAddress(creator[0].toString());
 	setSteezTotalSupply(parseInt(creator[1], 10));
 	setSteezCurrentPrice(parseInt(creator[2], 10)/(10 ** 20));
@@ -124,6 +126,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	setInvestorAddress(creator5[3].toString());
 	setTotalTransactionCount(parseInt(transactionCount, 10));
 	setSellers(sellers);
+	
 //	console.log("minimum allowed :", (parseInt(Bidders[1], 10) + (10 * 10 ** 18)), "minimum bid price :", parseInt(Bidders[1], 10), "highest bid :", parseInt(Bidders[2], 10));
 //	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
 //	setLowestBid(parseInt(Bidders[1], 10));

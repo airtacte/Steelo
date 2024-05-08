@@ -118,6 +118,7 @@ function App() {
   const [highestBid, setHighestBid] = useState(0);
   const [roleGranted, setRoleGranted] = useState("");
   const [stakedPound, setStakedPound] = useState(0);
+  const [interest, setInterest] = useState(0);
   let isConfirm = false
 
 
@@ -160,13 +161,14 @@ function App() {
         const balance = await contract.steeloBalanceOf(signerAddress);
 	const stakedPound = await contract.getStakedBalance();
 	const unstakers = await contract.getUnstakers();
+	const interest = await contract.getInterest();
 //        const creator = await contract.getAllCreator(creatorId);
 //        const creator2 = await contract.getAllCreator2(creatorId);
 //        const creator3 = await contract.getAllCreator3(creatorId);
 //        const creator4 = await contract.checkBidAmount(creatorId);
 //        const creator5 = await contract.checkInvestors(creatorId);
 //        const index = await contract.getPopIndex();
-//        const transactionCount = await contract.getTotalTransactionAmount();
+        const transactionCount = await contract.getTotalTransactionAmount();
 //	const preOrderStatus = await contract.checkPreOrderStatus(creatorId);
 //	const Bidders = await contract.FirstAndLast(creatorId);
         console.log("authors :", authors);
@@ -179,6 +181,7 @@ function App() {
 	console.log("staked pound :", parseFloat(stakedPound));
         console.log("Creator Name :", creatorName);
 	console.log("Unstakers :", unstakers);
+	console.log("your interest :", interest);
 //       console.log("Creator Symbol :", creatorSymbol);
 //	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
 //	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),
@@ -189,7 +192,7 @@ function App() {
 //      console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
 //	console.log("popping index :", parseInt(index[0]), "poppin address :", index[1].toString(), "popping price :", parseInt(index[2], 10));
 
-//	console.log("transaction count :", parseInt(transactionCount, 10));
+	console.log("transaction count :", parseInt(transactionCount, 10));
 	
 	setName(name);
 	setProfileId(profileId);
@@ -200,6 +203,7 @@ function App() {
 	setBalance(parseFloat(balance)/(10 ** 18));
 	setStakedPound(parseFloat(stakedPound)/(10 ** 18));
 	setCreatorName(creatorName);
+	setInterest(parseFloat(interest/ 100));
 //	setCreatorSymbol(creatorSymbol);
 //	setCreatorAddress(creator[0].toString());
 //	setSteezTotalSupply(parseInt(creator[1], 10));
@@ -217,7 +221,7 @@ function App() {
 //	setInvestorLength(parseInt(creator5[0], 10));
 //	setTimeInvested(new Date(creator5[2].toNumber() * 1000).toString());
 //	setInvestorAddress(creator5[3].toString());
-//	setTotalTransactionCount(parseInt(transactionCount, 10));
+	setTotalTransactionCount(parseInt(transactionCount, 10));
 //	console.log("minimum allowed :", (parseInt(Bidders[1], 10) + (10 * 10 ** 18)), "minimum bid price :", parseInt(Bidders[1], 10), "highest bid :", parseInt(Bidders[2], 10));
 //	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
 //	setLowestBid(parseInt(Bidders[1], 10));
@@ -317,7 +321,7 @@ useEffect(() => {
 	  									
 	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
-										email={email} token={token} stakedPound={stakedPound} />} />
+										email={email} token={token} stakedPound={stakedPound} interest={interest} />} />
 
 
 
