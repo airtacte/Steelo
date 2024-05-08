@@ -1,0 +1,151 @@
+.checkbox {
+	position: relative;
+	display: block;
+	width: 30px;
+	height: 30px;
+	left: 20%;
+	font-family: 'Chakra Petch';
+}
+
+.checkbox:hover {
+	cursor: pointer;
+}
+
+.previewImage {
+	position: relative;
+	display: inline-block;
+	left: 20%;
+	width: 40%;
+	margin: 10%;
+
+}
+
+.uploaddeletebutton {
+	position: relative;
+	display: inline-block;
+	background-color: #108a00;
+	background-color: #ffffff;
+	width: 75px;
+	padding: 10px;
+	left: 50%;
+	border-width: 0.00001px;
+	border-radius: 15px 15px 15px 15px;
+	font-family: 'Chakra Petch';
+}
+.uploaddeletebutton:hover {
+	background-color: #ff0000;
+	color: #ffffff;
+	cursor: pointer;
+}
+
+.uploadupdatebutton {
+	position: relative;
+	display: inline-block;
+	background-color: #108a00;
+	background-color: #ffffff;
+	width: 75px;
+	padding: 10px;
+	left: 30%;
+	border: solid;
+	border-width: 0.00001px;
+	border-radius: 15px 15px 15px 15px;
+	font-family: 'Chakra Petch';
+
+}
+
+.uploadupdatebutton:hover {
+	background-color: #14a800;
+	color: #ffffff;
+	cursor: pointer;
+
+}
+
+
+.uploadbutton {
+	position: relative;
+	display: inline-block;
+	background-color: #108a00;
+	background-color: #ffffff;
+	display: block;
+	width: 75px;
+	padding: 10px;
+	left: 50%;
+	border: solid;
+	border-width: 0.00001px;
+	border-radius: 15px 15px 15px 15px;
+	font-family: 'Chakra Petch';
+}
+.uploadbutton:hover {
+	background-color: #14a800;
+	color: #ffffff;
+	cursor: pointer;
+}
+
+.titleinput {
+	position: relative;
+	display: inline-block;
+	left: 20%;
+	width: 70%;
+	border-width: 0.00000000001px;
+	margin-bottom: 5%;
+	padding-left: 10px;
+	font-family: 'Chakra Petch';
+	padding: 5px;
+	border-radius: 15px;
+	padding-left: 10px;
+}
+.titleinput:hover {
+}
+.labeltitle {
+	position: relative;
+	display: inline-block;
+	width: 90%;
+}
+
+.uploadform {
+	position: relative;
+	font-family: 'Chakra Petch';
+	display: block;
+}
+
+.uploadbody {
+	position: relative;
+	display: inline-block;
+	border-radius: 5px 5px 5px 5px;
+	border: solid;
+	width: 85%;
+	margin: 5%;
+	border-width: 0.0001px;
+	padding: 25px;
+	color: #108a00;
+	margin-top: -100px;
+}
+
+.uploadtitle {
+	position: relative;
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Chakra Petch';
+	font-family: 'Black Ops One';
+	font-size: 300%;
+
+}
+
+
+@media (max-width: 1024px) {
+	.uploadbody {
+		width: 80%;
+	}
+}
+@media (max-width: 450px) {
+	.uploadbody {
+		width: 70%;
+	}
+}
+@media (max-width: 280px) {
+	.uploadtitle {
+		font-size: 150%;
+	}
+}

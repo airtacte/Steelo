@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { ethers } from "ethers";
 import Diamond from "../artifacts/steeloDiamond.json";
 
-const diamondAddress = "0xB23D3b12616B0A9665156e93afcb7A5F3A2E9A40";
+import {diamondAddress} from "../utils/constants";
 
 
 
@@ -38,15 +38,15 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 	  console.log("userId :", userId);
 
 	  useEffect(() => {
-		      if (email && token && role && userId) {
-			            if (role == "user") {
+		      if (email && token && role) {
+			            if (role == "user" && userId) {
    			            	navigate("/bazaar");
 				    }
-			            else if (role == "creator") {
+			            else if (role == "creator" && userId) {
 					navigate(`/creator/${userId}`);
 				    }
 			            else if (role == "executive") {
-					    navigate(`/admin/${userId}`);
+					    navigate(`/admin`);
 				    }
 			      	    
 			          }
@@ -54,7 +54,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 		      if (userRef.current) {
 			            userRef.current.focus();
 			          }
-		    }, [email, token, userId, role]);
+		    }, [email, token, role, userId]);
 
 	  useEffect(() => {
 		      setErrMsg('');
@@ -141,7 +141,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
         	setUserName(userNameData);
 		
 		if (roleData == "executive") {
-        		navigate(`/admin/${userIdData}`);
+        		navigate(`/admin`);
 		}
 		else if (roleData == "creator") {
         		navigate(`/creator/${userIdData}`);

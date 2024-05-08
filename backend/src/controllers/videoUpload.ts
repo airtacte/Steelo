@@ -83,18 +83,30 @@ router.post('/video', isLogin, isCreator, multipleUpload, async (req, res) => {
 
 router.put('/profile/:id', isLogin, isCreator,  upload.single("photo"), async (req, res) => {
     try {
+	const userId = req.params.id
 
-        const dateTime = new Date().toISOString();
-        const storageRef = ref(storage, `creatorProfilePhotos/${dateTime}_${req.file.originalname}`);
-        const metadata = { contentType: req.file.mimetype };
-        const snapshot = await uploadBytesResumable(storageRef, req.file.buffer, metadata);
-        const downloadURL = await getDownloadURL(snapshot.ref);
+        const Q = query(userRef, where(documentId(), "==", userId));
 
-        console.log('Photo successfully uploaded.');
+        const querySnapshotOld = await getDocs(Q);
+        if (querySnapshotOld.empty) {
+            return res.send(`User with id ${userId} does not exists.`)
+        }
+        const userRecord = querySnapshotOld.docs[0].data();
+	let downloadURL = userRecord.profile ? userRecord.profile : "";
+	let name =  userRecord.name;
+
+	    if (req.file) {
+	        const dateTime = new Date().toISOString();
+	        const storageRef = ref(storage, `creatorProfilePhotos/${dateTime}_${req.file.originalname}`);
+	        const metadata = { contentType: req.file.mimetype };
+	        const snapshot = await uploadBytesResumable(storageRef, req.file.buffer, metadata);
+	        downloadURL = await getDownloadURL(snapshot.ref);
+
+        	console.log('Photo successfully uploaded.');
+	    }
 
 	
-	const userId = req.params.id;
-        const UpdatedUser = { profile: downloadURL  };
+        const UpdatedUser = { profile: downloadURL, name: req.body.name ? req.body.name : name  };
         const q = query(userRef, where(documentId(), "==", userId));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {

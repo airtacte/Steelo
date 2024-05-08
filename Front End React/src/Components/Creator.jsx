@@ -1,0 +1,194 @@
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import styles from "../Components/Detail.module.css";
+import style from "../Components/Review.module.css";
+import axios from "axios";
+import styl from "../Components/Upload.module.css";
+import userImage from "../assets/user.png";
+
+
+
+
+
+function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, email, token, role }: Props  ) {
+	const { id } = useParams();
+	console.log("id :", id);
+	const navigate = useNavigate();
+	const item = "";
+	const [name, setName] = useState('');
+	  const [image, setImage] = useState(null);
+	  const [imagePreview, setImagePreview] = useState(null);
+	  const [creatorData, setCreatorData] = useState("");
+	const apiClient = "";
+
+
+
+
+	useEffect(() => {
+		
+        if (!token || !email || !role) {
+		    navigate("/");
+	          }
+	if (role != "creator") {
+		navigate("/");
+	}
+
+	}, [email, token, role]);
+
+
+
+
+
+	useEffect(() => {
+		      const fetchCreatorData = async () => {
+			            try {
+					            const response = await axios.get(`http://localhost:9000/auth/${id}`, {
+							              headers: {
+									                  'Content-Type': 'application/json',
+									                  Authorization: `Bearer ${token}`,
+									                },
+							            });
+
+					            console.log('Creator fetched successfully');
+					            console.log(response.data);
+						    setCreatorData(response.data);
+					          } catch (error) {
+							          console.error('Network error:', error);
+							        }
+			          };
+
+		      fetchCreatorData();
+		    }, []);
+
+	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	      const file = e.target.files?.[0];
+
+	      if (file) {
+		            setImage(file);
+
+		            const reader = new FileReader();
+		            reader.onload = () => {
+				            setImagePreview(reader.result);
+				          };
+		            reader.readAsDataURL(file);
+		          } else {
+				        setImage(null);
+				        setImagePreview(null);
+				      }
+	    };
+
+
+
+
+
+
+
+
+	function ProfileUpdater(formData2: any) {
+			console.log(formData2);
+				 axios.put(`http://localhost:9000/creator/profile/${id}` ,
+					 		formData2,
+					                 {
+							headers: {
+							        'Content-Type': 'multipart/form-data',
+							        Authorization: `Bearer ${token}`,
+							 },
+			                                })
+					   .then(res =>  {
+						   	console.log("successfully update", res.data);
+//						   	window.location.reload();
+						   					   			})
+		                        .catch(err =>{
+							console.log(err.message)
+						});
+				
+			}
+
+  const handleUpdate = (e: React.FormEvent) => {
+	      e.preventDefault();
+	      if (email && token) {
+		const formData = new FormData();
+			            formData.append('name', name != '' ? name: creatorData.name);
+				    formData.append('photo', image != null ? image:  creatorData.profile);
+	        
+		            console.log(image);
+		            ProfileUpdater(formData);
+		     	    } else {
+				console.log("no email and token found");
+			  }
+	    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	return (
+ <>
+		    <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:wght@100;400&family=Aguafina+Script&family=Amatic+SC&family=Barrio&family=Bellota:wght@300&family=Black+Ops+One&family=Caveat&family=Chakra+Petch:ital,wght@1,300&family=Cinzel&family=Cookie&family=Croissant+One&family=Dancing+Script&family=Faster+One&family=Fuggles&family=Gugi&family=Hammersmith+One&family=Homemade+Apple&family=Itim&family=Lilita+One&family=Montserrat+Alternates:wght@100&family=Nothing+You+Could+Do&family=Orbitron&family=Playball&family=Rajdhani&family=Satisfy&family=Sedgwick+Ave+Display&family=Shadows+Into+Light&family=Space+Mono&family=Tilt+Prism&family=Yellowtail&display=swap" rel="stylesheet" />
+
+			<img src={creatorData.profile ? creatorData.profile : userImage} alt="Image Preview" className={styl.previewImage} />
+
+			<div className={styles.productdetail}>
+		      <img className={styles.detailimage} src="" alt={item.name} />
+		      <div className={styles.detailinfo}>
+		        <h1 className={styles.detailtitle}>{item.name}</h1>
+		        <ul className={styles.detaildescription}> Description	
+		        </ul>
+		        <p className={styles.detailcolor}>{item.description}</p>
+		        <p className={styles.detailcolor}>Color: {item.color}</p>
+		        <p className={styles.detailprice}>Price: {item.price} ETB</p>
+		        {item.isAvailable ? (
+				          <button className={styles.detailadd}>Available</button>
+				        ) : null}
+		      </div>
+		      {email && token ? (
+			              <>
+			      	<div className={styl.uploadbody}>
+			            <h1 className={styl.uploadtitle}>Update Profile</h1>
+			      	<form className={styl.uploadform} onSubmit={handleUpdate}>
+			            <label className={styl.labeltitle}>Profile Name</label>
+			            <input
+			              className={styl.titleinput}
+			              type="text"
+			              value={name}
+			              onChange={(e) => setName(e.target.value)}
+			              placeholder={creatorData.name ? creatorData.name : "please insert name"}
+			            />
+			            <label className={styl.labeltitle}>Product Image</label>
+			            <input
+			              className={styl.titleinput}
+			              type="file"
+			              accept="image/*"
+			              onChange={handleImageChange}
+			              placeholder="Put Image"
+			            />
+			            {imagePreview && <img src={imagePreview} alt="Image Preview" className={styl.previewImage} />}
+			           
+			            <button className={styl.uploadupdatebutton} type="submit">
+			              Update Profile
+			            </button>
+			          </form>
+			      	</div>
+			              </>
+			            ) : null}
+		      		        
+		    </div>
+		  </>
+	)
+}
+export default Creator;

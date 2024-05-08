@@ -1,0 +1,42 @@
+.area {
+	position: relative;
+	display: inline-block;
+	width: 80%;
+	height: 100px;
+	left: -20%;
+}
+
+.reviewall {
+	position: relative;
+	display: inline-block;
+	width: 60%;
+	left: 40%;
+	font-family: Lato Hairline;
+	font-family: 'Bellota', cursive;
+	color: #213213;
+}
+.reviewbutton {
+	position: relative;
+	display: inline-block;
+	background-color: #ffffff;
+	width: 30%;
+	padding: 5px 10px 5px 10px;
+	border-radius: 10px 10px 10px 10px;
+	font-family: 'Chakra Petch';
+	font-family: 'Bellota', cursive;
+}
+
+.reviewbutton:hover {
+	background-color: #FFa818;
+	cursor: pointer;
+}
+.detailreviewtitle {
+	font-size: 200%;
+	color: #ff18a8;
+	color: #049303;
+}
+@media (max-width: 435px) {
+	.reviewbutton {
+		width: 70px;
+	}
+}

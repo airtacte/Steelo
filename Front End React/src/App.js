@@ -7,14 +7,14 @@ import Main from "./Components/Main";
 import Login from "./Components/Login";
 import SignUp from "./Components/SignUp";
 import Admin from "./Components/Admin";
+import Creator from "./Components/Creator"; 
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
+import {diamondAddress} from "./utils/constants";
 
 
 
 
-
-const diamondAddress = "0xB23D3b12616B0A9665156e93afcb7A5F3A2E9A40";
 
 function App() {
 
@@ -114,6 +114,7 @@ function App() {
   const [totalTransactionCount, setTotalTransactionCount] = useState(0);
   const [lowestBid, setLowestBid] = useState(0);
   const [highestBid, setHighestBid] = useState(0);
+  const [roleGranted, setRoleGranted] = useState("");
   let isConfirm = false
 
 
@@ -129,35 +130,8 @@ function App() {
     }
 }
 
-  async function switchToNetwork() {
-    try {
-        await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x539' }], // Hexadecimal version of 1337, commonly used for local development
-        });
-    } catch (switchError) {
-        // This error code indicates that the chain has not been added to MetaMask.
-        if (switchError.code === 4902) {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: '0x539',
-                        rpcUrl: 'http://localhost:8545/' // Assuming Ganache or Hardhat is running on this port; adjust if different
-                    }],
-                });
-            } catch (addError) {
-                console.error('Failed to add the network:', addError);
-            }
-        } else {
-            console.error('Failed to switch the network:', switchError);
-        }
-    }
-}
-
-  async function fetchDiamond() {
+    async function fetchDiamond() {
     if (typeof window.ethereum !== "undefined") {
-//      await switchToNetwork();
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(
@@ -192,7 +166,8 @@ function App() {
 //	const Bidders = await contract.FirstAndLast(creatorId);
         console.log("authors :", authors);
 	console.log("profile :", profileId);
-//        console.log("symbol :", symbol);
+	console.log("name :", name);
+        console.log("symbol :", symbol);
 //        console.log("totalSupply :", parseInt(totalSupply, 10));
 //        console.log("totalToken :", parseInt(totalToken, 10));
 //        console.log("balance :", parseInt(balance, 10));
@@ -248,23 +223,19 @@ function App() {
 
 
        window.ethereum.on('accountsChanged', async function (accounts) {
+	        localStorage.removeItem('email');
+		localStorage.removeItem('name');
+		localStorage.removeItem('role');
+		localStorage.removeItem('token');
+		setEmail("");
+		setToken("");
+		setRole("");
+		setUserName("");
                 await fetchDiamond();
+		
 	});
 
-	async function initiateSteez( ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steezInitiate();
-			setChange(11);
-		}
-	}
+	
 
 	async function createCreator( creatorId ) {
 		if (typeof window.ethereum !== "undefined") {
@@ -387,20 +358,7 @@ function App() {
 	}
 
 
-	async function initiateAccess() {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.initialize();
-			setChange(10);
-		}
-	}
+	
 
 	async function profileIdUser() {
     	if (typeof window.ethereum !== "undefined") {
@@ -420,21 +378,7 @@ function App() {
  
 
 
-	async function initiate( ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steeloInitiate();
-			setChange(10);
-			window.location.reload()
-		}
-	}
+	
 
 	async function transfer( address, amount ) {
 		if (typeof window.ethereum !== "undefined") {
@@ -448,7 +392,6 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.steeloTransfer(address, amount);
 			setChange(1);
-			window.location.reload()
 			}
 		}
 
@@ -547,7 +490,6 @@ function App() {
             			value: ethers.utils.parseEther(amount.toString())
         			})
 			setChange(7);
-			window.location.reload()
 			}
 		}
 
@@ -563,7 +505,20 @@ function App() {
 		const signerAddress = await signer.getAddress();
 			await contract.convertSteeloToEther(amount)
 			setChange(8);
-			window.location.reload()
+			}
+		}
+        async function steeloTGE() {
+		if (typeof window.ethereum !== "undefined") {
+		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.steeloTGE();
+			setChange(8);
 			}
 		}
 	
@@ -604,13 +559,13 @@ useEffect(() => {
 	        
 
 
-	  	<Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser} initiateAccess={initiateAccess} />} />
+	  	<Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser}  />} />
 	  
 
 
-	  	<Route path="/admin/:id" element={<Admin initiateAccess={initiateAccess} email={email} token={token}  initiate={initiate}  initiateSteez={initiateSteez} />} />
+	  	<Route path="/admin" element={<Admin  email={email} token={token}   steeloTGE={steeloTGE} role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 
-
+		<Route path="/creator/:id" element={<Creator  userName={userName} email={email} token={token}   steeloTGE={steeloTGE} role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 
 
 
@@ -630,7 +585,7 @@ useEffect(() => {
 	  									mintAmount={mintAmount} setMintAmount={setMintAmount} burn={burn} mint={mint}
 	  									buySteelo={buySteelo}  buyingEther={buyingEther} setBuyingEther={setBuyingEther}
 	  									getEther={getEther} steeloAmount={steeloAmount} setSteeloAmount={setSteeloAmount}
-	  									initiate={initiate} initiateSteez={initiateSteez} creatorName={creatorName}
+	  									 creatorName={creatorName}
 	  									creatorSymbol={creatorSymbol} creatorAddress={creatorAddress} 
 	  									steezTotalSupply={steezTotalSupply} steezCurrentPrice={steezCurrentPrice}
 	  									steezInvested={steezInvested} createSteez={createSteez} auctionStartTime={auctionStartTime}

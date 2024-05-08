@@ -2,7 +2,10 @@ import React, { useState, useContext, useRef, useEffect } from 'react';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import styles from '../Components/Signup.module.css';
 import { useNavigate } from 'react-router-dom';
+import { ethers } from "ethers";
+import Diamond from "../artifacts/steeloDiamond.json";
 
+import {diamondAddress} from "../utils/constants";
 
 
 interface Props {
@@ -34,15 +37,15 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 	  const navigate = useNavigate();
 
 	  useEffect(() => {
-		      if (email && token && role && userId) {
-			            if (role == "user") {
+		      if (email && token && role) {
+			            if (role == "user" && userId) {
    			            	navigate("/bazaar");
 				    }
-			            else if (role == "creator") {
+			            else if (role == "creator" && userId) {
 					navigate(`/creator/${userId}`);
 				    }
 			            else if (role == "executive") {
-					    navigate(`/admin/${userId}`);
+					    navigate(`/admin`);
 				    }
 			      	    
 			          }
@@ -50,7 +53,7 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 		      if (userRef.current) {
 			            userRef.current.focus();
 			          }
-		    }, [email, token, userId, role]);
+		    }, [email, token, role, userId]);
 
 	  useEffect(() => {
 		      setErrMsg('');
@@ -65,6 +68,20 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 	const handleChangeRole = (event) => {
 	    setSelectedRole(event.target.value);
 	  };
+
+	async function initiate() {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.initialize();
+		}
+	}
 
 	  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		      e.preventDefault();
@@ -86,8 +103,8 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 				    console.log("role :", roleData);
 			            if (roleData == "executive") {
 					try {
-						await initiateAccess();
-			      	    		navigate(`/admin/${userIdData}`);
+						await initiate();
+			      	    		navigate(`/admin`);
 					} catch (error) {
 						console.log("blockchain error :", error.data.message);	
 						setErrMsg(error.data.message);

@@ -32,7 +32,7 @@ library LibAccessControl {
 	function grantRole( address granter, string memory role, address account) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.executiveMembers[granter] == true, "only executive has the power to grant roles");
-		require(keccak256(bytes(s.roles[account])) == keccak256(bytes("")), "account already has a role");
+//		require(keccak256(bytes(s.roles[account])) == keccak256(bytes("")), "account already has a role");
 		s.roles[account] = role;
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.EXECUTIVE_ROLE))) {
 			s.executiveMembers[account] = true;

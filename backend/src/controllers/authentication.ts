@@ -13,7 +13,6 @@ import isCreator from '../middlewares/isCreator';
 import isExecutive from '../middlewares/isExecutive'; 
 
 
-
 const app = initializeApp(config.firebaseConfig);
 
 
@@ -159,9 +158,13 @@ router.get('/:id', async (req: Request, res: Response) => {
             return res.send(`User with id ${userId} does not exists.`)
         }
         const userRecord = querySnapshot.docs[0].data();
-        res.send({
-            'user record': userRecord
-        })
+        return res.json({ 
+		userId: querySnapshot.docs[0].id,
+		name: userRecord.name,
+		role: userRecord.role,
+		profile: userRecord.profile;
+		message: "creator data fetched successfully",
+	});
     } catch (error) {
         res.status(400).send(error.message)
     }
