@@ -5,6 +5,9 @@ import style from "../Components/Review.module.css";
 import axios from "axios";
 import styl from "../Components/Upload.module.css";
 import userImage from "../assets/user.png";
+import Diamond from "../artifacts/steeloDiamond.json";
+import { ethers } from "ethers";
+import {diamondAddress} from "../utils/constants";
 
 
 
@@ -121,7 +124,33 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 
 
 
+		async function createSteez() {
+			if (typeof window.ethereum !== "undefined") {
+      			const provider = new ethers.providers.Web3Provider(window.ethereum);
+      			const signer = provider.getSigner();
+      			const contract = new ethers.Contract(
+        			diamondAddress,
+        			Diamond.abi,
+        			signer
+      			);
+			const signerAddress = await signer.getAddress();
+				await contract.createSteez();
+			}
+		}
 
+		async function initializePreOrder( profileId) {
+			if (typeof window.ethereum !== "undefined") {
+      			const provider = new ethers.providers.Web3Provider(window.ethereum);
+      			const signer = provider.getSigner();
+      			const contract = new ethers.Contract(
+        			diamondAddress,
+        			Diamond.abi,
+        			signer
+      			);
+			const signerAddress = await signer.getAddress();
+				await contract.initializePreOrder( profileId );
+			}
+		}
 
 
 
@@ -186,7 +215,23 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 			      	</div>
 			              </>
 			            ) : null}
-		      		        
+		      		 
+
+
+
+				<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
+				<div id='content' className='mt-3'>
+				<button onClick={createSteez}  className='btn btn-primary btn-lg btn-block'>
+				 		Create Steez
+				</button>
+				</div>
+				<div id='content' className='mt-3'>
+					Executive Page
+				<button onClick={() => initializePreOrder( id )}  className='btn btn-primary btn-lg btn-block'>
+					 	Initiate PreOrder
+					</button>
+				</div>
+				</main>
 		    </div>
 		  </>
 	)

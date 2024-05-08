@@ -132,15 +132,19 @@ router.post('/login', async (req: Request, res: Response) => {
 
 
 
-router.get('/', isLogin, isExecutive, async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
     try {
         const querySnapshot = await getDocs(userRef);
         const records = [];
-        querySnapshot.forEach((doc) => {
-            records.push(doc.data());
-        });
+       querySnapshot.forEach((doc) => {
+            const dataWithId = {
+                id: doc.id,
+                ...doc.data()
+            };
+            records.push(dataWithId);
+        }); 
         return res.send({
-            'users records': records
+            userRecords: records
         });
     } catch (err) {
         res.status(400).send(err.message);

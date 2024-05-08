@@ -8,10 +8,11 @@ import Login from "./Components/Login";
 import SignUp from "./Components/SignUp";
 import Admin from "./Components/Admin";
 import Creator from "./Components/Creator"; 
+import Bazaar from "./Components/Baz"; 
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 import {diamondAddress} from "./utils/constants";
-
+import axios from "axios";
 
 
 
@@ -567,6 +568,7 @@ useEffect(() => {
 
 		<Route path="/creator/:id" element={<Creator  userName={userName} email={email} token={token}   steeloTGE={steeloTGE} role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 
+	  	<Route path="/bazaar" element={<Bazaar  email={email} token={token}   steeloTGE={steeloTGE} role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 
 
 
