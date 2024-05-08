@@ -27,7 +27,7 @@ interface Props {
 	  selectedService: any; 
 }
 
-function SignUp({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId, userName, setUserName, createCreator, createSteeloUser, initiateAccess }: Props) {
+function SignUp({ email, token, formData, setFormData, loggedin, setlogin, response, search, setSearch, setSelectedAbout, setSelectedService, selectedAbout, selectedService, setEmail, setToken, role, setRole, userId, setUserId, userName, setUserName }: Props) {
 	  const userRef = useRef(null);
 	  const errRef = useRef(null);
 
@@ -68,6 +68,57 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 	const handleChangeRole = (event) => {
 	    setSelectedRole(event.target.value);
 	  };
+
+	
+	async function createSteeloUser( profileId) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.createSteeloUser( profileId);
+		}
+	}
+
+	
+	
+
+
+	async function createCreator( creatorId ) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.createCreator( creatorId );
+		}
+	}
+
+
+
+	async function createSteez( ) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.createSteez();
+		}
+	}
+	
+
 
 	async function initiate() {
 		if (typeof window.ethereum !== "undefined") {

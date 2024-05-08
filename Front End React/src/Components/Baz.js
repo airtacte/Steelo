@@ -48,6 +48,8 @@ function Baazar ( {  email, token, role } ) {
 
 		      fetchCreatorDataBackend();
 		    }, []);
+
+	
 	
 
 
@@ -94,9 +96,9 @@ function Baazar ( {  email, token, role } ) {
 			                <a href={`bazaar/${creator?.creatorId}`} className="text-decoration-none text-white">
 			                    <div className="d-flex justify-content-between align-items-center">
  			                       <div>
-			                            <h5 className="mb-1">{creatorsDataBackend?.userRecords?.find(element => element.id === creator?.creatorId).name || "Unnamed Creator"}</h5>
+			                            <h5 className="mb-1">{creatorsDataBackend?.userRecords?.find(element => element.id === creator?.creatorId)?.name || "Unnamed Creator"}</h5>
 			                        </div>
-			                        <img src={creatorsDataBackend?.userRecords?.find(element => element.id === creator?.creatorId).profile || userImage} alt="Image Preview" className="img-fluid rounded" style={{ width: '100px' }} />
+			                        <img src={creatorsDataBackend?.userRecords?.find(element => element.id === creator?.creatorId)?.profile || userImage} alt="Image Preview" className="img-fluid rounded" style={{ width: '100px' }} />
 			                    </div>
 		                    <div>Current Steez Price: £{parseFloat(creator?.steezPrice) / (10 ** 20)}</div>
 		                    <div>Total Investors: {parseFloat(creator?.totalInvestors)}</div>

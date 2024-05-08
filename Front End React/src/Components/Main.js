@@ -9,13 +9,39 @@ import { ethers } from "ethers";
 import {diamondAddress} from "../utils/constants";
 
 
-function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, balanceEther, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token  } ) {
+function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, balanceEther, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, createSteez, email, token  } ) {
 
 
-	const navigate = useNavigate();
-	const { id } = useParams();
-	console.log("creator Id :", id);
-	const [creatorDataBackend, setCreatorDataBackend] = useState("");
+	  const navigate = useNavigate();
+	  const { id } = useParams();
+	  console.log("creator Id :", id);
+	  const [creatorDataBackend, setCreatorDataBackend] = useState("");
+	  const [creatorAddress, setCreatorAddress] = useState("0x0");
+  	  const [steezTotalSupply, setSteezTotalSupply] = useState(0);
+  	  const [steezCurrentPrice, setSteezCurrentPrice] = useState(0);
+	  const [steezInvested, setSteezInvested] = useState(0);
+  	  const [auctionStartTime, setauctionStartTime] = useState(0);
+  	  const [auctionAnniversary, setauctionAnniversary] = useState(0);
+	  const [auctionConcluded, setAuctionConlcuded] = useState(false);
+	  const [preOrderStartTime, setPreOrderStartTime] = useState(0);
+	  const [liquidityPool, setLiquidityPool] = useState(0);
+	  const [preOrderStarted, setPreOrderStarted] = useState(false);
+	  const [bidAmount, setBidAmount] = useState(0);
+	  const [auctionSecured, setAuctionSecured] = useState(0);
+	  const [totalSteeloPreOrder, setTotalSteeloPreOrder] = useState(0);
+	  const [investorLength, setInvestorLength] = useState(0);
+	  const [timeInvested, setTimeInvested] = useState(0);
+	  const [investorAddress, setInvestorAddress] = useState(0);
+	  const [creatorId, setCreatorId] = useState("fvG74d0z271TuaE6WD2t");
+	  const [creatorIdBid, setCreatorIdBid] = useState(0);
+	  const [biddingAmount, setBiddingAmount] = useState(0);
+	  const [answer, setAnswer] = useState(false);
+	  const [totalTransactionCount, setTotalTransactionCount] = useState(0);
+	  const [lowestBid, setLowestBid] = useState(0);
+	  const [highestBid, setHighestBid] = useState(0);
+	  const [launchAmount, setLaunchAmount] = useState(0);
+	  const [anniversaryAmount, setAnniversaryAmount] = useState(0);
+	
 
 
 	useEffect(() => {
@@ -41,12 +67,76 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 
 
+ async function fetchCreatorDetail() {
+    if (typeof window.ethereum !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        diamondAddress,
+        Diamond.abi,
+        signer
+      );
+	const signerAddress = await signer.getAddress();
+    	let etherBalance = await  provider.getBalance(signerAddress);
+	etherBalance = await ethers.utils.formatEther(etherBalance);
+//	setBalanceEther(etherBalance);
+      try {
+	
+        const creator = await contract.getAllCreator(id);
+        const creator2 = await contract.getAllCreator2(id);
+        const creator3 = await contract.getAllCreator3(id);
+        const creator4 = await contract.checkBidAmount(id);
+        const creator5 = await contract.checkInvestors(id);
+       const transactionCount = await contract.getTotalTransactionAmount();
+	const preOrderStatus = await contract.checkPreOrderStatus(id);
+//	const Bidders = await contract.FirstAndLast(id);
+	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
+	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
+	console.log("auction start time :", new Date(creator2[0].toNumber() * 1000).toString(),"auction anniversery :", new Date(creator2[1].toNumber() * 1000).toString(),"auction concluded :", creator2[2]);
+	console.log("preorder start time :", new Date(creator3[0].toNumber() * 1000).toString(),"liquidity pool :", parseInt(creator3[1], 10),"preorder started :", creator3[2]);
+	console.log("bid Amount :", parseInt(creator4[0], 10),"liquidity pool :", parseInt(creator4[1], 10),"auction secured :", parseInt(creator4[2]), "Total Steelo Preorder :", parseInt(creator4[3], 10)/(10 ** 18));
+      console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
+
+	console.log("transaction count :", parseInt(transactionCount, 10));
+	
+	setCreatorAddress(creator[0].toString());
+	setSteezTotalSupply(parseInt(creator[1], 10));
+	setSteezCurrentPrice(parseInt(creator[2], 10)/(10 ** 20));
+	setSteezInvested(parseInt(preOrderStatus[3], 10));
+	setauctionStartTime(new Date(creator2[0].toNumber() * 1000).toString());
+	setauctionAnniversary(new Date(creator2[1].toNumber() * 1000).toString());	
+	setAuctionConlcuded(creator2[2]);
+	setPreOrderStartTime(new Date(creator3[0].toNumber() * 1000).toString());
+	setLiquidityPool(parseInt(creator3[1], 10));
+	setPreOrderStarted(creator3[2]);
+	setBidAmount(parseInt(creator4[0], 10) / (10 ** 18));
+	setAuctionSecured(parseInt(creator4[2]));
+	setTotalSteeloPreOrder(parseInt(creator4[3], 10)/(10 ** 18));
+	setInvestorLength(parseInt(creator5[0], 10));
+	setTimeInvested(new Date(creator5[2].toNumber() * 1000).toString());
+	setInvestorAddress(creator5[3].toString());
+	setTotalTransactionCount(parseInt(transactionCount, 10));
+//	console.log("minimum allowed :", (parseInt(Bidders[1], 10) + (10 * 10 ** 18)), "minimum bid price :", parseInt(Bidders[1], 10), "highest bid :", parseInt(Bidders[2], 10));
+//	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
+//	setLowestBid(parseInt(Bidders[1], 10));
+//	setHighestBid(parseInt(Bidders[2], 10));
+	
+      } catch (error) {
+        console.log("Blockchain interaction failed :", error);
+      }
+    }
+  }
+	
+
+
+
 
 	useEffect(() => {
 		
 //        if (!token || !email) {
 //		    navigate("/");
 //	          }
+	fetchCreatorDetail();
 
 	}, [email, token]);
 
@@ -115,6 +205,73 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 		}
 	}
 
+
+		async function launchStarter( creatorId ) {
+		console.log("creator Id :", creatorId);
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.launchStarter( creatorId );
+		}
+	}
+
+
+		async function bidLaunch( creatorId, amount ) {
+		console.log("creator Id :", creatorId);
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.bidLaunch( creatorId, amount );
+		}
+	}
+
+
+
+
+	async function anniversaryStarter( creatorId ) {
+		console.log("creator Id :", creatorId);
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.anniversaryStarter( creatorId );
+		}
+	}
+
+
+		async function bidAnniversary( creatorId, amount ) {
+		console.log("creator Id :", creatorId);
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.bidAnniversary( creatorId, amount );
+		}
+	}
+		
+
 	
 
 
@@ -174,7 +331,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
-						<td>{steezCurrentPrice} {symbol}</td>
+						<td>{steezCurrentPrice} £</td>
 						<td>{steezInvested} {creatorSymbol}</td>
 					</tr>
 					</tbody>
@@ -310,7 +467,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 						</div>
 						</div>
 						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Bid
+							Bid PreOrder
 						</button>
 						
 						</div>
@@ -340,7 +497,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 						</div>
 						</div>
 						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Late Bid
+							PreOrder Ender
 						</button>
 						
 						</div>
@@ -372,7 +529,57 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 						</div>
 						</div>
 						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Accept Or Reject
+							Accept Or Reject Preorder
+						</button>
+						
+						</div>
+					</form>
+
+
+
+					
+					<button onClick={() => launchStarter( id )} className='btn btn-primary btn-lg btn-block'>
+							Launch Starter
+					</button>
+
+						
+
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							bidLaunch(id, launchAmount)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						
+					
+
+
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setLaunchAmount(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; {symbol}
+						</div>
+						</div>
+						</div>
+
+
+						
+					
+						
+
+
+						
+
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Bid Launch
 						</button>
 						
 						</div>
@@ -417,281 +624,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 
 				
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Total Supply</th>
-						<th scope='col'>Total Tokens</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{totalSupply}</td>
-						<td>{totalTokens}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>My Ethereum Balance</th>
-						<th scope='col'>My {name} Tokens</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{balanceEther} ETH</td>
-						<td>{balance} {symbol}</td>
-					</tr>
-					</tbody>
-				</table>
-				<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Total Transaction Count</th>
-						<th scope='col'></th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{totalTransactionCount}</td>
-						<td></td>
-					</tr>
-					</tbody>
-				</table>
-				<div className='card mb-2' style={{opacity:'.9'}}>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							buySteelo(buyingEther)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setBuyingEther(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; ETH
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Buy Steelo Tokens With Ether
-						</button>
-						
-						</div>
-					</form>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							getEther(steeloAmount)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setSteeloAmount(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Change Your Steelo Token to ether
-						</button>
-						
-						</div>
-					</form>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							mint(mintAmount)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setMintAmount(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Mint
-						</button>
-						
-						</div>
-					</form>	
-
-
-
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							burn(burnAmount)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setBurnAmount(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Burn
-						</button>
-						
-						</div>
-					</form>
-
-
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							transfer(addressTo, amountToTransfer)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address</label>
-						<input 
-							type='text'
-							placeholder='0x0'
-							onChange={(e) => setAddressTo(e.target.value) }
-							required />
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setAmountToTransfer(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Transfer
-						</button>
-						
-						</div>
-					</form>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							approve(addressToApprove, amountToApprove)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address</label>
-						<input 
-							type='text'
-							placeholder='0x0'
-							onChange={(e) => setAddressToApprove(e.target.value) }
-							required />
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setAmountToApprove(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block' style={{ marginTop: '20px' }}>
-							Approve
-						</button>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Allowed: {allowance}</label>
-						<button onClick={() => getAllowance(addressToApprove)} className='btn btn-primary btn-lg btn-block'>
-							Get Allowance
-						</button>
-						</div>
-						
-						
-						</div>
-					</form>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							transferFrom(addressToTransferFrom, addressToTransferTo, amountToTransferBetween)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address From</label>
-						<input 
-							type='text'
-							placeholder='0x0'
-							onChange={(e) => setAddressToTransferFrom(e.target.value) }
-							required />
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address To</label>
-						<input 
-							type='text'
-							placeholder='0x0'
-							onChange={(e) => setAddressToTransferTo(e.target.value) }
-							required />
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setAmountToTransferBetween(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Transfer
-						</button>
-						
-						</div>
-					</form>
-					<div className='card-body text-center' style={{ color: 'blue' }}>
-						
-					</div>
-				</div>
-			
+							
 		</main>
 		)
 }

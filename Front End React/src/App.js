@@ -9,6 +9,7 @@ import SignUp from "./Components/SignUp";
 import Admin from "./Components/Admin";
 import Creator from "./Components/Creator"; 
 import Bazaar from "./Components/Baz"; 
+import Gallery from "./Components/Gallery"; 
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 import {diamondAddress} from "./utils/constants";
@@ -116,6 +117,7 @@ function App() {
   const [lowestBid, setLowestBid] = useState(0);
   const [highestBid, setHighestBid] = useState(0);
   const [roleGranted, setRoleGranted] = useState("");
+  const [stakedPound, setStakedPound] = useState(0);
   let isConfirm = false
 
 
@@ -150,12 +152,13 @@ function App() {
 	const authors = await contract.authors();
         const name = await contract.steeloName();
 	const profileId = await contract.profileIdUser();
-//        const creatorName = await contract.creatorTokenName();
+        const creatorName = await contract.creatorTokenName();
 //      const creatorSymbol = await contract.creatorTokenSymbol();
-//        const symbol = await contract.steeloSymbol();
-//        const totalSupply = await contract.steeloTotalSupply();
-//        const totalToken = await contract.steeloTotalTokens();
-//        const balance = await contract.steeloBalanceOf(signerAddress);
+        const symbol = await contract.steeloSymbol();
+          const totalSupply = await contract.steeloTotalSupply();
+        const totalToken = await contract.steeloTotalTokens();
+        const balance = await contract.steeloBalanceOf(signerAddress);
+	const stakedPound = await contract.getStakedBalance();
 //        const creator = await contract.getAllCreator(creatorId);
 //        const creator2 = await contract.getAllCreator2(creatorId);
 //        const creator3 = await contract.getAllCreator3(creatorId);
@@ -169,11 +172,12 @@ function App() {
 	console.log("profile :", profileId);
 	console.log("name :", name);
         console.log("symbol :", symbol);
-//        console.log("totalSupply :", parseInt(totalSupply, 10));
-//        console.log("totalToken :", parseInt(totalToken, 10));
-//        console.log("balance :", parseInt(balance, 10));
-//        console.log("Creator Name :", creatorName);
-//        console.log("Creator Symbol :", creatorSymbol);
+        console.log("totalSupply :", parseFloat(totalSupply, 10));
+        console.log("totalToken :", parseFloat(totalToken, 10));
+        console.log("balance :", parseFloat(balance, 10));
+	console.log("staked pound :", parseFloat(stakedPound));
+        console.log("Creator Name :", creatorName);
+//       console.log("Creator Symbol :", creatorSymbol);
 //	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
 //	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),
 //		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
@@ -188,11 +192,12 @@ function App() {
 	setName(name);
 	setProfileId(profileId);
 	setUserId(profileId);
-//	setSymbol(symbol);
-//	setTotalSupply(parseInt(totalSupply)/(10 ** 18));
-//	setTotalTokens(parseInt(totalToken)/(10 ** 18));
-//	setBalance(parseInt(balance)/(10 ** 18));
-//	setCreatorName(creatorName);
+	setSymbol(symbol);
+	setTotalSupply(parseFloat(totalSupply)/(10 ** 18));
+	setTotalTokens(parseFloat(totalToken)/(10 ** 18));
+	setBalance(parseFloat(balance)/(10 ** 18));
+	setStakedPound(parseFloat(stakedPound)/(10 ** 18));
+	setCreatorName(creatorName);
 //	setCreatorSymbol(creatorSymbol);
 //	setCreatorAddress(creator[0].toString());
 //	setSteezTotalSupply(parseInt(creator[1], 10));
@@ -237,240 +242,6 @@ function App() {
 	});
 
 	
-
-	async function createCreator( creatorId ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.createCreator( creatorId );
-			setChange(13);
-		}
-	}
-
-
-
-	async function createSteez( ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.createSteez();
-			setChange(12);
-		}
-	}
-
-
-
-	async function createSteeloUser( profileId) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.createSteeloUser( profileId);
-			setChange(12);
-		}
-	}
-
-
-
-	async function initializePreOrder( creatorId ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.initializePreOrder( creatorId );
-			setChange(13);
-		}
-	}
-
-
-
-
-	
-
-	async function profileIdUser() {
-    	if (typeof window.ethereum !== "undefined") {
-        	const provider = new ethers.providers.Web3Provider(window.ethereum);
-        	const signer = provider.getSigner();
-        	const contract = new ethers.Contract(
-        	    diamondAddress,
-        	    Diamond.abi,
-        	    signer
-        	);
-        	const signerAddress = await signer.getAddress();
-        	return await contract.profileIdUser();  // Return the value directly
-    	}
-    	return null;  // Return null or throw an error if the environment is not correct
-}	
-
- 
-
-
-	
-
-	async function transfer( address, amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steeloTransfer(address, amount);
-			setChange(1);
-			}
-		}
-
-	async function mint( amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steeloMint(amount);
-			setChange(5);
-			window.location.reload()
-			}
-		}
-
-	async function burn( amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steeloBurn(amount);
-			setChange(6);
-			window.location.reload()
-			}
-		}
-
-	async function transferFrom( from, to, amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steeloTransferFrom(from, to, amount);
-			setChange(2);
-			window.location.reload()
-			}
-		}
-
-	async function approve( address, amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-		await contract.steeloApprove(address, amount);
-		setChange(3);
-	
-			}
-		}
-
-	async function getAllowance( address ) {
-		
-		if (typeof window.ethereum !== "undefined") {
-      			const provider = new ethers.providers.Web3Provider(window.ethereum);
-      			const signer = provider.getSigner();
-      			const contract = new ethers.Contract(
-        			diamondAddress,
-        			Diamond.abi,
-        			signer
-      			);
-		const signerAddress = await signer.getAddress();	
-		const allowed = await contract.steeloAllowance(myAccount, address);
-		setAllowance(parseInt(allowed, 10));
-		setChange(4);
-		}
-	}
-
-	async function buySteelo( amount ) {
-		if (typeof window.ethereum !== "undefined") {
-		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.convertEtherToSteelo({
-            			value: ethers.utils.parseEther(amount.toString())
-        			})
-			setChange(7);
-			}
-		}
-
-	async function getEther( amount ) {
-		if (typeof window.ethereum !== "undefined") {
-		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.convertSteeloToEther(amount)
-			setChange(8);
-			}
-		}
-        async function steeloTGE() {
-		if (typeof window.ethereum !== "undefined") {
-		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steeloTGE();
-			setChange(8);
-			}
-		}
-	
 	
 
 
@@ -504,53 +275,81 @@ useEffect(() => {
 	  	
 
 
-	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} />}  profileId={profileId} profileIdUser={profileIdUser} fetchDiamond={fetchDiamond}  />
+	  	<Route index element={<Login  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={loginData} setFormData={setLoginData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} />}  profileId={profileId} fetchDiamond={fetchDiamond}  />
 	        
 
 
-	  	<Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName} createCreator={createCreator} createSteeloUser={createSteeloUser}  />} />
+	  	<Route path="/signup" element={<SignUp  account={myAccount} shower={shower} remover={remover} email={email} token={token} formData={signupData} setFormData={setSignupData} loggedin={loggedin} setlogin={setlogin} setToken={setToken} setEmail={setEmail} role={role} setRole={setRole} userId={userId} setUserId={setUserId} userName={userName} setUserName={setUserName}  />} />
 	  
 
 
-	  	<Route path="/admin" element={<Admin  email={email} token={token}   steeloTGE={steeloTGE} role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
+	  	<Route path="/admin" element={<Admin  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 
-		<Route path="/creator/:id" element={<Creator  userName={userName} email={email} token={token}   steeloTGE={steeloTGE} role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
+		<Route path="/creator/:id" element={<Creator  userName={userName} email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 
-	  	<Route path="/bazaar" element={<Bazaar  email={email} token={token}   steeloTGE={steeloTGE} role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
-
-
-
-
-
-
-
-	  	<Route path="/bazaar/:id"  element={<Main transfer={transfer} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
+	  	<Route path="/bazaar" element={<Bazaar  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
+		
+	  <Route path="/gallery/:id" element={<Gallery  name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}
 										 addressToApprove={addressToApprove} setAddressToApprove={setAddressToApprove} 												   amountToApprove={amountToApprove} setAmountToApprove={setAmountToApprove}
-	  									 approve={approve} allowance={allowance} getAllowance={getAllowance}
+	  									  allowance={allowance}
 	  									addressToTransferFrom={addressToTransferFrom} setAddressToTransferFrom={setAddressToTransferFrom}
 	  									addressToTransferTo={addressToTransferTo} setAddressToTransferTo={setAddressToTransferTo}										  amountToTransferBetween={amountToTransferBetween} setAmountToTransferBetween={setAmountToTransferBetween}
-	  									transferFrom={transferFrom} burnAmount={burnAmount} setBurnAmount={setBurnAmount} 
-	  									mintAmount={mintAmount} setMintAmount={setMintAmount} burn={burn} mint={mint}
-	  									buySteelo={buySteelo}  buyingEther={buyingEther} setBuyingEther={setBuyingEther}
-	  									getEther={getEther} steeloAmount={steeloAmount} setSteeloAmount={setSteeloAmount}
+	  									burnAmount={burnAmount} setBurnAmount={setBurnAmount} 
+	  									mintAmount={mintAmount} setMintAmount={setMintAmount} 
+	  									buyingEther={buyingEther} setBuyingEther={setBuyingEther}
+	  									steeloAmount={steeloAmount} setSteeloAmount={setSteeloAmount}
 	  									 creatorName={creatorName}
 	  									creatorSymbol={creatorSymbol} creatorAddress={creatorAddress} 
 	  									steezTotalSupply={steezTotalSupply} steezCurrentPrice={steezCurrentPrice}
-	  									steezInvested={steezInvested} createSteez={createSteez} auctionStartTime={auctionStartTime}
+	  									steezInvested={steezInvested} auctionStartTime={auctionStartTime}
 	  									auctionAnniversary={auctionAnniversary} auctionConcluded={auctionConcluded} 
 	  									preOrderStartTime={preOrderStartTime}
 	  									liquidityPool={liquidityPool} preOrderStarted={preOrderStarted}
 	  									bidAmount={bidAmount} auctionSecured={auctionSecured} totalSteeloPreOrder={totalSteeloPreOrder}  
 	  									investorLength={investorLength} timeInvested={timeInvested} investorAddress={investorAddress}
-	  									creatorId={creatorId} setCreatorId={setCreatorId} initializePreOrder={initializePreOrder}
+	  									creatorId={creatorId} setCreatorId={setCreatorId}
 	  									 creatorIdBid={creatorIdBid} setCreatorIdBid={setCreatorIdBid}
 	  									biddingAmount={biddingAmount} setBiddingAmount={setBiddingAmount} 
 	  									
 	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
-										email={email} token={token}
+										email={email} token={token} stakedPound={stakedPound} />} />
+
+
+
+
+
+
+
+	  	<Route path="/bazaar/:id"  element={<Main name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
+	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
+	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}
+										 addressToApprove={addressToApprove} setAddressToApprove={setAddressToApprove} 												   amountToApprove={amountToApprove} setAmountToApprove={setAmountToApprove}
+	  									  allowance={allowance}
+	  									addressToTransferFrom={addressToTransferFrom} setAddressToTransferFrom={setAddressToTransferFrom}
+	  									addressToTransferTo={addressToTransferTo} setAddressToTransferTo={setAddressToTransferTo}										  amountToTransferBetween={amountToTransferBetween} setAmountToTransferBetween={setAmountToTransferBetween}
+	  									burnAmount={burnAmount} setBurnAmount={setBurnAmount} 
+	  									mintAmount={mintAmount} setMintAmount={setMintAmount} 
+	  									buyingEther={buyingEther} setBuyingEther={setBuyingEther}
+	  									steeloAmount={steeloAmount} setSteeloAmount={setSteeloAmount}
+	  									 creatorName={creatorName}
+	  									creatorSymbol={creatorSymbol} creatorAddress={creatorAddress} 
+	  									steezTotalSupply={steezTotalSupply} steezCurrentPrice={steezCurrentPrice}
+	  									steezInvested={steezInvested} auctionStartTime={auctionStartTime}
+	  									auctionAnniversary={auctionAnniversary} auctionConcluded={auctionConcluded} 
+	  									preOrderStartTime={preOrderStartTime}
+	  									liquidityPool={liquidityPool} preOrderStarted={preOrderStarted}
+	  									bidAmount={bidAmount} auctionSecured={auctionSecured} totalSteeloPreOrder={totalSteeloPreOrder}  
+	  									investorLength={investorLength} timeInvested={timeInvested} investorAddress={investorAddress}
+	  									creatorId={creatorId} setCreatorId={setCreatorId}
+	  									 creatorIdBid={creatorIdBid} setCreatorIdBid={setCreatorIdBid}
+	  									biddingAmount={biddingAmount} setBiddingAmount={setBiddingAmount} 
+	  									
+	  									answer={answer} setAnswer={setAnswer}
+	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
+										email={email} token={token}  stakedPound={stakedPound}
 	  									
 	/>} />
 	  </Routes>
