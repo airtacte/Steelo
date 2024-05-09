@@ -3246,7 +3246,13 @@ it('get staked ETH balance before staking:', async () => {
 	console.log("Creator Content:", creatorContent);
 	
     })
-    
+   
+    it("fetch all Investors of one creator", async() => {
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+   	const investors = await Steez8.connect(addr2).getAllInvestors( creatorId );
+	console.log("Investors:", investors);	
+    })
     
 
 

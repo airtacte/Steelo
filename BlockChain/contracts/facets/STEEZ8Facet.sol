@@ -42,6 +42,10 @@ contract STEEZ8Facet {
 		LibSteez.deleteContent(msg.sender, videoId);
 	}
 
+	function getAllInvestors(string memory creatorId) public view returns(Investor[] memory) {
+		return s.steez[creatorId].investors;
+	}
+
 	
 
 	
