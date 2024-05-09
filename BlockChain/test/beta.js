@@ -340,6 +340,24 @@ it('add the Village Facet', async () => {
     }).timeout(600000)
 
 
+
+    it('Add the Steez8 Facet', async () => {
+
+      const Steez8Facet = await ethers.getContractFactory('STEEZ8Facet')
+      const steez8Facet = await Steez8Facet.deploy()
+  
+      let selectors = getSelectors(steez8Facet);
+      let addresses = [];
+      addresses.push(steez8Facet.address);
+      
+      await diamondCutFacet.diamondCut([[steez8Facet.address, FacetCutAction.Add, selectors]], ethers.constants.AddressZero, '0x');
+  
+      result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
+      assert.sameMembers(result, selectors)
+  
+    }).timeout(600000)
+
+
 //   it('should initiate Steez', async () => { 
 //  
 //	const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
@@ -3087,11 +3105,41 @@ it('get staked ETH balance before staking:', async () => {
 	
     })
 
+     it('create a Creator another 3rd Account', async () => { 
+  
+	    try {
+		const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+		profileId = "abcd6XMcdTJQH2nsBLYF";
+   		await Steez2.connect(addr8).createCreator(profileId);
+		console.log("Creator Account Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Creator Account Did not create successully :", error.message);
+	    }
+
+    })
+
+    it('should create Steez', async () => { 
+  
+	    try {
+		const Steez = await ethers.getContractAt('STEEZ4Facet', diamondAddress);
+   		await Steez.connect(addr8).createSteez();
+		console.log("Steez Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Steez Did not create successully :", error.message);
+	    }
+
+    })
+
+    
+
     it('fetch all creators', async() => {
   
 	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
    	const creator = await Steez2.connect(addr2).getAllCreatorsData();
-	console.log("Creators:", creator);
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	console.log("Creator 2:", parseFloat(creator[1].steezPrice), parseFloat(creator[1].totalInvestors), creator[1].steezStatus);
 	
     })
 
@@ -3112,6 +3160,94 @@ it('get staked ETH balance before staking:', async () => {
 	console.log("Steez Status:", steezStatus);
 	
     })
+
+    it('should create Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let exclusivity = true;
+		let videoId = "xyghYUGfghjh";
+   		await Steez8.connect(addr8).createContent( videoId, exclusivity);
+		console.log("Content Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not create successully :", error.message);
+	    }
+
+    })
+     it('fetch one creator Content', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+	let creatorId = "abcd6XMcdTJQH2nsBLYF";
+	let videoId = "xyghYUGfghjh";
+   	const creatorContent = await Steez8.connect(addr2).getOneCreatorContent( creatorId, videoId);
+	console.log("Creator Content:", creatorContent);
+	
+    })
+
+    it('fetch all creator Content', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+	let creatorId = "abcd6XMcdTJQH2nsBLYF";
+   	const creatorContent = await Steez8.connect(addr2).getAllCreatorContents( creatorId);
+	console.log("Creator Content:", creatorContent);
+	
+    })
+
+
+    it('fetch all Contents', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+   	const creatorContent = await Steez8.connect(addr2).getAllContents();
+	console.log("Creator Content:", creatorContent);
+	
+    })
+
+
+    it('should delete Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let videoId = "xyghYUGfghjh";
+   		await Steez8.connect(addr8).deleteContent( videoId);
+		console.log("Content deleted Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not delete successully :", error.message);
+	    }
+
+    })
+
+    it('fetch all creator Content', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+	let creatorId = "abcd6XMcdTJQH2nsBLYF";
+   	const creatorContent = await Steez8.connect(addr2).getAllCreatorContents( creatorId);
+	console.log("Creator Content:", creatorContent);
+	
+    })
+
+
+    it('fetch all Contents', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+   	const creatorContent = await Steez8.connect(addr2).getAllContents();
+	console.log("Creator Content:", creatorContent);
+	
+    })
+
+
+    it('fetch one creator Content', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+	let creatorId = "abcd6XMcdTJQH2nsBLYF";
+	let videoId = "xyghYUGfghjh";
+   	const creatorContent = await Steez8.connect(addr2).getOneCreatorContent( creatorId, videoId);
+	console.log("Creator Content:", creatorContent);
+	
+    })
+    
+    
 
 
 

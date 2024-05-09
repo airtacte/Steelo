@@ -8,7 +8,7 @@ import "./LibAppStorage.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {AppConstants} from "./LibAppStorage.sol";
-import {Creator, Steez, Investor, Seller, CreatorSteez} from "./LibAppStorage.sol";
+import {Creator, Steez, Investor, Seller, CreatorSteez, Content} from "./LibAppStorage.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 
@@ -76,6 +76,8 @@ library LibSteez {
 		}
 
 		 
+
+		 
 	}
 
 
@@ -117,7 +119,8 @@ library LibSteez {
          			creatorId: creatorId,
             			creatorAddress: creator,
 				steezPrice: s.steez[creatorId].currentPrice,
-				totalInvestors: s.steez[creatorId].investors.length
+				totalInvestors: s.steez[creatorId].investors.length,
+				steezStatus: s.steez[creatorId].status
         		});
 			s.allCreators.push(newCreatorSteez);
 	        	
@@ -130,6 +133,75 @@ library LibSteez {
 	    	}
 
 
+
+
+		function createContent( address creator, string memory videoId, bool exclusivity) internal {
+			AppStorage storage s = LibAppStorage.diamondStorage();
+	
+		        require( creator != address(0), "STEEZFacet: Cannot mint to zero address" );
+			require(keccak256(abi.encodePacked(s.creatorIdentity[creator])) != keccak256(abi.encodePacked("")), "you have no creator account please create a creator account");
+	
+			string memory creatorId = s.creatorIdentity[creator]; 
+
+
+		        
+
+			
+			Content memory newContent = Content({
+         			creatorId: creatorId,
+            			contentId: videoId,
+				exclusivity: exclusivity,
+				creatorAddress: creator,
+				uploadTimestamp: block.timestamp
+        		});
+
+			s.creatorContent[creatorId][videoId] = newContent; 
+			s.creatorCollections[creatorId].push(newContent);
+			s.collections.push(newContent);
+	        	
+	
+	        	
+	
+	    	}
+
+		function deleteContent( address creator, string memory videoId ) internal {
+			AppStorage storage s = LibAppStorage.diamondStorage();
+			require( creator != address(0), "STEEZFacet: Cannot delete to zero address" );
+			require(keccak256(abi.encodePacked(s.creatorIdentity[creator])) != keccak256(abi.encodePacked("")), "you have no creator account please create a creator account");
+	
+			string memory creatorId = s.creatorIdentity[creator];
+			require(s.creatorContent[creatorId][videoId].creatorAddress == creator, "you can not delete other creators content");
+			
+			uint256 length = s.creatorCollections[creatorId].length;
+	
+			for (uint256 i = 0; i < length; i++) {
+				if (s.creatorCollections[creatorId][i].creatorAddress == creator) {
+					s.creatorCollections[creatorId][i] =  s.creatorCollections[creatorId][length - 1];
+					s.creatorCollections[creatorId].pop();
+				}
+			}
+
+			uint256 len = s.collections.length;
+	
+			for (uint256 i = 0; i < length; i++) {
+				if (s.collections[i].creatorAddress == creator) {
+					s.collections[i] =  s.collections[len - 1];
+					s.collections.pop();
+				}
+			}
+			delete s.creatorContent[creatorId][videoId];
+
+		 
+	}
+
+
+
+
+
+
+
+
+
 	function preOrder( string memory creatorId, address from ) internal {
 			AppStorage storage s = LibAppStorage.diamondStorage();
 			 require( s.steez[creatorId].creatorAddress == from, "STEEZFacet: Only creators can initiate pre-orders.");
@@ -139,6 +211,12 @@ library LibSteez {
         		s.steez[creatorId].preOrderStartTime = block.timestamp;
             		s.steez[creatorId].preOrderStarted = true;
     			s.steez[creatorId].status = "PreOrder";
+			for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+            					s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            					break;
+        				}
+    				}
 	    		
 			
 			mintSteez(from, creatorId, AppConstants.PRE_ORDER_SUPPLY);
@@ -180,7 +258,16 @@ library LibSteez {
 //				s.mintingTransactionLimit[creatorId] += 10;
 //			}
 			if (block.timestamp > s.steez[creatorId].preOrderStartTime + 24 hours) {
+    				s.steez[creatorId].status = "Approval";
 				s.steez[creatorId].currentPrice = s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].investors.length;
+				for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+            					s.allCreators[i].steezPrice = s.steez[creatorId].currentPrice;
+						s.allCreators[i].steezStatus = s.steez[creatorId].status;
+//						s.allCreators[i].totalInvestors = s.steez[creatorId].investors.length; 
+            					break;
+        				}
+    				}
 				s.steez[creatorId].preOrderStarted = false;
 				s.steez[creatorId].preOrderEnded = true;
 				require(s.steez[creatorId].preOrderEnded, "Preorder has not ended");
@@ -188,7 +275,6 @@ library LibSteez {
 				s.steez[creatorId].totalSupply += AppConstants.LAUNCH_SUPPLY;
             			s.steez[creatorId].launchStarted = true;				
 				mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.LAUNCH_SUPPLY);
-    				s.steez[creatorId].status = "Launch";
 			}
 
 			if (!s.steez[creatorId].launchStarted) {
@@ -258,6 +344,12 @@ library LibSteez {
             			isInvestor: true
         		});
         		s.steez[creatorId].investors.push(newInvestor);
+			for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+						s.allCreators[i].totalInvestors = s.steez[creatorId].investors.length; 
+            					break;
+        				}
+    				}
 			}
 			s.bidAgain = false;
 
@@ -339,11 +431,20 @@ library LibSteez {
 		require (s.userMembers[investor], "you  have no steelo account");	
 		require(s.steez[creatorId].SteeloInvestors[investor] > 0, "you have not bid any amount");
 		require(!s.preorderBidFinished[investor][creatorId], "you have finished bidding for your preorder finished");
-		require(s.steez[creatorId].launchStarted, "launch has not started");
+		require(s.steez[creatorId].launchStarted, "approval has not started");
 		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
 				steeloMint();
 				s.mintingTransactionLimit[creatorId] += 10;
 			}
+		if (block.timestamp >= s.steez[creatorId].auctionStartTime) {
+			s.steez[creatorId].status = "Launch";
+			for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+						s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            					break;
+        				}
+    				}
+		}
 		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
 					if (s.steez[creatorId].currentPrice > s.steez[creatorId].investors[i].steeloInvested) {
@@ -435,6 +536,15 @@ library LibSteez {
 		require(s.balances[investor] >= (s.steez[creatorId].currentPrice * amount), "you have insufficient balance");
 		require(amount > 0 && amount <= 5, "amount of steez per person is between 1 and 5");
 		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
+		if (block.timestamp >= s.steez[creatorId].auctionStartTime) {
+			s.steez[creatorId].status = "Launch";
+			for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+						s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            					break;
+        				}
+    			}
+		}
 		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
 				steeloMint();
 				s.mintingTransactionLimit[creatorId] += 10;
@@ -481,12 +591,32 @@ library LibSteez {
             		isInvestor: true
         	});
         	s.steez[creatorId].investors.push(newInvestor);
+		
 		s.steez[creatorId].currentPrice = ((75 * s.steez[creatorId].currentPrice) / 100) + ( (25 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
+
+
+
+		for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+            					s.allCreators[i].steezPrice = s.steez[creatorId].currentPrice;
+						s.allCreators[i].totalInvestors = s.steez[creatorId].investors.length; 
+            					break;
+        				}
+    				}
+		
+
+
 		
 		if (s.steez[creatorId].liquidityPool == 0) {
 			s.steez[creatorId].launchEnded = true;
 			s.steez[creatorId].P2PStarted = true;
     			s.steez[creatorId].status = "P2P";
+			for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+						s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            					break;
+        				}
+    			}
 		} 
 
 	}
@@ -521,6 +651,12 @@ library LibSteez {
     			s.steez[creatorId].status = "Anniversary";
 			s.steez[creatorId].totalSupply += AppConstants.EXPANSION_SUPPLY;
 			mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.EXPANSION_SUPPLY);
+			for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+						s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            					break;
+        				}
+    			}
 		}
 
 		if (s.steez[creatorId].P2PStarted) {
@@ -540,6 +676,14 @@ library LibSteez {
 		else if (buyingPrice < s.steez[creatorId].currentPrice) {
 			s.steez[creatorId].currentPrice -= (s.steez[creatorId].currentPrice - buyingPrice) / 10;
 		}
+
+		for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+            					s.allCreators[i].steezPrice = s.steez[creatorId].currentPrice;
+						s.allCreators[i].totalInvestors = s.steez[creatorId].investors.length; 
+            					break;
+        				}
+    				}
 		bool P2PTransaction = false;
 		address P2PSeller;
 
@@ -679,11 +823,26 @@ library LibSteez {
         	});
         	s.steez[creatorId].investors.push(newInvestor);
 		s.steez[creatorId].currentPrice = ((75 * s.steez[creatorId].currentPrice) / 100) + ( (25 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
+
+
+		for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+            					s.allCreators[i].steezPrice = s.steez[creatorId].currentPrice;
+						s.allCreators[i].totalInvestors = s.steez[creatorId].investors.length; 
+            					break;
+        				}
+    				}
 		
 		if (s.steez[creatorId].liquidityPool == 0) {
 			s.steez[creatorId].P2PStarted = true;
     			s.steez[creatorId].status = "P2P";
 			s.steez[creatorId].anniversaryDate += block.timestamp + 365 days;
+			for (uint i = 0; i < s.allCreators.length; i++) {
+        				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+						s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            					break;
+        				}
+    			}
 		} 
 
 	}

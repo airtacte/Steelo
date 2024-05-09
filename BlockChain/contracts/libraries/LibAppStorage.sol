@@ -39,18 +39,18 @@ library AppConstants{
         uint256 constant MAX_CREATOR_TOKENS = 5000;
         uint256 constant ANNUAL_TOKEN_INCREASE_PERCENTAGE = 10;
         // Stakeholder's royalty distribution
-        address constant treasury = 0x1dDB6f470E8EDfF3f6ac3CEda84E24Db5a0f220f;
+        address constant treasury = 0xa657A59F1e350ef5369C3C5cbECF014648eDa49C;
         uint256 constant trasuryTGE = 35;
         uint256 constant treasuryMint = 35;
-        address constant liquidityProviders = 0x265107d18402bEc6551Cb0D9F2FEb3C7c7AD6eB6;
+        address constant liquidityProviders = 0x9d7B8aD51C7476A154C0B0D80A86943aF4C314Bb;
         uint256 constant liquidityProvidersMint = 55;
-        address constant ecosystemProviders = 0xF90Bc5A04ff344Df6ca36e5E54ecC0F2198827BA;
+        address constant ecosystemProviders = 0x3178744Aa6c6a58B908F4f195BFe4b05444F133c;
         uint256 constant ecosystemProvidersMint = 10;
-        address constant foundersAddress = 0xb25e87a1625Fa1c4F7f73108CbeA2cC4d3c1F288;
+        address constant foundersAddress = 0x21D68A3668AE870D01374c0568FB140a21e0e781;
         uint256 constant foundersTGE = 20;
-        address constant earlyInvestorsAddress = 0x615515D278Ad8035073eeBCC551Bb6039f382F8A;
+        address constant earlyInvestorsAddress = 0x00b8f22b96acF900EB990367dD91005ACbC24b95;
         uint256 constant earlyInvestorsTGE = 10;
-        address constant communityAddress = 0xf7142c365a132cFBe0cC062a3B62D139ef68878a;
+        address constant communityAddress = 0xBA3bAeEc02D09D8Cd139ef47d739Ec84FcF6667e;
         uint256 constant communityTGE = 35;
 //        address constant steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
         uint256 constant FEE_RATE = 25;
@@ -148,15 +148,14 @@ library AppConstants{
 
 
     struct Content {
-        uint256 contentId;
-        uint256 creatorId;
+        string contentId;
+        string creatorId;
         bool exclusivity;
-        string title;
-        string contentURI;
-        uint256 collectionPrice;
-        uint256 collectionScarcity;
         uint256 uploadTimestamp;
-        mapping(address => uint256) collections;
+	address creatorAddress;
+//        uint256 collectionPrice;
+//        uint256 collectionScarcity;
+//        mapping(address => uint256) collections;
     }
 
 
@@ -225,7 +224,9 @@ library AppConstants{
 	address creatorAddress;
 	uint256 steezPrice;
 	uint256 totalInvestors;
+	string steezStatus;
     }
+
 
     struct Unstakers {
 	address account;
@@ -319,6 +320,11 @@ struct AppStorage {
         mapping(address => bool) moderatorMembers;
         mapping(address => bool) subscriberMembers;
 	bool accessInitialized;
+
+
+	mapping(string => mapping(string => Content)) creatorContent;
+	mapping(string => Content[]) creatorCollections;
+	Content[] collections;
 
 
 
