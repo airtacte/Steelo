@@ -40,7 +40,7 @@ library LibAccessControl {
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
 //			s.stakerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 //			s.creatorMembers[account] = true;
 			s.teamMembers[account] = true;
@@ -55,7 +55,7 @@ library LibAccessControl {
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
 //			s.stakerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 //			s.creatorMembers[account] = true;
 			s.teamMembers[account] = true;
@@ -69,7 +69,7 @@ library LibAccessControl {
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
 //			s.stakerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 //			s.creatorMembers[account] = true;
 			s.teamMembers[account] = true;
@@ -83,7 +83,7 @@ library LibAccessControl {
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
 //			s.stakerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 //			s.creatorMembers[account] = true;
 //			s.collaboratorMembers[account] = true;
@@ -94,7 +94,7 @@ library LibAccessControl {
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.CREATOR_ROLE))) {
 //			s.stakerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 			s.creatorMembers[account] = true;
 			s.collaboratorMembers[account] = true;
@@ -104,7 +104,7 @@ library LibAccessControl {
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.COLLABORATOR_ROLE))) {
 			s.collaboratorMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 //			s.investorMembers[account] = true;
 //			s.stakerMembers[account] = true;
@@ -112,7 +112,7 @@ library LibAccessControl {
 		}
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.INVESTOR_ROLE))) {
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 			s.investorMembers[account] = true;
 			s.stakerMembers[account] = true;
@@ -121,7 +121,7 @@ library LibAccessControl {
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.STAKER_ROLE))) {
 			s.stakerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
@@ -129,7 +129,7 @@ library LibAccessControl {
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.EMPLOYEE_ROLE))) {
 			s.employeeMembers[account] = true;
 			s.testerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
@@ -137,21 +137,21 @@ library LibAccessControl {
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.TESTER_ROLE))) {
 			s.testerMembers[account] = true;
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
 
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.SUBSCRIBER_ROLE))) {
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 			s.subscriberMembers[account] = true;
 		}
 
 
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.USER_ROLE))) {
-			s.userMembers[account] = true;
+//			s.userMembers[account] = true;
 			s.visitorMembers[account] = true;
 		}
 

@@ -651,6 +651,7 @@ library LibSteez {
 
 	function initiateP2PSell(address seller , string memory creatorId, uint256 sellingPrice, uint256 steezAmount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
+		bool sellAgain;
 		sellingPrice *= 10 ** 18;
 		require (s.userMembers[seller], "you  have no steelo account");	
 		require(steezAmount > 0 && steezAmount <= 5 , "steez has to be between 1 and 5");
@@ -669,12 +670,25 @@ library LibSteez {
     			}
 		}
 		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P")), "preorder has not started yet");
-		Seller memory newSeller = Seller({
-				sellerAddress: seller,
-				sellingPrice: sellingPrice,
-				sellingAmount: steezAmount
-        		});
-        		s.sellers[creatorId].push(newSeller);
+
+		for (uint256 i = 0; i < s.sellers[creatorId].length; i++) {
+					if (seller == s.sellers[creatorId][i].sellerAddress) {
+						sellAgain = true;
+						require(s.sellers[creatorId][i].sellingAmount + steezAmount <= 5, "amount of steez per person is from 1 up to 5");
+						s.sellers[creatorId][i].sellingPrice =  sellingPrice;
+						s.sellers[creatorId][i].sellingAmount = steezAmount;
+					}
+				}
+	
+		if (sellAgain == false) {
+			Seller memory newSeller = Seller({
+					sellerAddress: seller,
+					sellingPrice: sellingPrice,
+					sellingAmount: steezAmount
+        			});
+        			s.sellers[creatorId].push(newSeller);
+		}
+
 
 	}
 
@@ -948,6 +962,11 @@ library LibSteez {
 			s.balances[AppConstants.liquidityProviders] -= ((s.balances[s.unstakers[i].account] * s.stakers[s.unstakers[i].account].interest)/10000);
 			s.balances[s.unstakers[i].account] += ((s.balances[s.unstakers[i].account] * s.stakers[s.unstakers[i].account].interest)/10000);
 			s.stakers[s.unstakers[i].account].amount +=  ((s.stakers[s.unstakers[i].account].amount * s.stakers[s.unstakers[i].account].interest)/10000);
+			
+
+			require(s.balances[s.unstakers[i].account] >= (s.unstakers[i].amount * 100), "you have used your staked steelo token for something else");
+			require(s.stakers[s.unstakers[i].account].amount >= (s.unstakers[i].amount), "you have used your staked pound for something else");
+
 
 
 

@@ -166,7 +166,7 @@ library LibSteelo {
 
 	function mint(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
-		require (s.userMembers[from], "you  have no steelo account");
+//		require (s.userMembers[from], "you  have no steelo account");
 		require(s.adminMembers[from], "only admins can mint steelo tokens");
 //		require(amount > 0, "can not mint 0 amount");
 //		require(amount <= 825000000 * 10 ** 18, "can not mint more than 825 million tokens");
@@ -220,17 +220,30 @@ library LibSteelo {
 
 	function unstake(address from, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+
+		bool unstakeAgain;
+		require(amount > 0, "can not unstake 0 amount");
 		require(address(this).balance >= (amount +  ((amount * s.stakers[msg.sender].month) / 100 )), "no ether is available in the treasury of contract balance");
 		require (s.userMembers[from], "you  have no steelo account");
 		require(s.balances[from] + ((s.balances[from] * s.stakers[from].interest)/10000) >= amount, "not sufficient steelo tokens to sell");
+		require(block.timestamp >= s.stakers[from].endTime, "staking period is not over yet");
 		require(s.stakers[from].amount + ((s.stakers[from].amount * s.stakers[from].interest)/10000) >= amount, "you are asking more amount of ether than you staked");
-		require(s.unstakers.length <= 5, "the unstakers queue is filled right now please try another time");
-		Unstakers memory newUnstaker = Unstakers({
-         		account: from,
-            		amount:  amount
-        	});
-		
-		s.unstakers.push(newUnstaker);		
+
+		for (uint256 i = 0; i < s.unstakers.length; i++) {
+					if (from == s.unstakers[i].account) {
+						unstakeAgain = true;
+						s.unstakers[i].amount = amount;
+					}
+				}
+		if (unstakeAgain == false) {
+			require(s.unstakers.length <= 5, "the unstakers queue is filled right now please try another time");
+			Unstakers memory newUnstaker = Unstakers({
+	         		account: from,
+	            		amount:  amount
+	        	});
+			
+			s.unstakers.push(newUnstaker);		
+		}
 		
 //		s.balances[from] -= (amount * 100);
 //		s.balances[s.treasury] += (amount * 100);

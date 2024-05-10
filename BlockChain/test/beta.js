@@ -657,6 +657,43 @@ it('add the Village Facet', async () => {
   
     }).timeout(600000)
 
+
+    it('addr1 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      let profileId = "abcd0SRpjX9dD4hSi6rB";
+      await expect(Steelo4.connect(addr1).createSteeloUser(profileId)).to.not.be.reverted;
+
+    })
+    it('addr2 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      let profileId = "bcde0SRpjX9dD4hSi6rB";
+      await expect(Steelo4.connect(addr2).createSteeloUser(profileId)).to.not.be.reverted;
+
+    })
+    it('addr3 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      let profileId = "cdef0SRpjX9dD4hSi6rB";
+      await expect(Steelo4.connect(addr3).createSteeloUser(profileId)).to.not.be.reverted;
+
+    })
+    it('addr4 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      let profileId = "defg0SRpjX9dD4hSi6rB";
+      await expect(Steelo4.connect(addr4).createSteeloUser(profileId)).to.not.be.reverted;
+
+    })
+    it('addr5 create steelo user account', async () => { 
+ 
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress);
+      let profileId = "efgh0SRpjX9dD4hSi6rB";
+      await expect(Steelo4.connect(addr5).createSteeloUser(profileId)).to.not.be.reverted;
+
+    })
+      	
       
     
 
