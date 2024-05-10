@@ -407,6 +407,7 @@ library LibSteez {
     		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.popInvestorIndex < s.steez[creatorId].investors.length, "index out of bounds");
 		s.balances[s.steez[creatorId].investors[s.popInvestorIndex].walletAddress] += s.steez[creatorId].investors[s.popInvestorIndex].steeloInvested;
+		s.stakers[s.steez[creatorId].investors[s.popInvestorIndex].walletAddress].amount += (s.steez[creatorId].investors[s.popInvestorIndex].steeloInvested / 100);
 		s.steez[creatorId].SteeloInvestors[s.steez[creatorId].investors[s.popInvestorIndex].walletAddress] -= s.steez[creatorId].investors[s.popInvestorIndex].steeloInvested;
 		s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[s.popInvestorIndex].steeloInvested; 
     		uint length = s.steez[creatorId].investors.length;

@@ -43,7 +43,7 @@ contract STEELOFacet {
 	}
 
 	function steeloTransfer(address to, uint256 amount) public returns (bool) {
-		amount = amount * 10 ** 18;
+//		amount = amount * 10 ** 18;
 		LibSteelo.transfer(msg.sender, to, amount);
 		return true;
 			
@@ -54,13 +54,13 @@ contract STEELOFacet {
    	}
 
 	function steeloApprove(address spender, uint256 amount) public returns (bool success) {
-		amount = amount * 10 ** 18;
+//		amount = amount * 10 ** 18;
 		LibSteelo.approve(msg.sender, spender, amount);	
 		return true;
 	}
 
 	function steeloTransferFrom(address from, address to, uint256 amount) public returns (bool) {
-		amount = amount * 10 ** 18;
+//		amount = amount * 10 ** 18;
 		LibSteelo.transferFrom(from, to, amount);
 		return true;
 			
@@ -75,8 +75,8 @@ contract STEELOFacet {
     	
 
 	function unstakeSteelo(uint256 amount) external payable returns (bool) {
-		amount *= 10 ** 18;
-		amount /= 10000;
+//		amount *= 10 ** 18;
+//		amount /= 10000;
 		LibSteelo.unstake(msg.sender, amount);
 		return true;
 

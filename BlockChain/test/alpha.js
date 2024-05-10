@@ -471,7 +471,8 @@ describe('DiamondTest', async function () {
     it('should transfer 10 STLO from owner to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 10;
+      let num = 10;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.be.reverted;
 
     })
@@ -505,7 +506,8 @@ describe('DiamondTest', async function () {
     it('should transfer 740000 STLO from owner to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 740000;
+      let num = 740000;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.be.reverted;
 
     })
@@ -564,7 +566,8 @@ describe('DiamondTest', async function () {
     it('should check if transfer of some amount from one address to another address', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 200;
+      let num = 200;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(owner).steeloTransferFrom(owner.address, addr1.address, amount)).to.be.reverted;
 
     })
@@ -572,14 +575,16 @@ describe('DiamondTest', async function () {
     it('should check if transfer of some amount from one address to another address', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 10;
+      let num = 10;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(owner).steeloTransferFrom(owner.address, addr1.address, amount)).to.be.reverted;
 
     })
     it('should check if transfer of some amount from one address to another address', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 10;
+      let num = 10;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(owner).steeloTransferFrom(owner.address, addr1.address, amount)).to.be.reverted;
 
     })
@@ -731,7 +736,8 @@ describe('DiamondTest', async function () {
      it('should transfer 10 STLO from addr1 to addr2', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 50;
+      let num = 50;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(addr7).steeloTransfer(addr6.address, amount )).to.not.be.reverted;
 
     })
@@ -783,7 +789,8 @@ describe('DiamondTest', async function () {
      it('should transfer 10 STLO from addr1 to addr2', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 10;
+      let num = 50;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(addr2).steeloTransfer(addr6.address, amount )).to.not.be.reverted;
 
     })
@@ -878,7 +885,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      		let amount = 1;
+      		let num = 0.75;
+		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo2.connect(owner).withdrawEther(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -912,7 +920,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 9000;
+      		let num = 90;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr2).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -926,7 +935,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 1000;
+      		let num = 10;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr6).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1053,7 +1063,8 @@ describe('DiamondTest', async function () {
 //    it('should transfer balance from owner to someone else', async () => { 
 //  
 //      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-//      let amount = 5400;
+//      let num = 5400;
+//        let amount = ethers.utils.parseEther(num.toString());
 //      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
 //
 //    })
@@ -1061,7 +1072,8 @@ describe('DiamondTest', async function () {
 //    it('should transfer balance from owner to someone else', async () => { 
 //  
 //      const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-//      let amount = 54000;
+//      let num = 54000;
+//        let amount = ethers.utils.parseEther(num.toString());
 //      await expect(Steelo.connect(owner).steeloTransfer(addr1.address, amount )).to.not.be.reverted;
 //
 //    })
@@ -1246,7 +1258,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo2 = await ethers.getContractAt('STEELO2Facet', diamondAddress);
-      		let amount = 1;
+      		let num = 0.75;
+		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo2.connect(owner).withdrawEther(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1339,7 +1352,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      		let amount = 45;
+      		let num = 45;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr9).steeloTransfer(addr6.address, amount );
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1351,7 +1365,8 @@ describe('DiamondTest', async function () {
     it('should transfer 10 STLO from owner to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 45;
+      let num = 45;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(addr8).steeloTransfer(addr6.address, amount )).to.not.be.reverted;
 
     })
@@ -1359,7 +1374,8 @@ describe('DiamondTest', async function () {
     it('should transfer 10 STLO from owner to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 62;
+      let num = 62;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(addr7).steeloTransfer(addr9.address, amount )).to.not.be.reverted;
 
     })
@@ -1367,7 +1383,8 @@ describe('DiamondTest', async function () {
     it('should transfer 10 STLO from owner to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 29;
+      let num = 29;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(addr6).steeloTransfer(addr7.address, amount )).to.not.be.reverted;
 
     })
@@ -1375,7 +1392,8 @@ describe('DiamondTest', async function () {
     it('should transfer 10 STLO from owner to addr1', async () => { 
   
       const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress)
-      let amount = 100;
+      let num = 100;
+      let amount = ethers.utils.parseEther(num.toString());
       await expect(Steelo.connect(addr6).steeloTransfer(addr7.address, amount )).to.not.be.reverted;
 
     })
@@ -1473,7 +1491,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 12084;
+      		let num = 100;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr9).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1487,7 +1506,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 5665;
+      		let num = 50;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr8).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1501,7 +1521,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 14151;
+      		let num = 100;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr7).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1515,7 +1536,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 2961;
+      		let num = 29;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr6).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {
@@ -1529,7 +1551,8 @@ describe('DiamondTest', async function () {
       
       try {	
       		const Steelo = await ethers.getContractAt('STEELOFacet', diamondAddress);
-      		let amount = 6100;
+      		let num = 60;
+      		let amount = ethers.utils.parseEther(num.toString());
       		await Steelo.connect(addr2).unstakeSteelo(amount);
       		console.log('Transaction succeeded');
     	} catch (error) {

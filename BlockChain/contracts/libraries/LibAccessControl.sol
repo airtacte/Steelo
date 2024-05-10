@@ -10,7 +10,7 @@ library LibAccessControl {
 
 	function initialize( address owner ) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
-		require(!s.accessInitialized, "access control already initialized");
+		require(!s.accessInitialized, "executive already avaliable && access control already initialized");
 		s.roles[owner] = AppConstants.EXECUTIVE_ROLE;
 		s.executiveMembers[owner] = true;
 		s.adminMembers[owner] = true;
@@ -32,6 +32,7 @@ library LibAccessControl {
 	function grantRole( address granter, string memory role, address account) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.executiveMembers[granter] == true, "only executive has the power to grant roles");
+		require(granter != account, "can not grant role to oneself");
 //		require(keccak256(bytes(s.roles[account])) == keccak256(bytes("")), "account already has a role");
 		s.roles[account] = role;
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.EXECUTIVE_ROLE))) {
@@ -165,9 +166,10 @@ library LibAccessControl {
 		
 	}
 
-		function revokeRole( address revoker, string memory role, address account) internal {
+	function revokeRole( address revoker, string memory role, address account) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		require(s.executiveMembers[revoker] == true, "only executive has the power to grant roles");
+		require(revoker != account, "can not grant role to oneself");
 		require(keccak256(bytes(s.roles[account])) != keccak256(bytes("")), "account hsa no role");
 		string memory newRole;
 		if (keccak256(bytes(role)) == keccak256(bytes(AppConstants.EXECUTIVE_ROLE))) {

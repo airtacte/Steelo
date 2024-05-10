@@ -78,9 +78,11 @@ library LibSteelo {
 
 	function approve(address from, address to, uint256 amount) internal {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
+		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
+		require( to != address(0), "STEELOFacet: Cannot transfer from the zero address" );
+		require(from != to, "can not approve to ownself");
 		require (s.userMembers[from], "you  have no steelo account");
 		require(s.stakerMembers[from], "you must stake in order to approve steelo transaction");
-		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( amount > 0, "you can not approve 0 amount");
 		require(s.balances[from] >= amount, "you can not approve what you do not have");
 	        s.allowance[from][to] = amount;
@@ -93,6 +95,7 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( to != address(0), "STEELOFacet: Cannot transfer to the zero address" );
+		require(from != to, "can not transfer to ownself");
 		require (s.userMembers[from], "you  have no steelo account");
 		require(s.stakerMembers[from], "you must stake in order to transfer steelo transaction");
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
@@ -127,6 +130,7 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require( from != address(0), "STEELOFacet: Cannot transfer from the zero address" );
 		require( to != address(0), "STEELOFacet: Cannot transfer to the zero address" );
+		require(from != to, "can not transfer to ownself");
 		require (s.userMembers[from], "you  have no steelo account");
 		require(s.stakerMembers[from], "the sender must stake in order to transfer steelo transaction");
 		require(s.balances[from] >= amount, "you have insufficient steelo tokens to transfer");
@@ -222,10 +226,11 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 
 		bool unstakeAgain;
+		amount /= 100;
 		require(amount > 0, "can not unstake 0 amount");
-		require(address(this).balance >= (amount +  ((amount * s.stakers[msg.sender].month) / 100 )), "no ether is available in the treasury of contract balance");
+		require(address(this).balance >= (((amount +  (amount * s.stakers[msg.sender].month) / 100 ))), "no ether is available in the treasury of contract balance");
 		require (s.userMembers[from], "you  have no steelo account");
-		require(s.balances[from] + ((s.balances[from] * s.stakers[from].interest)/10000) >= amount, "not sufficient steelo tokens to sell");
+		require(s.balances[from] + ((s.balances[from] * s.stakers[from].interest)/10000) >= (amount * 100), "not sufficient steelo tokens to sell");
 		require(block.timestamp >= s.stakers[from].endTime, "staking period is not over yet");
 		require(s.stakers[from].amount + ((s.stakers[from].amount * s.stakers[from].interest)/10000) >= amount, "you are asking more amount of ether than you staked");
 

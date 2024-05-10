@@ -85,7 +85,7 @@ contract STEELO2Facet {
 	}
 
 	function withdrawEther(uint256 amount) external payable returns (bool) {
-		amount *= 10 ** 18;
+//		amount *= 10 ** 18;
 		require(s.executiveMembers[msg.sender], "only executive can withdraw Ether from the contract");
 		require(address(this).balance >= ((amount)), "no ether is available in the contract balance");
                (bool success, ) = msg.sender.call{value: amount}("");
