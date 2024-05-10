@@ -1292,6 +1292,13 @@ it('add the Village Facet', async () => {
       await expect(Steez.connect(addr6).bidPreOrder(creatorId, amount )).to.be.reverted;
 
     })
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	
+    })
 
     it('should bid preorder 6', async () => { 
   
@@ -1435,6 +1442,14 @@ it('add the Village Facet', async () => {
       let amount = ethers.utils.parseEther(num.toString());
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr6).bidPreOrder(creatorId, amount )).to.not.be.reverted;
+
+    })
+    it('Steelo Current Price:', async () => { 
+  
+      const Steelo4 = await ethers.getContractAt('STEELO4Facet', diamondAddress)
+      let price = await Steelo4.connect(addr1).steeloPrice();
+      price /= 10 ** 6;
+      console.log("Steelo Price Before :", parseFloat(price));
 
     })
 
@@ -1613,6 +1628,13 @@ it('add the Village Facet', async () => {
 	let creatorId = "fvG74d0z271TuaE6WD2t";
       await expect(Steez.connect(addr3).AcceptOrReject(creatorId, true )).to.not.be.reverted;
 
+    })
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	
     })
 
     it('should check preorder status', async () => { 
@@ -2049,6 +2071,13 @@ it('get staked ETH balance before staking:', async () => {
    	const balance = await Steez.connect(addr1).checkPreOrderStatus(creatorId);
 	console.log("bid Amount should be :", parseInt(balance[0], 10) / (10 ** 18),"steelo balance should be :", parseInt(balance[1], 10) / (10 ** 18),"total steelo  :", parseInt(balance[2], 10) / (10 ** 18), "steez invested should be 0:", parseInt(balance[3], 10), "lqiuidity pool before bid launch should be 4:", parseInt(balance[4], 10));
     });
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	
+    })
 
     
     
@@ -2065,6 +2094,14 @@ it('get staked ETH balance before staking:', async () => {
       	
 
     })
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	
+    })
+
 
     it('addr1 bid launch 4 steez', async () => { 
   
@@ -2235,6 +2272,13 @@ it('get staked ETH balance before staking:', async () => {
 
 
   });
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	
+    })
 
 
 it('get staked ETH balance before staking:', async () => { 
@@ -2626,6 +2670,13 @@ it('get staked ETH balance before staking:', async () => {
 	console.log("Steez Status:", steezStatus);
 	
     })
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	
+    })
 
     it('addr6 P2P buy 1 steez', async () => { 
   
@@ -2687,7 +2738,7 @@ it('get staked ETH balance before staking:', async () => {
 
   });
 
-    it('-----------------------------------------------------------------------------------------------------------------------addr4 P2P buy 4 steez', async () => { 
+    it('addr4 P2P buy 4 steez', async () => { 
   
       	try {	
       		const Steez2 = await ethers.getContractAt('STEEZ6Facet', diamondAddress) 
@@ -3092,15 +3143,15 @@ it('get staked ETH balance before staking:', async () => {
     });
     
 
-    it('addr2 bid anniversary 1 steez', async () => { 
+    it('----------------------------------------------------------------------------------------------------------------addr2 bid anniversary 1 steez', async () => { 
   
       	try {	
       		const Steez2 = await ethers.getContractAt('STEEZ7Facet', diamondAddress) 
 	let creatorId = "fvG74d0z271TuaE6WD2t";
 		await Steez2.connect(addr2).bidAnniversary(creatorId, 1 );
-      		console.log('Transaction succeeded');
+      		console.log('-----------------------------------------------------------------------------------------------------------------Transaction succeeded');
     	} catch (error) {
-      		console.error('Transaction failed with error:', error.message);
+      		console.error('-----------------------------------------------------------------------------------------Transaction failed with error:', error.message);
     	}
       	
 

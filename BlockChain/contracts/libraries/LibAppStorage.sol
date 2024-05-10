@@ -90,8 +90,7 @@ library AppConstants{
 
 
 	struct Investor {
-        	uint256 investorId;
-        	uint256 profileId; 
+        	string investorId;
         	address walletAddress;
 		uint256 steeloInvested;
 		uint256 timeInvested;

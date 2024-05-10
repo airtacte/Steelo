@@ -338,8 +338,7 @@ library LibSteez {
 			s.totalTransactionCount += 1;
 
 			 Investor memory newInvestor = Investor({
-            			investorId: s.steez[creatorId].investors.length,
-            			profileId: 1,
+            			investorId: s.userIdentity[investor],
             			walletAddress: investor,
             			steeloInvested: amount,
             			timeInvested: block.timestamp,
@@ -614,8 +613,7 @@ library LibSteez {
 		if (bidAgain == false) {
 
 			 Investor memory newInvestor = Investor({
-         			investorId: s.steez[creatorId].investors.length,
-            			profileId: 1,
+        			investorId: s.userIdentity[investor],
             			walletAddress: investor,
             			steeloInvested: (s.steez[creatorId].currentPrice * amount),
             			timeInvested: block.timestamp,
@@ -624,7 +622,7 @@ library LibSteez {
         		s.steez[creatorId].investors.push(newInvestor);
 		}
 		
-		s.steez[creatorId].currentPrice = ((75 * s.steez[creatorId].currentPrice) / 100) + ( (25 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
+		s.steez[creatorId].currentPrice = ((90 * s.steez[creatorId].currentPrice) / 100) + ( (10 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
 
 
 
@@ -783,8 +781,7 @@ library LibSteez {
 
 				if (bidAgain == false) {
 					Investor memory newInvestor = Investor({
-        					investorId: s.steez[creatorId].investors.length,
-          					profileId: 1,
+        					investorId: s.userIdentity[buyer],
             					walletAddress: buyer,
             					steeloInvested: (buyingPrice * buyingAmount),
             					timeInvested: block.timestamp,
@@ -906,8 +903,7 @@ library LibSteez {
 		if (bidAgain == false) {
 
 			 Investor memory newInvestor = Investor({
-        			investorId: s.steez[creatorId].investors.length,
-          			profileId: 1,
+        			investorId: s.userIdentity[investor],
             			walletAddress: investor,
             			steeloInvested: (s.steez[creatorId].currentPrice * amount),
             			timeInvested: block.timestamp,
@@ -916,7 +912,7 @@ library LibSteez {
         		s.steez[creatorId].investors.push(newInvestor);
 
 		}
-		s.steez[creatorId].currentPrice = ((75 * s.steez[creatorId].currentPrice) / 100) + ( (25 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
+		s.steez[creatorId].currentPrice = ((90 * s.steez[creatorId].currentPrice) / 100) + ( (10 * (s.steez[creatorId].liquidityPool > 0 ? s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].liquidityPool : s.steez[creatorId].currentPrice)) / 100);
 
 
 		for (uint i = 0; i < s.allCreators.length; i++) {
