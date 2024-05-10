@@ -75,8 +75,8 @@ contract STEEZ3Facet {
 
 	
 
-	function PreOrderEnder(string memory creatorId, uint256 amount) public {
-		LibSteez.PreOrderEnder( msg.sender, creatorId, amount );
+	function PreOrderEnder(string memory creatorId) public {
+		LibSteez.PreOrderEnder( creatorId );
 		
 	}
 	

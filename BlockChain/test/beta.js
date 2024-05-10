@@ -1372,12 +1372,20 @@ it('add the Village Facet', async () => {
 
     })
 
-    it('should bid preorder 1', async () => { 
+    it('preorder ender', async () => { 
   
       const Steez = await ethers.getContractAt('STEEZ3Facet', diamondAddress)
+	let creatorId = "fvG74d0z271TuaE6WD2t";
+      await expect(Steez.connect(addr6).PreOrderEnder(creatorId)).to.not.be.reverted;
+
+    })
+
+     it('should bid preorder 6', async () => { 
+  
+      const Steez = await ethers.getContractAt('STEEZFacet', diamondAddress)
       let amount = 30;
 	let creatorId = "fvG74d0z271TuaE6WD2t";
-      await expect(Steez.connect(addr6).PreOrderEnder(creatorId, amount )).to.not.be.reverted;
+      await expect(Steez.connect(addr6).bidPreOrder(creatorId, amount )).to.not.be.reverted;
 
     })
 
@@ -3252,6 +3260,16 @@ it('get staked ETH balance before staking:', async () => {
 	let creatorId = "fvG74d0z271TuaE6WD2t";
    	const investors = await Steez8.connect(addr2).getAllInvestors( creatorId );
 	console.log("Investors:", investors);	
+    })
+
+
+    it('fetch all creators', async() => {
+  
+	const Steez2 = await ethers.getContractAt('STEEZ3Facet', diamondAddress);
+   	const creator = await Steez2.connect(addr2).getAllCreatorsData();
+	console.log("Creator 1:", parseFloat(creator[0].steezPrice), parseFloat(creator[0].totalInvestors), creator[0].steezStatus);
+	console.log("Creator 2:", parseFloat(creator[1].steezPrice), parseFloat(creator[1].totalInvestors), creator[1].steezStatus);
+	
     })
     
 

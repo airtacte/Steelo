@@ -39,18 +39,18 @@ library AppConstants{
         uint256 constant MAX_CREATOR_TOKENS = 5000;
         uint256 constant ANNUAL_TOKEN_INCREASE_PERCENTAGE = 10;
         // Stakeholder's royalty distribution
-        address constant treasury = 0xa657A59F1e350ef5369C3C5cbECF014648eDa49C;
+        address constant treasury = 0xb2DA1744798AC776373e64db2A7F7bf43aA63733;
         uint256 constant trasuryTGE = 35;
         uint256 constant treasuryMint = 35;
-        address constant liquidityProviders = 0x9d7B8aD51C7476A154C0B0D80A86943aF4C314Bb;
+        address constant liquidityProviders = 0x4FdB541d77184E9A7144dF117f59965f0676337b;
         uint256 constant liquidityProvidersMint = 55;
-        address constant ecosystemProviders = 0x3178744Aa6c6a58B908F4f195BFe4b05444F133c;
+        address constant ecosystemProviders = 0xA5a83C791cf435D9Fb07e11CF71bD8D4fFa1dC49;
         uint256 constant ecosystemProvidersMint = 10;
-        address constant foundersAddress = 0x21D68A3668AE870D01374c0568FB140a21e0e781;
+        address constant foundersAddress = 0xb69ec02AD06eaF87be588c4aa02Cf77c12974943;
         uint256 constant foundersTGE = 20;
-        address constant earlyInvestorsAddress = 0x00b8f22b96acF900EB990367dD91005ACbC24b95;
+        address constant earlyInvestorsAddress = 0x4DE25615C88cF051f532A6e0249EA3572bBf4dF6;
         uint256 constant earlyInvestorsTGE = 10;
-        address constant communityAddress = 0xBA3bAeEc02D09D8Cd139ef47d739Ec84FcF6667e;
+        address constant communityAddress = 0x040C5A20B0E6eAEa8Cef0Dd97c5241a9C5bf20D2;
         uint256 constant communityTGE = 35;
 //        address constant steeloAddress = 0x45F9B54cB97970c0E798dB0FDF2b8076Cdf57d25;
         uint256 constant FEE_RATE = 25;
