@@ -1575,7 +1575,7 @@ it('add the Village Facet', async () => {
   
       const Steez = await ethers.getContractAt('STEEZ5Facet', diamondAddress)
 	let creatorId = "fvG74d0z271TuaE6WD2t";
-      await expect(Steez.connect(addr1).AcceptOrReject(creatorId, true )).to.not.be.reverted;
+      await expect(Steez.connect(addr1).AcceptOrReject(creatorId, false )).to.not.be.reverted;
 
     })
 

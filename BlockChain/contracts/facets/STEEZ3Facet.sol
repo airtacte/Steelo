@@ -29,7 +29,12 @@ contract STEEZ3Facet {
 	
 
 	function FirstAndLast(string memory creatorId) public view returns (uint256, uint256) {
-		return (s.steez[creatorId].investors[0].steeloInvested, s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1].steeloInvested);
+		if (s.steez[creatorId].investors.length > 0) {
+			return (s.steez[creatorId].investors[0].steeloInvested, s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1].steeloInvested);
+		}
+		else {
+			return (0, 0);
+		}
 	}
 
 	function getCreatorWithId( string memory creatorId) public view returns (Creator memory, uint256, uint256) {

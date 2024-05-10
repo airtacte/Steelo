@@ -499,6 +499,8 @@ library LibSteez {
                                                         s.steez[creatorId].SteeloInvestors[investor] -=  s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].investors[i].steeloInvested -= s.steez[creatorId].investors[i].steeloInvested;
+							s.steez[creatorId].investors[i] =  s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1];
+							s.steez[creatorId].investors.pop();
 							s.steez[creatorId].auctionSlotsSecured -= 1;
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
@@ -532,6 +534,8 @@ library LibSteez {
                                                         s.steez[creatorId].SteeloInvestors[investor] -=  s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[i].steeloInvested;
 							s.steez[creatorId].investors[i].steeloInvested -= s.steez[creatorId].investors[i].steeloInvested;
+							s.steez[creatorId].investors[i] =  s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1];
+							s.steez[creatorId].investors.pop();
 							s.steez[creatorId].auctionSlotsSecured -= 1;
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
