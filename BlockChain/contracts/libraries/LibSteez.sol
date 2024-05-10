@@ -247,7 +247,7 @@ library LibSteez {
 
 	function bidPreOrder( address investor, string memory creatorId,  uint256 amount ) internal {
 			AppStorage storage s = LibAppStorage.diamondStorage();
-			amount = amount * 10 ** 18;
+//			amount = amount * 10 ** 18;
 			bool bidAgain;
 			require (s.userMembers[investor], "you  have no steelo account");	
 			require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
@@ -657,7 +657,7 @@ library LibSteez {
 	function initiateP2PSell(address seller , string memory creatorId, uint256 sellingPrice, uint256 steezAmount) internal {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		bool sellAgain;
-		sellingPrice *= 10 ** 18;
+//		sellingPrice *= 10 ** 18;
 		require (s.userMembers[seller], "you  have no steelo account");	
 		require(steezAmount > 0 && steezAmount <= 5 , "steez has to be between 1 and 5");
 		require(s.steezInvested[seller][creatorId] >= steezAmount, "you have insufficient steez tokens to sell");
@@ -674,7 +674,7 @@ library LibSteez {
         				}
     			}
 		}
-		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P")), "preorder has not started yet");
+		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P")), "p2p has not started yet");
 
 		for (uint256 i = 0; i < s.sellers[creatorId].length; i++) {
 					if (seller == s.sellers[creatorId][i].sellerAddress) {
@@ -724,7 +724,7 @@ library LibSteez {
 		if (s.steez[creatorId].P2PStarted) {
 
 
-		buyingPrice *= 10 ** 18;
+//		buyingPrice *= 10 ** 18;
 		require(buyingAmount > 0, "can not buy 0 steez");
 		require(s.balances[buyer] > buyingPrice * buyingAmount, "has insufficient steelo tokens");
 		require(s.steezInvested[buyer][creatorId] + buyingAmount <= 5, "can not own more than 5 steez tokens");
@@ -750,7 +750,7 @@ library LibSteez {
 		address P2PSeller;
 
 		for (uint256 i = 0; i < s.sellers[creatorId].length; i++) {	
-			if (buyingPrice == s.sellers[creatorId][i].sellingPrice && buyingAmount <= s.sellers[creatorId][i].sellingAmount) {
+			if (buyingPrice == s.sellers[creatorId][i].sellingPrice && buyingAmount <= s.steezInvested[s.sellers[creatorId][i].sellerAddress][creatorId] && buyer != s.sellers[creatorId][i].sellerAddress) {
 				s.balances[s.sellers[creatorId][i].sellerAddress] += (buyingPrice * buyingAmount * 90) / 100;
 				s.balances[s.treasury] += (buyingPrice * buyingAmount * 25) / 1000;
 				s.balances[s.steez[creatorId].creatorAddress] += (buyingPrice * buyingAmount * 50) / 1000;
@@ -765,7 +765,6 @@ library LibSteez {
 				if (s.stakers[s.sellers[creatorId][i].sellerAddress].month < s.stakers[buyer].month) {
 					s.stakers[s.sellers[creatorId][i].sellerAddress].month = s.stakers[buyer].month;
 				}
-				s.steezInvested[buyer][creatorId] += buyingAmount;
 				
 				s.steezInvested[s.sellers[creatorId][i].sellerAddress][creatorId] -= buyingAmount;
 				s.totalSteezTransaction[creatorId] += 1;
@@ -793,6 +792,7 @@ library LibSteez {
         				});
         				s.steez[creatorId].investors.push(newInvestor);
 				}
+				s.steezInvested[buyer][creatorId] += buyingAmount;
 				for (uint256 j = 0; j < s.steez[creatorId].investors.length; j++) {
 					if (s.steez[creatorId].investors[j].walletAddress == s.sellers[creatorId][i].sellerAddress) {
 						if (s.steezInvested[s.sellers[creatorId][i].sellerAddress][creatorId] == 0) {
@@ -819,7 +819,7 @@ library LibSteez {
 							uint length = s.sellers[creatorId].length;
 							s.sellers[creatorId][k] =  s.sellers[creatorId][length - 1];
 							s.sellers[creatorId].pop();
-//							s.totalTransactionCount += 1;
+							s.totalTransactionCount += 1;
 							break;
 					}
 					else if (s.sellers[creatorId][k].sellerAddress == P2PSeller && s.sellers[creatorId][k].sellingAmount != buyingAmount ) {
