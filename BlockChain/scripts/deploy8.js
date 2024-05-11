@@ -9,7 +9,7 @@ const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
 async function deploySIPFacet () {
     // diamondAddress = await deployDiamond()
     
-    diamondAddress = "0xeCa52237C380F0147364E4EBC1B322ba4e3D9322";
+    diamondAddress = "0x6CD97678Ec4fF4067D5c0ACfe113976930f19ABC";
     console.log("diamondAddress", diamondAddress);
 
     const SIPFacet = await ethers.getContractFactory('SIPFacet')
