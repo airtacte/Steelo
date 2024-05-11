@@ -159,7 +159,7 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 		require (s.userMembers[from], "you  have no steelo account");
 		require(s.adminMembers[from], "only admin can burn steelo tokens");
-//		require(amount > 0, "can not burn 0 amount");
+		require(amount > 0, "can not burn 0 amount");
 		require(amount < 825000000 * 10 ** 18, "can not burn 825 million tokens");
 		require(s.balances[from] > amount, "you should have enough amount to burn some tokens");
 	        s.balances[from] -= amount;
@@ -172,8 +172,8 @@ library LibSteelo {
 	        AppStorage storage s = LibAppStorage.diamondStorage();
 //		require (s.userMembers[from], "you  have no steelo account");
 		require(s.adminMembers[from], "only admins can mint steelo tokens");
-//		require(amount > 0, "can not mint 0 amount");
-//		require(amount <= 825000000 * 10 ** 18, "can not mint more than 825 million tokens");
+		require(amount > 0, "can not mint 0 amount");
+		require(amount <= 825000000 * 10 ** 18, "can not mint more than 825 million tokens");
 	        s.balances[from] += amount;
 		s.totalSupply += amount;
 		s.totalTransactionCount += 1;

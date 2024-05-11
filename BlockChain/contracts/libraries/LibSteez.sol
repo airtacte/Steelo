@@ -251,15 +251,12 @@ library LibSteez {
 			bool bidAgain;
 			require (s.userMembers[investor], "you  have no steelo account");	
 			require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
-			require(!s.steez[creatorId].launchStarted, "Launch has started");	
-			require(!s.steez[creatorId].preOrderEnded, "Preorder has ended");	
 			require(amount >= s.steez[creatorId].currentPrice, "you should higher than the steez current price");
-			require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("PreOrder")), "preorder has not started yet");
 //			if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
 //				steeloMint();
 //				s.mintingTransactionLimit[creatorId] += 10;
 //			}
-			if ((block.timestamp > s.steez[creatorId].preOrderStartTime + 24 hours) && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("PreOrder"))) {
+			if ((block.timestamp >= s.steez[creatorId].preOrderStartTime + 24 hours) && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("PreOrder"))) {
     				s.steez[creatorId].status = "Approval";
 				s.steez[creatorId].currentPrice = s.steez[creatorId].totalSteeloPreOrder / s.steez[creatorId].investors.length;
 				for (uint i = 0; i < s.allCreators.length; i++) {
@@ -273,11 +270,14 @@ library LibSteez {
 				s.steez[creatorId].preOrderStarted = false;
 				s.steez[creatorId].preOrderEnded = true;
 				require(s.steez[creatorId].preOrderEnded, "Preorder has not ended");
-				require(s.steez[creatorId].liquidityPool > 0, "liquidity pool empty");
-				s.steez[creatorId].totalSupply += AppConstants.LAUNCH_SUPPLY;
-            			s.steez[creatorId].launchStarted = true;				
-				mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.LAUNCH_SUPPLY);
+//				require(s.steez[creatorId].liquidityPool > 0, "liquidity pool empty");
+//				s.steez[creatorId].totalSupply += AppConstants.LAUNCH_SUPPLY;
+//            			s.steez[creatorId].launchStarted = true;				
+//				mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.LAUNCH_SUPPLY);
 			}
+			require(!s.steez[creatorId].preOrderEnded, "Preorder has ended");	
+			require(!s.steez[creatorId].launchStarted, "Launch has started");	
+			require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("PreOrder")), "preorder has not started yet");
 
 			if (!s.steez[creatorId].launchStarted) {
 		
@@ -446,13 +446,10 @@ library LibSteez {
 				s.steez[creatorId].preOrderStarted = false;
 				s.steez[creatorId].preOrderEnded = true;
 				require(s.steez[creatorId].preOrderEnded, "Preorder has not ended");
-				require(s.steez[creatorId].liquidityPool > 0, "liquidity pool empty");
-				s.steez[creatorId].totalSupply += AppConstants.LAUNCH_SUPPLY;
-            			s.steez[creatorId].launchStarted = true;				
-				mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.LAUNCH_SUPPLY);
+//				require(s.steez[creatorId].liquidityPool > 0, "liquidity pool empty");
+				
 		}
-		require(s.steez[creatorId].launchStarted, "approval has not started");
-		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Approval")), "approval has not started yet");
+//		require(s.steez[creatorId].launchStarted, "approval has not started");
 		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
 				steeloMint();
 				s.mintingTransactionLimit[creatorId] += 10;
@@ -465,7 +462,13 @@ library LibSteez {
             					break;
         				}
     				}
+			s.steez[creatorId].totalSupply += AppConstants.LAUNCH_SUPPLY;
+            		s.steez[creatorId].launchStarted = true;				
+			mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.LAUNCH_SUPPLY);
+			
+
 		}
+		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Approval")), "approval has not started yet");
 		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
 					if (s.steez[creatorId].currentPrice > s.steez[creatorId].investors[i].steeloInvested) {
@@ -495,12 +498,14 @@ library LibSteez {
 						else {
 							s.balances[investor] += s.steez[creatorId].investors[i].steeloInvested;
 							s.stakers[investor].amount += (s.steez[creatorId].investors[i].steeloInvested / 100);
-                                                        s.steez[creatorId].SteeloInvestors[investor] -=  s.steez[creatorId].investors[i].steeloInvested;
+                                                        s.steez[creatorId].SteeloInvestors[investor] = 0;
 							s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[i].steeloInvested;
-							s.steez[creatorId].investors[i].steeloInvested -= s.steez[creatorId].investors[i].steeloInvested;
+							s.steez[creatorId].investors[i].steeloInvested = 0;
 							s.steez[creatorId].investors[i] =  s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1];
 							s.steez[creatorId].investors.pop();
-							s.steez[creatorId].auctionSlotsSecured -= 1;
+							if (s.steez[creatorId].auctionSlotsSecured > 0) {
+								s.steez[creatorId].auctionSlotsSecured -= 1;
+							}
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
 						}
@@ -530,12 +535,14 @@ library LibSteez {
 						else {
 							s.balances[investor] += s.steez[creatorId].investors[i].steeloInvested;
 							s.stakers[investor].amount += (s.steez[creatorId].investors[i].steeloInvested / 100);
-                                                        s.steez[creatorId].SteeloInvestors[investor] -=  s.steez[creatorId].investors[i].steeloInvested;
+                                                        s.steez[creatorId].SteeloInvestors[investor] =  0;
 							s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[i].steeloInvested;
-							s.steez[creatorId].investors[i].steeloInvested -= s.steez[creatorId].investors[i].steeloInvested;
+							s.steez[creatorId].investors[i].steeloInvested = 0;
 							s.steez[creatorId].investors[i] =  s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1];
 							s.steez[creatorId].investors.pop();
-							s.steez[creatorId].auctionSlotsSecured -= 1;
+							if (s.steez[creatorId].auctionSlotsSecured > 0) {
+								s.steez[creatorId].auctionSlotsSecured -= 1;
+							}
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
 						}
@@ -556,20 +563,45 @@ library LibSteez {
 		bool bidAgain;
 		require (s.userMembers[investor], "you  have no steelo account");	
 		require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
-		require(s.steez[creatorId].launchStarted, "Launch has not started");
-		require(!s.steez[creatorId].launchEnded, "Launch has ended");
 		require(s.balances[investor] >= (s.steez[creatorId].currentPrice * amount), "you have insufficient balance");
 		require(amount > 0 && amount <= 5, "amount of steez per person is between 1 and 5");
-		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
-		if (block.timestamp >= s.steez[creatorId].auctionStartTime && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Approval"))) {
+		if (block.timestamp >= s.steez[creatorId].auctionStartTime && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Approval")) || keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("PreOrder"))) {
 			s.steez[creatorId].status = "Launch";
 			for (uint i = 0; i < s.allCreators.length; i++) {
         				if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
 						s.allCreators[i].steezStatus = s.steez[creatorId].status;
             					break;
         				}
+    				}
+			s.steez[creatorId].totalSupply += AppConstants.LAUNCH_SUPPLY;
+            		s.steez[creatorId].launchStarted = true;				
+			mintSteez(s.steez[creatorId].creatorAddress, creatorId, AppConstants.LAUNCH_SUPPLY);
+			for (uint256 i = s.steez[creatorId].investors.length; i > 0; i--) {
+				uint256 index = i - 1;
+				address bidder = s.steez[creatorId].investors[index].walletAddress;
+
+			if (!s.preorderBidFinished[bidder][creatorId]) {
+				s.balances[bidder] += s.steez[creatorId].investors[index].steeloInvested;
+			        s.stakers[bidder].amount += (s.steez[creatorId].investors[index].steeloInvested / 100);
+			        s.steez[creatorId].SteeloInvestors[bidder] = 0;
+			        s.steez[creatorId].totalSteeloPreOrder -= s.steez[creatorId].investors[index].steeloInvested;
+			        s.steez[creatorId].investors[index].steeloInvested = 0;
+			        s.steez[creatorId].investors[index] = s.steez[creatorId].investors[s.steez[creatorId].investors.length - 1];
+			        s.steez[creatorId].investors.pop();
+
+        		if (s.steez[creatorId].auctionSlotsSecured > 0) {
+            			s.steez[creatorId].auctionSlotsSecured -= 1;
+        		}
+        		s.preorderBidFinished[bidder][creatorId] = true;
+        		s.totalTransactionCount += 1;
     			}
 		}
+			
+		}
+//		require(!s.steez[creatorId].launchEnded, "Launch has ended");
+//		require(s.steez[creatorId].launchStarted, "Launch has not started");
+		require(s.steez[creatorId].liquidityPool > 0, "liquidity pool is empty now go to P2P market");
+		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
 		require(block.timestamp >= s.steez[creatorId].auctionStartTime, "launch has not started yet");
 		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Launch")), "launch has not started yet");
 		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
@@ -659,7 +691,7 @@ library LibSteez {
 		require (s.userMembers[seller], "you  have no steelo account");	
 		require(steezAmount > 0 && steezAmount <= 5 , "steez has to be between 1 and 5");
 		require(s.steezInvested[seller][creatorId] >= steezAmount, "you have insufficient steez tokens to sell");
-		if (block.timestamp > s.steez[creatorId].anniversaryDate && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P"))) {
+		if (block.timestamp >= s.steez[creatorId].anniversaryDate && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P"))) {
 			s.steez[creatorId].P2PStarted = false;
 			s.steez[creatorId].AnniversaryStarted = true;
     			s.steez[creatorId].status = "Anniversary";
@@ -699,13 +731,11 @@ library LibSteez {
 		AppStorage storage s = LibAppStorage.diamondStorage();
 		bool bidAgain;
 		require (s.userMembers[buyer], "you  have no steelo account");	
-		require(s.steez[creatorId].P2PStarted, "Peer to Peer transaction not allowed yet");
-		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P")), "p2p has not started yet");
 		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
 				steeloMint();
 				s.mintingTransactionLimit[creatorId] += 10;
-			}
-		if (block.timestamp > s.steez[creatorId].anniversaryDate && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P"))) {
+		}
+		if (block.timestamp >= s.steez[creatorId].anniversaryDate && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P"))) {
 			s.steez[creatorId].P2PStarted = false;
 			s.steez[creatorId].AnniversaryStarted = true;
     			s.steez[creatorId].status = "Anniversary";
@@ -718,6 +748,8 @@ library LibSteez {
         				}
     			}
 		}
+		require(s.steez[creatorId].P2PStarted, "Peer to Peer transaction not allowed yet");
+		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P")), "p2p has not started yet");
 
 		if (s.steez[creatorId].P2PStarted) {
 
@@ -846,8 +878,7 @@ library LibSteez {
 		require(s.steez[creatorId].creatorAddress != investor, "creators can not bid on thier own steez");
 		require(s.balances[investor] >= (s.steez[creatorId].currentPrice * amount), "you have insufficient balance");
 		require(amount > 0 && amount <= 5, "amount of steez per person is between 1 and 5");
-		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
-		if (block.timestamp > s.steez[creatorId].anniversaryDate && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P"))) {
+		if (block.timestamp >= s.steez[creatorId].anniversaryDate && keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("P2P"))) {
 			s.steez[creatorId].P2PStarted = false;
 			s.steez[creatorId].AnniversaryStarted = true;
     			s.steez[creatorId].status = "Anniversary";
@@ -860,6 +891,8 @@ library LibSteez {
         				}
     			}
 		}
+		require(s.steez[creatorId].liquidityPool > 0, "liquidity pool is empty now go to P2P market");
+		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
 		require(block.timestamp >= s.steez[creatorId].anniversaryDate, "anniversary has not started yet");
 		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Anniversary")), "anniversary has not started yet");
 		if (s.totalSteezTransaction[creatorId] > s.mintingTransactionLimit[creatorId]) {
