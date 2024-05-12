@@ -96,7 +96,11 @@ function Baazar ( {  email, token, role } ) {
 		return(
 				
 			<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+			{ token && email && role ?
 				<a href="/mosaic" className="btn btn-primary"> Mosaic</a>
+				:
+				null
+			}
 			    <div id="content" className="mt-3">
 			        {creators?.map(creator => (
 			            <div key={creator?.creatorId} className="list-group-item list-group-item-action bg-dark text-white mb-2">

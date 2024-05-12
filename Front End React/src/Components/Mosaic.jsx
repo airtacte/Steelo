@@ -33,16 +33,20 @@ function Mosaic (  { items, user, setlogin, setSuccess, search, setSearch, setSe
 	const [creatorContentData, setCreatorContentData] = useState([]);
 	const [isExclusive, setIsExclusive] = useState(false);
 	const [creatorContentBlockchain, setCreatorContentBlockchain] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	
 
 
 
 //	console.log(creatorContentBlockchain);
 
 
+	console.log("email token role", email, token, role);
+
 	useEffect(() => {
 		
-        if (!token || !email || !role) {
-//		    navigate("/");
+        	if (!localStorage.getItem("token")) {
+		    navigate("/");
 	          }
 
 	}, [email, token, role]);
@@ -51,6 +55,14 @@ function Mosaic (  { items, user, setlogin, setSuccess, search, setSearch, setSe
 	useEffect(() => {
         	getAllContentsBlockchain() 
     }, []);
+
+
+	const checkLoading = () => {
+	   		 if (creatorContentBlockchain.length > 0) {
+	   		   setIsLoading(false);
+	    }
+	  };
+	
 
 	async function getAllContentsBlockchain() {
 		if (typeof window.ethereum !== "undefined") {
@@ -112,11 +124,12 @@ function Mosaic (  { items, user, setlogin, setSuccess, search, setSearch, setSe
 
   		fetchCreatorData();
   		fetchCreatorContentData();
+		checkLoading();
 
 	  return () => {
 	    isMounted = false;  // set flag to false when component unmounts
 	  }
-	}, [token]);
+	}, [token, creatorContentBlockchain]);
 
 	
 
@@ -133,7 +146,15 @@ function Mosaic (  { items, user, setlogin, setSuccess, search, setSearch, setSe
   	};
 
 
-
+	if (isLoading) {
+    	return (
+	        <div className="d-flex justify-content-center align-items-center vh-100" style={{ marginLeft: '50%'}}>
+            <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }} role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        </div>
+	    );
+	}
 
 
 
@@ -151,44 +172,48 @@ function Mosaic (  { items, user, setlogin, setSuccess, search, setSearch, setSe
 
 
 	
+			
 <main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
-			    <div id="content" className="mt-3">
-			        {creatorContentData?.map((content, index) => (
-			            <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
-			                    <div className="d-flex justify-content-between align-items-center">
- 			                       <div>
-			                            <h5 className="mb-1">Content Name :{content?.name}</h5>
-						    
-							<video 
-				                  id={`video${index}`} 
-				                  className="img-fluid" 
-			                  controls 
-	                  style={{ display: activeVideo === index ? 'block' : 'none' }}
-	                >
-	                  <source src={content?.videoUrl} type="video/mp4" />
-	                  Your browser does not support the video tag.
-	                </video>
-	                {content?.thumbnailUrl && activeVideo !== index && (
-	                  <img 
-	       	             src={content?.thumbnailUrl} 
-	       	             alt="Image Preview" 
-	       	             className="img-fluid top-0 start-0 w-40" 
-	                    style={{ cursor: 'pointer' }} 
-		       	             onClick={() => handleVideoPlay(index)}
-		                  />
-		                )}
-			                        </div>
-			                    </div>
-		                    <div>Comments : {content?.comments}</div>
-		                    <div>description : {content?.description}</div>
-		                    <div>likes : {content?.likes}</div>
-		                    <div>shares : {content?.shares}</div>
-				    <div>upload time :{new Date(creatorContentBlockchain?.find(element => element.contentId === content?.id)?.uploadTimestamp.toNumber() * 1000).toString()}</div>
-				    <div>exclusivity :{creatorContentBlockchain?.find(element => element.contentId === content?.id)?.exclusivity ? "exclusive" : "not exclusive"}</div>
-			            </div>
-			        ))}
-			    </div>
-			</main>
+  <div id="content" className="mt-3">
+    {creatorContentData?.filter(content => {
+      // Assuming there is a function or way to determine if the content is not exclusive
+      const blockchainContent = creatorContentBlockchain?.find(element => element.contentId === content?.id);
+      return !blockchainContent?.exclusivity; // Filter out exclusive content
+    }).map((content, index) => (
+      <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 className="mb-1">Content Name: {content?.name}</h5>
+            <video 
+              id={`video${index}`} 
+              className="img-fluid" 
+              controls 
+              style={{ display: activeVideo === index ? 'block' : 'none' }}
+            >
+              <source src={content?.videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            {content?.thumbnailUrl && activeVideo !== index && (
+              <img 
+                src={content?.thumbnailUrl} 
+                alt="Image Preview" 
+                className="img-fluid top-0 start-0 w-40" 
+                style={{ cursor: 'pointer' }} 
+                onClick={() => handleVideoPlay(index)}
+              />
+            )}
+          </div>
+        </div>
+        <div>Comments: {content?.comments}</div>
+        <div>Description: {content?.description}</div>
+        <div>Likes: {content?.likes}</div>
+        <div>Shares: {content?.shares}</div>
+        <div>Upload time: {new Date(creatorContentBlockchain?.find(element => element.contentId === content?.id)?.uploadTimestamp.toNumber() * 1000).toString()}</div>
+        <div>Exclusivity: {creatorContentBlockchain?.find(element => element.contentId === content?.id)?.exclusivity ? "exclusive" : "not exclusive"}</div>
+      </div>
+    ))}
+  </div>
+</main>
 			
 
 

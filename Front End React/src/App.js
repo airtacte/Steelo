@@ -121,6 +121,7 @@ function App() {
   const [roleGranted, setRoleGranted] = useState("");
   const [stakedPound, setStakedPound] = useState(0);
   const [interest, setInterest] = useState(0);
+  const [steeloPrice, setSteeloPrice] = useState(0);
   let isConfirm = false
 
 
@@ -164,6 +165,7 @@ function App() {
 	const stakedPound = await contract.getStakedBalance();
 	const unstakers = await contract.getUnstakers();
 	const interest = await contract.getInterest();
+	const steeloPrice = await contract.steeloPrice();
 //        const creator = await contract.getAllCreator(creatorId);
 //        const creator2 = await contract.getAllCreator2(creatorId);
 //        const creator3 = await contract.getAllCreator3(creatorId);
@@ -206,6 +208,7 @@ function App() {
 	setStakedPound(parseFloat(stakedPound)/(10 ** 18));
 	setCreatorName(creatorName);
 	setInterest(parseFloat(interest/ 100));
+	setSteeloPrice(parseFloat(steeloPrice)/ (10 ** 6));
 //	setCreatorSymbol(creatorSymbol);
 //	setCreatorAddress(creator[0].toString());
 //	setSteezTotalSupply(parseInt(creator[1], 10));
@@ -294,19 +297,11 @@ useEffect(() => {
 	  
 
 
-	  	<Route path="/admin" element={<Admin  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
-
-		<Route path="/creator/:id" element={<Creator  userName={userName} email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
-
-	  	<Route path="/bazaar" element={<Bazaar  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
-	  	<Route path="/mosaic" element={<Mosaic  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
-	  	<Route path="/mosaic/:id" element={<MosaicDetail  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
-		
-	  <Route path="/gallery/:id" element={<Gallery  name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
+	  	<Route path="/admin" element={<Admin  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted}   addressToTransferFrom={addressToTransferFrom} setAddressToTransferFrom={setAddressToTransferFrom}	addressToTransferTo={addressToTransferTo} setAddressToTransferTo={setAddressToTransferTo}  amountToTransferBetween={amountToTransferBetween} setAmountToTransferBetween={setAmountToTransferBetween} symbol={symbol} name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
 	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}
 										 addressToApprove={addressToApprove} setAddressToApprove={setAddressToApprove} 												   amountToApprove={amountToApprove} setAmountToApprove={setAmountToApprove}
-	  									  allowance={allowance}
+	  									  allowance={allowance} setAllowance={setAllowance}
 	  									addressToTransferFrom={addressToTransferFrom} setAddressToTransferFrom={setAddressToTransferFrom}
 	  									addressToTransferTo={addressToTransferTo} setAddressToTransferTo={setAddressToTransferTo}										  amountToTransferBetween={amountToTransferBetween} setAmountToTransferBetween={setAmountToTransferBetween}
 	  									burnAmount={burnAmount} setBurnAmount={setBurnAmount} 
@@ -328,7 +323,41 @@ useEffect(() => {
 	  									
 	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
-										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role} change={change} setChange={setChange}/>} />
+										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role} change={change} setChange={setChange} steeloPrice={steeloPrice}  />} />
+
+		<Route path="/creator/:id" element={<Creator  userName={userName} email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
+
+	  	<Route path="/bazaar" element={<Bazaar  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
+	  	<Route path="/mosaic" element={<Mosaic  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} userId={userId}/>} />
+	  	<Route path="/mosaic/:id" element={<MosaicDetail  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} userId={userId}/>} />
+		
+	  <Route path="/gallery/:id" element={<Gallery  name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
+	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
+	  									amountToTransfer={amountToTransfer} setAmountToTransfer={setAmountToTransfer}
+										 addressToApprove={addressToApprove} setAddressToApprove={setAddressToApprove} 												   amountToApprove={amountToApprove} setAmountToApprove={setAmountToApprove}
+	  									  allowance={allowance} setAllowance={setAllowance}
+	  									addressToTransferFrom={addressToTransferFrom} setAddressToTransferFrom={setAddressToTransferFrom}
+	  									addressToTransferTo={addressToTransferTo} setAddressToTransferTo={setAddressToTransferTo}										  amountToTransferBetween={amountToTransferBetween} setAmountToTransferBetween={setAmountToTransferBetween}
+	  									burnAmount={burnAmount} setBurnAmount={setBurnAmount} 
+	  									mintAmount={mintAmount} setMintAmount={setMintAmount} 
+	  									buyingEther={buyingEther} setBuyingEther={setBuyingEther}
+	  									steeloAmount={steeloAmount} setSteeloAmount={setSteeloAmount}
+	  									 creatorName={creatorName}
+	  									creatorSymbol={creatorSymbol} creatorAddress={creatorAddress} 
+	  									steezTotalSupply={steezTotalSupply} steezCurrentPrice={steezCurrentPrice}
+	  									steezInvested={steezInvested} auctionStartTime={auctionStartTime}
+	  									auctionAnniversary={auctionAnniversary} auctionConcluded={auctionConcluded} 
+	  									preOrderStartTime={preOrderStartTime}
+	  									liquidityPool={liquidityPool} preOrderStarted={preOrderStarted}
+	  									bidAmount={bidAmount} auctionSecured={auctionSecured} totalSteeloPreOrder={totalSteeloPreOrder}  
+	  									investorLength={investorLength} timeInvested={timeInvested} investorAddress={investorAddress}
+	  									creatorId={creatorId} setCreatorId={setCreatorId}
+	  									 creatorIdBid={creatorIdBid} setCreatorIdBid={setCreatorIdBid}
+	  									biddingAmount={biddingAmount} setBiddingAmount={setBiddingAmount} 
+	  									
+	  									answer={answer} setAnswer={setAnswer}
+	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
+										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role} change={change} setChange={setChange}  steeloPrice={steeloPrice}/>} />
 
 
 

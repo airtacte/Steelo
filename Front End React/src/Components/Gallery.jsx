@@ -8,7 +8,8 @@ import {diamondAddress} from "../utils/constants";
 
 
 
-function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, getAllowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound, balanceEther, interest , change , setChange} ) {
+function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound, balanceEther, interest , change , setChange, steeloPrice} ) {
+
 
 	const [roleGranted, setRoleGranted] = useState("");
 	const [addressGranted, setAddressGranted] = useState("");
@@ -122,22 +123,7 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 
 	
 
-	async function transferFrom( from, to, amount ) {
-		if (typeof window.ethereum !== "undefined") {
-      		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			await contract.steeloTransferFrom(from, to, ethers.utils.parseEther(amount.toString()));
-			setTimeout(() => {
-            			setChange(prev => prev + 1);
-        		}, 20000);
-			}
-		}
+	
 
 	async function approve( address, amount ) {
 		if (typeof window.ethereum !== "undefined") {
@@ -168,10 +154,11 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
         			signer
       			);
 		const signerAddress = await signer.getAddress();	
-			const allowed = await contract.steeloAllowance(myAccount, address);
+			const allowed = await contract.steeloAllowance(signerAddress, address);
+//			console.log(parseFloat(allowed)/ 10 ** 18);
 			setTimeout(() => {
             			setChange(prev => prev + 1);
-				setAllowance(parseInt(allowed, 10));
+				setAllowance(parseFloat(allowed) / 10 ** 18);
         		}, 20000);
 			
 		}
@@ -281,13 +268,13 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 					<thead>
 					<tr style={{ color: 'white' }}>
 						<th scope='col'>Total Transaction Count</th>
-						<th scope='col'></th>
+						<th scope='col'>Steelo Current Price</th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
 						<td>{totalTransactionCount}</td>
-						<td></td>
+						<td>{steeloPrice} £</td>
 					</tr>
 					</tbody>
 				</table>
@@ -463,7 +450,30 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 							Approve
 						</button>
 						<label className='input-group mb-4' style={{marginTop: '20px'}}>Allowed: {allowance}</label>
-						<button onClick={() => getAllowance(addressToApprove)} className='btn btn-primary btn-lg btn-block'>
+						
+						</div>
+						
+						
+						</div>
+					</form>
+
+					<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							getAllowance(addressToApprove)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address</label>
+						<input 
+							type='text'
+							placeholder='0x0'
+							onChange={(e) => setAddressToApprove(e.target.value) }
+							required />
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Allowed: {allowance}</label>
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
 							Get Allowance
 						</button>
 						</div>
@@ -471,46 +481,8 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 						
 						</div>
 					</form>
-					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							transferFrom(addressToTransferFrom, addressToTransferTo, amountToTransferBetween)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address From</label>
-						<input 
-							type='text'
-							placeholder='0x0'
-							onChange={(e) => setAddressToTransferFrom(e.target.value) }
-							required />
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address To</label>
-						<input 
-							type='text'
-							placeholder='0x0'
-							onChange={(e) => setAddressToTransferTo(e.target.value) }
-							required />
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setAmountToTransferBetween(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Transfer
-						</button>
 						
-						</div>
-					</form>
-					<div className='card-body text-center' style={{ color: 'blue' }}>
+						<div className='card-body text-center' style={{ color: 'blue' }}>
 						
 					</div>
 				</div>

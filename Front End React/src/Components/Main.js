@@ -97,6 +97,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
        const transactionCount = await contract.getTotalTransactionAmount();
 	const preOrderStatus = await contract.checkPreOrderStatus(id);
 	const sellers = await contract.returnSellers(id);
+	
 //	const Bidders = await contract.FirstAndLast(id);
 //	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
 //	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
@@ -114,21 +115,35 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	setSteezCurrentPrice(parseInt(creator[2], 10)/(10 ** 20));
 	setSteezInvested(parseInt(preOrderStatus[3], 10));
 
-	const timestamp1 = creator2[0].toNumber() * 1000;  // Convert from seconds to milliseconds
+	const timestamp1 = creator2[0].toNumber() * 1000; 
     	const date1 = new Date(timestamp1);
     	const isEpoch1 = date1.getTime() === 0;
 
+	const timestamp2 = creator2[1].toNumber() * 1000;  
+    	const date2 = new Date(timestamp2);
+    	const isEpoch2 = date2.getTime() === 0;
+
+	const timestamp3 = creator3[0].toNumber() * 1000;  
+    	const date3 = new Date(timestamp3);
+    	const isEpoch3 = date3.getTime() === 0;
+
+	const timestamp4 = creator5[2].toNumber() * 1000;  
+    	const date4 = new Date(timestamp4);
+    	const isEpoch4 = date4.getTime() === 0;
+	
+	
+
 	setauctionStartTime(isEpoch1 ? "not started yet" : date1.toString());
-	setauctionAnniversary(new Date(creator2[1].toNumber() * 1000).toString());	
+	setauctionAnniversary(isEpoch2 ? "not started yet" : date2.toString());	
 	setAuctionConlcuded(creator2[2]);
-	setPreOrderStartTime(new Date(creator3[0].toNumber() * 1000).toString());
+	setPreOrderStartTime(isEpoch3 ? "not started yet" : date3.toString());
 	setLiquidityPool(parseInt(creator3[1], 10));
 	setPreOrderStarted(creator3[2]);
 	setBidAmount(parseInt(creator4[0], 10) / (10 ** 18));
 	setAuctionSecured(parseInt(creator4[2]));
 	setTotalSteeloPreOrder(parseInt(creator4[3], 10)/(10 ** 18));
 	setInvestorLength(parseInt(creator5[0], 10));
-	setTimeInvested(new Date(creator5[2].toNumber() * 1000).toString());
+	setTimeInvested(isEpoch4 ? "not started yet" : date4.toString());
 	setInvestorAddress(creator5[3].toString());
 	setTotalTransactionCount(parseInt(transactionCount, 10));
 	setSellers(sellers);
@@ -360,6 +375,11 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 		return(
 			<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
+			{ role && token && email ?
+			<a href={`/mosaic/${id}`} className="btn btn-primary">{creatorDataBackend.name ? creatorDataBackend.name : "unnamed creator"} Mosaic</a>
+				:
+				null
+			}
 			<img src={creatorDataBackend.profile ? creatorDataBackend.profile : userImage} alt="Image Preview" className={styl.previewImage} style={{ borderRadius: '50%'}}/>
 			<p style={{color: "white"}}>{creatorDataBackend.name ? creatorDataBackend.name : "unnamed creator"}</p>
 			
@@ -486,14 +506,14 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 				<table className='table text-muted text-center'>
 					<thead>
 					<tr style={{ color: 'white' }}>
-						<th scope='col'>Total Steelo PreOrder</th>
-						<th scope='col'>Investor Address </th>
+						<th scope='col'>Total Steelo </th>
+						<th scope='col'> </th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
 						<td>{totalSteeloPreOrder}</td>
-						<td>{investorAddress}</td>
+						<td></td>
 					</tr>
 					</tbody>
 				</table>

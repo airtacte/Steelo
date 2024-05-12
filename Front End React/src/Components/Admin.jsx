@@ -8,7 +8,7 @@ import {diamondAddress} from "../utils/constants";
 
 
 
-function Admin ( {  email, token, role } ) {
+function Admin ( {  email, token, role, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, symbol, steeloPrice } ) {
 
 	const [roleGranted, setRoleGranted] = useState("");
 	const [addressGranted, setAddressGranted] = useState("");
@@ -186,6 +186,22 @@ function Admin ( {  email, token, role } ) {
 			await contract.steeloTGE();
 			}
 		}
+	async function transferFrom( from, to, amount ) {
+		if (typeof window.ethereum !== "undefined") {
+      		const provider = new ethers.providers.Web3Provider(window.ethereum);
+      		const signer = provider.getSigner();
+      		const contract = new ethers.Contract(
+        		diamondAddress,
+        		Diamond.abi,
+        		signer
+      		);
+		const signerAddress = await signer.getAddress();
+			await contract.steeloTransferFrom(from, to, ethers.utils.parseEther(amount.toString()));
+			setTimeout(() => {
+            			setBalanceChange(prev => prev + 1);
+        		}, 20000);
+			}
+		}
 
 	const handleChangeRole = (event) => {
 	    setRoleGranted(event.target.value);
@@ -213,13 +229,13 @@ function Admin ( {  email, token, role } ) {
 					<thead>
 					<tr style={{ color: 'white' }}>
 						<th scope='col'>Contract Balance</th>
-						<th scope='col'></th>
+						<th scope='col'>Steelo Current Price</th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
 						<td>{contractBalance} £</td>
-						<td></td>
+						<td>{steeloPrice} £</td>
 					</tr>
 					</tbody>
 				</table>
@@ -388,6 +404,47 @@ function Admin ( {  email, token, role } ) {
 						
 						</div>
 					</form>
+
+<form 
+						onSubmit={ (event) => {
+							event.preventDefault()
+							transferFrom(addressToTransferFrom, addressToTransferTo, amountToTransferBetween)
+						}}
+						className='mb-3'
+						style={{ padding: '15px' }}>
+						<div style={{ borderSpacing:'0 1em'}}>
+						<div className='input-group mb-4'>
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address From</label>
+						<input 
+							type='text'
+							placeholder='0x0'
+							onChange={(e) => setAddressToTransferFrom(e.target.value) }
+							required />
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Address To</label>
+						<input 
+							type='text'
+							placeholder='0x0'
+							onChange={(e) => setAddressToTransferTo(e.target.value) }
+							required />
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount</label>
+						<input 
+							type='number'
+							placeholder='0'
+							onChange={(e) => setAmountToTransferBetween(e.target.value) }
+							required />
+						<div className='input-group-open' style={{backgroundColor: 'none', border: 'none'}}>
+						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: 'none', border: 'none'}}>
+							&nbsp;&nbsp;&nbsp; {symbol}
+						</div>
+						</div>
+						</div>
+						<button type='submit' className='btn btn-primary btn-lg btn-block'>
+							Transfer
+						</button>
+						
+						</div>
+					</form>
+					
 				
 			</div>
 		</main>
