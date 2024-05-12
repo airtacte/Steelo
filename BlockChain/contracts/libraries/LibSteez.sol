@@ -175,18 +175,20 @@ library LibSteez {
 			uint256 length = s.creatorCollections[creatorId].length;
 	
 			for (uint256 i = 0; i < length; i++) {
-				if (s.creatorCollections[creatorId][i].creatorAddress == creator) {
+				if (keccak256(abi.encodePacked(s.creatorCollections[creatorId][i].contentId)) == keccak256(abi.encodePacked(videoId))) {
 					s.creatorCollections[creatorId][i] =  s.creatorCollections[creatorId][length - 1];
 					s.creatorCollections[creatorId].pop();
+					break;
 				}
 			}
 
 			uint256 len = s.collections.length;
 	
-			for (uint256 i = 0; i < length; i++) {
-				if (s.collections[i].creatorAddress == creator) {
+	   		for (uint256 i = 0; i < len; i++) {
+				if (keccak256(abi.encodePacked(s.collections[i].contentId)) == keccak256(abi.encodePacked(videoId))) {
 					s.collections[i] =  s.collections[len - 1];
 					s.collections.pop();
+					break;
 				}
 			}
 			delete s.creatorContent[creatorId][videoId];

@@ -25,12 +25,21 @@ const userRef = collection(db, "user");
 
 router.post('/register/executive', async (req: Request, res: Response) => {
     try {
-        const { email } = req.body;
+        const { email, password } = req.body;
         const executiveQuery = query(userRef, where("email", "==", email));
         const existingExecutives = await getDocs(executiveQuery);
 
         if (!existingExecutives.empty) {
             return res.status(400).send('Executive already exists.');
+        }
+
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        	if (!emailRegex.test(email)) {
+        	    return res.status(400).send('Invalid email format.');
+        }
+
+	if (password.length < 8 || password.length > 12) {
+            return res.status(400).send('Password must be between 8 and 12 characters.');
         }
 
         const executive = { name: req.body.name, email: req.body.email, password: await hashPassword(req.body.password), role: "executive"  }
@@ -52,12 +61,21 @@ router.post('/register/executive', async (req: Request, res: Response) => {
 
 router.post('/register/creator', async (req: Request, res: Response) => {
     try {
-        const { email } = req.body;
+        const { email, password } = req.body;
         const creatorQuery = query(userRef, where("email", "==", email));
         const existingCreators = await getDocs(creatorQuery);
 
         if (!existingCreators.empty) {
             return res.status(400).send('Creator already exists.');
+        }
+
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        	if (!emailRegex.test(email)) {
+        	    return res.status(400).send('Invalid email format.');
+        }
+
+	if (password.length < 8 || password.length > 12) {
+            return res.status(400).send('Password must be between 8 and 12 characters.');
         }
 
         const creator = { name: req.body.name, email: req.body.email, password: await hashPassword(req.body.password), role: "creator"  }
@@ -78,12 +96,21 @@ router.post('/register/creator', async (req: Request, res: Response) => {
 
 router.post('/register/user', async (req: Request, res: Response) => {
     try {
-        const { email } = req.body;
+        const { email, password } = req.body;
         const userQuery = query(userRef, where("email", "==", email));
         const existingUsers = await getDocs(userQuery);
 
         if (!existingUsers.empty) {
             return res.status(400).send('User already exists.');
+        }
+
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        	if (!emailRegex.test(email)) {
+        	    return res.status(400).send('Invalid email format.');
+        }
+
+	if (password.length < 8 || password.length > 12) {
+            return res.status(400).send('Password must be between 8 and 12 characters.');
         }
 
         const user = { name: req.body.name, email: req.body.email, password: await hashPassword(req.body.password), role: "user"  }
@@ -116,7 +143,7 @@ router.post('/login', async (req: Request, res: Response) => {
         const isMatched = await isPassMatched(password, creatorData.password);
 
 	if(!isMatched) {
-		return res.json({ message: "Invalid credentials"})
+		return res.status(401).send("Invalid credentials");
 	}
 	else {
 	return res.json({ 

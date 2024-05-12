@@ -29,25 +29,31 @@ function Baazar ( {  email, token, role } ) {
     }, []);
 
 	useEffect(() => {
-		      const fetchCreatorDataBackend = async () => {
-			            try {
-					            const response = await axios.get(`http://localhost:9000/auth`, {
-							              headers: {
-									                  'Content-Type': 'application/json',
-									                  Authorization: `Bearer ${token}`,
-									                },
-							            });
-
-					            console.log('Creators fetched successfully');
-
-						    setCreatorDataBackend(response.data);
-					          } catch (error) {
-							          console.error('Network error:', error);
-							        }
-			          };
-
-		      fetchCreatorDataBackend();
-		    }, []);
+			  let isMounted = true;  // flag to indicate if the component is still mounted
+	
+			  const fetchCreatorDataBackend = async () => {
+		    try {
+		      const response = await axios.get(`http://localhost:9000/auth`, {
+		        headers: {
+		          'Content-Type': 'application/json',
+		          Authorization: `Bearer ${token}`,
+		        },
+		      });
+		      console.log('Creators fetched successfully');
+		      if (isMounted) {
+		        setCreatorDataBackend(response.data);
+		      }
+		    } catch (error) {
+		      console.error('Network error:', error);
+		    }
+		  };
+	
+		  fetchCreatorDataBackend();
+		
+		  return () => {
+		    isMounted = false;  // set the flag to false when the component unmounts
+		  }
+	}, []);
 
 	
 	
@@ -69,8 +75,8 @@ function Baazar ( {  email, token, role } ) {
 			}
 		}
 
-	console.log(creators[0]);
-	console.log(creatorsDataBackend?.userRecords);
+//	console.log(creators[0]);
+//	console.log(creatorsDataBackend?.userRecords);
 
 	
 
@@ -88,8 +94,9 @@ function Baazar ( {  email, token, role } ) {
 		
 	
 		return(
-			
+				
 			<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+				<a href="/mosaic" className="btn btn-primary"> Mosaic</a>
 			    <div id="content" className="mt-3">
 			        {creators?.map(creator => (
 			            <div key={creator?.creatorId} className="list-group-item list-group-item-action bg-dark text-white mb-2">

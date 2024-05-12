@@ -14,7 +14,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 	  const navigate = useNavigate();
 	  const { id } = useParams();
-	  console.log("creator Id :", id);
+//	  console.log("creator Id :", id);
 	  const [creatorDataBackend, setCreatorDataBackend] = useState("");
 	  const [creatorAddress, setCreatorAddress] = useState("0x0");
   	  const [steezTotalSupply, setSteezTotalSupply] = useState(0);
@@ -46,6 +46,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	  const [buyingAmount, setBuyingAmount] = useState(0);
 	  const [amountToBuy, setAmountToBuy] = useState(0);
 	  const [sellers, setSellers] = useState([]);
+	  const [change, setChange] = useState(0);
 	  
 	
 
@@ -69,7 +70,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 			          };
 
 		      fetchCreatorData();
-		    }, []);
+		    }, [change]);
 
 
 
@@ -97,22 +98,27 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	const preOrderStatus = await contract.checkPreOrderStatus(id);
 	const sellers = await contract.returnSellers(id);
 //	const Bidders = await contract.FirstAndLast(id);
-	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
-	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
-	console.log("auction start time :", new Date(creator2[0].toNumber() * 1000).toString(),"auction anniversery :", new Date(creator2[1].toNumber() * 1000).toString(),"auction concluded :", creator2[2]);
-	console.log("preorder start time :", new Date(creator3[0].toNumber() * 1000).toString(),"liquidity pool :", parseInt(creator3[1], 10),"preorder started :", creator3[2]);
-	console.log("bid Amount :", parseInt(creator4[0], 10),"liquidity pool :", parseInt(creator4[1], 10),"auction secured :", parseInt(creator4[2]), "Total Steelo Preorder :", parseInt(creator4[3], 10)/(10 ** 18));
-      console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
+//	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
+//	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
+//	console.log("auction start time :", new Date(creator2[0].toNumber() * 1000).toString(),"auction anniversery :", new Date(creator2[1].toNumber() * 1000).toString(),"auction concluded :", creator2[2]);
+//	console.log("preorder start time :", new Date(creator3[0].toNumber() * 1000).toString(),"liquidity pool :", parseInt(creator3[1], 10),"preorder started :", creator3[2]);
+//	console.log("bid Amount :", parseInt(creator4[0], 10),"liquidity pool :", parseInt(creator4[1], 10),"auction secured :", parseInt(creator4[2]), "Total Steelo Preorder :", parseInt(creator4[3], 10)/(10 ** 18));
+ //     console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
 
-	console.log("transaction count :", parseInt(transactionCount, 10));
-	console.log("sellers :", sellers);
+//	console.log("transaction count :", parseInt(transactionCount, 10));
+//	console.log("sellers :", sellers);
 	
 	
 	setCreatorAddress(creator[0].toString());
 	setSteezTotalSupply(parseInt(creator[1], 10));
 	setSteezCurrentPrice(parseInt(creator[2], 10)/(10 ** 20));
 	setSteezInvested(parseInt(preOrderStatus[3], 10));
-	setauctionStartTime(new Date(creator2[0].toNumber() * 1000).toString());
+
+	const timestamp1 = creator2[0].toNumber() * 1000;  // Convert from seconds to milliseconds
+    	const date1 = new Date(timestamp1);
+    	const isEpoch1 = date1.getTime() === 0;
+
+	setauctionStartTime(isEpoch1 ? "not started yet" : date1.toString());
 	setauctionAnniversary(new Date(creator2[1].toNumber() * 1000).toString());	
 	setAuctionConlcuded(creator2[2]);
 	setPreOrderStartTime(new Date(creator3[0].toNumber() * 1000).toString());
@@ -150,7 +156,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	          }
 	fetchCreatorDetail();
 
-	}, [role]);
+	}, [role, change]);
 
 
 
@@ -165,7 +171,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 
 	async function bidPreOrder( creatorId, amount ) {
-		console.log("creator Id :", creatorId);
+//		console.log("creator Id :", creatorId);
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -175,11 +181,14 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
         		signer
       		);
 		const signerAddress = await signer.getAddress();
-			await contract.bidPreOrder( creatorId, amount );
+			await contract.bidPreOrder( creatorId, ethers.utils.parseEther(amount.toString()) );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 
-	async function preOrderEnder( creatorId, amount ) {
+	async function preOrderEnder( creatorId ) {
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -189,7 +198,10 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
         		signer
       		);
 		const signerAddress = await signer.getAddress();
-			await contract.PreOrderEnder( creatorId, amount );
+			await contract.PreOrderEnder( creatorId );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 
@@ -214,12 +226,15 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
       		);
 		const signerAddress = await signer.getAddress();
 			await contract.AcceptOrReject( creatorId, answer );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 
 
 		async function launchStarter( creatorId ) {
-		console.log("creator Id :", creatorId);
+//		console.log("creator Id :", creatorId);
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -230,12 +245,15 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
       		);
 		const signerAddress = await signer.getAddress();
 			await contract.launchStarter( creatorId );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 
 
 		async function bidLaunch( creatorId, amount ) {
-		console.log("creator Id :", creatorId);
+//		console.log("creator Id :", creatorId);
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -246,13 +264,16 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
       		);
 		const signerAddress = await signer.getAddress();
 			await contract.bidLaunch( creatorId, amount );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 
 
 
 	async function initiateP2PSell( creatorId, sellingAmount, amountToSell ) {
-		console.log("selling Amount :", sellingAmount);
+//		console.log("selling Amount :", sellingAmount);
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -262,12 +283,14 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
         		signer
       		);
 		const signerAddress = await signer.getAddress();
-			await contract.initiateP2PSell( creatorId, sellingAmount, amountToSell );
+			await contract.initiateP2PSell( creatorId, ethers.utils.parseEther(sellingAmount.toString()), amountToSell );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 
 	async function P2PBuy( creatorId, buyingAmount, amountToBuy ) {
-		console.log()
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -277,7 +300,10 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
         		signer
       		);
 		const signerAddress = await signer.getAddress();
-			await contract.P2PBuy( creatorId, buyingAmount, amountToBuy );
+			await contract.P2PBuy( creatorId, ethers.utils.parseEther(buyingAmount.toString()), amountToBuy );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 	
@@ -286,7 +312,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 
 	async function anniversaryStarter( creatorId ) {
-		console.log("creator Id :", creatorId);
+//		console.log("creator Id :", creatorId);
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -297,12 +323,15 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
       		);
 		const signerAddress = await signer.getAddress();
 			await contract.anniversaryStarter( creatorId );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 
 
 		async function bidAnniversary( creatorId, amount ) {
-		console.log("creator Id :", creatorId);
+//		console.log("creator Id :", creatorId);
 		if (typeof window.ethereum !== "undefined") {
       		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -313,6 +342,9 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
       		);
 		const signerAddress = await signer.getAddress();
 			await contract.bidAnniversary( creatorId, amount );
+			setTimeout(() => {
+            			setChange(prev => prev + 1);
+        		}, 20000);
 		}
 	}
 		
@@ -526,21 +558,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 						className='mb-3'
 						style={{ padding: '15px' }}>
 						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
 						
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
-						<input 
-							type='number'
-							placeholder='0'
-							onChange={(e) => setBiddingAmount(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
-						</div>
-						</div>
-						</div>
 						<button type='submit' className='btn btn-primary btn-lg btn-block'>
 							PreOrder Ender
 						</button>

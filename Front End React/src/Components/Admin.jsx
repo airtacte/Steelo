@@ -20,21 +20,29 @@ function Admin ( {  email, token, role } ) {
 
 
 	useEffect(() => {
-        async function fetchContractBalance() {
-            if (typeof window.ethereum !== "undefined") {
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const contract = new ethers.Contract(
-                    diamondAddress,
-                    Diamond.abi,
-                    provider
-                );
-                const balance = await contract.getContractBalance();
-                setContractBalance(parseFloat(ethers.utils.formatEther(balance)));
-            }
-        }
+    	let isActive = true; // Flag to check component mount status
 
-        fetchContractBalance();
-    }, [balanceChange]);
+    	const fetchContractBalance = async () => {
+    	if (typeof window.ethereum !== 'undefined') {
+        	const provider = new ethers.providers.Web3Provider(window.ethereum);
+        	const contract = new ethers.Contract(
+        		  diamondAddress,
+        		  Diamond.abi,
+        		  provider
+        	);
+        	const balance = await contract.getContractBalance();
+        	if (isActive) {
+        		  setContractBalance(parseFloat(ethers.utils.formatEther(balance)));
+        		}
+      		}
+    	};
+
+    fetchContractBalance();
+
+    return () => {
+      isActive = false; // Cleanup function to prevent state update after unmount
+    };
+  }, [balanceChange]);
 	
 
 
@@ -64,15 +72,16 @@ function Admin ( {  email, token, role } ) {
         		signer
       		);
 		const signerAddress = await signer.getAddress();
-			await contract.withdrawEther(withdrawingPound);
-                	setBalanceChange(prev => prev + 1);
-			}
+			await contract.withdrawEther(ethers.utils.parseEther(withdrawingPound.toString()));
+                	setTimeout(() => {
+            			setBalanceChange(prev => prev + 1);
+        		}, 20000);			}
 			
 		}
 
 
 	async function donatePound( donatingEther ) {
-		console.log("amount to be donated :", parseFloat(ethers.utils.parseEther(donatingEther.toString())));
+//		console.log("amount to be donated :", parseFloat(ethers.utils.parseEther(donatingEther.toString())));
 		if (typeof window.ethereum !== "undefined") {
 		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();
@@ -85,7 +94,9 @@ function Admin ( {  email, token, role } ) {
 			await contract.donateEther({
             			value: ethers.utils.parseEther(donatingEther.toString())
         			});
-                	setBalanceChange(prev => prev + 1);
+                	setTimeout(() => {
+            			setBalanceChange(prev => prev + 1);
+        		}, 20000);
 			}
 		}
 
@@ -185,8 +196,11 @@ function Admin ( {  email, token, role } ) {
 	useEffect(() => {
 		
         if (!token || !email || !role) {
-		    navigate("/");
+		navigate("/");
 	          }
+	if (role != "executive") {
+		navigate("/");
+	}
 
 	}, [email, token, role]);
 		
@@ -199,13 +213,13 @@ function Admin ( {  email, token, role } ) {
 					<thead>
 					<tr style={{ color: 'white' }}>
 						<th scope='col'>Contract Balance</th>
-						<th scope='col'>Balance Change</th>
+						<th scope='col'></th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
 						<td>{contractBalance} £</td>
-						<td>{balanceChange}</td>
+						<td></td>
 					</tr>
 					</tbody>
 				</table>

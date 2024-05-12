@@ -122,20 +122,25 @@ router.put('/profile/:id', isLogin, isCreator,  upload.single("photo"), async (r
 
 
 
-router.get('/video/', async (req: Request, res: Response) => {
+router.get('/video/', async (req, res) => {
     try {
         const querySnapshot = await getDocs(videoRef);
         const records = [];
         querySnapshot.forEach((doc) => {
-            records.push(doc.data());
+            // Include the document ID with the rest of the document data
+            const dataWithId = {
+                id: doc.id,
+                ...doc.data()
+            };
+            records.push(dataWithId);
         });
         return res.send({
-            'video records': records
+            videos: records
         });
     } catch (err) {
         res.status(400).send(err.message);
     }
-})
+});
 
 router.get('/video/one', async (req, res) => {
     try {
@@ -180,12 +185,30 @@ router.get('/video/:id', async (req: Request, res: Response) => {
         }
         const videoRecord = querySnapshot.docs[0].data();
         res.send({
-            'Employee record': videoRecord
+            video: videoRecord
         })
     } catch (error) {
         res.status(400).send(error.message)
     }
 })
+
+router.delete('/video/:id', isLogin, isCreator, async (req, res) => {
+    const videoId = req.params.id;
+
+    try {
+        const q = query(videoRef, where(documentId(), '==', videoId));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            return res.status(404).send(`Video with id ${videoId} does not exist.`);
+        }
+
+        await deleteDoc(doc(videoRef, querySnapshot.docs[0].id));
+        res.send(`Video with id ${videoId} has been successfully deleted.`);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
 
 router.put('/video/:id/like', isLogin, async (req, res) => {
     try {

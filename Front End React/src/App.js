@@ -10,6 +10,8 @@ import Admin from "./Components/Admin";
 import Creator from "./Components/Creator"; 
 import Bazaar from "./Components/Baz"; 
 import Gallery from "./Components/Gallery"; 
+import Mosaic from "./Components/Mosaic"; 
+import MosaicDetail from "./Components/MosaicDetail"; 
 import ParticleSettings from './ParticleSettings';
 import { BrowserRouter as Router, Route, Routes  } from "react-router-dom";
 import {diamondAddress} from "./utils/constants";
@@ -172,16 +174,16 @@ function App() {
 //	const preOrderStatus = await contract.checkPreOrderStatus(creatorId);
 //	const Bidders = await contract.FirstAndLast(creatorId);
         console.log("authors :", authors);
-	console.log("profile :", profileId);
-	console.log("name :", name);
-        console.log("symbol :", symbol);
-        console.log("totalSupply :", parseFloat(totalSupply, 10));
-        console.log("totalToken :", parseFloat(totalToken, 10));
-        console.log("balance :", parseFloat(balance, 10));
-	console.log("staked pound :", parseFloat(stakedPound));
-        console.log("Creator Name :", creatorName);
-	console.log("Unstakers :", unstakers);
-	console.log("your interest :", interest);
+//	console.log("profile :", profileId);
+//	console.log("name :", name);
+//        console.log("symbol :", symbol);
+//        console.log("totalSupply :", parseFloat(totalSupply, 10));
+//        console.log("totalToken :", parseFloat(totalToken, 10));
+//        console.log("balance :", parseFloat(balance, 10));
+//	console.log("staked pound :", parseFloat(stakedPound));
+//        console.log("Creator Name :", creatorName);
+//	console.log("Unstakers :", unstakers);
+//	console.log("your interest :", interest);
 //       console.log("Creator Symbol :", creatorSymbol);
 //	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
 //	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),
@@ -192,7 +194,7 @@ function App() {
 //      console.log("investor length :", parseInt(creator5[0], 10),"steelo Invested :", parseInt(creator5[1], 10),"time invested :", parseInt(creator5[2]), "address of investor :", creator5[3].toString());
 //	console.log("popping index :", parseInt(index[0]), "poppin address :", index[1].toString(), "popping price :", parseInt(index[2], 10));
 
-	console.log("transaction count :", parseInt(transactionCount, 10));
+//	console.log("transaction count :", parseInt(transactionCount, 10));
 	
 	setName(name);
 	setProfileId(profileId);
@@ -234,7 +236,9 @@ function App() {
   }
 
 
-       window.ethereum.on('accountsChanged', async function (accounts) {
+	
+
+       window.ethereum.on('accountsChanged', function (accounts) {
 	        localStorage.removeItem('email');
 		localStorage.removeItem('name');
 		localStorage.removeItem('role');
@@ -243,7 +247,8 @@ function App() {
 		setToken("");
 		setRole("");
 		setUserName("");
-                await fetchDiamond();
+	        setUserId("");
+                fetchDiamond();
 		
 	});
 
@@ -273,7 +278,7 @@ useEffect(() => {
 			<div style={{ position: 'absolute' }}>
 			<ParticleSettings />
 			</div>
-			<Navbar account={myAccount} userId={userId} role={role} setRole={setRole} setEmail={setEmail} setToken={setToken} setUserId={setUserId} userName={userName} setUserName={setUserName}/>
+			<Navbar account={myAccount} userId={userId} role={role} setRole={setRole} setEmail={setEmail} setToken={setToken} setUserId={setUserId} userName={userName} setUserName={setUserName} token={token} userName={userName} email={email} />
 			<div className="container-fluid mt-5" >
 				<div className='row'>
 	  			<Router>
@@ -294,6 +299,8 @@ useEffect(() => {
 		<Route path="/creator/:id" element={<Creator  userName={userName} email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 
 	  	<Route path="/bazaar" element={<Bazaar  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
+	  	<Route path="/mosaic" element={<Mosaic  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
+	  	<Route path="/mosaic/:id" element={<MosaicDetail  email={email} token={token}  role={role} userId={userId}  setRoleGranted={setRoleGranted} roleGranted={roleGranted} />} />
 		
 	  <Route path="/gallery/:id" element={<Gallery  name={name} symbol={symbol} totalSupply={totalSupply} totalTokens={totalTokens} balance={balance}
 	  									balanceEther={balanceEther} addressTo={addressTo} setAddressTo={setAddressTo}
@@ -321,7 +328,7 @@ useEffect(() => {
 	  									
 	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
-										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role}/>} />
+										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role} change={change} setChange={setChange}/>} />
 
 
 

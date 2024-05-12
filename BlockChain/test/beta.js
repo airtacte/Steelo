@@ -3710,6 +3710,140 @@ it('get staked ETH balance before staking:', async () => {
 	console.log("Creator 2:", parseFloat(creator[1].steezPrice), parseFloat(creator[1].totalInvestors), creator[1].steezStatus);
 	
     })
+
+	it('should create Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let exclusivity = true;
+		let videoId = "abcdYUGfghjh";
+   		await Steez8.connect(addr8).createContent( videoId, exclusivity);
+		console.log("Content Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not create successully :", error.message);
+	    }
+
+    })
+	it('should create Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let exclusivity = true;
+		let videoId = "bcdefhYUGfghjh";
+   		await Steez8.connect(addr8).createContent( videoId, exclusivity);
+		console.log("Content Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not create successully :", error.message);
+	    }
+
+    })
+
+     	it('should create Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let exclusivity = true;
+		let videoId = "cdefghYUGfghjh";
+   		await Steez8.connect(addr8).createContent( videoId, exclusivity);
+		console.log("Content Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not create successully :", error.message);
+	    }
+
+    })
+     	it('should create Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let exclusivity = true;
+		let videoId = "defhijYUGfghjh";
+   		await Steez8.connect(addr8).createContent( videoId, exclusivity);
+		console.log("Content Created Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not create successully :", error.message);
+	    }
+
+    })
+
+        it('fetch all creator Content', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+	let creatorId = "abcd6XMcdTJQH2nsBLYF";
+   	const creatorContent = await Steez8.connect(addr2).getAllCreatorContents( creatorId);
+	console.log("Creator Content:", creatorContent);
+	
+    })
+	it('should delete Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let videoId = "abcdYUGfghjh";
+   		await Steez8.connect(addr8).deleteContent( videoId);
+		console.log("Content deleted Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not delete successully :", error.message);
+	    }
+
+    })
+
+	it('should delete Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let videoId = "bcdefhYUGfghjh";
+   		await Steez8.connect(addr8).deleteContent( videoId);
+		console.log("Content deleted Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not delete successully :", error.message);
+	    }
+
+    })
+	it('should delete Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let videoId = "cdefghYUGfghjh";
+   		await Steez8.connect(addr8).deleteContent( videoId);
+		console.log("Content deleted Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not delete successully :", error.message);
+	    }
+
+    })
+
+	it('should delete Content', async () => { 
+  
+	    try {
+		const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+		let videoId = "defhijYUGfghjh";
+   		await Steez8.connect(addr8).deleteContent( videoId);
+		console.log("Content deleted Successulyy");
+	    }
+	    catch (error) {
+		console.error("Content Did not delete successully :", error.message);
+	    }
+
+    })
+    
+    it('fetch all creator Content', async() => {
+  
+	const Steez8 = await ethers.getContractAt('STEEZ8Facet', diamondAddress);
+	let creatorId = "abcd6XMcdTJQH2nsBLYF";
+   	const creatorContent = await Steez8.connect(addr2).getAllCreatorContents( creatorId);
+	console.log("Creator Content:", creatorContent);
+	
+    })    
+     
+     
+        
+    
     
 
 

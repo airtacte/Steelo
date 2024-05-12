@@ -2,7 +2,7 @@ import React from 'react';
 import bank from '../bank-2.png';
 import styles from '../Components/Signup.module.css';
 
-function Navbar({ account, setEmail, setToken, setUserId, userId, role, setRole, userName, setUserName }) {
+function Navbar({ account, setEmail, setToken, setUserId, userId, role, setRole, userName, setUserName, token, email }) {
 
 	function remover() {
 		      localStorage.removeItem('email');
@@ -19,11 +19,21 @@ function Navbar({ account, setEmail, setToken, setUserId, userId, role, setRole,
     return (
         <nav className='navbar navbar-dark fixed-top shadow p-0' style={{ backgroundColor: 'black', height: '50px' }}>
             <div className='navbar-brand col-sm-3 col-md-2 mr-0' style={{ color: 'white' }}>
-                <button onClick={remover} className="navbar-toggler">Log Out</button>
-	    	<a href={`/gallery/${userId}`} className="navbar-brand">
-	    		Gallery
-	    	</a>
-                <img src={bank} alt='Bank Logo' width='50' style={{ marginTop: '-10px' }} className='d-inline-block align-top' />
+	        {
+			token && email && userName ? (
+                	<button onClick={remover} className="navbar-toggler">Log Out</button>
+			)
+			: null
+		}
+	    	{
+			userId ? (
+    				<a href={`/gallery/${userId}`} className="navbar-brand">
+      				Gallery
+    				</a>
+			)
+  			: null
+		}
+                <a href="/"><img src={bank} alt='Bank Logo' width='50' style={{ marginTop: '-10px' }} className='d-inline-block align-top' /></a>
                 <span>Steelo Defi</span>
             </div>
             {account && (

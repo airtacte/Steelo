@@ -151,9 +151,10 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 
 
 				try {
-				    console.log("role :", roleData);
+//				    console.log("role :", roleData);
 			            if (roleData == "executive") {
 					try {
+						await createSteeloUser( userIdData);
 						await initiate();
 			      	    		navigate(`/admin`);
 					} catch (error) {
@@ -195,7 +196,7 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
         				}
         				throw innerError;
     				}
-				    console.log(response);
+//				    console.log(response);
 			      	    localStorage.setItem('name', userNameData);
 			      	    localStorage.setItem('email', email);
 			            localStorage.setItem('token', token);
@@ -207,23 +208,24 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 			            setRole(roleData);
 			            setUserId(userIdData)
 			            setUserName(userNameData);
-			            console.log("token :", token);
-			      	    console.log("role :", roleData);
-			      	    console.log("userId :", userIdData);
-			            console.log("userName", userNameData);
+//			            console.log("token :", token);
+//			      	    console.log("role :", roleData);
+//			      	    console.log("userId :", userIdData);
+//			            console.log("userName", userNameData);
 
 
 
 
 			          } catch (err) {
 					        if (!err?.response) {
-//						        setErrMsg('No Server Response');
+						        setErrMsg(err?.response?.data);
 						} else if (err.response.status === 400) {
-						        setErrMsg('Invalid Credentials or account already exists');
+							console.log(err?.response?.data);
+						        setErrMsg(err?.response?.data);
 						} else if (err.response.status === 401) {
-						        setErrMsg('Unauthorized');
+						        setErrMsg(err?.response?.data);
 						} else {
-						        setErrMsg('Login Failed');
+						        setErrMsg(err?.response?.data);
 						}
 					        if (errRef.current) {
 							        errRef.current.focus();

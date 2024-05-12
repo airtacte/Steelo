@@ -35,7 +35,7 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 	  const [errMsg, setErrMsg] = useState('');
 	  const [success, setSuccess] = useState(false);
 	  const navigate = useNavigate();
-	  console.log("userId :", userId);
+//	  console.log("userId :", userId);
 
 	  useEffect(() => {
 		      if (email && token && role) {
@@ -156,11 +156,11 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 		        if (!err?.response) {
 //			      setErrMsg('No Server Response');
 		      } else if (err.response.status === 400) {
-		              setErrMsg('Invalid Credentials or Account does not exist');
+		              setErrMsg(err?.response?.data);
 		      } else if (err.response.status === 401) {
-		              setErrMsg('Unauthorized');
+		              setErrMsg(err?.response?.data);
 		      } else {
-		              setErrMsg('Login Failed');
+		              setErrMsg(err?.response?.data);
 		      }
 					        if (errRef.current) {
 							        errRef.current.focus();
