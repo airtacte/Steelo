@@ -227,10 +227,10 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 
 	async function AcceptOrReject( creatorId, answer ) {
-		if ( answer == "yes") {
+		if ( answer == "Yes") {
 			answer = true
 		}
-		else if (answer == "no"){
+		else if (answer == "No"){
 			answer = false;
 		}
 		else {
@@ -615,35 +615,34 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 
 					<form 
-						onSubmit={ (event) => {
-							event.preventDefault()
-							AcceptOrReject(id, answer)
-						}}
-						className='mb-3'
-						style={{ padding: '15px' }}>
-						<div style={{ borderSpacing:'0 1em'}}>
-						<div className='input-group mb-4'>
-						
-						
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Answer</label>
-						<input
-							
-							type='text'
-							placeholder='your answer'
-							onChange={(e) => setAnswer(e.target.value) }
-							required />
-						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
-						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; 
-						</div>
-						</div>
-						</div>
-						<button type='submit' className='btn btn-primary btn-lg btn-block'>
-							Accept Or Reject Preorder
-						</button>
-						
-						</div>
-					</form>
+					    onSubmit={ (event) => {
+					        event.preventDefault();
+					        AcceptOrReject(id, answer);
+					    }}
+					    className='mb-3'
+					    style={{ padding: '15px' }}>
+					    <div style={{ borderSpacing:'0 1em'}}>
+					        <div className='input-group mb-4'>
+					            <label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Answer</label>
+					            <select
+					                onChange={(e) => setAnswer(e.target.value)}
+					                required
+					                className='form-control'>
+					                <option value="">Select an answer</option>
+					                <option value="Yes">Yes</option>
+					                <option value="No">No</option>
+						            </select>
+					            <div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
+					                <div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
+					                    &nbsp;&nbsp;&nbsp; 
+					                </div>
+						            </div>
+						        </div>
+						        <button type='submit' className='btn btn-primary btn-lg btn-block'>
+						            Accept Or Reject Preorder
+						        </button>
+							    </div>
+							</form>
 
 
 
@@ -667,7 +666,7 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 					
 
 
-						<label className='input-group mb-4' style={{marginTop: '20px'}}>Bidding Amount</label>
+						<label className='input-group mb-4' style={{marginTop: '20px'}}>Amount Of Steez</label>
 						<input 
 							type='number'
 							placeholder='0'
@@ -675,7 +674,6 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 							required />
 						<div className='input-group-open' style={{backgroundColor: '#ffffff', border: 'none'}}>
 						<div className='input-group-text' style={{ height: '70px', marginLeft: '40px', backgroundColor: '#ffffff', border: 'none'}}>
-							&nbsp;&nbsp;&nbsp; {symbol}
 						</div>
 						</div>
 						</div>
