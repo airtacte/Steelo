@@ -8,7 +8,7 @@ import {diamondAddress} from "../utils/constants";
 
 
 
-function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound, balanceEther, interest , change , setChange, steeloPrice} ) {
+function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance, addressTo, setAddressTo, amountToTransfer, setAmountToTransfer,addressToApprove, setAddressToApprove, amountToApprove, setAmountToApprove, approve, allowance, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, transferFrom, burnAmount, setBurnAmount, mintAmount, setMintAmount, burn, mint, buySteelo, buyingEther, setBuyingEther, steeloAmount, setSteeloAmount, getEther, initiate, initiateSteez, creatorName, creatorSymbol, creatorAddress , steezTotalSupply, steezCurrentPrice, steezInvested, createSteez, auctionStartTime, auctionAnniversary, auctionConcluded , preOrderStartTime, liquidityPool, preOrderStarted , bidAmount , auctionSecured, totalSteeloPreOrder, investorLength, timeInvested, investorAddress, creatorId, setCreatorId, initializePreOrder, bidPreOrder, creatorIdBid, setCreatorIdBid, biddingAmount, setBiddingAmount, answer, setAnswer, preOrderEnder, AcceptOrReject, totalTransactionCount, lowestBid, highestBid, email, token, role, setAllowance, stakedPound, balanceEther, interest , change , setChange, steeloPrice, unstakers} ) {
 
 
 	const [roleGranted, setRoleGranted] = useState("");
@@ -26,7 +26,7 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 	const navigate = useNavigate();
 	const { id } = useParams();
 //	console.log("user Id :", id);
-
+//	console.log("unstakers :", unstakers);
 
 
 	
@@ -56,6 +56,8 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 
 	
 
+
+		
 
 	
 
@@ -234,20 +236,6 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 			<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
 			<div id='content' className='mt-3'>
 			
-		<table className='table text-muted text-center'>
-					<thead>
-					<tr style={{ color: 'white' }}>
-						<th scope='col'>Total Supply</th>
-						<th scope='col'>Total Tokens</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr style={{ color: 'white' }}>
-						<td>{totalSupply}</td>
-						<td>{totalTokens}</td>
-					</tr>
-					</tbody>
-				</table>
 				<table className='table text-muted text-center'>
 					<thead>
 					<tr style={{ color: 'white' }}>
@@ -267,13 +255,11 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 				<table className='table text-muted text-center'>
 					<thead>
 					<tr style={{ color: 'white' }}>
-						<th scope='col'>Total Transaction Count</th>
 						<th scope='col'>Steelo Current Price</th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
-						<td>{totalTransactionCount}</td>
 						<td>{steeloPrice} £</td>
 					</tr>
 					</tbody>
@@ -292,6 +278,25 @@ function Gallery ( {  transfer, name, symbol, totalSupply, totalTokens, balance,
 					</tr>
 					</tbody>
 				</table>
+
+
+				<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+				    <div id="content" className="mt-3">
+				        {unstakers?.map((unstaker, index) => (
+				            <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
+				                    <div className="d-flex justify-content-between align-items-center">
+ 				                       <div>
+				                            <h5 className="mb-1">Unstaker Address :{unstaker?.account}</h5>
+				                        </div>
+				                    </div>
+		        	            <div>Amount to Unstake :{parseFloat(unstaker?.amount)/ (10 ** 18)} £</div>
+				            </div>
+				        ))}
+				    </div>
+				</main>
+				
+
+
 				<div className='card mb-2' style={{opacity:'.9'}}>
 					<form 
 						onSubmit={ (event) => {

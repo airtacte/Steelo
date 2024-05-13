@@ -182,13 +182,13 @@ function Mosaic (  { items, user, setlogin, setSuccess, search, setSearch, setSe
     }).map((content, index) => (
       <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
         <div className="d-flex justify-content-between align-items-center">
-          <div>
+          <div className="w-100">
             <h5 className="mb-1">Content Name: {content?.name}</h5>
             <video 
               id={`video${index}`} 
               className="img-fluid" 
               controls 
-              style={{ display: activeVideo === index ? 'block' : 'none' }}
+              style={{ display: activeVideo === index ? 'block' : 'none', width: '100%' }}
             >
               <source src={content?.videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
@@ -197,7 +197,7 @@ function Mosaic (  { items, user, setlogin, setSuccess, search, setSearch, setSe
               <img 
                 src={content?.thumbnailUrl} 
                 alt="Image Preview" 
-                className="img-fluid top-0 start-0 w-40" 
+                className="img-fluid w-100" 
                 style={{ cursor: 'pointer' }} 
                 onClick={() => handleVideoPlay(index)}
               />

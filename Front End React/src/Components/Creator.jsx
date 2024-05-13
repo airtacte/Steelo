@@ -33,6 +33,7 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 	const [creatorContentData, setCreatorContentData] = useState([]);
 	const [isExclusive, setIsExclusive] = useState(false);
 	const [creatorContentBlockchain, setCreatorContentBlockchain] = useState([]);
+	const [steezTransaction, setSteezTransaction] = useState(0);
 
 
 //	console.log(creatorContentBlockchain);
@@ -51,24 +52,35 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 
 
 	useEffect(() => {
-        	getAllCreatorContentsBlockchain( id ) 
-    }, []);
+	    let isMounted = true; // Flag to track mount status
+	
+	    const getAllCreatorContentsBlockchain = async (creatorId) => {
+	        if (typeof window.ethereum !== "undefined") {
+	       	     const provider = new ethers.providers.Web3Provider(window.ethereum);
+	            const signer = provider.getSigner();
+	            const contract = new ethers.Contract(
+	                diamondAddress,
+	                Diamond.abi,
+	                signer
+	       	     );
+	            try {
+	       	         const creatorsData = await contract.getAllCreatorContents(creatorId);
+	                if (isMounted) {
+	                    setCreatorContentBlockchain(creatorsData);
+	                }
+		            } catch (error) {
+		                console.error("Failed to fetch blockchain data:", error);
+		            }
+		        }
+	    };
 
-	async function getAllCreatorContentsBlockchain( creatorId) {
-		if (typeof window.ethereum !== "undefined") {
-		const provider = new ethers.providers.Web3Provider(window.ethereum);
-      		const signer = provider.getSigner();
-      		const contract = new ethers.Contract(
-        		diamondAddress,
-        		Diamond.abi,
-        		signer
-      		);
-		const signerAddress = await signer.getAddress();
-			const creatorsData = await contract.getAllCreatorContents( creatorId );
-			setCreatorContentBlockchain(creatorsData);
-			}
-		}
+    	getAllCreatorContentsBlockchain(id);
+	returnSteezTransaction( id );
 
+    return () => {
+        isMounted = false; // Set the flag to false when the component unmounts
+    }
+}, [id]);
 
 
 
@@ -352,6 +364,21 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 			}
 		}
 
+		async function returnSteezTransaction( profileId) {
+			if (typeof window.ethereum !== "undefined") {
+      			const provider = new ethers.providers.Web3Provider(window.ethereum);
+      			const signer = provider.getSigner();
+      			const contract = new ethers.Contract(
+        			diamondAddress,
+        			Diamond.abi,
+        			signer
+      			);
+			const signerAddress = await signer.getAddress();
+				const transaction = await contract.returnSteezTransaction( profileId );
+				setSteezTransaction(parseFloat(transaction));
+			}
+		}
+
 
 	const handleVideoPlay = (index) => {
     		setActiveVideo(index);
@@ -381,7 +408,23 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 		      
 		      {email && token ? (
 			              <>
-			      	<div className={styl.uploadbody}>
+
+
+			      <table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Total Steez Transaction</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{steezTransaction}</td>
+					</tr>
+					</tbody>
+				</table>
+
+
+			      	<div className={styl.uploadbody} style={{marginTop: '100px'}}>
 			            <h1 className={styl.uploadtitle}>Update Profile</h1>
 			      	<form className="mb-3" onSubmit={handleUpdate}>
 			            <label className={styl.labeltitle}>Profile Name</label>
@@ -493,14 +536,14 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 			        {creatorContentData?.map((content, index) => (
 			            <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
 			                    <div className="d-flex justify-content-between align-items-center">
- 			                       <div>
+ 			                       <div className="w-100">
 			                            <h5 className="mb-1">Content Name :{content?.name}</h5>
 						    
 							<video 
 				                  id={`video${index}`} 
 				                  className="img-fluid" 
 			                  controls 
-	                  style={{ display: activeVideo === index ? 'block' : 'none' }}
+	                  style={{ display: activeVideo === index ? 'block' : 'none', width: '100%' }}
 	                >
 	                  <source src={content?.videoUrl} type="video/mp4" />
 	                  Your browser does not support the video tag.
@@ -509,7 +552,7 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 	                  <img 
 	       	             src={content?.thumbnailUrl} 
 	       	             alt="Image Preview" 
-	       	             className="img-fluid top-0 start-0 w-40" 
+	       	             className="img-fluid w-100" 
 	                    style={{ cursor: 'pointer' }} 
 		       	             onClick={() => handleVideoPlay(index)}
 		                  />
@@ -538,7 +581,6 @@ function Creator (  { items, user, setlogin, setSuccess, search, setSearch, setS
 				</button>
 				</div>
 				<div id='content' className='mt-3'>
-					Executive Page
 				<button onClick={() => initializePreOrder( id )}  className='btn btn-primary btn-lg btn-block'>
 					 	Initiate PreOrder
 					</button>

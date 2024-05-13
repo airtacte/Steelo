@@ -122,6 +122,7 @@ function App() {
   const [stakedPound, setStakedPound] = useState(0);
   const [interest, setInterest] = useState(0);
   const [steeloPrice, setSteeloPrice] = useState(0);
+  const [unstakers, setUnstakers] = useState([]);
   let isConfirm = false
 
 
@@ -163,7 +164,7 @@ function App() {
         const totalToken = await contract.steeloTotalTokens();
         const balance = await contract.steeloBalanceOf(signerAddress);
 	const stakedPound = await contract.getStakedBalance();
-	const unstakers = await contract.getUnstakers();
+	const unstakersData = await contract.getUnstakers();
 	const interest = await contract.getInterest();
 	const steeloPrice = await contract.steeloPrice();
 //        const creator = await contract.getAllCreator(creatorId);
@@ -209,6 +210,7 @@ function App() {
 	setCreatorName(creatorName);
 	setInterest(parseFloat(interest/ 100));
 	setSteeloPrice(parseFloat(steeloPrice)/ (10 ** 6));
+	setUnstakers(unstakersData);
 //	setCreatorSymbol(creatorSymbol);
 //	setCreatorAddress(creator[0].toString());
 //	setSteezTotalSupply(parseInt(creator[1], 10));
@@ -357,7 +359,7 @@ useEffect(() => {
 	  									
 	  									answer={answer} setAnswer={setAnswer}
 	  									totalTransactionCount={totalTransactionCount} lowestBid={lowestBid} highestBid={highestBid} 
-										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role} change={change} setChange={setChange}  steeloPrice={steeloPrice}/>} />
+										email={email} token={token} stakedPound={stakedPound} interest={interest} role={role} change={change} setChange={setChange}  steeloPrice={steeloPrice} unstakers={unstakers}/>} />
 
 
 

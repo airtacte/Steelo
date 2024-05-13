@@ -8,7 +8,7 @@ import {diamondAddress} from "../utils/constants";
 
 
 
-function Admin ( {  email, token, role, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, symbol, steeloPrice } ) {
+function Admin ( {  email, token, role, addressToTransferFrom, setAddressToTransferFrom, addressToTransferTo, setAddressToTransferTo, amountToTransferBetween, setAmountToTransferBetween, symbol, steeloPrice, totalSupply, totalTokens, totalTransactionCount } ) {
 
 	const [roleGranted, setRoleGranted] = useState("");
 	const [addressGranted, setAddressGranted] = useState("");
@@ -225,6 +225,34 @@ function Admin ( {  email, token, role, addressToTransferFrom, setAddressToTrans
 			<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
 			<div id='content' className='mt-3'>
 				Executive Page
+			<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Total Supply</th>
+						<th scope='col'>Total Tokens</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{totalSupply}</td>
+						<td>{totalTokens}</td>
+					</tr>
+					</tbody>
+				</table>
+			<table className='table text-muted text-center'>
+					<thead>
+					<tr style={{ color: 'white' }}>
+						<th scope='col'>Total Transaction Count</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr style={{ color: 'white' }}>
+						<td>{totalTransactionCount}</td>
+					</tr>
+					</tbody>
+				</table>
+			
+			
 			<table className='table text-muted text-center'>
 					<thead>
 					<tr style={{ color: 'white' }}>

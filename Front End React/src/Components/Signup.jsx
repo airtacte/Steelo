@@ -56,7 +56,6 @@ function SignUp({ email, token, formData, setFormData, loggedin, setlogin, respo
 		    }, [email, token, role, userId]);
 
 	  useEffect(() => {
-		      setErrMsg('');
 		    }, [formData.name, formData.email, formData.password]);
 
 	  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

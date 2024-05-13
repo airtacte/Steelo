@@ -35,12 +35,13 @@ function MosaicDetail (  { items, user, setlogin, setSuccess, search, setSearch,
 	const [creatorContentBlockchain, setCreatorContentBlockchain] = useState([]);
 	const [investors, setInvestors] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState("");
 
 
 
 //	console.log(creatorContentBlockchain);
 //	console.log("invesotrs :", investors);
-	console.log(userId);
+//	console.log(userId);
 
 
 
@@ -51,7 +52,7 @@ function MosaicDetail (  { items, user, setlogin, setSuccess, search, setSearch,
     }, [id]);
 
 	const checkLoading = () => {
-   		 if (creatorContentBlockchain.length > 0 && investors.length > 0) {
+   		 if (creatorContentBlockchain.length > 0 || investors.length > 0) {
    		   setIsLoading(false);
     }
   };
@@ -135,7 +136,7 @@ function MosaicDetail (  { items, user, setlogin, setSuccess, search, setSearch,
 	  return () => {
 	    isMounted = false;  // set flag to false when component unmounts
 	  }
-	}, [token, investors]);
+	}, [token, investors, creatorContentBlockchain]);
 
 	useEffect(() => {
 		
@@ -193,6 +194,11 @@ function MosaicDetail (  { items, user, setlogin, setSuccess, search, setSearch,
 
 	
 		<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+		{error ? (
+			<div className="alert alert-danger" role="alert">
+        		Error: {error}
+    			</div>
+		) : null}
         <div id="content" className="mt-3">
           {creatorContentData?.map((content, index) => {
             const isInvestor = investors.some(element => element.investorId === userId);
@@ -202,14 +208,14 @@ function MosaicDetail (  { items, user, setlogin, setSuccess, search, setSearch,
             return shouldDisplay && (
               <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
                 <div className="d-flex justify-content-between align-items-center">
-                  <div>
+                  <div className="w-100">
                     <h5 className="mb-1">Content Name: {content?.name}</h5>
-                    <video id={`video${index}`} className="img-fluid" controls style={{ display: activeVideo === index ? 'block' : 'none' }}>
+                    <video id={`video${index}`} className="img-fluid" controls style={{ display: activeVideo === index ? 'block' : 'none', width: '100%' }}>
                       <source src={content?.videoUrl} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                     {content?.thumbnailUrl && activeVideo !== index && (
-                      <img src={content?.thumbnailUrl} alt="Image Preview" className="img-fluid top-0 start-0 w-100" style={{ cursor: 'pointer' }} onClick={() => handleVideoPlay(index)} />
+                      <img src={content?.thumbnailUrl} alt="Image Preview" className="img-fluid w-100" style={{ cursor: 'pointer' }} onClick={() => handleVideoPlay(index)} />
                     )}
                   </div>
                 </div>

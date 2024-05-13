@@ -47,6 +47,8 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	  const [amountToBuy, setAmountToBuy] = useState(0);
 	  const [sellers, setSellers] = useState([]);
 	  const [change, setChange] = useState(0);
+	  const [error, setError] = useState("");
+	  const [investors, setInvestors] = useState([]);
 	  
 	
 
@@ -97,8 +99,10 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
        const transactionCount = await contract.getTotalTransactionAmount();
 	const preOrderStatus = await contract.checkPreOrderStatus(id);
 	const sellers = await contract.returnSellers(id);
+	const investorsData = await contract.getAllInvestors( id );
+//	console.log(investorsData);	
 	
-//	const Bidders = await contract.FirstAndLast(id);
+	const Bidders = await contract.FirstAndLast(id);
 //	console.log("creator address :", creator[0].toString(), "total supply :",parseInt(creator[1], 10), "current price :", parseInt(creator[2], 10));
 //	console.log("bid Amount :", parseInt(preOrderStatus[0], 10),"steelo balance :", parseInt(preOrderStatus[1], 10),"total steelo  :", parseInt(preOrderStatus[2], 10),		"steez invested :", parseInt(preOrderStatus[3], 10), "lqiuidity pool :", parseInt(preOrderStatus[4], 10));
 //	console.log("auction start time :", new Date(creator2[0].toNumber() * 1000).toString(),"auction anniversery :", new Date(creator2[1].toNumber() * 1000).toString(),"auction concluded :", creator2[2]);
@@ -147,11 +151,12 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 	setInvestorAddress(creator5[3].toString());
 	setTotalTransactionCount(parseInt(transactionCount, 10));
 	setSellers(sellers);
+	setInvestors( investorsData );
 	
 //	console.log("minimum allowed :", (parseInt(Bidders[1], 10) + (10 * 10 ** 18)), "minimum bid price :", parseInt(Bidders[1], 10), "highest bid :", parseInt(Bidders[2], 10));
-//	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
-//	setLowestBid(parseInt(Bidders[1], 10));
-//	setHighestBid(parseInt(Bidders[2], 10));
+	setHighestBid((parseInt(Bidders[1], 10) + (10 * 10 ** 18)));
+	setLowestBid(parseInt(Bidders[1], 10));
+	setHighestBid(parseInt(Bidders[2], 10));
 	
       } catch (error) {
         console.log("Blockchain interaction failed :", error);
@@ -375,6 +380,11 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 
 		return(
 			<main role='main' className='col-lg-12 ml-auto mr-auto' style={{ maxWidth: '600px', minHeight: '100vm' }}>
+			{error ? (
+				<div className="alert alert-danger" role="alert">
+        			Error: {error}
+    				</div>
+			) : null}
 			{ role && token && email ?
 			<a href={`/mosaic/${id}`} className="btn btn-primary">{creatorDataBackend.name ? creatorDataBackend.name : "unnamed creator"} Mosaic</a>
 				:
@@ -479,13 +489,13 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 					<thead>
 					<tr style={{ color: 'white' }}>
 						<th scope='col'>Total Investors</th>
-						<th scope='col'> Bid Time</th>
+						<th scope='col'></th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
 						<td>{investorLength} </td>
-						<td>{timeInvested}</td>
+						<td></td>
 					</tr>
 					</tbody>
 				</table>
@@ -520,22 +530,39 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 				<table className='table text-muted text-center'>
 					<thead>
 					<tr style={{ color: 'white' }}>
-						<th scope='col'>Highest Bid</th>
-						<th scope='col'>Lowest Bid</th>
+						<th scope='col'></th>
+						<th scope='col'></th>
 						<th scope='col'>Minimum Bid Allowed</th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr style={{ color: 'white' }}>
-						<td>{highestBid / 10 ** 18}</td>
-						<td>{lowestBid / 10 ** 18}</td>
+						<td></td>
+						<td></td>
 						<td>{(auctionSecured == 5 ? lowestBid + (10 ** 19) : lowestBid ) / 10 ** 18}</td>
 					</tr>
 					</tbody>
 				</table>
 				
 				
-								
+			
+				<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+				    <div id="content" className="mt-3">
+				        {investors?.map((investor, index) => (
+				            <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
+				                    <div className="d-flex justify-content-between align-items-center">
+ 				                       <div>
+				                            <h5 className="mb-1">Investor Address :{investor?.walletAddress}</h5>
+				                        </div>
+				                    </div>
+		        	            <div>Steelo Invested :{parseFloat(investor?.steeloInvested)/ (10 ** 18)}</div>
+		        	            <div>Investor Id :{investor?.investorId} {symbol}</div>
+					    <div>Time Invested : {new Date(investor?.timeInvested.toNumber() * 1000).toString()}</div>
+				            </div>
+				        ))}
+				    </div>
+				</main>
+				
 				
 				
 				<div className='card mb-2' style={{opacity:'.9'}}>
