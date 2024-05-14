@@ -508,6 +508,12 @@ library LibSteez {
 							if (s.steez[creatorId].auctionSlotsSecured > 0) {
 								s.steez[creatorId].auctionSlotsSecured -= 1;
 							}
+							for (uint i = 0; i < s.allCreators.length; i++) {
+        							if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+								s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            							break;
+        							}
+    							}
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
 						}
@@ -545,6 +551,12 @@ library LibSteez {
 							if (s.steez[creatorId].auctionSlotsSecured > 0) {
 								s.steez[creatorId].auctionSlotsSecured -= 1;
 							}
+							for (uint i = 0; i < s.allCreators.length; i++) {
+        							if (keccak256(abi.encodePacked(s.allCreators[i].creatorId)) == keccak256(abi.encodePacked(creatorId))) {
+								s.allCreators[i].steezStatus = s.steez[creatorId].status;
+            							break;
+        							}
+    							}
 							s.preorderBidFinished[investor][creatorId] = true;
 							s.totalTransactionCount += 1;
 						}
@@ -603,6 +615,7 @@ library LibSteez {
 //		require(!s.steez[creatorId].launchEnded, "Launch has ended");
 //		require(s.steez[creatorId].launchStarted, "Launch has not started");
 		require(s.steez[creatorId].liquidityPool > 0, "liquidity pool is empty now go to P2P market");
+		require(s.steez[creatorId].liquidityPool >= amount, "please lower your amount liquidity pool is insiffiecient");
 		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
 		require(block.timestamp >= s.steez[creatorId].auctionStartTime, "launch has not started yet");
 		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Launch")), "launch has not started yet");
@@ -615,6 +628,8 @@ library LibSteez {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
 					bidAgain = true;
 					require(s.steezInvested[investor][creatorId] + amount <= 5, "amount of steez per person is from 1 up to 5");
+					s.steez[creatorId].investors[i].steeloInvested += (s.steez[creatorId].currentPrice * amount);
+					s.steez[creatorId].investors[i].timeInvested = block.timestamp;
 				}
 			}
 
@@ -635,7 +650,7 @@ library LibSteez {
 			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
 				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
 			}
-		s.steez[creatorId].SteeloInvestors[investor] = (s.steez[creatorId].currentPrice);
+		s.steez[creatorId].SteeloInvestors[investor] += (s.steez[creatorId].currentPrice * amount);
 		s.steez[creatorId].totalSteeloPreOrder += (s.steez[creatorId].currentPrice * amount);
 		s.steezInvested[investor][creatorId] += amount;
 
@@ -804,14 +819,15 @@ library LibSteez {
 				for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 					if (buyer == s.steez[creatorId].investors[i].walletAddress) {
 						bidAgain = true;
+						require(s.steezInvested[buyer][creatorId] + buyingAmount <= 5, "amount of steez per person is from 1 up to 5");
 						s.steez[creatorId].investors[i].steeloInvested +=  (buyingPrice * buyingAmount);
 						s.steez[creatorId].investors[i].timeInvested = block.timestamp;
-						require(s.steezInvested[buyer][creatorId] + buyingAmount <= 5, "amount of steez per person is from 1 up to 5");
 					}
 				}
 				
 				P2PTransaction = true;
 				P2PSeller = s.sellers[creatorId][i].sellerAddress;
+				s.steez[creatorId].SteeloInvestors[buyer] += (buyingPrice * buyingAmount);
 
 				if (bidAgain == false) {
 					Investor memory newInvestor = Investor({
@@ -834,8 +850,16 @@ library LibSteez {
 							s.totalTransactionCount += 1;	
 						}	
 						else {
-						s.steez[creatorId].investors[j].steeloInvested -= (buyingPrice * buyingAmount);
-						s.totalTransactionCount += 1;	
+							if ((buyingPrice * buyingAmount) > s.steez[creatorId].investors[j].steeloInvested) {
+								s.steez[creatorId].investors[j].steeloInvested = 0;
+								s.steez[creatorId].SteeloInvestors[s.sellers[creatorId][i].sellerAddress] = 0;
+								s.totalTransactionCount += 1;			
+							}
+							else {
+								s.steez[creatorId].investors[j].steeloInvested -= (buyingPrice * buyingAmount);
+								s.steez[creatorId].SteeloInvestors[s.sellers[creatorId][i].sellerAddress] -= (buyingPrice * buyingAmount);
+								s.totalTransactionCount += 1;	
+							}
 						
 						}
 					}
@@ -894,6 +918,7 @@ library LibSteez {
     			}
 		}
 		require(s.steez[creatorId].liquidityPool > 0, "liquidity pool is empty now go to P2P market");
+		require(s.steez[creatorId].liquidityPool >= amount, "please lower your amount liquidity pool is insiffiecient");
 		require(s.steez[creatorId].liquidityPool - amount >= 0, "liquidity pool has insufficient steez");
 		require(block.timestamp >= s.steez[creatorId].anniversaryDate, "anniversary has not started yet");
 		require(keccak256(abi.encodePacked(s.steez[creatorId].status)) == keccak256(abi.encodePacked("Anniversary")), "anniversary has not started yet");
@@ -905,6 +930,8 @@ library LibSteez {
 		for (uint256 i = 0; i < s.steez[creatorId].investors.length; i++) {
 				if (investor == s.steez[creatorId].investors[i].walletAddress) {
 					require(s.steezInvested[investor][creatorId] + amount <= 5, "amount of steez per person is from 1 up to 5");
+					s.steez[creatorId].investors[i].steeloInvested += (s.steez[creatorId].currentPrice * amount);
+					s.steez[creatorId].investors[i].timeInvested = block.timestamp;
 					bidAgain = true;
 				}
 			}
@@ -926,7 +953,7 @@ library LibSteez {
 			if (s.stakers[s.steez[creatorId].creatorAddress].month < s.stakers[investor].month) {
 				s.stakers[s.steez[creatorId].creatorAddress].month = s.stakers[investor].month;
 			}
-		s.steez[creatorId].SteeloInvestors[investor] = (s.steez[creatorId].currentPrice);
+		s.steez[creatorId].SteeloInvestors[investor] += (s.steez[creatorId].currentPrice * amount);
 		s.steez[creatorId].totalSteeloPreOrder += (s.steez[creatorId].currentPrice * amount);
 		s.steezInvested[investor][creatorId] += amount;
 

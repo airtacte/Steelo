@@ -119,8 +119,8 @@ function MosaicDetail (  { items, user, setlogin, setSuccess, search, setSearch,
 		          Authorization: `Bearer ${token}`,
 		        },
 		      });
-		      console.log('Creator Content fetched successfully');
-		      console.log(response.data.videos);
+//		      console.log('Creator Content fetched successfully');
+//		      console.log(response.data.videos);
 		      if (isMounted) {
 		        setCreatorContentData(response.data.videos);
 		      }

@@ -63,8 +63,8 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 									                },
 							            });
 
-					            console.log('Creator fetched successfully');
-					            console.log(response.data);
+//					            console.log('Creator fetched successfully');
+//					            console.log(response.data);
 						    setCreatorDataBackend(response.data);
 					          } catch (error) {
 							          console.error('Network error:', error);
@@ -546,22 +546,25 @@ function Main ( { transfer, name, symbol, totalSupply, totalTokens, balance, bal
 				
 				
 			
-				<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
-				    <div id="content" className="mt-3">
-				        {investors?.map((investor, index) => (
-				            <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
-				                    <div className="d-flex justify-content-between align-items-center">
- 				                       <div>
-				                            <h5 className="mb-1">Investor Address :{investor?.walletAddress}</h5>
-				                        </div>
-				                    </div>
-		        	            <div>Steelo Invested :{parseFloat(investor?.steeloInvested)/ (10 ** 18)}</div>
-		        	            <div>Investor Id :{investor?.investorId} {symbol}</div>
-					    <div>Time Invested : {new Date(investor?.timeInvested.toNumber() * 1000).toString()}</div>
-				            </div>
-				        ))}
-				    </div>
-				</main>
+				
+			<main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '600px', minHeight: '100vh' }}>
+			    <div id="content" className="mt-3">
+			        {[...investors]?.sort((a, b) => parseFloat(b.steeloInvested) - parseFloat(a.steeloInvested))
+			          .map((investor, index) => (
+			            <div key={index} className="list-group-item list-group-item-action bg-dark text-white mb-2">
+			                <div className="d-flex justify-content-between align-items-center">
+			                    <div>
+			                        <h5 className="mb-1">Investor Address: {investor?.walletAddress}</h5>
+			                    </div>
+			                </div>
+			                <div>Steelo Invested: {parseFloat(investor?.steeloInvested) / (10 ** 18)}</div>
+			                <div>Investor Id: {investor?.investorId} {symbol}</div>
+			                <div>Time Invested: {new Date(investor?.timeInvested.toNumber() * 1000).toString()}</div>
+			            </div>
+			        ))}
+			    </div>
+			</main>
+
 				
 				
 				

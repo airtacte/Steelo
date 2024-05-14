@@ -39,7 +39,7 @@ function Baazar ( {  email, token, role } ) {
 		          Authorization: `Bearer ${token}`,
 		        },
 		      });
-		      console.log('Creators fetched successfully');
+//		      console.log('Creators fetched successfully');
 		      if (isMounted) {
 		        setCreatorDataBackend(response.data);
 		      }

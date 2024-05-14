@@ -1,3 +1,3 @@
-const diamondAddress = "0x2Ef4b738e2119DDB78A95Bf075ECd879747660Ff";
+const diamondAddress = "0x7a0867211f190F616A3aBDFB0B000C5C2955029F";
 
 export {diamondAddress};

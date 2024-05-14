@@ -47,7 +47,7 @@ function Admin ( {  email, token, role, addressToTransferFrom, setAddressToTrans
 
 
 	async function getContractBalance() {
-		console.log("amount to be donated :", parseFloat(ethers.utils.parseEther(donatingEther.toString())));
+//		console.log("amount to be donated :", parseFloat(ethers.utils.parseEther(donatingEther.toString())));
 		if (typeof window.ethereum !== "undefined") {
 		const provider = new ethers.providers.Web3Provider(window.ethereum);
       		const signer = provider.getSigner();

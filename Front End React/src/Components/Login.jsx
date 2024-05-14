@@ -57,7 +57,6 @@ function Login({ email, token, formData, setFormData, loggedin, setlogin, respon
 		    }, [email, token, role, userId]);
 
 	  useEffect(() => {
-		      setErrMsg('');
 		    }, [formData.email, formData.password]);
 
 	  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
