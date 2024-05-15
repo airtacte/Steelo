@@ -5,7 +5,7 @@ import "./App.css";
 import Navbar from './Components/Navbar';
 import Main from "./Components/Main";
 import Login from "./Components/Login";
-import SignUp from "./Components/SignUp";
+import SignUp from "./Components/Register";
 import Admin from "./Components/Admin";
 import Creator from "./Components/Creator"; 
 import Bazaar from "./Components/Baz"; 
