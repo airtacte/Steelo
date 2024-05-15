@@ -139,23 +139,25 @@ router.post('/login', async (req: Request, res: Response) => {
             return res.status(400).send('Creator not found.');
         }
 
-	const creatorData = querySnapshot.docs[0].data();
+        const creatorData = querySnapshot.docs[0].data();
         const isMatched = await isPassMatched(password, creatorData.password);
 
-	if(!isMatched) {
-		return res.status(401).send("Invalid credentials");
-	}
-	else {
-	return res.json({ 
-		userId: querySnapshot.docs[0].id,
-		name: creatorData.name,
-		role: creatorData.role,
-		email: email,
-		token: generateToken(querySnapshot.docs[0].id),
-		message: "user loggedin succesfully",
-	});
+        if (!isMatched) {
+            return res.status(401).send("Invalid credentials");
+        } else {
+            return res.json({
+                userId: querySnapshot.docs[0].id,
+                name: creatorData.name,
+                role: creatorData.role,
+                email: email,
+                token: generateToken(querySnapshot.docs[0].id),
+                message: "user logged in successfully",
+            });
+        }
+    } catch (e) {
+        return res.status(400).send(e.message);
+    }
 });
-
 
 
 
@@ -193,7 +195,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 		userId: querySnapshot.docs[0].id,
 		name: userRecord.name,
 		role: userRecord.role,
-		profile: userRecord.profile;
+		profile: userRecord.profile,
 		message: "creator data fetched successfully",
 	});
     } catch (error) {
